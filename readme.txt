@@ -10,7 +10,7 @@ FoxyShop is a full integration for FoxyCart and WordPress, providing a robust sh
 
 == Description ==
 
-FoxyShop is a complete shopping cart solution for WordPress. This plugin connects to FoxyCart’s excellent shopping cart service and will allow you to manage your inventory from a WordPress backend. FoxyShop is designed for complete flexibility so that WordPress developers can use the plugin’s helpful library and sample code to quickly configure and implement almost any shopping cart solution.
+FoxyShop is a complete shopping cart solution for WordPress. This plugin connects to FoxyCart's excellent shopping cart service and will allow you to manage your inventory from a WordPress backend. FoxyShop is designed for complete flexibility so that WordPress developers can use the plugin's helpful library and sample code to quickly configure and implement almost any shopping cart solution.
 
 Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for more details and full documentation and instructions.
 
@@ -18,7 +18,7 @@ Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for more details and full d
 * Manage your product inventory within the WordPress structure
 * Full product information: name, price, product code, shipping weight, shipping category, minimum and maximum quantities, product description, and short product description.
 * Multiple images with popup slideshow
-* Complete flexibility for product variations and pricing. Chainable variations are supported so that some options aren’t available until others are selected. Price is automatically updated when different selections are made.
+* Complete flexibility for product variations and pricing. Chainable variations are supported so that some options aren't available until others are selected. Price is automatically updated when different selections are made.
 * Supports basic product sorting with the ability to highlight and feature certain items as well as moving some items to the bottom of the list
 * Widget support for featured categories
 * Shortcode support for "Add to Cart" links
@@ -77,7 +77,7 @@ Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
 
-= 1.0 (February 19, 2011) =
+= 1.0 (February 20, 2011) =
 * Initial release
 
 == Upgrade Notice ==
