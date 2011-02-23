@@ -5,8 +5,10 @@ jQuery(document).ready(function($){
 	updateVariations($("form.foxyshop_product select"));
 
 	function updateVariations(elSelect) {
-		price = parseFloat($("#price").val());
-		price1 = parseFloat($("#originalprice").val());
+		price = $("#price").val();
+		price1 = $("#originalprice").val();
+		price = parseFloat(price.replace(",",""));
+		price1 = parseFloat(price1.replace(",",""));
 		displayKey = new Array();
 		elSelect.parents("form").find(".foxyshop_variations select option:selected").each(function(){
 			var thisEl = $(this);
@@ -43,8 +45,20 @@ jQuery(document).ready(function($){
 			}
 
 		});
-		$("#foxyshop_main_price .foxyshop_currentprice").text("$"+price.toFixed(2));
-		$("#foxyshop_main_price .foxyshop_oldprice").text("$"+price1.toFixed(2));
-		//alert('done');
+		$("#foxyshop_main_price .foxyshop_currentprice").text("$"+addCommas(price.toFixed(2)));
+		$("#foxyshop_main_price .foxyshop_oldprice").text("$"+addCommas(price1.toFixed(2)));
 	}
+	
+	function addCommas(nStr) {
+		nStr += '';
+		x = nStr.split('.');
+		x1 = x[0];
+		x2 = x.length > 1 ? '.' + x[1] : '';
+		var rgx = /(\d+)(\d{3})/;
+		while (rgx.test(x1)) {
+			x1 = x1.replace(rgx, '$1' + ',' + '$2');
+		}
+		return x1 + x2;
+	}
+
 });

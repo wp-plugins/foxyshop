@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 1.0
+Stable tag: 1.1
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -76,6 +76,12 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 1.1 (February 23, 2011) =
+* Added Internationalization Support (contact me if you can help translate)
+* Fixed bug where commas entered in price field would invalidate input
+* Fixed bug in sale date calculation method
+
 
 = 1.0 (February 20, 2011) =
 * Initial release

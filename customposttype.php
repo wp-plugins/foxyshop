@@ -79,8 +79,8 @@ function manage_custom_columns($column_name, $id) {
 		$saleprice = get_post_meta($id,'_saleprice', true);
 
 		if ($saleprice > 0) {
-			$beginningOK = (strtotime(now) > $salestartdate);
-			$endingOK = (strtotime(now) < ($saleenddate + 86400) || $$saleenddate == 0);
+			$beginningOK = (strtotime("now") > $salestartdate);
+			$endingOK = (strtotime("now") < ($saleenddate + 86400) || $saleenddate == 0);
 			if ($beginningOK && $endingOK || ($salestartdate == 0 && $saleenddate == 0)) {
 				echo '<span style="text-decoration: line-through; margin-right: 10px;">$' . number_format($originalprice,2) . '</span><span style="color: red;">$' . number_format($saleprice,2) . '</span>';
 			} else {
@@ -115,7 +115,7 @@ function my_restrict_manage_posts() {
 
             // output html for taxonomy dropdown filter
             echo "<select name='$tax_slug' id='$tax_slug' class='postform'>";
-            echo "<option value=''>Show All $tax_name</option>";
+            echo '<option value="">' . __('Show All') . ' ' . $tax_name . '</option>'."\n";
             foreach ($terms as $term) {
                 // output each select option line, check against the last $_GET to show the current option selected
                 echo '<option value='. $term->slug, $_GET[$tax_slug] == $term->slug ? ' selected="selected"' : '','>' . $term->name .' (' . $term->count .')</option>';
@@ -171,7 +171,7 @@ function product_details_setup() {
 	//$_sort = (int)get_post_meta($post->ID,'_sort',TRUE);
 	$_sort = (int)$post->menu_order;
 	if ($_sort == 0) $_sort = 3;
-	$_price = get_post_meta($post->ID,'_price',TRUE);
+	$_price = number_format(get_post_meta($post->ID,'_price',TRUE),2,".",",");
 	$_code = get_post_meta($post->ID,'_code',TRUE);
 	$_category = get_post_meta($post->ID,'_category',TRUE);
 	$_quantity_min = get_post_meta($post->ID,'_quantity_min',TRUE);
@@ -181,32 +181,32 @@ function product_details_setup() {
 	$_hide_product = get_post_meta($post->ID,'_hide_product',TRUE);
 	?>
 	<div class="my_meta_control">
-		<label>Base Price</label>
+		<label><?php _e('Base Price'); ?></label>
 		<input type="text" name="_price" value="<?php echo $_price; ?>" onblur="foxyshop_check_number(this);" />
 	</div>
 	<div class="my_meta_control">
-		<label>Item Code</label>
+		<label><?php _e('Item Code'); ?></label>
 		<input type="text" name="_code" value="<?php echo $_code; ?>" />
 	</div>
 	<div class="my_meta_control">
-		<label>Weight</label>
+		<label><?php _e('Weight'); ?></label>
 		<input type="text" name="_weight1" id="_weight1" value="<?php echo (int)$_weight[0]; ?>" style="width: 40px; float: left;" onblur="foxyshop_check_number_single(this);" />
 		<span style="float: left; margin: 9px 0 0 5px; width: 34px;"><?php echo ($foxyshop_settings['weight_type'] == "metric" ? 'kg' : 'lbs'); ?></span>
 		<input type="text" name="_weight2" value="<?php echo (int)$_weight[1]; ?>" style="width: 40px; float: left;" onblur="check_oz(this);" />
 		<span style="float: left; margin: 9px 0 0 5px;"><?php echo ($foxyshop_settings['weight_type'] == "metric" ? 'gm' : 'oz'); ?></span>
 	</div>
 	<div class="my_meta_control">
-		<label>Qty Settings</label>
+		<label><?php _e('Qty Settings'); ?></label>
 		<input type="text" name="_quantity_min" id="_weight1" value="<?php echo $_quantity_min; ?>" style="width: 40px; float: left;" onblur="foxyshop_check_number_single(this);" />
-		<span style="float: left; margin: 9px 0 0 5px; width: 34px;">min</span>
+		<span style="float: left; margin: 9px 0 0 5px; width: 34px;"><?php _e('min', 'Minimum'); ?></span>
 		<input type="text" name="_quantity_max" value="<?php echo $_quantity_max; ?>" style="width: 40px; float: left;" onblur="foxyshop_check_number_single(this);" />
-		<span style="float: left; margin: 9px 0 0 5px;">max</span>
+		<span style="float: left; margin: 9px 0 0 5px;"><?php _e('max', 'Maximum'); ?></span>
 	</div>
 	<div class="my_meta_control">
-		<label>Sorting</label>
+		<label><?php _e('Sorting'); ?></label>
 		<select name="menu_order">
 			<?php
-			$arrSorting = array(1=>'Featured','Elevated','Normal','Lower','Lowest');
+			$arrSorting = array(1=>__('Featured'),__('Elevated'),__('Normal'),__('Lower'),__('Lowest'));
 			for ($i = 1; $i < count($arrSorting)+1; $i++) {
 				echo '<option value="' . $i . '"';
 				if ($i == $_sort) echo ' selected="selected"';
@@ -218,9 +218,9 @@ function product_details_setup() {
 	</div>
 	<?php if ($foxyshop_settings['ship_categories']) { ?>
 	<div class="my_meta_control">
-		<label>Shipping Cat.</label>
+		<label><?php _e('Shipping Cat.'); ?></label>
 		<select name="_category">
-			<option value="">- - Default - -</option>
+			<option value="">- - <?php _e('Default'); ?> - -</option>
 			<?php
 			$arrShipCategories = preg_split("/(\r\n|\n)/", $foxyshop_settings['ship_categories']);
 			for ($i = 0; $i < count($arrShipCategories); $i++) {
@@ -235,7 +235,7 @@ function product_details_setup() {
 	<?php } ?>
 	<div class="my_meta_control">
 		<input type="checkbox" name="_hide_product" id="_hide_product" style="float: left; margin: 5px 0 0 10px;"<?php echo checked($_hide_product,"on"); ?> />
-		<label style="width: 210px;" for="_hide_product">Hide This Product From List View</label>
+		<label style="width: 210px;" for="_hide_product"><?php _e('Hide This Product From List View','hide_product'); ?></label>
 	</div>
 	<div style="clear:both"></div>
 	<?php
@@ -245,7 +245,7 @@ function product_details_setup() {
 //Secondary Product Details
 function product_pricing_setup() {
 	global $post, $foxyshop_settings;
-	$_saleprice = get_post_meta($post->ID,'_saleprice',TRUE);
+	$_saleprice = number_format(get_post_meta($post->ID,'_saleprice',TRUE),2,".",",");
 	$_salestartdate = get_post_meta($post->ID,'_salestartdate',TRUE);
 	$_saleenddate = get_post_meta($post->ID,'_saleenddate',TRUE);
 
@@ -265,57 +265,57 @@ function product_pricing_setup() {
 	$_sub_enddate = get_post_meta($post->ID,'_sub_enddate',TRUE);
 
 	?>
-	<h4>Sale</h4>
+	<h4><?php _e('Sale'); ?></h4>
 	<div class="my_meta_control">
-		<label>Sale Price</label>
+		<label><?php _e('Sale Price'); ?></label>
 		<input type="text" name="_saleprice" value="<?php echo $_saleprice; ?>" onblur="foxyshop_check_number(this);" />
 	</div>
 	<div class="my_meta_control">
-		<label>Start Date</label>
+		<label><?php _e('Start Date'); ?></label>
 		<input type="text" name="_salestartdate" value="<?php echo $_salestartdate; ?>" />
 	</div>
 	<div class="my_meta_control">
-		<label>End Date</label>
+		<label><?php _e('End Date'); ?></label>
 		<input type="text" name="_saleenddate" value="<?php echo $_saleenddate; ?>" />
 	</div>
 	
 
-	<h4>Discounts <a href="http://wiki.foxycart.com/v/0.6.0/getting_started/adding_links_and_forms#discounts" target="_blank">(reference)</a></h4>
+	<h4><?php _e('Discounts'); ?> <a href="http://wiki.foxycart.com/v/0.6.0/getting_started/adding_links_and_forms#discounts" target="_blank">(<?php _e('reference'); ?>)</a></h4>
 	<div class="my_meta_control discount_fields">
-		<label>Quantity $</label>
+		<label><?php _e('Quantity $'); ?></label>
 		<input type="text" name="_discount_quantity_amount" value="<?php echo $_discount_quantity_amount; ?>" />
 		<div style="clear:both;"></div>
 	</div>
 	<div class="my_meta_control discount_fields">
-		<label>Quantity %</label>
+		<label><?php _e('Quantity %'); ?></label>
 		<input type="text" name="_discount_quantity_percentage" value="<?php echo $_discount_quantity_percentage; ?>" />
 		<div style="clear:both;"></div>
 	</div>
 	<div class="my_meta_control discount_fields">
-		<label>Price $</label>
+		<label><?php _e('Price $'); ?></label>
 		<input type="text" name="_discount_price_amount" value="<?php echo $_discount_price_amount; ?>" />
 		<div style="clear:both;"></div>
 	</div>
 	<div class="my_meta_control discount_fields">
-		<label>Price %</label>
+		<label><?php _e('Price %'); ?></label>
 		<input type="text" name="_discount_price_percentage" value="<?php echo $_discount_price_percentage; ?>" />
 		<div style="clear:both;"></div>
 	</div>
 	<div style="clear:both;"></div>
 
 	<?php if ($foxyshop_settings['enable_subscriptions']) { ?>
-	<h4><a href="#" id="showsublink">Subscription Attributes</a> <a href="http://wiki.foxycart.com/v/0.6.0/getting_started/adding_links_and_forms#subscription_attributes" target="_blank">(reference)</a></h4>
+	<h4><a href="#" id="showsublink"><?php _e('Subscription Attributes'); ?></a> <a href="http://wiki.foxycart.com/v/0.6.0/getting_started/adding_links_and_forms#subscription_attributes" target="_blank">(<?php _e('reference'); ?>)</a></h4>
 	<div id="foxyshop_subscription_attributes" style="display: none;">
 		<div class="my_meta_control">
-			<label>Frequency</label>
+			<label><?php _e('Frequency'); ?></label>
 			<input type="text" name="_sub_frequency" value="<?php echo $_sub_frequency; ?>" />
 		</div>
 		<div class="my_meta_control">
-			<label>Start Date</label>
+			<label><?php _e('Start Date'); ?></label>
 			<input type="text" name="_sub_startdate" value="<?php echo $_sub_startdate; ?>" />
 		</div>
 		<div class="my_meta_control">
-			<label>End Date</label>
+			<label><?php _e('End Date'); ?></label>
 			<input type="text" name="_sub_enddate" value="<?php echo $_sub_enddate; ?>" />
 		</div>
 	</div>
@@ -343,33 +343,33 @@ function product_secondary_setup() {
 		$productList .= '<option value="' . $product->ID . '">' . $productName . '</option>'."\n";
 		
 		foreach ($arr_related_products as $relatedprod) {
-			if ($relatedprod == $product->ID) $related_product_list .= '<span id="related_' . $product->ID . '"><a href="#" class="remove_related_product" rel="' . $product->ID . '">Delete</a>&nbsp;' . $product->post_title . '</span>'."\n";
+			if ($relatedprod == $product->ID) $related_product_list .= '<span id="related_' . $product->ID . '"><a href="#" class="remove_related_product" rel="' . $product->ID . '">' . __('Delete') . '</a>&nbsp;' . $product->post_title . '</span>'."\n";
 		}
 
 		foreach ($arr_bundled_products as $bundledprod) {
-			if ($bundledprod == $product->ID) $bundled_product_list .= '<span id="bundled_' . $product->ID . '"><a href="#" class="remove_bundled_product" rel="' . $product->ID . '">Delete</a>&nbsp;' . $product->post_title . '</span>'."\n";
+			if ($bundledprod == $product->ID) $bundled_product_list .= '<span id="bundled_' . $product->ID . '"><a href="#" class="remove_bundled_product" rel="' . $product->ID . '">' . __('Delete') . '</a>&nbsp;' . $product->post_title . '</span>'."\n";
 		}
 	}
 	?>
 	<div class="my_meta_control" style="float: left; width: 48%;">
 		<input type="hidden" name="_related_products" id="_related_products" value=",<?php echo $_related_products; ?>," />
-		<div style="padding: 4px;"><strong>Related Products</strong></div>
+		<div style="padding: 4px;"><strong><?php _e('Related Products'); ?></strong></div>
 		<select name="_related_products_list" id="_related_products_list" style="width: 210px;">
-			<option value="">- - Select Products Below - -</option>
+			<option value=""><?php _e('- - Select Products Below - -'); ?></option>
 			<?php echo $productList; ?>
 		</select>
-		<a href="#" class="button" id="add_related_product">Add</a>
+		<a href="#" class="button" id="add_related_product"><?php _e('Add'); ?></a>
 		<div id="related_product_listing" class="tagchecklist"><?php echo $related_product_list; ?></div>
 	</div>
 	<?php if ($foxyshop_settings['enable_bundled_products']) { ?>
 	<div class="my_meta_control" style="float: right; width: 48%;">
 		<input type="hidden" name="_bundled_products" id="_bundled_products" value=",<?php echo $_bundled_products; ?>," />
-		<div style="padding: 4px;"><strong>Bundled Products</strong></div>
+		<div style="padding: 4px;"><strong><?php _e('Bundled Products'); ?></strong></div>
 		<select name="_bundled_products_list" id="_bundled_products_list" style="width: 210px;">
-			<option value="">- - Select Products Below - -</option>
+			<option value=""><?php _e('- - Select Products Below - -'); ?></option>
 			<?php echo $productList; ?>
 		</select>
-		<a href="#" class="button" id="add_bundled_product">Add</a>
+		<a href="#" class="button" id="add_bundled_product"><?php _e('Add'); ?></a>
 		<div id="bundled_product_listing" class="tagchecklist"><?php echo $bundled_product_list; ?></div>
 	</div>
 	<?php } ?>
@@ -380,7 +380,7 @@ jQuery(document).ready(function($){
 	$("#add_related_product").click(function() {
 		thisID = $("#_related_products_list option:selected").attr("value");
 		thisName = $("#_related_products_list option:selected").attr("text");
-		$("#related_product_listing").append('<span id="related_' + thisID + '"><a href="#" class="remove_related_product" rel="' + thisID + '">Delete</a>&nbsp;' + thisName + '</span>');
+		$("#related_product_listing").append('<span id="related_' + thisID + '"><a href="#" class="remove_related_product" rel="' + thisID + '"><?php _e('Delete'); ?></a>&nbsp;' + thisName + '</span>');
 		$("#_related_products").val($("#_related_products").val() + ',' + thisID + ',');
 		return false;
 	});
@@ -394,7 +394,7 @@ jQuery(document).ready(function($){
 	$("#add_bundled_product").click(function() {
 		thisID = $("#_bundled_products_list option:selected").attr("value");
 		thisName = $("#_bundled_products_list option:selected").attr("text");
-		$("#bundled_product_listing").append('<span id="bundled_' + thisID + '"><a href="#" class="remove_bundled_product" rel="' + thisID + '">Delete</a>&nbsp;' + thisName + '</span>');
+		$("#bundled_product_listing").append('<span id="bundled_' + thisID + '"><a href="#" class="remove_bundled_product" rel="' + thisID + '"><?php _e('Delete'); ?></a>&nbsp;' + thisName + '</span>');
 		$("#_bundled_products").val($("#_bundled_products").val() + ',' + thisID + ',');
 		return false;
 	});
@@ -453,30 +453,30 @@ function product_variations_setup() {
 				</div>
 			</div>
 			<div class="my_meta_control variations variationoptions">
-				<label>Variations</label>
+				<label><?php _e('Variations'); ?></label>
 				<textarea name="_variation_value_<?php echo $i; ?>" style="width: 500px; height: 130px;"><?php echo $_variationValue; ?></textarea>
 				<br />
-				<div style="margin: 2px 0 0 114px; font-size: 10px;">Example: Variation Name{p+1.50|w-1|c:product_code|y:shipping_category|dkey:display_key}<br />
-				Put a * in your variation name to indicate that the option will be selected by default.
+				<div style="margin: 2px 0 0 114px; font-size: 10px;"><?php _e('Example: Variation Name{p+1.50|w-1|c:product_code|y:shipping_category|dkey:display_key}'); ?><br />
+				<?php _e('Put a * in your variation name to indicate that the option will be selected by default.'); ?>
 				</div>
 			</div>
 			<div class="my_meta_control textboxsize variationoptions">
 				<div class="my_meta_control">
-					<label>Text Box Size</label>
-					<input type="text" name="_variation_textsize1_<?php echo $i; ?>" value="<?php echo $arrVariationTextSize[0]; ?>" style="width: 45px;" /> characters
+					<label><?php _e('Text Box Size'); ?></label>
+					<input type="text" name="_variation_textsize1_<?php echo $i; ?>" value="<?php echo $arrVariationTextSize[0]; ?>" style="width: 45px;" /> <?php _e('characters'); ?>
 				</div>
 				<div class="my_meta_control">
-					<label>Maximum Chars</label>
-					<input type="text" name="_variation_textsize2_<?php echo $i; ?>" value="<?php echo $arrVariationTextSize[1]; ?>" style="width: 45px;" /> characters
+					<label><?php _e('Maximum Chars'); ?></label>
+					<input type="text" name="_variation_textsize2_<?php echo $i; ?>" value="<?php echo $arrVariationTextSize[1]; ?>" style="width: 45px;" /> <?php _e('characters'); ?>
 				</div>
 				<div style="clear: both;"></div>
 			</div>
 			<div class="my_meta_control textareasize variationoptions">
-				<label>Lines of Text</label>
+				<label><?php _e('Lines of Text'); ?></label>
 				<input type="text" name="_variation_textareasize_<?php echo $i; ?>" value="<?php echo $_variationTextSize; ?>" style="width: 45px;" />
 			</div>
 			<div class="my_meta_control customupload variationoptions">
-				<label style="width: 120px;">Special Instructions</label>
+				<label style="width: 120px;"><?php _e('Special Instructions'); ?></label>
 				<textarea name="_variation_uploadinstructions_<?php echo $i; ?>" style="width: 500px; height: 40px;"><?php echo $_variationValue; ?></textarea>
 			</div>
 		</div>
@@ -484,7 +484,7 @@ function product_variations_setup() {
 	}
 	
 	?>
-	<button id="AddVariation" class="button" style="display: none;">Add Another Variation</button>
+	<button id="AddVariation" class="button" style="display: none;"><?php _e('Add Another Variation'); ?></button>
 
 <script type="text/javascript">
 jQuery(document).ready(function($){
@@ -574,7 +574,7 @@ function product_meta_save($post_id) {
 	if ($_weight == ' ') $_weight = $foxyshop_settings['default_weight'].' 0'; //Set Default Weight
 
 	//Save Product Detail Data
-	saveFoxyShopMetaData('_price',number_format($_POST['_price'],2,".",""));
+	saveFoxyShopMetaData('_price',number_format(str_replace(",","",$_POST['_price']),2,".",""));
 	saveFoxyShopMetaData('_code',$_POST['_code']);
 	saveFoxyShopMetaData('_category',$_POST['_category']);
 	saveFoxyShopMetaData('_weight',$_weight);
@@ -589,7 +589,7 @@ function product_meta_save($post_id) {
 	if (($_saleenddate = strtotime($_POST['_saleenddate'])) === false) saveFoxyShopMetaData('_saleenddate',"999999999999999999");
 	else saveFoxyShopMetaData('_saleenddate',$_saleenddate);
 
-	saveFoxyShopMetaData('_saleprice',number_format($_POST['_saleprice'],2,".",""));
+	saveFoxyShopMetaData('_saleprice',number_format(str_replace(",","",$_POST['_saleprice']),2,".",""));
 	saveFoxyShopMetaData('_discount_quantity_amount',$_POST['_discount_quantity_amount']);
 	saveFoxyShopMetaData('_discount_quantity_percentage',$_POST['_discount_quantity_percentage']);
 	saveFoxyShopMetaData('_discount_price_amount',$_POST['_discount_price_amount']);

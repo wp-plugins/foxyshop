@@ -86,8 +86,8 @@ function title_filter_category() {
 	$term = get_term_by('slug', $currentCategory, "foxyshop_categories");
 	return $term->name . " | ";
 }
-function title_filter_productcat() { return"Product Categories | "; }
-function title_filter_productsearch() { return "Product Seach | "; }
+function title_filter_productcat() { return __("Product Categories") . " | "; }
+function title_filter_productsearch() { return __("Product Seach") . " | "; }
 
 
 function do_theme_redirect($url) {
