@@ -98,17 +98,19 @@ function foxyshop_custom_sort() {
 			$current_category_slug = $term->slug;
 			$unwanted_children = get_term_children($categoryID, "foxyshop_categories");
 			$unwanted_post_ids = get_objects_in_term($unwanted_children, "foxyshop_categories");
-			$args = array('post_type' => 'foxyshop_product', "post__not_in" => $unwanted_post_ids, "foxyshop_categories" => $current_category_slug, 'posts_per_page' => -1, 'orderby' => "menu_order", 'order' => "ASC");
+			$args = array('post_type' => 'foxyshop_product', "post__not_in" => $unwanted_post_ids, "foxyshop_categories" => $current_category_slug, 'numberposts' => -1, 'orderby' => "menu_order", 'order' => "ASC");
 		} else {
 			$current_category_name = "All Products";
-			$args = array('post_type' => 'foxyshop_product', 'posts_per_page' => -1, 'orderby' => "menu_order", 'order' => "ASC");
+			$args = array('post_type' => 'foxyshop_product', 'numberposts' => -1, 'orderby' => "menu_order", 'order' => "ASC");
 		}
 	
-		echo '<h3>' . $current_category_name . '</h3>'."\n";
-		echo '<form name="form_product_order" method="post" action="">'."\n";
 
 		$product_list = get_posts($args);
 		if ($product_list) {
+
+			echo '<h3>' . $current_category_name . '</h3>'."\n";
+			echo '<p>Drag products to the preferred order and then click the Save button at the bottom of the page.</p>';
+			echo '<form name="form_product_order" method="post" action="">'."\n";
 			echo '<ul id="foxyshop_product_order_list">'."\n";
 			foreach ($product_list as $prod) {
 				$product = foxyshop_setup_product($prod);
@@ -121,18 +123,21 @@ function foxyshop_custom_sort() {
 				echo '</li>'."\n";
 			}
 			echo '</ul>'."\n";
+			?>
+			<div style="width: 90%; height: 100px;">
+				<input type="submit" name="submit_new_product_order" id="submit_new_product_order" class="button-primary" value="<?php _e('Save Custom Order'); ?>" onclick="javascript:orderPages(); return true;" />&nbsp;&nbsp;<strong id="updateText"></strong>
+				<input type="submit" name="revert_product_order" id="revert_product_order" class="button" style="float: right;" value="<?php _e('Revert To Original'); ?>" />
+			</div>
+			<input type="hidden" id="foxyshop_product_order_value" name="foxyshop_product_order_value" />
+			<input type="hidden" id="hdnParentID" name="hdnParentID" value="<?php echo $parentID; ?>" />
+			<?php wp_nonce_field('update-foxyshop-sorting-options'); ?>
+			</form>
+			<?php
+
+		} else {
+			echo '<p><em>No Products Found For This Category.</em></p>';
 		}
 
-		?>
-		<div style="width: 90%; height: 100px;">
-			<input type="submit" name="submit_new_product_order" id="submit_new_product_order" class="button-primary" value="<?php _e('Save Custom Order'); ?>" onclick="javascript:orderPages(); return true;" />&nbsp;&nbsp;<strong id="updateText"></strong>
-			<input type="submit" name="revert_product_order" id="revert_product_order" class="button" style="float: right;" value="<?php _e('Revert To Original'); ?>" />
-		</div>
-		<input type="hidden" id="foxyshop_product_order_value" name="foxyshop_product_order_value" />
-		<input type="hidden" id="hdnParentID" name="hdnParentID" value="<?php echo $parentID; ?>" />
-		<?php wp_nonce_field('update-foxyshop-sorting-options'); ?>
-		</form>
-	<?php	
 	}
 	?>
 
