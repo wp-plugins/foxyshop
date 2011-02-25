@@ -83,6 +83,8 @@ function title_filter_product() { return "Products | "; }
 function title_filter_category() {
 	global $wp;
 	$currentCategory = (isset($wp->query_vars["foxyshop_categories"]) ? $wp->query_vars["foxyshop_categories"] : "");
+	$currentCategory = explode("/",$currentCategory);
+	$currentCategory = end($currentCategory);
 	$term = get_term_by('slug', $currentCategory, "foxyshop_categories");
 	return $term->name . " | ";
 }

@@ -3,6 +3,16 @@
 This file is setup to provide you with the ability to create a product feed that can be sent out to various aggregators. This is designed specifically for Google.
 */
 
+//Only run this if sort key is set to custom
+if ($foxyshop_settings['generate_feed'] != "") {
+	add_action('admin_menu', 'foxyshop_product_feed_menu');
+}
+
+//Put in Sidebar
+function foxyshop_product_feed_menu() {    
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Product Feed'), __('Product Feed'), 'manage_options', 'foxyshop_product_feed', 'foxyshop_product_feed');
+}
+
 function createFeed() {
 	global $product;
 	
@@ -50,6 +60,16 @@ function dblquotes($str) {
 	return str_replace('"','""',$str);
 }
 
-createFeed();
 
+//The Main Function
+function foxyshop_product_feed() {
+		echo '<div class="wrap">';
+		echo '<h2>' . __('Product Feed') . '</h2>'."\n";
+		echo "<p>" . __('If you would like to <a href="http://www.google.com/merchants" target="_blank">submit your products to Google</a>, you may do so by copying and pasting the contents of this box into a txt file and submitting it.') . "</p>"; ?>
+		<form>
+			<textarea name="feedtext" style="width: 100%; height: 200px;" onclick="this.select();" wrap="off"><?php createFeed(); ?></textarea>
+		</form>
+		</div>
+<?php
+}
 ?>

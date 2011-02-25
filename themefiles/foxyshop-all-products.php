@@ -13,22 +13,10 @@ if (function_exists('foxyshop_breadcrumbs')) {
 	//Put a category description here
 	//echo '<p></p>'."\n";
 
-	//To handle the sorting on this page, just pass in a querystring variable called "sort"
-	$sort = (isset($_GET['sort']) ? $_GET['sort'] : "featured");
-	if ($sort == "featured") {
-		$order = "menu_order";
-		$orderby = "ASC";
-	} elseif ($sort == "price") {
-		$order = "meta_value_num";
-		$orderby = "DESC";
-	} elseif ($sort == "title") {
-		$order = "title";
-		$orderby = "ASC";
-	}
-	
 	
 	//Run the query for all products in this category
-	$args = array('post_type' => 'foxyshop_product', 'posts_per_page' => -1, 'paged' => get_query_var('paged'), 'orderby' => $order, 'meta_key' => '_price', 'order' => $orderby);
+	$args = array('post_type' => 'foxyshop_product', 'posts_per_page' => -1, 'paged' => get_query_var('paged'));
+	$args = array_merge($args,foxyshop_sort_order_array());
 	query_posts($args);
 	echo '<ul class="foxyshop_product_list">';
 	while (have_posts()) :

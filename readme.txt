@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 1.1
+Stable tag: 1.2
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -77,13 +77,19 @@ Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
 
-= 1.1 (February 23, 2011) =
+= 1.2
+* Added custom product sorting with drag and drop capability as well as an option to select your sorting preference. Note that if you have custom theme files you may need to copy the new sorting routine on foxyshop-all-products.php, foxyshop-search.php, and foxyshop-single-category.php in order to take full advantage of the new sorting power.
+* Internationalization Tweaks
+* Product feed moved to its own page
+* Squashed a bug with special characters in title name causing validation failure
+* Squashed a bug with negative price adjustments
+
+= 1.1
 * Added Internationalization Support (contact me if you can help translate)
-* Fixed bug where commas entered in price field would invalidate input
-* Fixed bug in sale date calculation method
+* Squashed bug where commas entered in price field would invalidate input
+* Squashed bug in sale date calculation method
 
-
-= 1.0 (February 20, 2011) =
+= 1.0
 * Initial release
 
 == Upgrade Notice ==

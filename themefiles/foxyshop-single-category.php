@@ -24,24 +24,11 @@ if (function_exists('foxyshop_breadcrumbs')) {
 	//Show Children Categories
 	foxyshop_category_children($currentCategoryID);
 	
-	//To handle the sorting on this page, just pass in a querystring variable called "sort"
-	$sort = (isset($_GET['sort']) ? $_GET['sort'] : "featured");
-	if ($sort == "featured") {
-		$order = "menu_order";
-		$orderby = "ASC";
-	} elseif ($sort == "price") {
-		$order = "meta_value_num";
-		$orderby = "DESC";
-	} elseif ($sort == "title") {
-		$order = "title";
-		$orderby = "ASC";
-	}
-	
-	
 	//Run the query for all products in this category
 	$unwanted_children = get_term_children($currentCategoryID, "foxyshop_categories");
 	$unwanted_post_ids = get_objects_in_term($unwanted_children, "foxyshop_categories");
-	$args = array('post_type' => 'foxyshop_product', "post__not_in" => $unwanted_post_ids, "foxyshop_categories" => $currentCategorySlug, 'posts_per_page' => -1, 'paged' => get_query_var('paged'), 'orderby' => $order, 'meta_key' => '_price', 'order' => $orderby);
+	$args = array('post_type' => 'foxyshop_product', "post__not_in" => $unwanted_post_ids, "foxyshop_categories" => $currentCategorySlug, 'posts_per_page' => -1, 'paged' => get_query_var('paged'));
+	$args = array_merge($args,foxyshop_sort_order_array());
 	query_posts($args);
 	echo '<ul class="foxyshop_product_list">';
 	while (have_posts()) :
@@ -60,7 +47,7 @@ if (function_exists('foxyshop_breadcrumbs')) {
 
 		//Show Main Product Info
 		echo '<div class="foxyshop_product_info">';
-		echo '<h2><a href="' . $product['url'] . '">' . $product['name'] . '</a></h2>';
+		echo '<h2><a href="' . $product['url'] . '">' . apply_filters('the_title', $product['name']) . '</a></h2>';
 
 		echo "<p>" . $product['short_description'] . "</p>";
 

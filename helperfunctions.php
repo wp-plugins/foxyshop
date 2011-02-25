@@ -216,10 +216,10 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 							if (substr($valtemp1,0,1) == "p") $pricechange = substr($valtemp1,1);
 						}
 					}
-					if ($pricechange) {
-						if (substr($pricechange,1,1) == '-') {
-							$displaypricechange = "-$".number_format($pricechange, 2, ".", ",");
-							$pricechange = "-$".number_format($pricechange, 2, ".", "");
+					if ($pricechange != "") {
+						if (substr($pricechange,0,1) == '-') {
+							$displaypricechange = "-$".number_format(str_replace("-","",$pricechange), 2, ".", ",");
+							$pricechange = "-$".number_format(str_replace("-","",$pricechange), 2, ".", "");
 						} else {
 							$displaypricechange = "+$".number_format($pricechange, 2, ".", ",");
 							$pricechange = "+$".number_format($pricechange, 2, ".", "");
@@ -384,7 +384,7 @@ function foxyshop_image_slideshow($size = "thumbnail", $includeFeatured = true) 
 		}
 	}
 	if ($write && (count($product['images']) != 1 && includeFeatured)) {
-		echo '<div class="foxyshop_slideshow_title">' . __('Click Below For More Images:','image_slideshow_instructions') . '</div>';
+		echo '<div class="foxyshop_slideshow_title">' . __('Click Below For More Images:') . '</div>';
 		echo '<ul class="foxyshop_slideshow">' . $write . '</ul>'."\n";
 		echo '<div class="clr"></div>';
 	}
@@ -417,14 +417,14 @@ function foxyshop_category_children($categoryID = 0, $showCount = false) {
 //Generates Verification Code for HMAC Anti-Tampering
 function foxyshop_get_verification($varname, $varvalue = "") {
 	global $product, $foxyshop_settings;
-	$encodingval = $product['code'] . esc_attr($varname) . esc_attr($varvalue ? $varvalue : $product[$varname]);
+	$encodingval = $product['code'] . htmlspecialchars($varname) . htmlspecialchars($varvalue ? $varvalue : $product[$varname]);
 	return '||'.hash_hmac('sha256', $encodingval, $foxyshop_settings['api_key']).($varvalue == "--OPEN--" ? "||open" : "");
 }
 
 
 
 //Writes Breadcrumbs For Products and Categories
-function foxyshop_breadcrumbs($sep = " 	&raquo; ") {
+function foxyshop_breadcrumbs($sep = " &raquo; ") {
 	global $post, $product;
 	
 	//Category Page
@@ -503,7 +503,8 @@ function foxyshop_featured_category($categoryName, $showAddToCart = false, $show
 	$unwanted_children = get_term_children($currentCategoryID, "foxyshop_categories");
 	$unwanted_post_ids = get_objects_in_term($unwanted_children, "foxyshop_categories");
 
-	$args = array('post_type' => 'foxyshop_product', "post__not_in" => $unwanted_post_ids, "foxyshop_categories" => $currentCategorySlug, 'paged' => get_query_var('paged'), 'orderby' => 'meta_value_num', 'numberposts' => $showMax, 'meta_key' => '_price', 'order' => 'ASC');
+	$args = array('post_type' => 'foxyshop_product', "post__not_in" => $unwanted_post_ids, "foxyshop_categories" => $currentCategorySlug, 'paged' => get_query_var('paged'), 'numberposts' => $showMax);
+	$args = array_merge($args,foxyshop_sort_order_array());
 	echo '<ul class="foxyshop_featured_product_list' . ($simpleList ? "_simple" : "") . '">';
 	$featuredlist = get_posts($args);
 	foreach($featuredlist as $featuredprod) {
@@ -511,7 +512,7 @@ function foxyshop_featured_category($categoryName, $showAddToCart = false, $show
 		if ($product['hide_product']) continue;
 		
 		if ($simpleList) {
-			echo '<li><a href="' . $product['url'] . '">' . $product['name'] . '</a></li>'."\n";
+			echo '<li><a href="' . $product['url'] . '">' . apply_filters('the_title', $product['name']) . '</a></li>'."\n";
 		} else {
 			$thumbnailSRC = foxyshop_get_main_image("thumbnail");
 			echo '<li class="foxyshop_product_box">'."\n";
@@ -520,7 +521,7 @@ function foxyshop_featured_category($categoryName, $showAddToCart = false, $show
 			echo "</div>\n";
 
 			echo '<div class="foxyshop_product_info">';
-			echo '<h2><a href="' . $product['url'] . '">' . $product['name'] . '</a></h2>';
+			echo '<h2><a href="' . $product['url'] . '">' . apply_filters('the_title', $product['name']) . '</a></h2>';
 
 			foxyshop_price();
 
@@ -551,14 +552,16 @@ function foxyshop_cart_link($linkText = "-1", $hideEmpty = false) {
 
 
 //Shows Related Products
-function foxyshop_related_products() {
+function foxyshop_related_products($sectiontitle = "-1") {
 	global $product, $post;
-	$args = array('post_type' => 'foxyshop_product', "post__not_in" => array($post->ID), 'posts_per_page' => -1, 'post__in' => explode(",",$product['related_products']), 'orderby' => 'meta_value_num', 'meta_key' => '_price', 'order' => 'ASC');
+	if ($sectiontitle == "-1") $sectiontitle = __('Related Products');
+	$args = array('post_type' => 'foxyshop_product', "post__not_in" => array($post->ID), 'posts_per_page' => -1, 'post__in' => explode(",",$product['related_products']));
+	$args = array_merge($args,foxyshop_sort_order_array());
 	$relatedlist = get_posts($args);
 	if ($relatedlist) {
 		$original_product = $product;
 		echo '<ul class="foxyshop_related_product_list">';
-		echo '<li class="titleline"><h3>' . __('Related Products') . '</h3></li>';
+		echo '<li class="titleline"><h3>' . $sectiontitle . '</h3></li>';
 		foreach($relatedlist as $relatedprod) {
 			$product = foxyshop_setup_product($relatedprod);
 			$thumbnailSRC = foxyshop_get_main_image("thumbnail");
@@ -568,7 +571,7 @@ function foxyshop_related_products() {
 			echo "</div>\n";
 
 			echo '<div class="foxyshop_product_info">';
-			echo '<h2><a href="' . $product['url'] . '">' . $product['name'] . '</a></h2>';
+			echo '<h2><a href="' . $product['url'] . '">' . apply_filters('the_title', $product['name']) . '</a></h2>';
 
 			foxyshop_price();
 
@@ -582,6 +585,24 @@ function foxyshop_related_products() {
 	}
 }
 
+
+//Get Sort Order
+function foxyshop_sort_order_array() {
+	global $foxyshop_settings;
+	if ($foxyshop_settings['sort_key'] == "name") {
+		return array('orderby' => 'title', 'order' => 'ASC');
+	} elseif ($foxyshop_settings['sort_key'] == "price_asc") {
+		return array('orderby' => 'meta_value_num', 'meta_key' => '_price', 'order' => 'ASC');
+	} elseif ($foxyshop_settings['sort_key'] == "price_desc") {
+		return array('orderby' => 'meta_value_num', 'meta_key' => '_price', 'order' => 'DESC');
+	} elseif ($foxyshop_settings['sort_key'] == "date_asc") {
+		return array('orderby' => 'date', 'order' => 'ASC');
+	} elseif ($foxyshop_settings['sort_key'] == "date_desc") {
+		return array('orderby' => 'date', 'order' => 'DESC');
+	} else {
+		return array('orderby' => 'menu_order', 'order' => 'ASC');
+	}
+}
 
 
 //Includes Header and Footer Files
