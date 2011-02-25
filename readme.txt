@@ -19,7 +19,7 @@ Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for more details and full d
 * Full product information: name, price, product code, shipping weight, shipping category, minimum and maximum quantities, product description, and short product description.
 * Multiple images with popup slideshow
 * Complete flexibility for product variations and pricing. Chainable variations are supported so that some options aren't available until others are selected. Price is automatically updated when different selections are made.
-* Supports basic product sorting with the ability to highlight and feature certain items as well as moving some items to the bottom of the list
+* Full product sorting capabilities: sort by name, price, date, or customize your sorting with a drag-and-drop sorter.
 * Widget support for featured categories
 * Shortcode support for "Add to Cart" links
 * Subscription and downloadable product support
