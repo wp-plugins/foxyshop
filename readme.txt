@@ -30,7 +30,7 @@ Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for more details and full d
 * Multiple shipping recipients
 * Custom file upload lets your customers send you a file when adding to the shopping cart
 * Related product suggestions
-* Bundled products--add more than one product to the cart at once
+* Bundled products-add more than one product to the cart at once
 * Ability to hide products and categories
 * Both english and metric weight support
 * Custom fields allowing for your own customization
