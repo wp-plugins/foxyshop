@@ -12,7 +12,7 @@ function foxyshop_custom_sorting_menu() {
 
 //Load JS Libaries
 function foxyshop_custom_sort_js_libs() {
-	if ( isset($_GET['page']) && $_GET['page'] == "foxyshop_custom_sort" ) {
+	if (isset($_GET['page']) && $_GET['page'] == "foxyshop_custom_sort") {
 		wp_enqueue_script('jquery-ui-core');
 		wp_enqueue_script('jquery-ui-sortable');
 	}
@@ -21,7 +21,7 @@ function foxyshop_custom_sort_js_libs() {
 
 //Update Order
 function foxyshop_update_order() {
-	if (isset($_POST['foxyshop_product_order_value']) && $_POST['foxyshop_product_order_value'] != "") { 
+	if ($_POST['foxyshop_product_order_value'] != "") { 
 		global $wpdb;
 
 		$foxyshop_product_order_value = $_POST['foxyshop_product_order_value'];
@@ -31,28 +31,24 @@ function foxyshop_update_order() {
 			$str = str_replace("id_", "", $IDs[$i]);
 			$wpdb->query("UPDATE $wpdb->posts SET menu_order = '$i' WHERE id ='$str'");
 		}
-		return '<div id="message" class="updated fade"><p>'. __('Product order updated successfully.', 'mypageorder').'</p></div>';
+		return '<div id="message" class="updated fade"><p>'. __('Product order updated successfully.').'</p></div>';
 	} else {
-		return '<div id="message" class="updated fade"><p>'. __('An error occured, order has not been saved.', 'mypageorder').'</p></div>';
+		return '<div id="message" class="updated fade"><p>'. __('An error occured, order has not been saved.').'</p></div>';
 	}
 }
 
-//Rever Order to Original (set all to 0)
+//Revert Order to Original (set all to 0)
 function foxyshop_revert_order() {
-	if (isset($_POST['foxyshop_product_order_value']) && $_POST['foxyshop_product_order_value'] != "") { 
-		global $wpdb;
+	global $wpdb;
 
-		$foxyshop_product_order_value = $_POST['foxyshop_product_order_value'];
-		$IDs = explode(",", $foxyshop_product_order_value);
-		$result = count($IDs);
-		for($i = 0; $i < $result; $i++) {
-			$str = str_replace("id_", "", $IDs[$i]);
-			$wpdb->query("UPDATE $wpdb->posts SET menu_order = '0' WHERE id ='$str'");
-		}
-		return '<div id="message" class="updated fade"><p>'. __('Product order reverted to original.', 'mypageorder').'</p></div>';
-	} else {
-		return '<div id="message" class="updated fade"><p>'. __('An error occured, order has not been saved.', 'mypageorder').'</p></div>';
+	$foxyshop_product_order_value = $_POST['foxyshop_product_order_value'];
+	$IDs = explode(",", $foxyshop_product_order_value);
+	$result = count($IDs);
+	for($i = 0; $i < $result; $i++) {
+		$str = str_replace("id_", "", $IDs[$i]);
+		$wpdb->query("UPDATE $wpdb->posts SET menu_order = '0' WHERE id ='$str'");
 	}
+	return '<div id="message" class="updated fade"><p>'. __('Product order reverted to original.').'</p></div>';
 }
 
 //The Main Function
@@ -63,7 +59,7 @@ function foxyshop_custom_sort() {
 
 	if (isset($_POST['submit_new_product_order'])) {
 		if (check_admin_referer('update-foxyshop-sorting-options')) $success = foxyshop_update_order();
-	} elseif (isset($_POST['submit_new_product_order'])) {
+	} elseif (isset($_POST['revert_product_order'])) {
 		if (check_admin_referer('update-foxyshop-sorting-options')) $success = foxyshop_revert_order();
 	}
 	?>
@@ -71,7 +67,6 @@ function foxyshop_custom_sort() {
 	<div class="wrap">
 	<h2><?php _e('Custom Product Order'); ?></h2>
 	<?php if ($success) echo $success; ?>
-	<p><?php  ?></p>
 	
 	<?php
 	$product_categories = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&orderby=name&order=ASC');
@@ -84,7 +79,7 @@ function foxyshop_custom_sort() {
 			echo '<option value="' . $cat->term_id . '"' . ($categoryID == $cat->term_id ? ' selected="selected"' : '') . '>' . $cat->name . ' (' . $cat->count . ')' . '</option>'."\n";
 		}
 		echo '</select>'."\n";
-		echo '<input type="submit" name="btnSubPages" class="button" id="btnSubPages" value="' . __('Order Categories') . '" /></form>';
+		echo '<input type="submit" name="btnSubPages" class="button" id="btnSubPages" value="' . __('Select Category') . '" /></form>';
 	} else {
 		$categoryID = 0;
 	}
@@ -100,7 +95,7 @@ function foxyshop_custom_sort() {
 			$unwanted_post_ids = get_objects_in_term($unwanted_children, "foxyshop_categories");
 			$args = array('post_type' => 'foxyshop_product', "post__not_in" => $unwanted_post_ids, "foxyshop_categories" => $current_category_slug, 'numberposts' => -1, 'orderby' => "menu_order", 'order' => "ASC");
 		} else {
-			$current_category_name = "All Products";
+			$current_category_name = __("All Products");
 			$args = array('post_type' => 'foxyshop_product', 'numberposts' => -1, 'orderby' => "menu_order", 'order' => "ASC");
 		}
 	
@@ -111,7 +106,7 @@ function foxyshop_custom_sort() {
 			echo '<h3>' . $current_category_name . '</h3>'."\n";
 			echo '<p>Drag products to the preferred order and then click the Save button at the bottom of the page.</p>';
 			echo '<form name="form_product_order" method="post" action="">'."\n";
-			echo '<ul id="foxyshop_product_order_list">'."\n";
+			echo '<ul id="foxyshop_product_order_list" class="foxyshop_sort_list">'."\n";
 			foreach ($product_list as $prod) {
 				$product = foxyshop_setup_product($prod);
 				echo '<li id="id_' . $prod->ID . '" class="lineitem">';
@@ -126,7 +121,7 @@ function foxyshop_custom_sort() {
 			?>
 			<div style="width: 90%; height: 100px;">
 				<input type="submit" name="submit_new_product_order" id="submit_new_product_order" class="button-primary" value="<?php _e('Save Custom Order'); ?>" onclick="javascript:orderPages(); return true;" />&nbsp;&nbsp;<strong id="updateText"></strong>
-				<input type="submit" name="revert_product_order" id="revert_product_order" class="button" style="float: right;" value="<?php _e('Revert To Original'); ?>" />
+				<input type="submit" name="revert_product_order" id="revert_product_order" class="button" style="float: right;" value="<?php _e('Revert To Original'); ?>" onclick="javascript:orderPages(); return true;" />
 			</div>
 			<input type="hidden" id="foxyshop_product_order_value" name="foxyshop_product_order_value" />
 			<input type="hidden" id="hdnParentID" name="hdnParentID" value="<?php echo $parentID; ?>" />

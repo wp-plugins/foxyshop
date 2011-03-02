@@ -118,7 +118,7 @@ function foxyshop_restrict_manage_posts() {
             echo '<option value="">' . __('Show All') . ' ' . $tax_name . '</option>'."\n";
             foreach ($terms as $term) {
                 // output each select option line, check against the last $_GET to show the current option selected
-                echo '<option value='. $term->slug, $_GET[$tax_slug] == $term->slug ? ' selected="selected"' : '','>' . $term->name .' (' . $term->count .')</option>';
+                echo '<option value='. $term->slug, $tax_slug == $term->slug ? ' selected="selected"' : '','>' . $term->name .' (' . $term->count .')</option>';
             }
             echo "</select>";
         }
@@ -176,8 +176,16 @@ function foxyshop_product_details_setup() {
 	$_category = get_post_meta($post->ID,'_category',TRUE);
 	$_quantity_min = get_post_meta($post->ID,'_quantity_min',TRUE);
 	$_quantity_max = get_post_meta($post->ID,'_quantity_max',TRUE);
+
+	$defaultweight = explode(" ",$foxyshop_settings['default_weight']);
+	$weight1 = (int)$defaultweight[0];
+	$weight2 = (count($defaultweight) > 1 ? (int)$defaultweight[1] : 0);
 	$_weight = (get_post_meta($post->ID,'_weight',TRUE) ? explode(" ", get_post_meta($post->ID,'_weight',TRUE)) : "0 0");
-	if ((int)$_weight[0] == 0 && (int)$_weight[1] == 0) $_weight[0] = $foxyshop_settings['default_weight'];
+	if ((int)$_weight[0] == 0 && (int)$_weight[1] == 0) {
+		$_weight[0] = $weight1;
+		$_weight[1] = $weight2;
+	}
+	
 	$_hide_product = get_post_meta($post->ID,'_hide_product',TRUE);
 	?>
 	<div class="my_meta_control">
@@ -348,7 +356,7 @@ function foxyshop_product_secondary_setup() {
 		<div id="related_product_listing" class="tagchecklist"><?php echo $related_product_list; ?></div>
 	</div>
 	<?php if ($foxyshop_settings['enable_bundled_products']) { ?>
-	<div class="my_meta_control" style="float: right; width: 48%;">
+	<div class="my_meta_control" style="float: right; width: 48%; clear: none;">
 		<input type="hidden" name="_bundled_products" id="_bundled_products" value=",<?php echo $_bundled_products; ?>," />
 		<div style="padding: 4px;"><strong><?php _e('Bundled Products'); ?></strong></div>
 		<select name="_bundled_products_list" id="_bundled_products_list" style="width: 210px;">

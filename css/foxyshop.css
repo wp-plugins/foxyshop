@@ -216,7 +216,13 @@ input.foxyshop_quantity {
 	clear: both;
 	margin: 10px 0 2px 0;
 }
+.foxyshop_slideshow {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
 .foxyshop_slideshow li {
+	list-style: none;
 	margin: 0 5px 8px 0;
 	float: left;
 }

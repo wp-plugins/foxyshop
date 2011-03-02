@@ -1,70 +1,44 @@
 <?php get_header(); ?>
 
-<div id="foxyshop_container">
-<?php foxyshop_include('header'); ?>
-
 <?php
 //Hide page content if plugin is disabled
-if (function_exists('foxyshop_breadcrumbs')) {
+if (function_exists('foxyshop_setup_product')) {
+global $product;
+?>
+<div id="foxyshop_container">
+	<?php
+	//Product Page Header
+	foxyshop_include('header');
 
 	//Write Category Title
 	echo '<h1 id="foxyshop_category_title">Products</h1>'."\n";
 	
-	//Put a category description here
+	//Feel free to put a store description here
 	//echo '<p></p>'."\n";
 
 	
 	//Run the query for all products in this category
-	$args = array('post_type' => 'foxyshop_product', 'posts_per_page' => -1, 'paged' => get_query_var('paged'));
+	$args = array('post_type' => 'foxyshop_product', 'posts_per_page' => -1);
 	$args = array_merge($args,foxyshop_sort_order_array());
 	query_posts($args);
 	echo '<ul class="foxyshop_product_list">';
 	while (have_posts()) :
-
 		the_post();
-		global $product;
-		$product = foxyshop_setup_product();
-		if ($product['hide_product']) continue;
 
-		echo '<li class="foxyshop_product_box">';
-		
-		//Show Image on Left
-		echo '<div class="foxyshop_product_image">';
-		if ($thumbnailSRC = foxyshop_get_main_image("thumbnail")) echo '<a href="' . $product['url'] . '"><img src="' . $thumbnailSRC . '" alt="' . htmlspecialchars($product['name']) . '" class="foxyshop_main_image" /></a>';
-		echo "</div>\n";
-
-		//Show Main Product Info
-		echo '<div class="foxyshop_product_info">';
-		echo '<h2><a href="' . $product['url'] . '">' . $product['name'] . '</a></h2>';
-
-		echo "<p>" . $product['short_description'] . "</p>";
-
-		//More Details Button
-		echo '<a href="' . $product['url'] . '" class="foxyshop_button">More Details</a>';
-		
-		//Add To Cart Button
-		//echo '<a href="' . foxyshop_product_link("", true) . '" class="foxyshop_button">Add To Cart</a>';
-		
-		//Show Price (and sale if applicable)
-		foxyshop_price();
-		
-		echo "</div>\n";
-		
-		echo '<div class="clr"></div>';
-		echo "</li>\n";
+		//Product Display
+		foxyshop_include('product-loop');
 
 	endwhile;
 	echo '</ul>';
 	
-	//Pagination (not in use by default but there's a native function for it if you want to turn it on)
+	//Pagination
+	foxyshop_get_pagination();
+	
+	//Product Page Footer
+	foxyshop_include('footer');
 	?>
-	<div id="foxyshop_pagination">
-		<?php foxyshop_get_pagination(); ?>
-	</div>
-
-<?php } ?>
-	<?php foxyshop_include('footer'); ?>
 </div>
+<?php } ?>
 
 <script type="text/javascript">
 jQuery(document).ready(function($){

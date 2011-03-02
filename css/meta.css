@@ -74,15 +74,41 @@
 }
 #foxyshop_settings_wrap td .small {
 	margin-bottom: 0;
+	clear: both;
 }
 
 #foxyshop_settings_wrap div.updated {
 	margin: 5px 0 17px 0;
 }
+#foxyshop_settings_wrap label {
+	font-weight: bold;
+	margin: 3px 5px 0 0;
+	float: left;
+}
+#foxyshop_settings_wrap input {
+	float: left;
+}
+#foxyshop_settings_wrap input[type=checkbox], #foxyshop_settings_wrap input[type=radio] {
+	margin: 5px 5px 0 0;
+}
 
-
-
-
+.widefat th:last-child, .widefat th:last-child td {
+	border-bottom: 0 none;
+}
+#foxyshop_settings_wrap select {
+	float: left;
+	margin-top: 2px;
+}
+#foxyshop_settings_wrap input.button-primary {
+	float: none;
+}
+#foxyshop_settings_wrap small {
+	float: left;
+	margin: 3px 0 0 5px;
+}
+#foxyshop_settings_wrap option {
+	padding: 2px 6px 2px 2px;
+}
 
 
 
@@ -97,7 +123,7 @@
 	-webkit-border-radius:3px;
 }
 
-#foxyshop_product_order_list li.lineitem {
+.foxyshop_sort_list li.lineitem {
 	border:1px solid #B2B2B2;
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
@@ -112,37 +138,58 @@
 	position: relative;
 }
 
-#foxyshop_product_order_list li.lineitem img {
-	width: 50px;
+.foxyshop_sort_list li.lineitem img {
+	max-width: 50px;
+	max-height: 50px;
 	float: left;
 	margin-right: 10px;
 }
 
-#foxyshop_product_order_list li.lineitem h4 {
+.foxyshop_sort_list li.lineitem h4 {
 	font-size: 18px;
 	font-weight: bold;
 	margin: 0;
 }
 
-#foxyshop_product_order_list .sortable-placeholder { 
+.foxyshop_sort_list .sortable-placeholder { 
 	border:1px dashed #B2B2B2;
 	margin-top:5px;
 	margin-bottom:5px; 
 	padding: 5px;
 	height:50px
 }
-#foxyshop_product_order_list .counter { 
+.foxyshop_sort_list .sortable-placeholder-category { 
+	border:1px dashed #B2B2B2;
+	margin-top:5px;
+	margin-bottom:5px; 
+	padding: 5px;
+	height:25px
+}
+.foxyshop_sort_list .counter { 
 	font-size: 40px;
 	position: absolute;
 	right: 10px;
 	top: 10px;
 	border-left: 1px dashed #B2B2B2;
 	color: #CCCCCC;
-	width: 110px;
+	min-width: 105px;
+	padding: 0 10px;
 	line-height: 41px;
 	text-align: center;
 }
 
+#foxyshop_category_order_list .counter {
+	border-left: 1px dashed #B2B2B2;
+	color: #CCCCCC;
+	font-size: 18px;
+	line-height: 18px;
+	min-width: 35px;
+	padding: 0 10px;
+	position: absolute;
+	right: 10px;
+	text-align: center;
+	top: 6px;
+}
 .foxyshop_oldprice {
 	text-decoration: line-through;
 	margin-right: 10px;

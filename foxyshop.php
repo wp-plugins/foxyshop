@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 1.2
+Version: 1.3
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -37,7 +37,10 @@ the most out of FoxyShop.
 //Setup Variables
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
-$foxyshop_settings = unserialize(get_option("foxyshop_settings"));
+$foxyshop_settings_defaults = array('sort_key' => "menu_order", 'generate_feed' => "", "products_per_page" => -1, "hide_subcat_children" => "on");
+$foxyshop_settings = wp_parse_args(unserialize(get_option("foxyshop_settings")), $foxyshop_settings_defaults);
+$foxyshop_category_sort = (get_option('foxyshop_category_sort') ? unserialize(get_option('foxyshop_category_sort')) : array());
+
 
 //If you don't need Widgets or Shortcodes you can comment out these lines:
 include('widgetcode.php');
@@ -57,23 +60,28 @@ if (is_admin()) {
 	if ($foxyshop_settings['ga']) add_action('wp_footer', 'foxyshop_insert_google_analytics', 100);
 }
 
-
 //Custom Post Type and Taxonomy
 include_once('customposttype.php');
 
-//Settings Page
-add_action('admin_menu', 'foxyshop_settings_menu');
-add_action('admin_init', 'set_foxyshop_settings');
-include_once('settings.php');
 
-//Main Functions
-include('helperfunctions.php');
 
 //Custom Sorting
 include_once('customsorting.php');
 
+//Category Sorting
+include_once('categorysorting.php');
+
 //Generate Product Feed
 include_once('productfeed.php');
+
+//Settings Page
+include_once('settings.php');
+
+
+
+
+//Main Functions
+include('helperfunctions.php');
 
 //Template Fallback (files are in /themefiles/)
 include('templateredirect.php');
