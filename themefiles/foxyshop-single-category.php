@@ -1,0 +1,65 @@
+<?php get_header(); ?>
+
+<?php
+//Hide page content if plugin is disabled
+if (function_exists('foxyshop_setup_product')) {
+global $product;
+
+?>
+<div id="foxyshop_container">
+	<?php
+	//Product Page Header
+	foxyshop_include('header');
+	
+	//Write Breadcrumbs
+	foxyshop_breadcrumbs(" &raquo; ");
+
+	//Get Current Page Info
+	$term = get_term_by('slug', get_query_var('term'), "foxyshop_categories");
+	$currentCategoryName = $term->name;
+	$currentCategoryDescription = $term->description;
+	$currentCategorySlug = $term->slug;
+	$currentCategoryID = $term->term_id;
+
+	//Write Category Title
+	echo '<h1 id="foxyshop_category_title">' . str_replace("_","",$currentCategoryName) . '</h1>'."\n";
+	
+	//If there's a category description, write it here
+	if ($currentCategoryDescription) echo '<p>' . $currentCategoryDescription . '</p>'."\n";
+
+	//Show Children Categories
+	foxyshop_category_children($currentCategoryID);
+	
+	//Run the query for all products in this category
+	$args = array('post_type' => 'foxyshop_product', "foxyshop_categories" => $currentCategorySlug, 'posts_per_page' => foxyshop_products_per_page(), 'paged' => get_query_var('paged'));
+	$args = array_merge($args,foxyshop_sort_order_array());
+	$args = array_merge($args,foxyshop_hide_children_array($currentCategoryID));
+	query_posts($args);
+	echo '<ul class="foxyshop_product_list">';
+	while (have_posts()) :
+		the_post();
+		
+		//Product Display
+		foxyshop_include('product-loop');
+
+	endwhile;
+	echo '</ul>';
+	
+	//Pagination
+	foxyshop_get_pagination();
+	
+	//Product Page Footer
+	foxyshop_include('footer');
+	?>
+</div>
+<?php } ?>
+
+<script type="text/javascript">
+jQuery(document).ready(function($){
+	//This is set up for a two-column display. For a three column you need to do: nth-child(3n+1)
+	$(".foxyshop_product_list>li:nth-child(odd)").css("clear","left");
+});
+</script>
+
+
+<?php get_footer(); ?>
