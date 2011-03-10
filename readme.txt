@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 1.3
+Stable tag: 1.4
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -30,7 +30,7 @@ Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for more details and full d
 * Multiple shipping recipients
 * Custom file upload lets your customers send you a file when adding to the shopping cart
 * Related product suggestions
-* Bundled products-add more than one product to the cart at once
+* Bundled products--add more than one product to the cart at once
 * Ability to hide products and categories
 * Both english and metric weight support
 * Custom fields allowing for your own customization
@@ -56,8 +56,15 @@ Copy the folder to your WordPress
 == Frequently Asked Questions ==
 
 = How can I edit product pages? =
-
 Copy the files from the '*themefiles*' folder inside the plugin into your theme file. You may now edit these files. Refer to the documentation or comments within these theme files for more directions.
+
+= Can I import my products? =
+FoxyShop works very nicely with the [CSV Importer](http://wordpress.org/extend/plugins/csv-importer/) plugin. [Click here](http://www.foxy-shop.com/2011/03/importing-products/) for a sample import file and lots of tips for a successful import.
+
+= Getting Post Thumbnail errors? =
+If another plugin or your functions file is setting the post-thumbnails theme support to only one particular type of post, this can overwrite anything that happens in the plugin. Add this line to your functions.php file:
+
+*add_theme_support('post-thumbnails');*
 
 
 
@@ -77,6 +84,17 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 1.4 =
+* New Feature: Improved Product Image Support with Dedicated Bar
+* New Feature: Product Sitemap Creation
+* Calendar popups added for sale and subscription date selectors
+* Theme file jQuery updates for sub-category wrapping
+* Template redirect adjustments for some (wonky) WP installs
+* Added settings link to WP plugin page
+* Added base name customization option to breadcrumbs function (Products)
+* Improved post thumbnail setting by attaching to 'after_setup_theme' hook. It gets turned on more reliably now.
+* See [Release Notes](http://www.foxy-shop.com/2011/03/version-1-4-improved-image-support/) for more details
 
 = 1.3 =
 * Added product category sorting feature. Sort by alphabetical (default) or set a custom order.

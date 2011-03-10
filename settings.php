@@ -11,10 +11,17 @@ function set_foxyshop_settings() {
 	$foxyshop_settings_update_key = (isset($_POST['action']) ? $_POST['action'] : "");
 	if ($foxyshop_settings_update_key == "foxyshop_settings_update" && check_admin_referer('update-foxyshop-options')) {
 		global $foxyshop_settings;
+		
+		//Do initial product sitemap creation
+		if ($_POST['foxyshop_generate_product_sitemap'] == "on") {
+			foxyshop_create_product_sitemap();
+		}
+		
 		$new_settings = array();
-		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_custom_file_uploads","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "generate_feed", "hide_subcat_children");
+		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_custom_file_uploads","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "generate_feed", "hide_subcat_children", "generate_product_sitemap");
 		foreach ($fields as $field1) {
-			$new_settings[$field1] = $_POST['foxyshop_'.$field1];
+			$val = (isset($_POST['foxyshop_'.$field1]) ? $_POST['foxyshop_'.$field1] : '');
+			$new_settings[$field1] = $val;
 		}
 		$new_settings["domain"] = str_replace("http://","",$_POST['foxyshop_domain']);
 		$new_settings["api_key"] = $foxyshop_settings['api_key'];
@@ -224,6 +231,13 @@ function foxyshop_options() {
 					<div class="small"><?php _e('Selecting this option will add a sidebar to the menu which will allow you to export a file suitable for uploading to Google\'s Product Search system.'); ?></div>
 				</td>
 			</tr>
+			<tr>
+				<td>
+					<input type="checkbox" id="foxyshop_generate_product_sitemap" name="foxyshop_generate_product_sitemap"<?php checked($foxyshop_settings['generate_product_sitemap'], "on"); ?> />
+					<label for="foxyshop_generate_product_sitemap"><?php _e('Generate Product Sitemap'); ?></label>
+					<div class="small"><?php _e('If checked, a sitemap file called \'sitemap-products.xml\' will be created in your root folder. Please make sure that the root folder is writeable or that the file exists and is writeable. File Here: '); echo '<a href="' . get_bloginfo('url') . '/sitemap-products.xml" target="blank">' . get_bloginfo('url') . '/sitemap-products.xml</a>'; ?></div>
+				</td>
+			</tr>
 
 		</tbody>
 	</table>
@@ -281,6 +295,7 @@ function set_foxyshop_defaults() {
 		"default_weight" => "1 0",
 		"use_jquery" => "on",
 		"hide_subcat_children" => "on",
+		"generate_product_sitemap" => "",
 		"sort_key" => "menu_order",
 		"ga" => "",
 		"generate_feed" => "",
@@ -290,4 +305,5 @@ function set_foxyshop_defaults() {
 	);
 	update_option("foxyshop_settings", serialize($foxyshop_settings));
 }
+
 ?>

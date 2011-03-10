@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 1.3
+Version: 1.4
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -37,7 +37,7 @@ the most out of FoxyShop.
 //Setup Variables
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
-$foxyshop_settings_defaults = array('sort_key' => "menu_order", 'generate_feed' => "", "products_per_page" => -1, "hide_subcat_children" => "on");
+$foxyshop_settings_defaults = array('sort_key' => "menu_order", 'generate_feed' => "", "products_per_page" => -1, "hide_subcat_children" => "on", "generate_product_sitemap" => "");
 $foxyshop_settings = wp_parse_args(unserialize(get_option("foxyshop_settings")), $foxyshop_settings_defaults);
 $foxyshop_category_sort = (get_option('foxyshop_category_sort') ? unserialize(get_option('foxyshop_category_sort')) : array());
 
@@ -76,11 +76,12 @@ include_once('productfeed.php');
 
 //Settings Page
 include_once('settings.php');
-
+add_filter('plugin_action_links', 'foxyshop_plugin_action_links', 10, 2);
 
 
 
 //Main Functions
+include('adminfunctions.php');
 include('helperfunctions.php');
 
 //Template Fallback (files are in /themefiles/)
@@ -88,12 +89,5 @@ include('templateredirect.php');
 
 //Plugin Activation Function
 register_activation_hook(__FILE__, 'foxyshop_activation');
-//register_deactivation_hook( __FILE__, 'foxyshop_deactivation' );
-
-function foxyshop_activation() {
-	add_option('foxyshop_set_rewrite_rules',"1");
-}
-function foxyshop_deactivation() {
-	flush_rewrite_rules();
-}
+register_deactivation_hook( __FILE__, 'foxyshop_deactivation' );
 ?>

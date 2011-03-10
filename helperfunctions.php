@@ -25,7 +25,7 @@ function foxyshop_setup_product($thepost = false) {
 	$product['description'] = apply_filters('the_content', $thepost->post_content);
 	$product['short_description'] = $thepost->post_excerpt;
 	$product['originalprice'] = number_format(get_post_meta($thepost->ID,'_price', true),2,".",",");
-	$product['sort'] = ((int)get_post_meta($thepost->ID,'_sort', true) > 0 ? (int)get_post_meta($thepost->ID,'_sort', true) : 3);
+	//$product['sort'] = ((int)get_post_meta($thepost->ID,'_sort', true) > 0 ? (int)get_post_meta($thepost->ID,'_sort', true) : 3);
 	$product['quantity_min'] = (int)get_post_meta($thepost->ID,'_quantity_min', true);
 	$product['quantity_max'] = (int)get_post_meta($thepost->ID,'_quantity_max', true);
 	$product['hide_product'] = get_post_meta($thepost->ID,'_hide_product', true);
@@ -60,7 +60,7 @@ function foxyshop_setup_product($thepost = false) {
 	$product['images'] = array();
 	$imageNumber = 0;
 	if (has_post_thumbnail($thepost->ID)) {
-		$featuredImageID = $image_id = get_post_thumbnail_id($thepost->ID);
+		$featuredImageID = get_post_thumbnail_id($thepost->ID);
 	} else {
 		$featuredImageID = 0;
 	}
@@ -450,7 +450,7 @@ function foxyshop_get_verification($varname, $varvalue = "") {
 //Writes Breadcrumbs For Products and Categories
 //If there are no categories, $product_fallback indicates whether a link back to the product list should be shown.
 //If it is entered, the link text is shown. If the string is blank, the fallback breadcrumb bar will not be shown.
-function foxyshop_breadcrumbs($sep = " &raquo; ", $product_fallback = "&laquo; Back to Products") {
+function foxyshop_breadcrumbs($sep = " &raquo; ", $product_fallback = "&laquo; Back to Products", $base_name = "Products") {
 	global $post, $product;
 	$this_term_id = 0;
 	
@@ -500,7 +500,7 @@ function foxyshop_breadcrumbs($sep = " &raquo; ", $product_fallback = "&laquo; B
 		}
 		$breadcrumbarray = array_reverse($breadcrumbarray);
 
-		$write1 = '<li><a href="' . get_bloginfo('url') . '/product-cat/">'. __('Products') . '</a></li>';
+		$write1 = '<li><a href="' . get_bloginfo('wpurl') . '/product-cat/">'. $base_name . '</a></li>';
 		foreach($breadcrumbarray as $termid) {
 			$write1 .= '<li class="foxyshop_category_separator">' . $sep .'</li>';
 			$terminfo = get_term_by('id',$termid,"foxyshop_categories");
@@ -521,7 +521,7 @@ function foxyshop_breadcrumbs($sep = " &raquo; ", $product_fallback = "&laquo; B
 	
 	//Product Fallback
 	} elseif ($post->ID && $product_fallback != "") {
-		echo '<ul id="foxyshop_breadcrumbs"><li><a href="' . get_bloginfo('url') . '/product-cat/">'. $product_fallback . '</a></li><li style="float: none; text-indent: -99999px; width: 1px; margin: 0;">-</li></ul>';
+		echo '<ul id="foxyshop_breadcrumbs"><li><a href="' . get_bloginfo('wpurl') . '/product-cat/">'. $product_fallback . '</a></li><li style="float: none; text-indent: -99999px; width: 1px; margin: 0;">-</li></ul>';
 	}
 
 }
@@ -691,58 +691,4 @@ function foxyshop_get_pagination($range = 4) {
 		echo '</div>';
 	}
 }
-
-//Other Admin Functions
-function foxyshop_insert_jquery() {
-	$jquery_version = "1.4.2";
-	wp_deregister_script('jquery');
-	wp_register_script('jquery', ("http".($_SERVER['SERVER_PORT'] == 443 ? 's' : '')."://ajax.googleapis.com/ajax/libs/jquery/".$jquery_version."/jquery.min.js"), false, $jquery_version);
-	wp_enqueue_script('jquery');
-}
-function foxyshop_insert_google_analytics() {
-	global $foxyshop_settings;
-	if (!is_user_logged_in()) {
-	?><script type="text/javascript">
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', '<?php echo htmlspecialchars($foxyshop_settings['ga']); ?>']);
-_gaq.push(['_trackPageview']);
-(function() {
-	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-</script><?php
-	}
-}
-function foxyshop_comparison($a, $b) { 
-	if ($a->sort_key == $b->sort_key) { return 0; }
-	return ($a->sort_key < $b->sort_key) ? -1 : 1;
-}
-function foxyshop_sort_categories($obj, $categoryID) {
-	global $foxyshop_category_sort;
-	if (array_key_exists($categoryID,$foxyshop_category_sort)) {
-		$sort_array = $foxyshop_category_sort[$categoryID];
-		foreach($obj as $cat) {
-			$cat->sort_key = 999;
-			for ($i=0;$i<count($sort_array);$i++) {
-				if ($sort_array[$i] == $cat->term_id) $cat->sort_key = $i;
-			}
-		}
-		usort($obj,'foxyshop_comparison');
-	}
-	return $obj;
-}
-function foxyshop_products_per_page() {
-	global $foxyshop_settings;
-	return $foxyshop_settings['products_per_page'];
-}
-function foxyshop_hide_children_array($currentCategoryID) {
-	global $foxyshop_settings;
-	if ($foxyshop_settings['hide_subcat_children']) {
-		return array("post__not_in" => get_objects_in_term(get_term_children($currentCategoryID, "foxyshop_categories"), "foxyshop_categories"));
-	} else {
-		return array();
-	}
-}
-
 ?>

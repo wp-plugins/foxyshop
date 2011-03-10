@@ -29,7 +29,7 @@ if (!empty($_FILES)) {
 	if (isset($_REQUEST['folder'])) {
 		$targetPath = $_SERVER['DOCUMENT_ROOT'] . '/'.$_REQUEST['folder'].'/';
 	} else {
-		$targetPath = $_SERVER['DOCUMENT_ROOT'] . '/userimg/';
+		$targetPath = $_SERVER['DOCUMENT_ROOT'] . '/customuploads/';
 	}
 	
 	$ext = strtolower(substr($_FILES['Filedata']['name'], strrpos($_FILES['Filedata']['name'], '.') + 1));

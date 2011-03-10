@@ -18,7 +18,7 @@ if (!$writeUploadInclude) {
 				auto      : true,
 				width     : '130',
 				height    : '29',
-				folder    : '<?php echo str_replace(get_bloginfo("url"),"",$upload_dir['baseurl']); ?>/customuploads',
+				folder    : '<?php echo str_replace(get_bloginfo("wpurl"),"",$upload_dir['baseurl']); ?>/customuploads',
 				sizeLimit : '800000',
 				scriptData: { 'newfilename': '<?php echo $imagefilename; ?>_' + $(this).attr("rel") },
 				onComplete: function(event,queueID,fileObj,response,data) {

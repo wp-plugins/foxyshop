@@ -28,7 +28,10 @@ function foxyshop_create_post_type() {
 }
 
 //Setup Thumbnail Support
-add_theme_support('post-thumbnails', array('post', 'foxyshop_product'));
+add_action('after_setup_theme','foxyshop_setup_post_thumbnails', 9999);
+function foxyshop_setup_post_thumbnails(){
+	add_theme_support('post-thumbnails');
+}
 
 
 
@@ -158,9 +161,17 @@ add_action('init', 'foxyshop_product_category_init');
 //Meta Box for Product Info
 add_action('admin_init','foxyshop_product_meta_init');
 function foxyshop_product_meta_init() {
+	global $wp_version;
+	
+	if (version_compare($wp_version, '3.1', '>=')) {
+		wp_enqueue_script('datepickerScript', FOXYSHOP_DIR . '/js/jquery.ui.datepicker.js', array('jquery','jquery-ui-core'));
+		wp_enqueue_style('datepickerStyle', FOXYSHOP_DIR . '/css/ui-smoothness/jquery-ui-1.8.10.custom.css');
+	}
+	
 	add_meta_box('product_details_meta', 'Product Details', 'foxyshop_product_details_setup', 'foxyshop_product', 'side', 'high');
 	add_meta_box('product_pricing_meta', 'Pricing Details', 'foxyshop_product_pricing_setup', 'foxyshop_product', 'side', 'low');
 	add_meta_box('product_secondary_meta', 'Secondary Product Features', 'foxyshop_product_secondary_setup', 'foxyshop_product', 'normal', 'low');
+	add_meta_box('product_images_meta', 'Product Images', 'foxyshop_product_images_setup', 'foxyshop_product', 'normal', 'high');
 	add_meta_box('product_variations_meta', 'Product Variations', 'foxyshop_product_variations_setup', 'foxyshop_product', 'normal', 'high');
 	add_action('save_post','foxyshop_product_meta_save');
 }
@@ -266,11 +277,11 @@ function foxyshop_product_pricing_setup() {
 	</div>
 	<div class="my_meta_control">
 		<label><?php _e('Start Date'); ?></label>
-		<input type="text" name="_salestartdate" value="<?php echo $_salestartdate; ?>" />
+		<input type="text" id="_salestartdate" name="_salestartdate" value="<?php echo $_salestartdate; ?>" />
 	</div>
 	<div class="my_meta_control">
 		<label><?php _e('End Date'); ?></label>
-		<input type="text" name="_saleenddate" value="<?php echo $_saleenddate; ?>" />
+		<input type="text" id="_salenddate" name="_saleenddate" value="<?php echo $_saleenddate; ?>" />
 	</div>
 	
 
@@ -306,11 +317,11 @@ function foxyshop_product_pricing_setup() {
 		</div>
 		<div class="my_meta_control">
 			<label><?php _e('Start Date'); ?></label>
-			<input type="text" name="_sub_startdate" value="<?php echo $_sub_startdate; ?>" />
+			<input type="text" id="_sub_startdate" name="_sub_startdate" value="<?php echo $_sub_startdate; ?>" />
 		</div>
 		<div class="my_meta_control">
 			<label><?php _e('End Date'); ?></label>
-			<input type="text" name="_sub_enddate" value="<?php echo $_sub_enddate; ?>" />
+			<input type="text" id="_sub_enddate" name="_sub_enddate" value="<?php echo $_sub_enddate; ?>" />
 		</div>
 	</div>
 	<?php
@@ -406,10 +417,171 @@ jQuery(document).ready(function($){
 }
 
 
+//Product Images
+function foxyshop_product_images_setup() {
+	global $post, $foxyshop_settings;
+	$upload_dir = wp_upload_dir();
+
+	echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/uploadify/uploadify.css" type="text/css" media="screen" />'."\n";
+	echo '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/uploadify/jquery.uploadify.v2.1.4.min.js"></script>'."\n";
+	echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>'."\n";
+
+	
+	echo '<input type="file" id="foxyshop_new_product_image">'."\n";
+	echo '<div id="foxyshop_image_waiter"></div>';
+	echo '<input type="hidden" id="foxyshop_sortable_value" name="foxyshop_sortable_value">'."\n";
+	echo '<ul id="foxyshop_product_image_list"></ul>'."\n";
+	echo '<div style="clear: both;"></div>';
+
+
+	$ajax_nonce = wp_create_nonce("foxyshop-product-image-functions-".$post->ID);
+	?>
+	<script type="text/javascript">
+	var renameLive = false;
+	jQuery(document).ready(function($){
+		$("#postimagediv").hide();
+		
+		$.post(ajaxurl, { action: 'foxyshop_product_ajax_action', foxyshop_action: 'refresh_images', security: '<?php echo $ajax_nonce; ?>', foxyshop_product_id: <?php echo $post->ID; ?>}, function(response) {
+			$("#foxyshop_product_image_list").html(response)
+		});
+
+		$("#foxyshop_product_image_list .foxyshop_image_rename").live("click", function() {
+			var thisID = $(this).attr("rel");
+			$(".renamediv").removeClass('rename_active');
+			$("#renamediv_" + thisID).addClass('rename_active');
+			document.getElementById('rename_' + thisID).select();
+			renameLive = true;
+			return false;
+		});
+
+		$("form").bind("keypress", function(e) {
+			if (e.keyCode == 13 && renameLive) {
+				return false;
+			}
+		});
+
+		$("#foxyshop_product_image_list input").live("keyup", function(e) {
+			var thisID = $(this).attr("rel");
+			var newTitle = $(this).val();
+			
+			if(e.keyCode == 13) {
+				var data = {
+					action: 'foxyshop_product_ajax_action',
+					security: '<?php echo $ajax_nonce; ?>',
+					foxyshop_action: 'rename_image',
+					foxyshop_new_name: newTitle,
+					foxyshop_image_id: thisID,
+					foxyshop_product_id: <?php echo $post->ID; ?>
+				};
+				$.post(ajaxurl, data, function() {
+					$("#renamediv_" + thisID).removeClass('rename_active');
+					$("#att_" + thisID + " img").attr("alt",newTitle).attr("title",newTitle);
+					renameLive = false;
+				});
+			} else if (e.keyCode == 27) {
+				$("#renamediv_" + thisID).removeClass('rename_active');
+				renameLive = false;
+			}
+			return false;
+		});
+		
+		
+		$("#foxyshop_product_image_list .foxyshop_image_delete").live("click", function() {
+			var data = {
+				action: 'foxyshop_product_ajax_action',
+				security: '<?php echo $ajax_nonce; ?>',
+				foxyshop_action: 'delete_image',
+				foxyshop_image_id: $(this).attr("rel"),
+				foxyshop_product_id: <?php echo $post->ID; ?>
+			};
+			$("#foxyshop_image_waiter").show();
+			$.post(ajaxurl, data, function(response) {
+				$("#foxyshop_product_image_list").html(response);
+				$("#foxyshop_image_waiter").hide();
+			});
+			return false;
+		});
+
+		$("#foxyshop_product_image_list .foxyshop_image_featured").live("click", function() {
+			var data = {
+				action: 'foxyshop_product_ajax_action',
+				security: '<?php echo $ajax_nonce; ?>',
+				foxyshop_action: 'featured_image',
+				foxyshop_image_id: $(this).attr("rel"),
+				foxyshop_product_id: <?php echo $post->ID; ?>
+			};
+			$("#foxyshop_image_waiter").show();
+			$.post(ajaxurl, data, function(response) {
+				$("#foxyshop_product_image_list").html(response);
+				$("#foxyshop_image_waiter").hide();
+			});
+			return false;
+		});
+		
+		$('#foxyshop_new_product_image').show().each(function() {
+			var variationID = $(this).attr("rel");
+			$(this).uploadify({
+				uploader  : '<?php echo FOXYSHOP_DIR; ?>/js/uploadify/uploadify.swf',
+				script    : '<?php echo FOXYSHOP_DIR; ?>/js/uploadify/uploadify_admin.php',
+				cancelImg : '<?php echo FOXYSHOP_DIR; ?>/js/uploadify/cancel.png',
+				folder    : '<?php echo str_replace(get_bloginfo("wpurl"),"",$upload_dir['url']); ?>',
+				auto      : true,
+				buttonImg	: '<?php echo FOXYSHOP_DIR; ?>/images/add-new-image.png',
+				width     : '132',
+				height    : '23',
+				sizeLimit : '5000000',
+				onComplete: function(event,queueID,fileObj,response,data) {
+						var data = {
+							action: 'foxyshop_product_ajax_action',
+							security: '<?php echo $ajax_nonce; ?>',
+							foxyshop_action: 'add_new_image',
+							foxyshop_new_product_image: response,
+							foxyshop_product_id: <?php echo $post->ID; ?>,
+							foxyshop_product_title: $("#title").val(),
+							foxyshop_product_count: $("#foxyshop_product_image_list li").length
+						};
+
+						$("#foxyshop_image_waiter").show();
+						$.post(ajaxurl, data, function(response) {
+							$("#foxyshop_product_image_list").html(response)
+							$("#foxyshop_image_waiter").hide();
+						});
+						
+				}
+			});
+		});
+
+		$("#foxyshop_product_image_list").sortable({ 
+			placeholder: "sortable-placeholder", 
+			revert: false,
+			tolerance: "pointer",
+			update: function() {
+				$("#foxyshop_sortable_value").val($("#foxyshop_product_image_list").sortable("toArray"));
+				var data = {
+					action: 'foxyshop_product_ajax_action',
+					security: '<?php echo $ajax_nonce; ?>',
+					foxyshop_action: 'update_image_order',
+					foxyshop_order_array: $("#foxyshop_sortable_value").val(),
+					foxyshop_product_id: <?php echo $post->ID; ?>
+				};
+				$("#foxyshop_image_waiter").show();
+				$.post(ajaxurl, data, function(response) {
+					$("#foxyshop_product_image_list").html(response)
+					$("#foxyshop_image_waiter").hide();
+				});
+			}
+		});
+
+	});	
+	</script>
+	<?php
+
+
+}
 
 //Product Variations
 function foxyshop_product_variations_setup() {
-	global $post, $foxyshop_settings;
+	global $post, $foxyshop_settings, $wp_version;
 	
 	$showNew = 0;
 	
@@ -457,17 +629,17 @@ function foxyshop_product_variations_setup() {
 			<div class="my_meta_control textboxsize variationoptions">
 				<div class="my_meta_control">
 					<label><?php _e('Text Box Size'); ?></label>
-					<input type="text" name="_variation_textsize1_<?php echo $i; ?>" value="<?php echo $arrVariationTextSize[0]; ?>" style="width: 45px;" /> <?php _e('characters'); ?>
+					<input type="text" name="_variation_textsize1_<?php echo $i; ?>" value="<?php if (isset($arrVariationTextSize)) echo $arrVariationTextSize[0]; ?>" style="width: 45px;" /> <?php _e('characters'); ?>
 				</div>
 				<div class="my_meta_control">
 					<label><?php _e('Maximum Chars'); ?></label>
-					<input type="text" name="_variation_textsize2_<?php echo $i; ?>" value="<?php echo $arrVariationTextSize[1]; ?>" style="width: 45px;" /> <?php _e('characters'); ?>
+					<input type="text" name="_variation_textsize2_<?php echo $i; ?>" value="<?php if (isset($arrVariationTextSize)) echo $arrVariationTextSize[1]; ?>" style="width: 45px;" /> <?php _e('characters'); ?>
 				</div>
 				<div style="clear: both;"></div>
 			</div>
 			<div class="my_meta_control textareasize variationoptions">
 				<label><?php _e('Lines of Text'); ?></label>
-				<input type="text" name="_variation_textareasize_<?php echo $i; ?>" value="<?php echo $_variationTextSize; ?>" style="width: 45px;" />
+				<input type="text" name="_variation_textareasize_<?php echo $i; ?>" value="<?php if (isset($_variationTextSize)) echo $_variationTextSize; ?>" style="width: 45px;" />
 			</div>
 			<div class="my_meta_control customupload variationoptions">
 				<label style="width: 120px;"><?php _e('Special Instructions'); ?></label>
@@ -537,6 +709,13 @@ jQuery(document).ready(function($){
 	$("#foxyshop_subscription_attributes").show();
 	<?php } ?>
 	
+	
+	<?php if (version_compare($wp_version, '3.1', '>=')) { ?>
+	$("#_salestartdate, #_salenddate, #_sub_startdate, #_sub_enddate").datepicker({ dateFormat: 'm/d/yy' });
+	<?php } ?>
+
+
+	
 });
 function foxyshop_format_number_single(num) { num = num.toString().replace(/\$|\,/g,''); if(isNaN(num)) num = "0"; sign = (num == (num = Math.abs(num))); num = Math.floor(num*100+0.50000000001); cents = num%100; num = Math.floor(num/100).toString(); if(cents<10) cents = "0" + cents; for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++) num = num.substring(0,num.length-(4*i+3))+','+ num.substring(num.length-(4*i+3)); return (((sign)?'':'-') + num); }
 function foxyshop_format_number(num) { num = num.toString().replace(/\$|\,/g,''); if(isNaN(num)) num = "0"; sign = (num == (num = Math.abs(num))); num = Math.floor(num*100+0.50000000001); cents = num%100; num = Math.floor(num/100).toString(); if(cents<10) cents = "0" + cents; for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++) num = num.substring(0,num.length-(4*i+3))+','+ num.substring(num.length-(4*i+3)); return (((sign)?'':'-') + num + '.' + cents); }
@@ -568,13 +747,13 @@ function foxyshop_product_meta_save($post_id) {
 	if ($_weight == ' ') $_weight = $foxyshop_settings['default_weight'].' 0'; //Set Default Weight
 
 	//Save Product Detail Data
-	foxyshop_save_meta_data('_price',number_format(str_replace(",","",$_POST['_price']),2,".",""));
-	foxyshop_save_meta_data('_code',$_POST['_code']);
-	foxyshop_save_meta_data('_category',$_POST['_category']);
-	foxyshop_save_meta_data('_weight',$_weight);
-	foxyshop_save_meta_data('_quantity_min',(int)$_POST['_quantity_min']);
-	foxyshop_save_meta_data('_quantity_max',(int)$_POST['_quantity_max']);
-	foxyshop_save_meta_data('_hide_product',$_POST['_hide_product']);
+	if (isset($_POST['_price'])) foxyshop_save_meta_data('_price',number_format(str_replace(",","",$_POST['_price']),2,".",""));
+	if (isset($_POST['_code'])) foxyshop_save_meta_data('_code',$_POST['_code']);
+	if (isset($_POST['_category'])) foxyshop_save_meta_data('_category',$_POST['_category']);
+	if (isset($_POST['_weight'])) foxyshop_save_meta_data('_weight',$_weight);
+	if (isset($_POST['_quantity_min'])) foxyshop_save_meta_data('_quantity_min',(int)$_POST['_quantity_min']);
+	if (isset($_POST['_quantity_max'])) foxyshop_save_meta_data('_quantity_max',(int)$_POST['_quantity_max']);
+	if (isset($_POST['_hide_product'])) foxyshop_save_meta_data('_hide_product',$_POST['_hide_product']);
 
 
 	//Save Product Pricing Data
@@ -589,9 +768,9 @@ function foxyshop_product_meta_save($post_id) {
 	foxyshop_save_meta_data('_discount_price_amount',$_POST['_discount_price_amount']);
 	foxyshop_save_meta_data('_discount_price_percentage',$_POST['_discount_price_percentage']);
 
-	foxyshop_save_meta_data('_sub_frequency',$_POST['_sub_frequency']);
-	foxyshop_save_meta_data('_sub_startdate',$_POST['_sub_startdate']);
-	foxyshop_save_meta_data('_sub_enddate',$_POST['_sub_enddate']);
+	if (isset($_POST['_sub_frequency'])) foxyshop_save_meta_data('_sub_frequency',$_POST['_sub_frequency']);
+	if (isset($_POST['_sub_startdate'])) foxyshop_save_meta_data('_sub_startdate',$_POST['_sub_startdate']);
+	if (isset($_POST['_sub_enddate'])) foxyshop_save_meta_data('_sub_enddate',$_POST['_sub_enddate']);
 
 	//Save Related Product Data
 	$_related_products = "";
@@ -605,16 +784,18 @@ function foxyshop_product_meta_save($post_id) {
 	foxyshop_save_meta_data('_related_products',$_related_products);
 
 	//Save Bundled Product Data
-	$_bundled_products = "";
-	$arr_bundled = explode(",",$_POST['_bundled_products']);
-	foreach($arr_bundled as $arr_bundled_single) {
-		if ($arr_bundled_single) {
-			if ($_bundled_products) $_bundled_products .= ",";
-			$_bundled_products .= $arr_bundled_single;
+	if (isset($_POST['_bundled_products'])) {
+		$_bundled_products = "";
+		$arr_bundled = explode(",",$_POST['_bundled_products']);
+		foreach($arr_bundled as $arr_bundled_single) {
+			if ($arr_bundled_single) {
+				if ($_bundled_products) $_bundled_products .= ",";
+				$_bundled_products .= $arr_bundled_single;
+			}
 		}
+		foxyshop_save_meta_data('_bundled_products',$_bundled_products);
 	}
-	foxyshop_save_meta_data('_bundled_products',$_bundled_products);
-
+	
 	//Save Product Variations
 	$currentID = 0;
 	for ($i=1;$i<=$foxyshop_settings['max_variations'];$i++) {
@@ -646,6 +827,11 @@ function foxyshop_product_meta_save($post_id) {
 		foxyshop_save_meta_data('_variation_name_'.$writeID,$_variationName);
 		foxyshop_save_meta_data('_variation_value_'.$writeID,$_variationValue);
 		foxyshop_save_meta_data('_variation_dkey_'.$writeID,$_variationDisplayKey);
+	}
+	
+	//Rewrite Product Sitemap
+	if ($foxyshop_settings['generate_product_sitemap']) {
+		foxyshop_create_product_sitemap();
 	}
 
 	return $post_id;
