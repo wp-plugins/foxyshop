@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 1.4
+Stable tag: 1.41
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -18,6 +18,7 @@ Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for more details and full d
 * Manage your product inventory within the WordPress structure
 * Full product information: name, price, product code, shipping weight, shipping category, minimum and maximum quantities, product description, and short product description.
 * Multiple images with popup slideshow
+* Dedicated image uploader, improves default WordPress process
 * Setup product categories and subcategories. Categories can be ordered alphabetically or by a custom sort.
 * Complete flexibility for product variations and pricing. Chainable variations are supported so that some options aren't available until others are selected. Price is automatically updated when different selections are made.
 * Full product sorting capabilities: sort by name, price, date, or customize your sorting with a drag-and-drop sorter.
@@ -37,6 +38,8 @@ Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for more details and full d
 * Custom FoxyCart domain support
 * Product validation support to prevent form tampering
 * Automated Google Product Search Data-feed
+* Automated Product Sitemap Creation
+* Product importing and duplication support available with third-party plugins
 * Supports FoxyCart versions 0.70 and 0.7.1 and includes product images in the shopping cart
 
 
@@ -84,6 +87,12 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 1.41 =
+* Bug Fix: Weight was not updating properly
+* Added variables to make temporarily changing the slug a bit easier
+* Removed the small gallery image overlay from the PrettyPhoto lightbox. It looks smoother now.
+* See [Release Notes](http://www.foxy-shop.com/2011/03/version-1-4-1-maintenance-release/) for more details
 
 = 1.4 =
 * New Feature: Improved Product Image Support with Dedicated Bar

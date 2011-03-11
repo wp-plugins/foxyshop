@@ -23,7 +23,7 @@ function foxyshop_create_post_type() {
 		'hierarchical' => false,
 		'supports' => array('title','editor','thumbnail', 'custom-fields', 'excerpt'),
 		'menu_icon' => FOXYSHOP_DIR . '/images/icon.png',
-		'rewrite' => array("slug" => "products")
+		'rewrite' => array("slug" => FOXYSHOP_PRODUCTS_SLUG)
 	));
 }
 
@@ -150,7 +150,7 @@ function foxyshop_product_category_init() {
 		'labels' => $labels,
 		'show_ui' => true,
 		'query_var' => true,
-		'rewrite' => array('slug' => 'product-cat', 'hierarchical' => true)
+		'rewrite' => array('slug' => FOXYSHOP_PRODUCT_CATEGORY_SLUG, 'hierarchical' => true)
 	));
 }
 add_action('init', 'foxyshop_product_category_init');
@@ -191,7 +191,8 @@ function foxyshop_product_details_setup() {
 	$defaultweight = explode(" ",$foxyshop_settings['default_weight']);
 	$weight1 = (int)$defaultweight[0];
 	$weight2 = (count($defaultweight) > 1 ? (int)$defaultweight[1] : 0);
-	$_weight = (get_post_meta($post->ID,'_weight',TRUE) ? explode(" ", get_post_meta($post->ID,'_weight',TRUE)) : "0 0");
+	$_weight = (get_post_meta($post->ID,'_weight',TRUE) ? explode(" ", get_post_meta($post->ID,'_weight',TRUE)) : array("0","0"));
+	
 	if ((int)$_weight[0] == 0 && (int)$_weight[1] == 0) {
 		$_weight[0] = $weight1;
 		$_weight[1] = $weight2;
@@ -744,17 +745,16 @@ function foxyshop_product_meta_save($post_id) {
 	if (!current_user_can('edit_'.($_POST['post_type'] == 'page' ? 'page' : 'post'), $post_id)) return $post_id;
 	
 	$_weight = (int)$_POST['_weight1'] . ' ' . (int)$_POST['_weight2'];
-	if ($_weight == ' ') $_weight = $foxyshop_settings['default_weight'].' 0'; //Set Default Weight
+	if ($_weight == ' ') $_weight = $foxyshop_settings['default_weight']; //Set Default Weight
 
 	//Save Product Detail Data
+	foxyshop_save_meta_data('_weight',$_weight);
 	if (isset($_POST['_price'])) foxyshop_save_meta_data('_price',number_format(str_replace(",","",$_POST['_price']),2,".",""));
 	if (isset($_POST['_code'])) foxyshop_save_meta_data('_code',$_POST['_code']);
 	if (isset($_POST['_category'])) foxyshop_save_meta_data('_category',$_POST['_category']);
-	if (isset($_POST['_weight'])) foxyshop_save_meta_data('_weight',$_weight);
 	if (isset($_POST['_quantity_min'])) foxyshop_save_meta_data('_quantity_min',(int)$_POST['_quantity_min']);
 	if (isset($_POST['_quantity_max'])) foxyshop_save_meta_data('_quantity_max',(int)$_POST['_quantity_max']);
 	if (isset($_POST['_hide_product'])) foxyshop_save_meta_data('_hide_product',$_POST['_hide_product']);
-
 
 	//Save Product Pricing Data
 	if (($_salestartdate = strtotime($_POST['_salestartdate'])) === false) foxyshop_save_meta_data('_salestartdate',"999999999999999999");

@@ -53,7 +53,7 @@ function foxyshop_theme_redirect() {
 	
 
 	//All Products Page
-	} elseif ($currentPageName == 'products' || $currentName == 'products' || $currentPostType == 'foxyshop_product') {
+	} elseif ($currentPageName == FOXYSHOP_PRODUCTS_SLUG || $currentName == FOXYSHOP_PRODUCTS_SLUG || $currentPostType == 'foxyshop_product') {
 		$templatefilename = 'foxyshop-all-products.php';
 		if (file_exists(TEMPLATEPATH . '/' . $templatefilename)) {
 			$return_template = TEMPLATEPATH . '/' . $templatefilename;

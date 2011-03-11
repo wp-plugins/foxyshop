@@ -12,7 +12,7 @@ while (have_posts()) : the_post();
 	//PrettyPhoto Includes (can be removed if you want to use a different javascript slideshow plugin)
 	echo '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/prettyphoto/jquery.prettyPhoto.js"></script>'."\n";
 	echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/prettyphoto/prettyPhoto.css" type="text/css" media="screen" />'."\n";
-	echo '<script type="text/javascript">jQuery(document).ready(function($){$("a[rel^=\'foxyshop_gallery\']").prettyPhoto({theme: \'light_square\'});});</script>'."\n";
+	echo '<script type="text/javascript">jQuery(document).ready(function($){$("a[rel^=\'foxyshop_gallery\']").prettyPhoto({theme: \'light_square\', overlay_gallery: false});});</script>'."\n";
 
 	//Initialize Product
 	global $product;

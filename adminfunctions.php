@@ -195,7 +195,7 @@ function foxyshop_create_product_sitemap() {
 	$write .= '<urlset xmlns="http://www.google.com/schemas/sitemap/0.90">'."\n";
 	foreach ($products as $product) {
 		$write .= '<url>'."\n";
-		$write .= '<loc>' . get_bloginfo('wpurl') . '/products/' . htmlspecialchars($product->post_name) . '/</loc>'."\n";
+		$write .= '<loc>' . get_bloginfo('wpurl') . '/' . FOXYSHOP_PRODUCTS_SLUG . '/' . htmlspecialchars($product->post_name) . '/</loc>'."\n";
 		$write .= '<lastmod>' . date('Y-m-d\TH:i:s+00:00',strtotime($product->post_modified)) . '</lastmod>'."\n";
 		$write .= '<changefreq>weekly</changefreq>'."\n";
 		$write .= '<priority>1.0</priority>'."\n";
@@ -205,7 +205,7 @@ function foxyshop_create_product_sitemap() {
 	$termchildren = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&orderby=name&order=ASC');
 	if ($termchildren) {
 		$write .= '<url>'."\n";
-		$write .= '<loc>' . get_bloginfo('wpurl') . '/product-cat/</loc>'."\n";
+		$write .= '<loc>' . get_bloginfo('wpurl') . '/' . FOXYSHOP_PRODUCT_CATEGORY_SLUG . '/</loc>'."\n";
 		$write .= '<lastmod>' . date('Y-m-d\TH:i:s+00:00',time()) . '</lastmod>'."\n";
 		$write .= '<changefreq>weekly</changefreq>'."\n";
 		$write .= '<priority>1.0</priority>'."\n";
@@ -220,7 +220,7 @@ function foxyshop_create_product_sitemap() {
 		}
 	} else {
 		$write .= '<url>'."\n";
-		$write .= '<loc>' . get_bloginfo('wpurl') . '/products/</loc>'."\n";
+		$write .= '<loc>' . get_bloginfo('wpurl') . '/' . FOXYSHOP_PRODUCTS_SLUG . '/</loc>'."\n";
 		$write .= '<lastmod>' . date('Y-m-d\TH:i:s+00:00',time()) . '</lastmod>'."\n";
 		$write .= '<changefreq>weekly</changefreq>'."\n";
 		$write .= '<priority>1.0</priority>'."\n";
