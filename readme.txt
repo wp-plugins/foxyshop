@@ -91,7 +91,7 @@ Author URI: http://www.foxy-shop.com/<br />
 = 1.50 =
 * New Feature: Product images based on dropdown selection (image key)
 * Thumbnail images now available in the admin product selection screen. Makes identifying your products easier.
-* Improved internationalization features. Now supports local currency. (If you have trouble, please let me know.)
+* Improved internationalization features. Now supports local currency.
 * Variations now stored inside of the main product variable. Easier to access when doing advanced integrations.
 * See [Release Notes](http://www.foxy-shop.com/2011/03/version-1-5-variation-images/) for more details
 
