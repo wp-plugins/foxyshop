@@ -102,7 +102,7 @@ function foxyshop_redraw_images($id) {
 
 //Insert jQuery
 function foxyshop_insert_jquery() {
-	$jquery_version = "1.4.2";
+	$jquery_version = "1.4.4";
 	wp_deregister_script('jquery');
 	wp_register_script('jquery', ("http".($_SERVER['SERVER_PORT'] == 443 ? 's' : '')."://ajax.googleapis.com/ajax/libs/jquery/".$jquery_version."/jquery.min.js"), false, $jquery_version);
 	wp_enqueue_script('jquery');

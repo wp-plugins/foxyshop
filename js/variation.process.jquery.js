@@ -19,7 +19,8 @@ jQuery(document).ready(function($){
 			if (imagekey != "" && typeof imagekey != "undefined") {
 				for (i=0; i<ikey.length; i++) {
 					if (ikey[i][0] == imagekey) {
-						$("#foxyshop_main_product_image").attr("src",ikey[i][1]).attr("alt",ikey[i][3]).parent().attr("href",ikey[i][2]);
+						$("#foxyshop_main_product_image").attr("src",ikey[i][2]).attr("alt",ikey[i][4]).parent().attr("href",ikey[i][3]);
+						$("#foxyshop_cart_product_image").attr("name",'image'+ikey[i][5]).val(ikey[i][1]);
 					}
 				}
 			}

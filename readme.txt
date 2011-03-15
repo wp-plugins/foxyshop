@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 1.5
+Stable tag: 1.51
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -87,6 +87,12 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 1.51 =
+* Updated FoxyCart Include Files to ColorBox 1.3.16
+* Updated jQuery to 1.4.4 to fix IE 9 problem with 1.4.2. Note 1.5 and 1.5.1 still doesn't work with FoxyCart.
+* Tweaked the image key feature so that the current active image will also be the cart image in FoxyCart.
+* See [Release Notes](http://www.foxy-shop.com/2011/03/version-1-51-foxycart-include-update-for-ie-9-compatibility/) for more details
 
 = 1.50 =
 * New Feature: Product images based on dropdown selection (image key)
