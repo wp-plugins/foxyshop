@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 1.41
+Version: 1.50
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -43,6 +43,10 @@ $foxyshop_settings_defaults = array('sort_key' => "menu_order", 'generate_feed' 
 $foxyshop_settings = wp_parse_args(unserialize(get_option("foxyshop_settings")), $foxyshop_settings_defaults);
 $foxyshop_category_sort = (get_option('foxyshop_category_sort') ? unserialize(get_option('foxyshop_category_sort')) : array());
 
+//Sets the Locale
+setlocale(LC_MONETARY, get_locale());
+$foxyshop_localsettings = localeconv();
+if ($foxyshop_localsettings['int_curr_symbol'] == "") setlocale(LC_MONETARY, 'en_US');
 
 //If you don't need Widgets or Shortcodes you can comment out these lines:
 include('widgetcode.php');

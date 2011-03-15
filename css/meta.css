@@ -65,6 +65,15 @@
 .column-id {
 	width: 50px;
 }
+.column-productimage {
+	width: 50px;
+}
+.column-productimage img {
+	max-width: 50px;
+	max-height: 38px;
+	border: 1px solid #bbb;
+}
+
 
 #foxyshop_settings_wrap {
 	width: 770px;

@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 1.41
+Stable tag: 1.5
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -20,7 +20,7 @@ Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for more details and full d
 * Multiple images with popup slideshow
 * Dedicated image uploader, improves default WordPress process
 * Setup product categories and subcategories. Categories can be ordered alphabetically or by a custom sort.
-* Complete flexibility for product variations and pricing. Chainable variations are supported so that some options aren't available until others are selected. Price is automatically updated when different selections are made.
+* Complete flexibility for product variations and pricing. Chainable variations are supported so that some options aren't available until others are selected. Price is automatically updated when different selections are made. Images can be tied to variations.
 * Full product sorting capabilities: sort by name, price, date, or customize your sorting with a drag-and-drop sorter.
 * Widget support for featured categories
 * Shortcode support for "Add to Cart" links
@@ -87,6 +87,13 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 1.50 =
+* New Feature: Product images based on dropdown selection (image key)
+* Thumbnail images now available in the admin product selection screen. Makes identifying your products easier.
+* Improved internationalization features. Now supports local currency. (If you have trouble, please let me know.)
+* Variations now stored inside of the main product variable. Easier to access when doing advanced integrations.
+* See [Release Notes](http://www.foxy-shop.com/2011/03/version-1-5-variation-images/) for more details
 
 = 1.41 =
 * Bug Fix: Weight was not updating properly

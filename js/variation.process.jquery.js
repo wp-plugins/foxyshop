@@ -7,13 +7,24 @@ jQuery(document).ready(function($){
 	function updateVariations(elSelect) {
 		price = $("#price").val();
 		price1 = $("#originalprice").val();
-		price = parseFloat(price.replace(",",""));
-		price1 = parseFloat(price1.replace(",",""));
+		price = parseFloat(price.replace(",","")) * 100;
+		price1 = parseFloat(price1.replace(",","")) * 100;
 		displayKey = new Array();
 		elSelect.parents("form").find(".foxyshop_variations select option:selected").each(function(){
 			var thisEl = $(this);
 			var selectedValue = thisEl.val();
 			
+			//Set Image Key
+			imagekey = thisEl.attr("imagekey");
+			if (imagekey != "" && typeof imagekey != "undefined") {
+				for (i=0; i<ikey.length; i++) {
+					if (ikey[i][0] == imagekey) {
+						$("#foxyshop_main_product_image").attr("src",ikey[i][1]).attr("alt",ikey[i][3]).parent().attr("href",ikey[i][2]);
+					}
+				}
+			}
+
+
 			//Set Display Key
 			thisdisplaykey = thisEl.attr("displaykey");
 			if (thisdisplaykey != "") displayKey[displayKey.length] = thisdisplaykey;
@@ -45,20 +56,35 @@ jQuery(document).ready(function($){
 			}
 
 		});
-		$("#foxyshop_main_price .foxyshop_currentprice").text("$"+addCommas(price.toFixed(2)));
-		$("#foxyshop_main_price .foxyshop_oldprice").text("$"+addCommas(price1.toFixed(2)));
+		
+		l18n_settings = $("#foxyshop_l18n").val();
+		arrl18n_settings = l18n_settings.split("|")
+		currencySymbol = arrl18n_settings[0];
+		decimalSeparator = arrl18n_settings[1];
+		thousandsSeparator = arrl18n_settings[2];
+		p_precedes = arrl18n_settings[3];
+		n_sep_by_space = arrl18n_settings[4];
+		$("#foxyshop_main_price .foxyshop_currentprice").text(toCurrency(price, currencySymbol, thousandsSeparator, decimalSeparator, p_precedes, n_sep_by_space));
+		$("#foxyshop_main_price .foxyshop_oldprice").text(toCurrency(price1, currencySymbol, thousandsSeparator, decimalSeparator, p_precedes, n_sep_by_space));
 	}
 	
-	function addCommas(nStr) {
-		nStr += '';
-		x = nStr.split('.');
-		x1 = x[0];
-		x2 = x.length > 1 ? '.' + x[1] : '';
-		var rgx = /(\d+)(\d{3})/;
-		while (rgx.test(x1)) {
-			x1 = x1.replace(rgx, '$1' + ',' + '$2');
+	function toCurrency(n, c, g, d, first, separator) {
+		var s = (0 > n) ? '-' : '';
+		if (separator == 1) { separator = ' '; } else { separator = ''; }
+		var m = String(Math.round(Math.abs(n)));
+		var i = '', j, f; c = c || ''; g = g || ''; d = d || '.';
+		while(m.length < 3) {m = '0' + m;}
+		f = m.substring((j = m.length - 2));
+		while(j > 3) {
+			i = g + m.substring(j - 3, j) + i;
+			j -= 3;
 		}
-		return x1 + x2;
+		i = m.substring(0, j) + i;
+		if (first == 1) {
+			return s + c + separator + i + d + f;
+		} else {
+			return s + i + d + f + separator + c;
+		}
 	}
 
 });

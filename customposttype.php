@@ -41,6 +41,7 @@ function add_new_foxyshop_product_columns($cols) {
 	$new_columns['cb'] = '<input type="checkbox" />';
 	$new_columns['id'] = __('ID');
 	$new_columns['title'] = _x('Product Title', 'column name');
+	$new_columns['productimage'] = __('Image');
 	$new_columns['productcode'] = __('Code');
 	$new_columns['price'] = __('Price');
 	$new_columns['productcategory'] = __('Product Category');
@@ -50,7 +51,7 @@ function add_new_foxyshop_product_columns($cols) {
 //Rewrite Columns
 add_action('manage_posts_custom_column', 'manage_custom_columns', 10, 2);
 function manage_custom_columns($column_name, $id) {
-	global $wpdb;
+	global $wpdb, $foxyshop_settings;
 	switch ($column_name) {
 	case 'id':
 		echo $id;
@@ -67,6 +68,19 @@ function manage_custom_columns($column_name, $id) {
 		else {
 			_e('Uncategorized');
 		}
+		break;
+	case 'productimage':
+		$featuredImageID = (has_post_thumbnail($id) ? get_post_thumbnail_id($id) : 0);
+		$imageNumber = 0;
+		$src = "";
+		$attachments = get_posts(array('numberposts' => -1, 'post_type' => 'attachment','post_status' => null,'post_parent' => $id, 'order' => 'ASC','orderby' => 'menu_order'));
+		foreach ($attachments as $attachment) {
+			$thumbnailSRC = wp_get_attachment_image_src($attachment->ID, "thumbnail");
+			if ($featuredImageID == $attachment->ID || ($featuredImageID == 0 && $imageNumber == 0)) $src = $thumbnailSRC[0];
+			$imageNumber++;
+		}
+		if (!$src) $src = $foxyshop_settings['default_image'];
+		echo '<a href="post.php?post=' . $id . '&amp;action=edit"><img src="' . $src . '" alt="" /></a>';
 		break;
 	case 'productcode':
 		$productcode = get_post_meta($id, "_code", true);
@@ -85,12 +99,12 @@ function manage_custom_columns($column_name, $id) {
 			$beginningOK = (strtotime("now") > $salestartdate);
 			$endingOK = (strtotime("now") < ($saleenddate + 86400) || $saleenddate == 0);
 			if ($beginningOK && $endingOK || ($salestartdate == 0 && $saleenddate == 0)) {
-				echo '<span style="text-decoration: line-through; margin-right: 10px;">$' . number_format($originalprice,2) . '</span><span style="color: red;">$' . number_format($saleprice,2) . '</span>';
+				echo '<span style="text-decoration: line-through; margin-right: 10px;">' . foxyshop_currency($originalprice) . '</span><span style="color: red;">' . foxyshop_currency($saleprice) . '</span>';
 			} else {
-				echo '$'.number_format($originalprice,2);
+				echo foxyshop_currency($originalprice);
 			}
 		} else {
-			echo '$'.number_format($originalprice,2);
+			echo foxyshop_currency($originalprice);
 		}
 		break;
 	default:
@@ -179,9 +193,6 @@ function foxyshop_product_meta_init() {
 //Main Product Details
 function foxyshop_product_details_setup() {
 	global $post, $foxyshop_settings;
-	//$_sort = (int)get_post_meta($post->ID,'_sort',TRUE);
-	$_sort = (int)$post->menu_order;
-	if ($_sort == 0) $_sort = 3;
 	$_price = number_format(get_post_meta($post->ID,'_price',TRUE),2,".",",");
 	$_code = get_post_meta($post->ID,'_code',TRUE);
 	$_category = get_post_meta($post->ID,'_category',TRUE);
@@ -434,7 +445,6 @@ function foxyshop_product_images_setup() {
 	echo '<ul id="foxyshop_product_image_list"></ul>'."\n";
 	echo '<div style="clear: both;"></div>';
 
-
 	$ajax_nonce = wp_create_nonce("foxyshop-product-image-functions-".$post->ID);
 	?>
 	<script type="text/javascript">
@@ -623,7 +633,7 @@ function foxyshop_product_variations_setup() {
 				<label><?php _e('Variations'); ?></label>
 				<textarea name="_variation_value_<?php echo $i; ?>" style="width: 500px; height: 130px;"><?php echo $_variationValue; ?></textarea>
 				<br />
-				<div style="margin: 2px 0 0 114px; font-size: 10px;"><?php _e('Example: Variation Name{p+1.50|w-1|c:product_code|y:shipping_category|dkey:display_key}'); ?><br />
+				<div style="margin: 2px 0 0 114px; font-size: 10px;"><?php _e('Example: Variation Name{p+1.50|w-1|c:product_code|y:shipping_category|dkey:display_key|ikey:image_id}'); ?><br />
 				<?php _e('Put a * in your variation name to indicate that the option will be selected by default.'); ?>
 				</div>
 			</div>

@@ -30,13 +30,13 @@ while (have_posts()) : the_post();
 	//Show the Main Image and Slideshow if Available
 	$mediumSRC = foxyshop_get_main_image("medium");
 	$mediumSRCtitle = foxyshop_get_main_image("title");
-	$fullSRC = foxyshop_get_main_image("full");
+	$largeSRC = foxyshop_get_main_image("large");
 	$imagecount = count($product['images']);
 	if ($mediumSRC) {
 		echo '<div class="foxyshop_product_image">';
-		if ($mediumSRC != $fullSRC || $imagecount > 1) echo '<a href="' . $fullSRC . '" rel="foxyshop_gallery' . ($imagecount > 1 ? '[fs_gall]' : '') . '">';
+		if ($mediumSRC != $largeSRC || $imagecount > 1) echo '<a href="' . $largeSRC . '" rel="foxyshop_gallery' . ($imagecount > 1 ? '[fs_gall]' : '') . '">';
 		echo '<img src="' . $mediumSRC . '" id="foxyshop_main_product_image" alt="' . htmlspecialchars($mediumSRCtitle) . '" title="" /></a>';
-		if ($mediumSRC != $fullSRC) echo '</a>';
+		if ($mediumSRC != $largeSRC || $imagecount > 1) echo '</a>';
 		foxyshop_image_slideshow("thumbnail", false, "Click Below For More Images:");
 		echo "</div>\n";
 	}

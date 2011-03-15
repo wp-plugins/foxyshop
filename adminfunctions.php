@@ -79,7 +79,7 @@ function foxyshop_redraw_images($id) {
 				
 				$thumbnailSRC = wp_get_attachment_image_src($attachment->ID, "thumbnail");
 				$write .= '<li id="att_' . $attachment->ID . '"'. ($featuredImageID == $attachment->ID || ($featuredImageID == 0 && $i == 0) ? ' class="foxyshop_featured_image"' : '') . '>';
-				$write .= '<div class="foxyshop_image_holder"><img src="' . $thumbnailSRC[0] . '" alt="' . htmlspecialchars($attachment->post_title) . '" title="' . htmlspecialchars($attachment->post_title) . '" /></div>';
+				$write .= '<div class="foxyshop_image_holder"><img src="' . $thumbnailSRC[0] . '" alt=' . htmlspecialchars($attachment->post_title) . ' (' . $attachment->ID . ')" title="' . htmlspecialchars($attachment->post_title) . ' (' . $attachment->ID . ')" /></div>';
 				$write .= '<div style="clear: both;"></div>';
 				$write .= '<a href="#" class="foxyshop_image_delete" rel="' . $attachment->ID . '" alt="Delete" title="Delete">Delete</a>';
 				$write .= '<a href="#" class="foxyshop_image_rename" rel="' . $attachment->ID . '" alt="Rename" title="Rename">Rename</a>';
