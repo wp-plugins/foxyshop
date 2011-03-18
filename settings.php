@@ -18,7 +18,7 @@ function set_foxyshop_settings() {
 		}
 		
 		$new_settings = array();
-		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_custom_file_uploads","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "generate_feed", "hide_subcat_children", "generate_product_sitemap");
+		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_custom_file_uploads","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "generate_feed", "hide_subcat_children", "generate_product_sitemap", "manage_inventory_levels", "inventory_url_key", "inventory_alert_level");
 		foreach ($fields as $field1) {
 			$val = (isset($_POST['foxyshop_'.$field1]) ? $_POST['foxyshop_'.$field1] : '');
 			$new_settings[$field1] = $val;
@@ -37,11 +37,15 @@ function set_foxyshop_settings() {
 function foxyshop_options() {
 	global $foxyshop_settings;
 	
-	//This is a little awkward because products won't load until this settings page has been loaded for the first time.
-	//print_r(get_option('rewrite_rules')); //View Rewrite Rules
+	//Products won't load until this settings page has been loaded for the first time and the rewrite rules have been flushed..
 	if (get_option('foxyshop_set_rewrite_rules') == "1") {
 		flush_rewrite_rules(false);
 		delete_option('foxyshop_set_rewrite_rules');
+	}
+	
+	//Set Inventory URL Key if Not Set
+	if ($foxyshop_settings['inventory_url_key'] == "") {
+		$foxyshop_settings['inventory_url_key'] = substr(MD5(rand(1000, 99999)."{urlkey}" . date("H:i:s")),1,12);
 	}
 ?>
 <div id="foxyshop_settings_wrap">
@@ -64,14 +68,14 @@ function foxyshop_options() {
 		<tbody>
 			<tr>
 				<td>
-					<label for="foxyshop_domain"><?php _e('Your FoxyCart Domain'); ?>:</label> <input type="text" name="foxyshop_domain" value="<?php echo $foxyshop_settings['domain']; ?>" size="50" /> (example: yourname.foxycart.com)
+					<label for="foxyshop_domain"><?php _e('Your FoxyCart Domain'); ?>:</label> <input type="text" name="foxyshop_domain" value="<?php echo $foxyshop_settings['domain']; ?>" size="50" /> <small>(example: yourname.foxycart.com)</small>
 					<div class="small"><?php _e('If you have your own custom domain, you may enter that as well (cart.yourdomain.com). Do not include the "http://". The FoxyCart include files will be inserted automatically so you won\'t need to add anything to the header of your site.'); ?></div>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<label for="foxyshop_key"><?php _e('API Key'); ?>:</label>
-					<input type="text" id="foxyshop_key" name="key" readonly="readonly" value="<?php echo $foxyshop_settings['api_key']; ?>" onclick="this.select();" size="88" />
+					<input type="text" id="foxyshop_key" name="key" value="<?php echo $foxyshop_settings['api_key']; ?>" readonly="readonly" onclick="this.select();" size="88" />
 					<div class="small"><?php echo __('Note: this is a required step for security reasons and utilizes FoxyCart\'s HMAC product verification to avoid link tampering.<br /><span style="color: red;"><strong>Enter this API key on the advanced menu of your FoxyCart admin and check the box to enable cart validation.</strong></span><br />(This API key is generated automatically and cannot be edited.)'); ?></div>
 				</td>
 			</tr>
@@ -80,7 +84,7 @@ function foxyshop_options() {
 					<label for="foxyshop_version"><?php _e('FoxyCart Version'); ?>:</label> 
 					<select name="foxyshop_version" id="foxyshop_version">
 					<?php
-					$versionArray = array('0.70', '0.7.1');
+					$versionArray = array('0.7.0', '0.7.1');
 					foreach ($versionArray as $version1) {
 						echo '<option value="' . $version1 . '"' . ($foxyshop_settings['version'] == $version1 ? ' selected="selected"' : '') . '>' . $version1 . '  </option>'."\n";
 					} ?>
@@ -181,6 +185,16 @@ function foxyshop_options() {
 					<input type="checkbox" id="foxyshop_enable_subscriptions" name="foxyshop_enable_subscriptions"<?php checked($foxyshop_settings['enable_subscriptions'], "on"); ?> />
 					<label for="foxyshop_enable_subscriptions"><?php _e('Enable Subscriptions'); ?></label>
 					<div class="small"><?php _e('Show fields to allow the creation of subscription products.'); ?></div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="checkbox" id="foxyshop_manage_inventory_levels" name="foxyshop_manage_inventory_levels"<?php checked($foxyshop_settings['manage_inventory_levels'], "on"); ?> />
+					<label for="foxyshop_manage_inventory_levels"><?php _e('Manage Inventory Levels'); ?></label>
+					<input type="hidden" name="foxyshop_inventory_url_key" value="<?php echo $foxyshop_settings['inventory_url_key']; ?>" />
+					<div class="small"><?php _e('If enabled, you will be able to set inventory levels per product code. In the FoxyCart admin, you need to check the box to enable your datafeed and enter the following url in the "datafeed url" box:'); ?></div>
+					<div style="height: 30px;"><input type="text" name="inventoryurlkey_notused" value="<?php echo get_bloginfo('wpurl') . '/foxycart-datafeed-' . $foxyshop_settings['inventory_url_key']; ?>/" readonly="readonly" onclick="this.select();" size="88" /></div>
+					<label for="foxyshop_inventory_alert_level"><?php _e('Default Inventory Alert Level'); ?>:</label> <input type="text" id="foxyshop_inventory_alert_level" name="foxyshop_inventory_alert_level" value="<?php echo $foxyshop_settings['inventory_alert_level']; ?>" style="width: 50px;" />
 				</td>
 			</tr>
 			<tr>
@@ -298,6 +312,9 @@ function set_foxyshop_defaults() {
 		"generate_product_sitemap" => "",
 		"sort_key" => "menu_order",
 		"ga" => "",
+		"manage_inventory_levels" => "",
+		"inventory_alert_level" => 3,
+		"inventory_url_key" => substr(MD5(rand(1000, 99999)."{urlkey}" . date("H:i:s")),1,12),
 		"generate_feed" => "",
 		"default_image" => FOXYSHOP_DIR."/images/no-photo.png",
 		"products_per_page" => -1,

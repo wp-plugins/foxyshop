@@ -3,7 +3,7 @@
 add_action("template_redirect", 'foxyshop_theme_redirect', 1);
 
 function foxyshop_theme_redirect() {
-	global $wp;
+	global $wp, $foxyshop_settings;
 
 
 	$currentName = (isset($wp->query_vars["name"]) ? $wp->query_vars["name"] : "");
@@ -13,7 +13,9 @@ function foxyshop_theme_redirect() {
 	$currentTaxonomy = (isset($wp->query_vars["taxonomy"]) ? $wp->query_vars["taxonomy"] : "");
 	$currentProduct = (isset($wp->query_vars["foxyshop_product"]) ? $wp->query_vars["foxyshop_product"] : "");
 
+	//Uncomment to Troubleshoot
 	//if (is_user_logged_in()) {
+	//	print_r(get_option('rewrite_rules')); //View Rewrite Rules
 	//	echo "<pre>";print_r($wp);echo "</pre>";
 	//}
 
@@ -75,6 +77,13 @@ function foxyshop_theme_redirect() {
 		}
 		
 		add_filter('wp_title', 'title_filter_productsearch', 1, 3);
+		include($return_template);
+		die();
+
+	//FoxyCart Datafeed Endpoint
+	} elseif ($currentPageName == 'foxycart-datafeed-'.$foxyshop_settings['inventory_url_key']) {
+		$templatefilename = 'datafeedendpoint.php';
+		$return_template = FOXYSHOP_PATH . '/' . $templatefilename;
 		include($return_template);
 		die();
 	

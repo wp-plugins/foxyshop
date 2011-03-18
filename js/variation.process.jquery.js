@@ -25,6 +25,28 @@ jQuery(document).ready(function($){
 				}
 			}
 
+			//Check Inventory
+			varcode = thisEl.attr("code");
+			if (varcode != "" && typeof varcode != "undefined") {
+				match = 0;
+				for (i=0; i<arr_foxyshop_inventory.length; i++) {
+					if (arr_foxyshop_inventory[i][0] == varcode) {
+						if (arr_foxyshop_inventory[i][1] > 0) {
+							$(".foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").text(update_inventory_alert_language(foxyshop_inventory_stock_alert,arr_foxyshop_inventory[i][1])).show();
+							$("#productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
+						} else {
+							$(".foxyshop_stock_alert").addClass("foxyshop_out_of_stock").text(update_inventory_alert_language(foxyshop_inventory_stock_none,arr_foxyshop_inventory[i][1])).show();
+							if (!foxyshop_allow_backorder) $("#productsubmit").attr("disabled","disabled").addClass("foxyshop_disabled");
+						}
+						match = 1;
+					}
+				}
+				if (match == 0) {
+					$("#productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
+					$(".foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").hide();
+				}
+			}
+
 
 			//Set Display Key
 			thisdisplaykey = thisEl.attr("displaykey");
@@ -67,6 +89,18 @@ jQuery(document).ready(function($){
 		n_sep_by_space = arrl18n_settings[4];
 		$("#foxyshop_main_price .foxyshop_currentprice").text(toCurrency(price, currencySymbol, thousandsSeparator, decimalSeparator, p_precedes, n_sep_by_space));
 		$("#foxyshop_main_price .foxyshop_oldprice").text(toCurrency(price1, currencySymbol, thousandsSeparator, decimalSeparator, p_precedes, n_sep_by_space));
+	
+		function update_inventory_alert_language(strlang,itemcount) {
+			strlang = strlang.replace('%c',itemcount);
+			if (itemcount == 1) {
+				strlang = strlang.replace('%s',"");
+			} else {
+				strlang = strlang.replace('%s',"s");
+			}
+			strlang = strlang.replace('%n',$("#input[name^='name||']").val());
+			return strlang;
+		}
+
 	}
 	
 	function toCurrency(n, c, g, d, first, separator) {

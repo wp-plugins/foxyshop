@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 1.51
+Stable tag: 1.60
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -37,6 +37,7 @@ Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for more details and full d
 * Custom fields allowing for your own customization
 * Custom FoxyCart domain support
 * Product validation support to prevent form tampering
+* Inventory level management with auto-updating features
 * Automated Google Product Search Data-feed
 * Automated Product Sitemap Creation
 * Product importing and duplication support available with third-party plugins
@@ -64,10 +65,8 @@ Copy the files from the '*themefiles*' folder inside the plugin into your theme 
 = Can I import my products? =
 FoxyShop works very nicely with the [CSV Importer](http://wordpress.org/extend/plugins/csv-importer/) plugin. [Click here](http://www.foxy-shop.com/2011/03/importing-products/) for a sample import file and lots of tips for a successful import.
 
-= Getting Post Thumbnail errors? =
-If another plugin or your functions file is setting the post-thumbnails theme support to only one particular type of post, this can overwrite anything that happens in the plugin. Add this line to your functions.php file:
-
-*add_theme_support('post-thumbnails');*
+= Any other suggestioned plugins? =
+The [Duplicate Posts](http://wordpress.org/extend/plugins/duplicate-post/) plugin works great for letting you quickly copy products.
 
 
 
@@ -87,6 +86,13 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 1.60 =
+* New Feature: Manage Inventory Levels
+* Added 'url' to fields passed to cart. Makes the image a clickable link. For 0.7.1 only. 
+* Updated FoxyCart Include Files for 0.7.0
+* Fixed price validation bug in bundled products.
+* See [Release Notes](http://www.foxy-shop.com/2011/03/version-1-60-inventory-levels/) for more details
 
 = 1.51 =
 * Updated FoxyCart Include Files to ColorBox 1.3.16

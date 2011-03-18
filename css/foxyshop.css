@@ -54,6 +54,19 @@
 	color: #fff;
 }
 
+/* disabled button color and settings */
+.foxyshop_button.foxyshop_disabled {
+	background-color: #DFDFDF;
+	color: #CECECE;
+	border: 1px solid #CECECE;
+	font-family: Arial;
+	font-size: 12px;
+}
+.foxyshop_button.foxyshop_disabled:hover {
+	background-color: #DFDFDF;
+	color: #CECECE;
+}
+
 /* product page settings */
 .foxyshop_product .foxyshop_product_image {
 	float: left;

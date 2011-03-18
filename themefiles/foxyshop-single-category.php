@@ -2,7 +2,7 @@
 
 <?php
 //Hide page content if plugin is disabled
-if (function_exists('foxyshop_setup_product')) {
+if (function_exists('foxyshop_insert_foxycart_files')) {
 global $product;
 
 ?>

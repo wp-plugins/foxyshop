@@ -300,3 +300,8 @@
 	margin: 7px;
 	float: left;
 }
+
+.inventory_count {
+	margin-left: 10px;
+	width: 40px;
+}

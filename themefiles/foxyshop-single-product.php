@@ -2,7 +2,7 @@
 
 <?php
 //Hide page content if plugin is disabled
-if (function_exists('foxyshop_setup_product')) {
+if (function_exists('foxyshop_insert_foxycart_files')) {
 ?>
 <div id="foxyshop_container">
 <?php
@@ -63,6 +63,9 @@ while (have_posts()) : the_post();
 	//(style) clear floats before the submit button
 	echo '<div class="clr"></div>';
 
+	//Check Inventory Levels and Display Status (last variable allows ordering of out of stock items)
+	foxyshop_inventory_management("There are only %c item%s left in stock.", "Item is not in stock.", false);
+	
 	//Add To Cart Button
 	echo '<button type="submit" name="productsubmit" id="productsubmit" class="foxyshop_button">Add To Cart</button>';
 	

@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 1.51
+Version: 1.60
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -28,27 +28,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 **************************************************************************
 
-Thanks you for using this plugin. Please see www.foxy-shop.com for 
+Thanks you for using this plugin. Please see http://www.foxy-shop.com/ for 
 installation instructions and lots of helpful advice on how to get
 the most out of FoxyShop.
 
 **************************************************************************/
 
-//Setup Variables
+//Setup Plugin Variables
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 define('FOXYSHOP_PRODUCTS_SLUG','products');
 define('FOXYSHOP_PRODUCT_CATEGORY_SLUG','product-cat');
-$foxyshop_settings_defaults = array('sort_key' => "menu_order", 'generate_feed' => "", "products_per_page" => -1, "hide_subcat_children" => "on", "generate_product_sitemap" => "");
+$foxyshop_settings_defaults = array('sort_key' => "menu_order", 'generate_feed' => "", "products_per_page" => -1, "hide_subcat_children" => "on", "generate_product_sitemap" => "", "manage_inventory_levels" => "", "inventory_url_key" => "", "inventory_alert_level" => 3);
 $foxyshop_settings = wp_parse_args(unserialize(get_option("foxyshop_settings")), $foxyshop_settings_defaults);
 $foxyshop_category_sort = (get_option('foxyshop_category_sort') ? unserialize(get_option('foxyshop_category_sort')) : array());
 
-//Sets the Locale
+//Sets the Locale for Currency Internationalization
 setlocale(LC_MONETARY, get_locale());
 $foxyshop_localsettings = localeconv();
 if ($foxyshop_localsettings['int_curr_symbol'] == "") setlocale(LC_MONETARY, 'en_US');
 
-//If you don't need Widgets or Shortcodes you can comment out these lines:
+//Widgets and Shortcodes support
 include('widgetcode.php');
 include('shortcodesettings.php');
 
@@ -58,7 +58,7 @@ if (!is_admin()) {
 	add_action('wp_head', 'foxyshop_insert_foxycart_files');
 }
 
-//Put Foxyshop Styles on front pages and load in the admin styles as well
+//Put FoxyShop Styles on front pages and load in the admin styles as well
 if (is_admin()) {
 	wp_enqueue_style('meta_css', FOXYSHOP_DIR . '/css/meta.css');
 } else {
@@ -69,12 +69,10 @@ if (is_admin()) {
 //Custom Post Type and Taxonomy
 include_once('customposttype.php');
 
-
-
-//Custom Sorting
+//Custom Product Sorting
 include_once('customsorting.php');
 
-//Category Sorting
+//Custom Category Sorting
 include_once('categorysorting.php');
 
 //Generate Product Feed
@@ -82,18 +80,20 @@ include_once('productfeed.php');
 
 //Settings Page
 include_once('settings.php');
+
+//Display Settings Link on Plugin Screen
 add_filter('plugin_action_links', 'foxyshop_plugin_action_links', 10, 2);
 
-
-
-//Main Functions
+//Admin Functions
 include('adminfunctions.php');
+
+//Frontend Helper Functions
 include('helperfunctions.php');
 
-//Template Fallback (files are in /themefiles/)
+//Template Redirector (files are in /themefiles/)
 include('templateredirect.php');
 
-//Plugin Activation Function
+//Plugin Activation Functions
 register_activation_hook(__FILE__, 'foxyshop_activation');
 register_deactivation_hook( __FILE__, 'foxyshop_deactivation' );
 ?>

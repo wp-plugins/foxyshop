@@ -217,7 +217,7 @@ function foxyshop_product_details_setup() {
 	</div>
 	<div class="my_meta_control">
 		<label><?php _e('Item Code'); ?></label>
-		<input type="text" name="_code" value="<?php echo $_code; ?>" />
+		<input type="text" name="_code" id="_code" value="<?php echo $_code; ?>" />
 	</div>
 	<div class="my_meta_control">
 		<label><?php _e('Weight'); ?></label>
@@ -319,6 +319,57 @@ function foxyshop_product_pricing_setup() {
 		<div style="clear:both;"></div>
 	</div>
 	<div style="clear:both;"></div>
+
+	<?php if ($foxyshop_settings['manage_inventory_levels']) { ?>
+	<h4><?php _e('Set Inventory Levels'); ?></a></h4>
+	<div style="float: left; width: 160px; margin-bottom: 5px; font-size: 11px;">Product Code</div>
+	<div style="float: left; width: 52px; margin-bottom: 5px; font-size: 11px;">Count</div>
+	<div style="float: left; width: 50px; margin-bottom: 5px; font-size: 11px;" title="If not set, default value will be used (<?php echo $foxyshop_settings['inventory_alert_level']; ?>)">Alert Lvl</div>
+	<ul id="inventory_levels">
+		<?php
+		$inventory_levels = unserialize(get_post_meta($post->ID,'_inventory_levels',TRUE));
+		if (!is_array($inventory_levels)) $inventory_levels = array();
+		$i = 1;
+		foreach ($inventory_levels as $ivcode => $iv) {
+			if ($ivcode) {
+				echo '<li>';
+				echo '<input type="text" id="inventory_code_' . $i . '" name="inventory_code_' . $i . '" value="' . $ivcode . '" class="inventory_code" rel="' . $i . '" />';
+				echo '<input type="text" id="inventory_count_' . $i . '" name="inventory_count_' . $i . '" value="' . $iv['count'] . '" class="inventory_count" rel="' . $i . '" />';
+				echo '<input type="text" id="inventory_alert_' . $i . '" name="inventory_alert_' . $i . '" value="' . $iv['alert'] . '" class="inventory_count" rel="' . $i . '" />';
+				echo "</li>\n";
+				$i++;
+			}
+		}
+		?>
+		<li><input type="text" id="inventory_code_<?php echo $i; ?>" name="inventory_code_<?php echo $i; ?>" value="" class="inventory_code" rel="<?php echo $i; ?>" /><input type="text" id="inventory_count_<?php echo $i; ?>" name="inventory_count_<?php echo $i; ?>" value="" class="inventory_count" rel="<?php echo $i; ?>" /><input type="text" id="inventory_alert_<?php echo $i; ?>" name="inventory_alert_<?php echo $i; ?>" value="" class="inventory_count" rel="<?php echo $i; ?>" /></li>
+	</ul>
+	<input type="hidden" name="max_inventory_count" id="max_inventory_count" value="<?php echo $i; ?>" />
+	<div style="clear:both;"></div>
+	<script type="text/javascript">
+	jQuery(document).ready(function($){
+		$("#_code").blur(function() {
+			if ($("#max_inventory_count").val() == 1 && !$("#inventory_code_1").val()) {
+				$("#inventory_code_1").val($("#_code").val());
+				addField(2);
+			}
+		});
+		
+		$(".inventory_code, .inventory_count").live("keyup", function() {
+			thisID = parseFloat($(this).attr("rel"));
+			nextID = thisID + 1;
+			if (parseFloat($("#max_inventory_count").val()) == thisID && $("#inventory_code_"+nextID).length == 0 && $("#inventory_code_"+thisID).val()) {
+				addField(nextID);
+			}
+		});
+		
+		function addField(nextID) {
+			$("#inventory_levels").append('<li><input type="text" id="inventory_code_' + nextID + '" name="inventory_code_' + nextID + '" value="" class="inventory_code" rel="' + nextID + '" /><input type="text" id="inventory_count_' + nextID + '" name="inventory_count_' + nextID + '" value="" class="inventory_count" rel="' + nextID + '" /><input type="text" id="inventory_alert_' + nextID + '" name="inventory_alert_' + nextID + '" value="" class="inventory_count" rel="' + nextID + '" /></li>');
+			$("#max_inventory_count").val(nextID);
+		}
+	});
+	</script>
+	<?php } ?>
+
 
 	<?php if ($foxyshop_settings['enable_subscriptions']) { ?>
 	<h4><a href="#" id="showsublink"><?php _e('Subscription Attributes'); ?></a> <a href="http://wiki.foxycart.com/v/0.6.0/getting_started/adding_links_and_forms#subscription_attributes" target="_blank">(<?php _e('reference'); ?>)</a></h4>
@@ -804,6 +855,20 @@ function foxyshop_product_meta_save($post_id) {
 			}
 		}
 		foxyshop_save_meta_data('_bundled_products',$_bundled_products);
+	}
+
+	//Inventory Levels
+	if ($foxyshop_settings['manage_inventory_levels']) {
+		$inventory_array = array();
+		for ($i=1; $i<=$_POST['max_inventory_count']; $i++) {
+			if ($_POST['inventory_code_'.$i] && $_POST['inventory_count_'.$i] != '') {
+				$alert_level = $_POST['inventory_alert_'.$i];
+				if ($alert_level != '') $alert_level = (int)$alert_level;
+				$inventory_array[stripslashes(str_replace("'","",$_POST['inventory_code_'.$i]))] = array("count" => (int)$_POST['inventory_count_'.$i], "alert" => $alert_level);
+			}
+		}
+		$inventory_results = serialize($inventory_array);
+		foxyshop_save_meta_data('_inventory_levels',$inventory_results);
 	}
 	
 	//Save Product Variations
