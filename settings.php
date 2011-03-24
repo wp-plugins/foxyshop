@@ -18,7 +18,7 @@ function set_foxyshop_settings() {
 		}
 		
 		$new_settings = array();
-		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_custom_file_uploads","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "generate_feed", "hide_subcat_children", "generate_product_sitemap", "manage_inventory_levels", "inventory_url_key", "inventory_alert_level");
+		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_custom_file_uploads","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "ga_advanced", "generate_feed", "hide_subcat_children", "generate_product_sitemap", "manage_inventory_levels", "inventory_url_key", "inventory_alert_level", "enable_sso", "sso_account_required");
 		foreach ($fields as $field1) {
 			$val = (isset($_POST['foxyshop_'.$field1]) ? $_POST['foxyshop_'.$field1] : '');
 			$new_settings[$field1] = $val;
@@ -89,7 +89,7 @@ function foxyshop_options() {
 						echo '<option value="' . $version1 . '"' . ($foxyshop_settings['version'] == $version1 ? ' selected="selected"' : '') . '>' . $version1 . '  </option>'."\n";
 					} ?>
 					</select><br />
-					<div class="small"><?php _e('Version 0.7.1 and up includes the product image in the shopping cart.'); ?></div>
+					<div class="small"><?php _e('Version 0.7.1 is recommended.'); ?></div>
 				</td>
 			</tr>
 			<tr>
@@ -101,7 +101,7 @@ function foxyshop_options() {
 			</tr>
 		</tbody>
 	</table>
-	<p><input type="submit" class="button-primary" value="<?php _e('Save Settings','settings-submit') ?>" /></p>
+	<p><input type="submit" class="button-primary" value="<?php _e('Save Settings'); ?>" /></p>
 	
 	<br /><br />
 
@@ -141,7 +141,7 @@ function foxyshop_options() {
 
 		</tbody>
 	</table>
-	<p><input type="submit" class="button-primary" value="<?php _e('Save Settings','settings-submit') ?>" /></p>
+	<p><input type="submit" class="button-primary" value="<?php _e('Save Settings'); ?>" /></p>
 	
 	<br /><br />
 
@@ -156,13 +156,13 @@ function foxyshop_options() {
 				<td>
 					<label for="foxyshop_ship_categories" style="vertical-align: top;"><?php _e('Your Shipping Categories'); ?>:</label>
 					<textarea id="name="foxyshop_ship_categories" name="foxyshop_ship_categories" rows="3" cols="40" wrap="auto"><?php echo $foxyshop_settings['ship_categories']; ?></textarea><br />
-					<div class="small"><?php _e('These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your product setup page. Separate each category with a line break. If you only use one category this is not required.'); ?></div>
+					<div class="small"><?php _e('These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your product setup page. Separate each category with a line break. If you only use one category this is not required. If you would like to also display a nice name in the dropdown menu, use a pipe sign "|" like this: free_shipping|Free Shipping.'); ?></div>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_shipto" name="foxyshop_enable_ship_to"<?php checked($foxyshop_settings['enable_ship_to'], "on"); ?> />
-					<label for="foxyshop_shipto"><?php _e('Enable Multiple Shipping Recipients'); ?></label>
+					<label for="foxyshop_shipto"><?php _e('Enable Multi-Ship'); ?></label>
 					<div class="small"><?php _e('Remember that FoxyCart charges an extra fee for this service. You must enable it on your FoxyCart account or it will not work.'); ?></div>
 				</td>
 			</tr>
@@ -187,6 +187,21 @@ function foxyshop_options() {
 					<div class="small"><?php _e('Show fields to allow the creation of subscription products.'); ?></div>
 				</td>
 			</tr>
+
+			<tr>
+				<td>
+					<input type="checkbox" id="foxyshop_enable_sso" name="foxyshop_enable_sso"<?php checked($foxyshop_settings['enable_sso'], "on"); ?> />
+					<label for="foxyshop_enable_sso"><?php _e('Enable WordPress Single-Sign-On'); ?></label>
+					<div class="small"><?php _e('If enabled, your WordPress users will not have to login again to complete a FoxyCart checkout. WordPress accounts and FoxyCart accounts are kept in sync. You must be using FoxyCart 0.7.1 or above and in the FoxyCart admin you must set the "customer password hash type" to "phpass, portable mode" and the hash config to 8. Check the "enable single sign on" option and put this url in the "single sign on url" box:'); ?></div>
+					<div style="height: 30px;"><input type="text" name="ssourlkey_notused" value="<?php echo get_bloginfo('wpurl') . '/foxycart-sso-' . $foxyshop_settings['inventory_url_key']; ?>/" readonly="readonly" onclick="this.select();" size="88" /></div>
+					<div style="padding: 0 0 0 15px;">
+						<input type="checkbox" id="foxyshop_sso_account_required" name="foxyshop_sso_account_required"<?php checked($foxyshop_settings['sso_account_required'], "on"); ?> />
+						<label for="foxyshop_sso_account_required"><?php _e('Require a WordPress Account to check out'); ?></label>
+					</div>
+				</td>
+			</tr>
+
+
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_manage_inventory_levels" name="foxyshop_manage_inventory_levels"<?php checked($foxyshop_settings['manage_inventory_levels'], "on"); ?> />
@@ -221,7 +236,7 @@ function foxyshop_options() {
 			</tr>
 			<tr>
 				<td>
-					<label for="foxyshop_max_variations"><?php _e('Maximum Variations'); ?>:</label> <input type="text" id="foxyshop_max_variations" name="foxyshop_max_variations" value="<?php echo $foxyshop_settings['max_variations']; ?>" style="width: 50px;" />
+					<label for="foxyshop_max_variations"><?php _e('Maximum Variations'); ?>:</label> <input type="text" id="foxyshop_max_variations" name="foxyshop_max_variations" value="<?php echo $foxyshop_settings['max_variations']; ?>" style="width: 50px;" />  <small>(per product)</small>
 					<div class="small"><?php _e('This is an arbitrary number to save resources and should be sufficient in most cases. Raise only if necessary.'); ?></div>
 				</td>
 			</tr>
@@ -236,6 +251,11 @@ function foxyshop_options() {
 				<td>
 					<label for="foxyshop_ga"><?php _e('Google Analytics Code'); ?>:</label> <input type="text" id="foxyshop_ga" name="foxyshop_ga" value="<?php echo $foxyshop_settings['ga']; ?>" size="20" /> <small>(UA-XXXXXXXX-X)</small>
 					<div class="small"><?php _e('Enter your UA code here and Google Analytics tracking will be installed in the footer. Tracking will only be initiated if the visitor is not a logged-in WordPress user so that admin usage won\'t be tracked.'); ?></div>
+					<div style="padding: 5px 0 0 15px;">
+						<input type="checkbox" id="foxyshop_ga_advanced" name="foxyshop_ga_advanced"<?php checked($foxyshop_settings['ga_advanced'], "on"); ?> />
+						<label for="foxyshop_ga_advanced"><?php _e('Advanced Google Analytics Code'); ?></label>
+						<div class="small"><?php _e('Check this box if you are using the amazing FoxyCart Google Analytics Sync. We will put the appropriate code in your footer (but you\'ll still have to setup Google Analytics and your template. Read more about it:'); ?> <a href="http://wiki.foxycart.com/integration/googleanalytics_async" target="_blank">here</a> and see our handy code guide <a href="http://www.foxy-shop.com/wp-content/uploads/2011/02/FoxyCart_Google_Analytics.txt" target="_blank">here</a>.</div>
+					</div>
 				</td>
 			</tr>
 			<tr>
@@ -249,7 +269,7 @@ function foxyshop_options() {
 				<td>
 					<input type="checkbox" id="foxyshop_generate_product_sitemap" name="foxyshop_generate_product_sitemap"<?php checked($foxyshop_settings['generate_product_sitemap'], "on"); ?> />
 					<label for="foxyshop_generate_product_sitemap"><?php _e('Generate Product Sitemap'); ?></label>
-					<div class="small"><?php _e('If checked, a sitemap file called \'sitemap-products.xml\' will be created in your root folder. Please make sure that the root folder is writeable or that the file exists and is writeable. File Here: '); echo '<a href="' . get_bloginfo('url') . '/sitemap-products.xml" target="blank">' . get_bloginfo('url') . '/sitemap-products.xml</a>'; ?></div>
+					<div class="small"><?php _e('If checked, a sitemap file will be created in your root folder. Please make sure that the root folder is writeable or that this file exists and is writeable:'); echo ' <a href="' . get_bloginfo('url') . '/sitemap-products.xml" target="blank">' . get_bloginfo('url') . '/sitemap-products.xml</a>'; ?></div>
 				</td>
 			</tr>
 
@@ -257,7 +277,7 @@ function foxyshop_options() {
 	</table>
 	
 	
-	<p><input type="submit" class="button-primary" value="<?php _e('Save Settings','settings-submit') ?>" /></p>
+	<p><input type="submit" class="button-primary" value="<?php _e('Save Settings'); ?>" /></p>
 
 	<input type="hidden" name="action" value="foxyshop_settings_update" />
 	<?php wp_nonce_field('update-foxyshop-options'); ?>
@@ -311,7 +331,10 @@ function set_foxyshop_defaults() {
 		"hide_subcat_children" => "on",
 		"generate_product_sitemap" => "",
 		"sort_key" => "menu_order",
+		"enable_sso" => "",
+		"sso_account_required" => "",
 		"ga" => "",
+		"ga_advanced" => "",
 		"manage_inventory_levels" => "",
 		"inventory_alert_level" => 3,
 		"inventory_url_key" => substr(MD5(rand(1000, 99999)."{urlkey}" . date("H:i:s")),1,12),

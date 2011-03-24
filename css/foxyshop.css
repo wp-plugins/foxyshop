@@ -115,6 +115,14 @@
 	background-color: #CECECE;
 }
 
+/* Inventory Colors and Settings */
+.foxyshop_stock_alert {
+	background-color: #FBEEB2;
+	border: 1px solid #E3CD69;
+	padding: 10px;
+	margin-bottom: 20px;
+}
+
 
 
 

@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 1.60
+Version: 2.0
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -37,11 +37,12 @@ the most out of FoxyShop.
 //Setup Plugin Variables
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
-define('FOXYSHOP_PRODUCTS_SLUG','products');
-define('FOXYSHOP_PRODUCT_CATEGORY_SLUG','product-cat');
-$foxyshop_settings_defaults = array('sort_key' => "menu_order", 'generate_feed' => "", "products_per_page" => -1, "hide_subcat_children" => "on", "generate_product_sitemap" => "", "manage_inventory_levels" => "", "inventory_url_key" => "", "inventory_alert_level" => 3);
+if (!defined('FOXYSHOP_PRODUCTS_SLUG')) define('FOXYSHOP_PRODUCTS_SLUG','products');
+if (!defined('FOXYSHOP_PRODUCT_CATEGORY_SLUG')) define('FOXYSHOP_PRODUCT_CATEGORY_SLUG','product-cat');
+$foxyshop_settings_defaults = array('sort_key' => "menu_order", 'generate_feed' => "", "products_per_page" => -1, "hide_subcat_children" => "on", "generate_product_sitemap" => "", "manage_inventory_levels" => "", "inventory_url_key" => "", "inventory_alert_level" => 3, "ga_advanced" => "", "enable_sso" => "", "sso_account_required" => "");
 $foxyshop_settings = wp_parse_args(unserialize(get_option("foxyshop_settings")), $foxyshop_settings_defaults);
 $foxyshop_category_sort = (get_option('foxyshop_category_sort') ? unserialize(get_option('foxyshop_category_sort')) : array());
+if ($foxyshop_settings['version'] == "0.70") $foxyshop_settings['version'] = "0.7.0";
 
 //Sets the Locale for Currency Internationalization
 setlocale(LC_MONETARY, get_locale());
@@ -60,7 +61,7 @@ if (!is_admin()) {
 
 //Put FoxyShop Styles on front pages and load in the admin styles as well
 if (is_admin()) {
-	wp_enqueue_style('meta_css', FOXYSHOP_DIR . '/css/meta.css');
+	wp_enqueue_style('foxyshop_admin_css', FOXYSHOP_DIR . '/css/foxyshop-admin.css');
 } else {
 	wp_enqueue_style('foxyshop_css', FOXYSHOP_DIR . '/css/foxyshop.css');
 	if ($foxyshop_settings['ga']) add_action('wp_footer', 'foxyshop_insert_google_analytics', 100);
@@ -75,17 +76,38 @@ include_once('customsorting.php');
 //Custom Category Sorting
 include_once('categorysorting.php');
 
+//FoxyCart Data Feeds
+if ($foxyshop_settings['domain']) {
+
+	//Orders
+	include_once('orders.php');
+
+	//Customers
+	include_once('customers.php');
+
+	//Subscriptions
+	if ($foxyshop_settings['enable_subscriptions']) {
+		include_once('subscriptions.php');
+	}
+}
+
 //Generate Product Feed
 include_once('productfeed.php');
 
 //Settings Page
 include_once('settings.php');
 
+//Single Sign On
+if ($foxyshop_settings['enable_sso']) {
+	include_once('sso.php');
+}
+
 //Display Settings Link on Plugin Screen
 add_filter('plugin_action_links', 'foxyshop_plugin_action_links', 10, 2);
 
 //Admin Functions
 include('adminfunctions.php');
+include('adminajax.php');
 
 //Frontend Helper Functions
 include('helperfunctions.php');

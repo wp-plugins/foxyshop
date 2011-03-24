@@ -1,105 +1,4 @@
 <?php
-//FoxyShop Product AJAX Functions
-add_action('wp_ajax_foxyshop_product_ajax_action', 'foxyshop_product_ajax');
-function foxyshop_product_ajax() {
-	global $wpdb;
-	$productID = (isset($_POST['foxyshop_product_id']) ? $_POST['foxyshop_product_id'] : 0);
-	$imageID = (isset($_POST['foxyshop_image_id']) ? $_POST['foxyshop_image_id'] : 0);
-	check_ajax_referer('foxyshop-product-image-functions-'.$productID, 'security');
-	if (!isset($_POST['foxyshop_action'])) die;
-	
-	if ($_POST['foxyshop_action'] == "add_new_image") {
-		$filename = $_POST['foxyshop_new_product_image'];
-		$upload_dir = wp_upload_dir();
-		$product_count = (isset($_POST['foxyshop_product_count']) ? (int)$_POST['foxyshop_product_count'] : 0);
-		$wp_filetype = wp_check_filetype(basename($filename), null);
-		$attachment = array(
-			'post_mime_type' => $wp_filetype['type'],
-			'post_title' => $_POST['foxyshop_product_title'],
-			'guid' => $upload_dir['url'] . "/" . basename($filename),
-			'menu_order' => $product_count + 1,
-			'post_content' => '',
-			'post_status' => 'inherit'
-		);
-		require_once(ABSPATH . "wp-admin" . '/includes/image.php');
-		$attach_id = wp_insert_attachment($attachment, $filename, $productID);
-		$attach_data = wp_generate_attachment_metadata($attach_id, $_SERVER['DOCUMENT_ROOT'] . $filename);
-		wp_update_attachment_metadata($attach_id, $attach_data);
-		
-		if ($product_count == 0) {
-			update_post_meta($productID,"_thumbnail_id",$attach_id);
-		}
-
-		echo foxyshop_redraw_images($productID);
-		
-	} elseif ($_POST['foxyshop_action'] == "delete_image") {
-		wp_delete_attachment($imageID);
-		echo foxyshop_redraw_images($productID);
-
-	} elseif ($_POST['foxyshop_action'] == "featured_image") {
-		delete_post_meta($productID, "_thumbnail_id");
-		update_post_meta($productID,"_thumbnail_id",$imageID);
-		echo foxyshop_redraw_images($productID);
-
-	} elseif ($_POST['foxyshop_action'] == "rename_image") {
-		$update_post = array();
-		$update_post['ID'] = $imageID;
-		$update_post['post_title'] = $_POST['foxyshop_new_name'];
-		wp_update_post($update_post);
-	
-	} elseif ($_POST['foxyshop_action'] == "update_image_order") {
-
-		$foxyshop_order_array = $_POST['foxyshop_order_array'];
-		$IDs = explode(",", $foxyshop_order_array);
-		$result = count($IDs);
-		for($i = 0; $i < $result; $i++) {
-			$update_post = array();
-			$update_post['ID'] = str_replace("att_", "", $IDs[$i]);
-			$update_post['menu_order'] = $i+1;
-			wp_update_post($update_post);
-		}
-	
-		echo foxyshop_redraw_images($productID);
-	
-	} elseif ($_POST['foxyshop_action'] == "refresh_images") {
-		echo foxyshop_redraw_images($productID);
-	}
-	die();
-}
-
-function foxyshop_redraw_images($id) {
-	global $wpdb;
-	$write = "";
-	$featuredImageID = (has_post_thumbnail($id) ? get_post_thumbnail_id($id) : 0);
-	$attachments = get_posts(array('numberposts' => -1, 'post_type' => 'attachment','post_status' => null,'post_parent' => $id, 'order' => 'ASC','orderby' => 'menu_order'));
-	if ($attachments) {
-		$i = 0;
-		foreach ($attachments as $attachment) {
-			if (wp_attachment_is_image($attachment->ID)) {
-				
-				$thumbnailSRC = wp_get_attachment_image_src($attachment->ID, "thumbnail");
-				$write .= '<li id="att_' . $attachment->ID . '"'. ($featuredImageID == $attachment->ID || ($featuredImageID == 0 && $i == 0) ? ' class="foxyshop_featured_image"' : '') . '>';
-				$write .= '<div class="foxyshop_image_holder"><img src="' . $thumbnailSRC[0] . '" alt=' . htmlspecialchars($attachment->post_title) . ' (' . $attachment->ID . ')" title="' . htmlspecialchars($attachment->post_title) . ' (' . $attachment->ID . ')" /></div>';
-				$write .= '<div style="clear: both;"></div>';
-				$write .= '<a href="#" class="foxyshop_image_delete" rel="' . $attachment->ID . '" alt="Delete" title="Delete">Delete</a>';
-				$write .= '<a href="#" class="foxyshop_image_rename" rel="' . $attachment->ID . '" alt="Rename" title="Rename">Rename</a>';
-				$write .= '<a href="#" class="foxyshop_image_featured" rel="' . $attachment->ID . '" alt="Make Featured Image" title="Make Featured Image">Make Featured Image</a>';
-				$write .= '<div class="renamediv" id="renamediv_' . $attachment->ID . '">';
-				$write .= '<input type="text" name="rename_' . $attachment->ID . '" id="rename_' . $attachment->ID . '" rel="' . $attachment->ID . '" value="' . htmlspecialchars($attachment->post_title) . '" />';
-				$write .= '</div>';
-				$write .= '<div style="clear: both;"></div>';
-				$write .= '</li>';
-				$write .= "\n";
-				$i++;
-			}
-		}
-	}
-	return $write;
-}
-
-
-
-
 //Insert jQuery
 function foxyshop_insert_jquery() {
 	$jquery_version = "1.4.4";
@@ -111,8 +10,48 @@ function foxyshop_insert_jquery() {
 //Insert Google Analytics
 function foxyshop_insert_google_analytics() {
 	global $foxyshop_settings;
-	if (!is_user_logged_in()) {
-	?><script type="text/javascript">
+	
+	//Advanced
+	if ($foxyshop_settings['ga_advanced']) {
+		?><script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', '<?php echo htmlspecialchars($foxyshop_settings['ga']); ?>']);
+  _gaq.push(['_setDomainName', 'none']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+<script type="text/javascript" charset="utf-8">
+	fcc.events.cart.preprocess.add(function(e, arr) {
+		if (arr['cart'] == 'checkout' || arr['cart'] == 'updateinfo' || arr['output'] == 'json') {
+			return true;
+		}
+		if (arr['cart'] == 'checkout_paypal_express') {
+			_gaq.push(['_trackPageview', '/paypal_checkout']);
+			return true;
+		}
+		_gaq.push(['_trackPageview', '/cart']);
+		return true;
+	});
+	fcc.events.cart.process.add_pre(function(e, arr) {
+		var pageTracker = _gat._getTrackerByName();
+		jQuery.getJSON('https://' + storedomain + '/cart?' + fcc.session_get() + '&h:ga=' + escape(pageTracker._getLinkerUrl('', true)) + '&output=json&callback=?', function(data){});
+		return true;
+	});
+</script><?php
+	
+	
+	} else {
+		if (!is_user_logged_in()) {
+		?><script type="text/javascript">
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', '<?php echo htmlspecialchars($foxyshop_settings['ga']); ?>']);
 _gaq.push(['_trackPageview']);
@@ -122,6 +61,9 @@ _gaq.push(['_trackPageview']);
 	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 })();
 </script><?php
+		} else {
+			echo "<!-- Google Analytics Not Loaded Because This is a Logged-In User -->";
+		}
 	}
 }
 
@@ -229,6 +171,335 @@ function foxyshop_create_product_sitemap() {
 	$write .= '</urlset>';
 	file_put_contents($_SERVER['DOCUMENT_ROOT'].'/sitemap-products.xml', $write);
 }
+
+//Access the FoxyCart API
+function foxyshop_get_foxycart_data($foxyData) {
+	global $foxyshop_settings;
+	//print_r($foxyData);
+	$foxyData = array_merge(array("api_token" => $foxyshop_settings['api_key']), $foxyData);
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, "https://" . $foxyshop_settings['domain'] . "/api");
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $foxyData);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+	// If you get SSL errors, you can uncomment the following, or ask your host to add the appropriate CA bundle
+	// curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	$response = trim(curl_exec($ch));
+	 
+	// The following if block will print any CURL errors you might have
+	if ($response == false) {
+		die("CURL Error: \n" . curl_error($ch));
+	}
+	curl_close($ch);
+	return $response;
+}
+
+//Function to Prepare the List Tables
+function foxyshop_list_table_setup($tabletype) {
+	global $foxyshop_settings, $wp_version;
+
+	echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/datatables/css/demo_table.css" type="text/css" media="screen" />'."\n";
+	echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/datatables/css/demo_table_jui.css" type="text/css" media="screen" />'."\n";
+	echo '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/datatables/jquery.dataTables.min.js"></script>'."\n";
+	
+	$sortColumn = 1;
+	if ($tabletype == "orders") {
+		$sortColumn = 2;
+		
+	} elseif ($tabletype == "subscriptions") {
+		$sortColumn = 2;
+	
+	} elseif ($tabletype == "customers") {
+		$sortColumn = 1;
+	}
+	$ajax_nonce = wp_create_nonce("foxyshop-display-list-function");
+	?>
+<script type="text/javascript" charset="utf-8">
+jQuery(document).ready(function($) {
+
+	//Details Column
+	var nCloneTh = document.createElement( 'th' );
+	var nCloneTd = document.createElement( 'td' );
+	nCloneTd.innerHTML = '<img src="<?php echo FOXYSHOP_DIR . "/js/datatables/images/";?>details_open.png" class="openclose" style="cursor: pointer;" />';
+	nCloneTd.className = "center";
+	
+	$('.foxyshop_table_list thead tr').each( function () {
+		this.insertBefore(nCloneTh, this.childNodes[0]);
+	});
+	
+	$('.foxyshop_table_list tbody tr').each( function () {
+		this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
+	});
+
+
+	var oTable = $('.foxyshop_table_list').dataTable( {
+		"bPaginate": false,
+		"bFilter": true,
+		"bSort": true,
+		"bInfo": true,
+		"bAutoWidth": true,
+		"bJQueryUI": true,
+		"aoColumnDefs": [{ "bSortable": false, "aTargets": [0<?php if ($tabletype == "orders") echo ", 4, 5"; ?>] }],
+		"aaSorting": [[<?php echo $sortColumn; ?>, 'desc']]
+		<?php if ($tabletype == "orders") { ?>
+			,"aoColumns": [
+			null,
+			null,
+			null,
+			{ "sType": "html" },
+			null,
+			null
+			]
+		<?php } ?>
+		
+	});
+
+
+	$('.foxyshop_table_list tbody td img.openclose').live('click', function() {
+		var nTr = this.parentNode.parentNode;
+		var thisImage = this;
+		if (thisImage.src.match('details_close')) {
+			thisImage.src = "<?php echo FOXYSHOP_DIR . "/js/datatables/images/";?>details_open.png";
+			oTable.fnClose( nTr );
+		} else {
+			
+			<?php if ($tabletype == "orders") { ?>
+
+				thisImage.src = '<?php echo get_bloginfo("wpurl");?>/wp-admin/images/wpspin_light.gif';
+				var transaction_id = $(nTr).attr("rel");
+				var data = {
+					action: 'foxyshop_display_list_ajax_action',
+					security: '<?php echo $ajax_nonce; ?>',
+					foxyshop_action: 'order_detail',
+					id: transaction_id
+				};
+				$.post(ajaxurl, data, function(response) {
+					oTable.fnOpen( nTr, fnFormatDetails_<?php echo $tabletype; ?> (oTable, nTr, response), 'details' );
+					thisImage.src = '<?php echo FOXYSHOP_DIR . "/js/datatables/images/";?>details_close.png';
+				});
+			<?php } elseif ($tabletype == "customers") { ?>
+
+				thisImage.src = '<?php echo get_bloginfo("wpurl");?>/wp-admin/images/wpspin_light.gif';
+				var customer_id = $(nTr).attr("rel");
+				var data = {
+					action: 'foxyshop_display_list_ajax_action',
+					security: '<?php echo $ajax_nonce; ?>',
+					foxyshop_action: 'customer_detail',
+					id: customer_id
+				};
+				$.post(ajaxurl, data, function(response) {
+					oTable.fnOpen( nTr, fnFormatDetails_<?php echo $tabletype; ?> (oTable, nTr, response), 'details' );
+					thisImage.src = '<?php echo FOXYSHOP_DIR . "/js/datatables/images/";?>details_close.png';
+				});
+			<?php } else { ?>
+
+				thisImage.src = '<?php echo FOXYSHOP_DIR . "/js/datatables/images/";?>details_close.png';
+				oTable.fnOpen( nTr, fnFormatDetails_<?php echo $tabletype; ?> (oTable, nTr), 'details' );
+			
+			<?php } ?>
+			
+			
+			
+			
+		}
+	});
+
+	$(".archive_order").click( function() {
+		var transaction_id = $(this).attr("rel");
+		var data = {
+			action: 'foxyshop_display_list_ajax_action',
+			security: '<?php echo $ajax_nonce; ?>',
+			foxyshop_action: 'hide_transaction',
+			id: transaction_id
+		};
+		$.post(ajaxurl, data);
+		$("tr[rel="+transaction_id+"]").hide();
+		return false;
+	});
+
+	$('input.foxyshop_date_field').live('click', function () {
+		$(this).datepicker({dateFormat: 'yy-mm-dd'}).css("z-index", "9999999").focus();
+	});
+    
+	$(".subscriptionUpdate").live("click", function() {
+		var action = $(this).attr("rel");
+		var id = $(this).attr("actionid");
+		$(".foxyshop_list_action_status[rel=" + id + "]").html('<div id="foxyshop_image_waiter"></div>').show();
+		if (action == "start_date") {
+			if (!$("#" + action + id).val()) { $(".foxyshop_list_action_status[rel=" + id + "]").css("color","red").html("No Value Entered!").delay(2000).fadeOut(); return false; }
+			var data = {
+				action: 'foxyshop_display_list_ajax_action',
+				security: '<?php echo $ajax_nonce; ?>',
+				foxyshop_action: action,
+				id: id,
+				start_date: $("#" + action + id).val()
+			};
+		} else if (action == "end_date") {
+			if (!$("#" + action + id).val()) { $(".foxyshop_list_action_status[rel=" + id + "]").css("color","red").html("No Value Entered!").delay(2000).fadeOut(); return false; }
+			var data = {
+				action: 'foxyshop_display_list_ajax_action',
+				security: '<?php echo $ajax_nonce; ?>',
+				foxyshop_action: action,
+				id: id,
+				end_date: $("#" + action + id).val()
+			};
+		} else if (action == "next_transaction_date") {
+			if (!$("#" + action + id).val()) { $(".foxyshop_list_action_status[rel=" + id + "]").css("color","red").html("No Value Entered!").delay(2000).fadeOut(); return false; }
+			var data = {
+				action: 'foxyshop_display_list_ajax_action',
+				security: '<?php echo $ajax_nonce; ?>',
+				foxyshop_action: action,
+				id: id,
+				next_transaction_date: $("#" + action + id).val()
+			};
+		} else if (action == "frequency") {
+			if (!$("#" + action + id).val()) { $(".foxyshop_list_action_status[rel=" + id + "]").css("color","red").html("No Value Entered!").delay(2000).fadeOut(); return false; }
+			var data = {
+				action: 'foxyshop_display_list_ajax_action',
+				security: '<?php echo $ajax_nonce; ?>',
+				foxyshop_action: action,
+				id: id,
+				frequency: $("#" + action + id).val()
+			};
+		} else if (action == "past_due_amount") {
+			if (!$("#" + action + id).val()) { $(".foxyshop_list_action_status[rel=" + id + "]").css("color","red").html("No Value Entered!").delay(2000).fadeOut(); return false; }
+			var data = {
+				action: 'foxyshop_display_list_ajax_action',
+				security: '<?php echo $ajax_nonce; ?>',
+				foxyshop_action: action,
+				id: id,
+				past_due_amount: $("#" + action + id).val()
+			};
+		} else if (action == "sub_on") {
+			var data = {
+				action: 'foxyshop_display_list_ajax_action',
+				security: '<?php echo $ajax_nonce; ?>',
+				foxyshop_action: action,
+				id: id,
+				sub_on: 1
+			};
+		} else if (action == "sub_off") {
+			var data = {
+				action: 'foxyshop_display_list_ajax_action',
+				security: '<?php echo $ajax_nonce; ?>',
+				foxyshop_action: action,
+				id: id,
+				sub_on: 0
+			};
+		}
+
+		if (action) {
+			$.post(ajaxurl, data, function(response) {
+				if (response.indexOf('SUCCESS') != -1) {
+					if (action == "sub_off") {
+						$("a.button[actionid=" + id + "][rel=sub_on]").show();
+						$("a.button[actionid=" + id + "][rel=sub_off]").hide();
+						$("tr[rel=" + id + "]").removeClass().addClass("gradeU");
+					} else if (action == "sub_on") {
+						$("a.button[actionid=" + id + "][rel=sub_on]").hide();
+						$("a.button[actionid=" + id + "][rel=sub_off]").show();
+						$("tr[rel=" + id + "]").removeClass().addClass("gradeA");
+
+					} else {
+						if (action == "start_date") {
+							$("tr[rel=" + id + "] td:eq(2)").text($("#" + action + id).val());
+						} else if (action == "end_date") {
+							$("tr[rel=" + id + "] td:eq(4)").text($("#" + action + id).val());
+						} else if (action == "next_transaction_date") {
+							$("tr[rel=" + id + "] td:eq(3)").text($("#" + action + id).val());
+						} else if (action == "past_due_amount") {
+							if ($("#" + action + id).val() > 0) {
+								$("tr[rel=" + id + "]").removeClass().addClass("gradeX");
+							} else {
+								$("tr[rel=" + id + "]").removeClass().addClass("gradeA");
+							}
+							$("tr[rel=" + id + "] td:eq(5)").text($("#" + action + id).val());
+						} else if (action == "frequency") {
+							$("tr[rel=" + id + "] td:eq(7)").text($("#" + action + id).val());
+						}
+						$("#" + action + id).val("");
+					}
+				
+					$(".foxyshop_list_action_status[rel=" + id + "]").css("color","green").html(response).delay(2000).fadeOut();
+				} else {
+					$(".foxyshop_list_action_status[rel=" + id + "]").css("color","red").html(response);
+				}
+			});
+		}
+		return false;
+	});
+
+
+	function fnFormatDetails_subscriptions(oTable, nTr) {
+		var aData = oTable.fnGetData(nTr);
+		var sub_token = $(nTr).attr("rel");
+		
+		var onHide = "";
+		var offHide = "";
+		if ($(nTr).hasClass("gradeA")) {
+			onHide = ' style="display: none;"';
+		} else {
+			offHide = ' style="display: none;"';
+		}
+		
+		
+		
+		
+		var sOut = '<div class="list_detail"><form onsubmit="return false;">';
+		sOut += '<div class="foxyshop_field_control" style="height: 32px;">';
+		sOut += '<a href="#" rel="sub_on" actionid="' + sub_token + '"class="button subscriptionUpdate"' + onHide + '>Activate Subscription</a>';
+		sOut += '<a href="#" rel="sub_off" actionid="' + sub_token + '" class="button subscriptionUpdate"' + offHide + '>Disable Subscription</a>';
+		sOut += '<div class="foxyshop_list_action_status" rel="' + sub_token + '"></div>';
+		sOut += '</div>';
+		sOut += '<div class="foxyshop_field_control">';
+		sOut += '<label>Start Date</label><input type="text" name="start_date' + sub_token + '" id="start_date' + sub_token + '" class="foxyshop_date_field" /><a href="#" class="button subscriptionUpdate" rel="start_date" actionid="' + sub_token + '">Update</a><span>(YYYY-MM-DD)</span>';
+		sOut += '</div>';
+		sOut += '<div class="foxyshop_field_control">';
+		sOut += '<label>Next Transaction Date</label><input type="text" name="next_transaction_date' + sub_token + '" id="next_transaction_date' + sub_token + '" class="foxyshop_date_field" /><a href="#" class="button subscriptionUpdate" rel="next_transaction_date" actionid="' + sub_token + '">Update</a><span>(YYYY-MM-DD)</span>';
+		sOut += '</div>';
+		sOut += '<div class="foxyshop_field_control">';
+		sOut += '<label>End Date</label><input type="text" name="end_date' + sub_token + '" id="end_date' + sub_token + '" class="foxyshop_date_field" /><a href="#" class="button subscriptionUpdate" rel="end_date" actionid="' + sub_token + '">Update</a><span>(YYYY-MM-DD) <a href="#" onclick="jQuery(\'#end_date' + sub_token + '\').val(\'0000-00-00\'); return false;">Never?</a></span>';
+		sOut += '</div>';
+		sOut += '<div class="foxyshop_field_control">';
+		sOut += '<label>Frequency</label><input type="text" name="frequency' + sub_token + '" id="frequency' + sub_token + '" /><a href="#" class="button subscriptionUpdate" rel="frequency" actionid="' + sub_token + '">Update</a><span>(60d, 2w, 1m, 1y, .5m)</span>';
+		sOut += '</div>';
+		sOut += '<div class="foxyshop_field_control">';
+		sOut += '<label>Past Due Amount</label><input type="text" name="past_due_amount' + sub_token + '" id="past_due_amount' + sub_token + '" /><a href="#" class="button subscriptionUpdate" rel="past_due_amount" actionid="' + sub_token + '">Update</a><span>(0.00)</span>';
+		sOut += '</div>';
+		sOut += '<div class="foxyshop_field_control">';
+		sOut += '<label>Update URL</label><input type="text" name="update_url' + sub_token + '" id="update_url' + sub_token + '" value="<?php echo 'https://' . $foxyshop_settings['domain'] . '/cart?sub_token=\' + sub_token + \'&amp;cart=checkout'; ?>" style="width: 390px;" onclick="this.select();" />';
+		sOut += '</div>';
+		sOut += '<div class="foxyshop_field_control">';
+		sOut += '<label>Cancellation URL</label><input type="text" name="cancel_url' + sub_token + '" id="cancel_url' + sub_token + '" value="<?php echo 'https://' . $foxyshop_settings['domain'] . '/cart?sub_token=\' + sub_token + \'&amp;cart=checkout&mp;sub_cancel=true'; ?>" style="width: 390px;" onclick="this.select();" />';
+		sOut += '</div>';
+
+
+		sOut += '</form></div>';
+		
+		return sOut;
+	}
+
+
+
+	function fnFormatDetails_customers(oTable, nTr, optionalReturn) {
+		var aData = oTable.fnGetData(nTr);
+		return optionalReturn;
+	}
+
+	function fnFormatDetails_orders(oTable, nTr, optionalReturn) {
+		var aData = oTable.fnGetData(nTr);
+		return optionalReturn;
+	}
+
+
+});
+</script>
+<?php
+
+}
+
+
 
 
 ?>

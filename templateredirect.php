@@ -15,7 +15,7 @@ function foxyshop_theme_redirect() {
 
 	//Uncomment to Troubleshoot
 	//if (is_user_logged_in()) {
-	//	print_r(get_option('rewrite_rules')); //View Rewrite Rules
+	//	echo "<pre>";print_r(get_option('rewrite_rules'));echo "</pre>"; //View Rewrite Rules
 	//	echo "<pre>";print_r($wp);echo "</pre>";
 	//}
 
@@ -83,6 +83,13 @@ function foxyshop_theme_redirect() {
 	//FoxyCart Datafeed Endpoint
 	} elseif ($currentPageName == 'foxycart-datafeed-'.$foxyshop_settings['inventory_url_key']) {
 		$templatefilename = 'datafeedendpoint.php';
+		$return_template = FOXYSHOP_PATH . '/' . $templatefilename;
+		include($return_template);
+		die();
+
+	//FoxyCart SSO Endpoint
+	} elseif ($currentPageName == 'foxycart-sso-'.$foxyshop_settings['inventory_url_key']) {
+		$templatefilename = 'ssoendpoint.php';
 		$return_template = FOXYSHOP_PATH . '/' . $templatefilename;
 		include($return_template);
 		die();

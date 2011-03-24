@@ -27,7 +27,7 @@ jQuery(document).ready(function($){
 
 			//Check Inventory
 			varcode = thisEl.attr("code");
-			if (varcode != "" && typeof varcode != "undefined") {
+			if (varcode != "" && typeof varcode != "undefined" && typeof arr_foxyshop_inventory != 'undefined') {
 				match = 0;
 				for (i=0; i<arr_foxyshop_inventory.length; i++) {
 					if (arr_foxyshop_inventory[i][0] == varcode) {
@@ -54,6 +54,7 @@ jQuery(document).ready(function($){
 
 			//Price Change
 			priceChange = thisEl.attr("pricechange");
+			priceSet = thisEl.attr("priceset");
 			if (priceChange) {
 				priceChangeAmount = parseFloat(priceChange);
 				if (priceChange.substr(1,2) == "-") {
@@ -63,6 +64,9 @@ jQuery(document).ready(function($){
 					price = price + priceChangeAmount;
 					price1 = price1 + priceChangeAmount;
 				}
+			} else if (priceSet) {
+				price = parseFloat(priceSet);
+				price1 = price;
 			}
 		});
 		
@@ -123,3 +127,10 @@ jQuery(document).ready(function($){
 	}
 
 });
+
+function foxyshop_is_array(obj) {
+	if (obj.constructor.toString().indexOf("Array") == -1)
+		return false;
+	else
+		return true;
+}

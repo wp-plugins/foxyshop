@@ -4,43 +4,49 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 1.60
+Stable tag: 2.0
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
 == Description ==
 
-FoxyShop is a complete shopping cart solution for WordPress. This plugin connects to FoxyCart's excellent shopping cart service and will allow you to manage your inventory from a WordPress backend. FoxyShop is designed for complete flexibility so that WordPress developers can use the plugin's helpful library and sample code to quickly configure and implement almost any shopping cart solution.
+FoxyShop is a complete shopping cart solution for WordPress. This plugin connects to FoxyCart's excellent shopping cart service and will allow you to manage your inventory from a WordPress backend. FoxyShop is designed for complete flexibility so that WordPress developers can use the plugin's helpful library and sample code to quickly configure and implement almost any type of ecommerce solution.
 
-Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for more details and full documentation and instructions.
+Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for full documentation and instructions.
+
+[youtube http://www.youtube.com/watch?v=roYF1CFAyUA]
 
 = Features: =
 * Manage your product inventory within the WordPress structure
-* Full product information: name, price, product code, shipping weight, shipping category, minimum and maximum quantities, product description, and short product description.
-* Multiple images with popup slideshow
+* Full product information: name, price, product code, shipping weight, shipping category, minimum and maximum quantities, product description, and short product description and lots more.
+* Multiple images per product with popup slideshow
 * Dedicated image uploader, improves default WordPress process
-* Setup product categories and subcategories. Categories can be ordered alphabetically or by a custom sort.
+* Set up product categories and subcategories. Categories can be ordered alphabetically or by a custom sort.
 * Complete flexibility for product variations and pricing. Chainable variations are supported so that some options aren't available until others are selected. Price is automatically updated when different selections are made. Images can be tied to variations.
 * Full product sorting capabilities: sort by name, price, date, or customize your sorting with a drag-and-drop sorter.
 * Widget support for featured categories
-* Shortcode support for "Add to Cart" links
-* Subscription and downloadable product support
 * Discounts available in all the FoxyCart flavors: Quantity and Price, Amount and Percentage, Single Units, All Units, Buy One Get One Free, etc. Lots of flexibility.
 * Sale pricing with optional date controls
 * Coupon code support
 * Multiple shipping recipients
 * Custom file upload lets your customers send you a file when adding to the shopping cart
-* Related product suggestions
-* Bundled products--add more than one product to the cart at once
+* Assign related product for product upselling
+* Bundled products let you add more than one product to the cart at once
 * Ability to hide products and categories
 * Both english and metric weight support
+* Support for international currencies
 * Custom fields allowing for your own customization
 * Custom FoxyCart domain support
-* Product validation support to prevent form tampering
+* Field validation to prevent form tampering
+* Shortcode support for "Add to Cart" links
+* Subscription and downloadable product support
+* Manage your subscriptions list using FoxyCart's API
+* View orders and customers in your WordPress admin
+* FoxyCart Single Sign On (SSO) support lets you sync your WordPress users and FoxyCart customer list
 * Inventory level management with auto-updating features
-* Automated Google Product Search Data-feed
-* Automated Product Sitemap Creation
-* Product importing and duplication support available with third-party plugins
+* Creates Google Product Search datafeed
+* Automated product sitemaps
+* Product importing and duplication support available
 * Supports FoxyCart versions 0.70 and 0.7.1 and includes product images in the shopping cart
 
 
@@ -52,7 +58,7 @@ Copy the folder to your WordPress
 '*/wp-content/plugins/*' folder.
 
 1. Activate the '*FoxyShop*' plugin in your WordPress admin '*Plugins*'
-1. Go to '*Products / Manage Settings*' in your WordPress admin area.
+1. Go to '*Products / Manage Settings*' in your WordPress admin.
 1. Enter your FoxyCart domain.
 1. Copy and paste the supplied API key into your FoxyCart admin area (Advanced) and check the "enable verification" checkbox.
 1. All the other settings are optional.
@@ -68,6 +74,13 @@ FoxyShop works very nicely with the [CSV Importer](http://wordpress.org/extend/p
 = Any other suggestioned plugins? =
 The [Duplicate Posts](http://wordpress.org/extend/plugins/duplicate-post/) plugin works great for letting you quickly copy products.
 
+= Can I change the slug from 'products' to something else? =
+Sure! Starting in version 2.0 you can easily do this. Just put this code in your wp-config.php file:
+
+define('FOXYSHOP_PRODUCTS_SLUG','yourproductslug');
+define('FOXYSHOP_PRODUCT_CATEGORY_SLUG','yourproductcategoryslug');
+
+After making this change, be sure that you flush your permalink structure to enable the new settings. To do this, go to Settings / Permalinks and click "Save Changes".
 
 
 == Screenshots ==
@@ -86,6 +99,22 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 2.0 =
+* New Feature: Order Management (Using FoxyCart API)
+* New Feature: Subscription Management (Using FoxyCart API)
+* New Feature: Customer Management (Using FoxyCart API)
+* New Feature: WordPress User Single Sign On Support (syncs with your WordPress users and lets them check out)
+* Subscription support improved in product admin
+* Added option for advanced Google Analytics code to assist in setting up your FoxyCart and Analytics sync (goals and funnels)
+* Made it easier to change your product and category slugs by letting you define these in wp-config.php
+* Added support for the FoxyCart feature "p:5" to set price directly on a variation. Note that it doesn't work well with sale prices.
+* Nice-name support for shipping category code list
+* Updated PrettyPhoto files to version 3.0.3
+* Bugfix for uploading images on a WordPress install not in the root
+* Updated plugin screenshots
+* See [Release Notes](http://www.foxy-shop.com/2011/03/version-2-0-manage-orders-and-subscriptions/) for more details
+[youtube http://www.youtube.com/watch?v=JFj6TFXC4Lk]
 
 = 1.60 =
 * New Feature: Manage Inventory Levels
