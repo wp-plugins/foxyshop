@@ -85,12 +85,17 @@ After making this change, be sure that you flush your permalink structure to ena
 
 == Screenshots ==
 
-1. Admin Product List
-2. Create New Product Screen
-3. Product Categories
-4. Settings Screen
-5. Public Product View
-6. Public Category View
+1. Admin Settings Screen
+2. More Settings
+3. Product List
+4. Product Entry Screen
+5. Product Entry Screen Continued
+6. Set Custom Product Order
+7. Set Custom Category Order
+8. Order Managment
+9. Customer Management
+10. Subscription Management
+11. Product Feed
 
 == Other == 
 
