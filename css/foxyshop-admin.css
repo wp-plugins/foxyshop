@@ -382,3 +382,6 @@
 .order_details .product_listing .details_div {
 	float: left;
 }
+#admin_list_pagination {
+	padding: 20px 5px;
+}

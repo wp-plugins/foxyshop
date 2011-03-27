@@ -501,6 +501,13 @@ jQuery(document).ready(function($){
 function foxyshop_product_images_setup() {
 	global $post, $foxyshop_settings;
 	$upload_dir = wp_upload_dir();
+	if (array_key_exists('error', $upload_dir)) {
+		if ($upload_dir['error'] != '') {
+			echo '<p style="color: red;"><strong>Warning:</strong> Images cannot be uploaded at this time. The error given is below.<br />Please attempt to correct the error and reload this page.</p>';
+			echo '<p>' . $upload_dir['error'] . '</p>';
+			return;
+		}
+	}
 
 	echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/uploadify/uploadify.css" type="text/css" media="screen" />'."\n";
 	echo '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/uploadify/jquery.uploadify.v2.1.4.min.js"></script>'."\n";
@@ -539,11 +546,13 @@ function foxyshop_product_images_setup() {
 			}
 		});
 
-		$("#foxyshop_product_image_list input").live("keyup", function(e) {
+		$("#foxyshop_product_image_list input").live("keyup, blur", function(e) {
 			var thisID = $(this).attr("rel");
 			var newTitle = $(this).val();
-			
-			if(e.keyCode == 13) {
+			if (e.keyCode == 27) {
+				$("#renamediv_" + thisID).removeClass('rename_active');
+				renameLive = false;
+			} else if (e.keyCode == 13) {
 				var data = {
 					action: 'foxyshop_product_ajax_action',
 					security: '<?php echo $ajax_nonce; ?>',
@@ -554,12 +563,9 @@ function foxyshop_product_images_setup() {
 				};
 				$.post(ajaxurl, data, function() {
 					$("#renamediv_" + thisID).removeClass('rename_active');
-					$("#att_" + thisID + " img").attr("alt",newTitle).attr("title",newTitle);
+					$("#att_" + thisID + " img").attr("alt",newTitle + ' (' + thisID + ')').attr("title",newTitle + ' (' + thisID + ')');
 					renameLive = false;
 				});
-			} else if (e.keyCode == 27) {
-				$("#renamediv_" + thisID).removeClass('rename_active');
-				renameLive = false;
 			}
 			return false;
 		});
@@ -663,6 +669,7 @@ function foxyshop_product_variations_setup() {
 	global $post, $foxyshop_settings, $wp_version;
 	
 	$showNew = 0;
+	$var_type_array = array('dropdown' => "Dropdown List", 'radio' => "Radio Buttons", 'checkbox' => "Checkbox", 'text' => "Single Line of Text", 'textarea' => "Multiple Lines of Text", 'customupload' => "Custom File Upload");
 	
 	for ($i=1;$i<=$foxyshop_settings['max_variations'];$i++) {
 		$_variationName = get_post_meta($post->ID,'_variation_name_'.$i,TRUE);
@@ -681,31 +688,41 @@ function foxyshop_product_variations_setup() {
 		
 		?>
 		<div class="product_variation" rel="<?php echo $i; ?>" id="variation<?php echo $i; ?>" <?php if (!$_variationName) echo ' style="display: none;"'; ?>>
+			<!-- Variation Header -->
 			<div class="foxyshop_field_control">
-				<label>Variation Name</label>
+				<label><?php _e('Variation Name'); ?></label>
 				<input type="text" name="_variation_name_<?php echo $i; ?>" id="_variation_name_<?php echo $i; ?>" value="<?php echo esc_attr($_variationName); ?>" style="float: left; width: 200px;" />
-				<label style="margin-left: 40px; width: auto; padding-bottom: 2px; cursor: help; border-bottom: 1px dotted darkgray;" title="Enter a value here if you want your variation to be invisible until called by another variation.">Display Key</label>
-				<input type="text" name="_variation_dkey_<?php echo $i; ?>" id="_variation_dkey_<?php echo $i; ?>" value="<?php echo esc_attr($_variationDisplayKey); ?>" style="float: left; width: 100px;" />
+
+				<label for="_variation_type_<?php echo $i; ?>" style="margin-left: 40px; width: auto;"><?php _e('Variation Type'); ?>:</label> 
+				<select name="_variation_type_<?php echo $i; ?>" id="_variation_type_<?php echo $i; ?>" class="variationtype">
+				<?php
+				foreach ($var_type_array as $var_name => $var_val) {
+					echo '<option value="' . $var_name . '"' . ($_variationType == $var_name ? ' selected="selected"' : '') . '>' . $var_val . '  </option>'."\n";
+				} ?>
+				</select>
 				<a href="#" class="button deleteVariation" style="float: right;" rel="<?php echo $i; ?>">Delete</a>
 			</div>
-			<div class="foxyshop_field_control variationtypes" style="clear: both;">
-				<label>Variation Type</label>
-				<div style="padding: 7px 0 7px 0;">
-					<input type="radio" name="_variation_type_<?php echo $i; ?>" id="_variation_type_<?php echo $i; ?>_dropdown" value="dropdown" style="margin-top: -2px; float: left;"<?php if ($_variationType == 'dropdown' || $_variationType == '') echo ' checked="checked"' ?> /> <label for="_variation_type_<?php echo $i; ?>_dropdown">Dropdown</label>
-					<input type="radio" name="_variation_type_<?php echo $i; ?>" id="_variation_type_<?php echo $i; ?>_text" value="text" style="margin-top: -2px; float: left;"<?php if ($_variationType == 'text') echo ' checked="checked"' ?> /> <label for="_variation_type_<?php echo $i; ?>_text">Single Line of Text</label>
-					<input type="radio" name="_variation_type_<?php echo $i; ?>" id="_variation_type_<?php echo $i; ?>_textarea" value="textarea" style="margin-top: -2px; float: left;"<?php if ($_variationType == 'textarea') echo ' checked="checked"' ?> /> <label for="_variation_type_<?php echo $i; ?>_textarea">Multiple Lines of Text</label>
-					<?php if ($foxyshop_settings['enable_custom_file_uploads']) { ?><input type="radio" name="_variation_type_<?php echo $i; ?>" id="_variation_type_<?php echo $i; ?>_upload" value="upload" style="margin-top: -2px; float: left;"<?php if ($_variationType == 'upload') echo ' checked="checked"' ?> /> <label for="_variation_type_<?php echo $i; ?>_upload">File Upload</label><?php } ?>
-				</div>
-			</div>
-			<div class="foxyshop_field_control variations variationoptions">
-				<label><?php _e('Variations'); ?></label>
+			
+			<!-- Dropdown -->
+			<div class="foxyshop_field_control dropdown variationoptions">
+				<label><?php _e('Items in Dropdown'); ?></label>
 				<textarea name="_variation_value_<?php echo $i; ?>" style="width: 500px; height: 130px;"><?php echo $_variationValue; ?></textarea>
 				<br />
-				<div style="margin: 2px 0 0 114px; font-size: 10px;"><?php _e('Example: Variation Name{p+1.50|w-1|c:product_code|y:shipping_category|dkey:display_key|ikey:image_id}'); ?><br />
-				<?php _e('Put a * in your variation name to indicate that the option will be selected by default.'); ?>
+				<div style="margin: 2px 0 15px 114px; font-size: 10px;"><?php _e('Name{p+1.50|w-1|c:product_code|y:shipping_category|dkey:display_key|ikey:image_id}'); ?>
 				</div>
 			</div>
-			<div class="foxyshop_field_control textboxsize variationoptions">
+			
+			<!-- Radio Buttons -->
+			<div class="foxyshop_field_control radio variationoptions">
+				<label><?php _e('Radio Button Options'); ?></label>
+				<textarea name="_variation_radio_<?php echo $i; ?>" style="width: 500px; height: 130px;"><?php echo $_variationValue; ?></textarea>
+				<br />
+				<div style="margin: 2px 0 15px 114px; font-size: 10px;"><?php _e('Name{p+1.50|w-1|c:product_code|y:shipping_category|dkey:display_key|ikey:image_id}'); ?>
+				</div>
+			</div>
+			
+			<!-- Text Box -->
+			<div class="foxyshop_field_control text variationoptions">
 				<div class="foxyshop_field_control">
 					<label><?php _e('Text Box Size'); ?></label>
 					<input type="text" name="_variation_textsize1_<?php echo $i; ?>" value="<?php if (isset($arrVariationTextSize)) echo $arrVariationTextSize[0]; ?>" style="width: 45px;" /> <?php _e('characters'); ?>
@@ -716,14 +733,35 @@ function foxyshop_product_variations_setup() {
 				</div>
 				<div style="clear: both;"></div>
 			</div>
-			<div class="foxyshop_field_control textareasize variationoptions">
+			
+			<!-- Textarea -->
+			<div class="foxyshop_field_control textarea variationoptions">
 				<label><?php _e('Lines of Text'); ?></label>
-				<input type="text" name="_variation_textareasize_<?php echo $i; ?>" value="<?php if (isset($_variationTextSize)) echo $_variationTextSize; ?>" style="width: 45px;" />
+				<input type="text" name="_variation_textareasize_<?php echo $i; ?>" value="<?php if (isset($_variationTextSize)) echo $_variationTextSize; ?>" style="width: 45px;" /> (default is 3)
 			</div>
+			
+			<!-- Checkbox -->
+			<div class="foxyshop_field_control checkbox variationoptions" style="background-color: transparent;">
+				<label><?php _e('Value'); ?></label>
+				<input type="text" name="_variation_checkbox_<?php echo $i; ?>" value="<?php echo $_variationValue; ?>" style="width: 500px;" />
+				<br />
+				<div style="margin: 2px 0 15px 114px; font-size: 10px;"><?php _e('Name{p+1.50|w-1|c:product_code|y:shipping_category|dkey:display_key|ikey:image_id}'); ?>
+				</div>
+			</div>
+			
+			<!-- Custom File Upload -->
 			<div class="foxyshop_field_control customupload variationoptions">
-				<label style="width: 120px;"><?php _e('Special Instructions'); ?></label>
+				<label><?php _e('Instructions'); ?></label>
 				<textarea name="_variation_uploadinstructions_<?php echo $i; ?>" style="width: 500px; height: 40px;"><?php echo $_variationValue; ?></textarea>
 			</div>
+
+			<!-- Display Key -->
+			<div class="foxyshop_field_control">
+				<label style="width: auto; margin-right: 40px; padding-bottom: 2px; cursor: help; border-bottom: 1px dotted darkgray;" title="Enter a value here if you want your variation to be invisible until called by another variation.">Display Key</label>
+				<input type="text" name="_variation_dkey_<?php echo $i; ?>" id="_variation_dkey_<?php echo $i; ?>" value="<?php echo esc_attr($_variationDisplayKey); ?>" style="float: left; width: 100px;" />
+			</div>
+			
+			<div style="clear: both;"></div>
 		</div>
 		<?php
 	}
@@ -741,32 +779,18 @@ jQuery(document).ready(function($){
 		return false;
 	});
 	
+	//Startup Setup
 	$('.product_variation').each(function() {
 		thisID = $(this).attr("rel");
-		$(this).find('.variationoptions').hide();
-		if ($(this).find('input[type=radio]:checked').val() == 'text') {
-			$(this).find('.textboxsize').show();
-		} else if ($(this).find('input[type=radio]:checked').val() == 'textarea') {
-			$(this).find('.textareasize').show();
-		} else if ($(this).find('input[type=radio]:checked').val() == 'upload') {
-			$(this).find('.customupload').show();
-		} else if ($(this).find('input[type=radio]:checked').val() == 'dropdown') {
-			$(this).find('.variations').show();
-		}
-
+		thisType = $(this).find(".variationtype").val();
+		$(this).find(".variationoptions").hide();
+		$(this).find("." + thisType).show();
 	});
 	
-	$(".variationtypes input[type=radio]").change(function() {
+	//On Change Listener
+	$(".variationtype").change(function() {
 		$(this).parents(".product_variation").find(".variationoptions").hide();
-		if ($(this).val() == 'text') {
-			$(this).parents(".product_variation").find(".textboxsize").show();
-		} else if($(this).val() == "textarea") {
-			$(this).parents(".product_variation").find(".textareasize").show();
-		} else if($(this).val() == "upload") {
-			$(this).parents(".product_variation").find(".customupload").show();
-		} else if($(this).val() == "dropdown") {
-			$(this).parents(".product_variation").find(".variations").show();
-		}
+		$(this).parents(".product_variation").find("." + $(this).val()).show();
 	});
 	
 	if (lastNewOne <= <?php echo $foxyshop_settings['max_variations']; ?>) $("#AddVariation").show();
@@ -886,8 +910,11 @@ function foxyshop_product_meta_save($post_id) {
 				$inventory_array[stripslashes(str_replace("'","",$_POST['inventory_code_'.$i]))] = array("count" => (int)$_POST['inventory_count_'.$i], "alert" => $alert_level);
 			}
 		}
-		$inventory_results = serialize($inventory_array);
-		foxyshop_save_meta_data('_inventory_levels',$inventory_results);
+		if (count($inventory_array) > 0) {
+			foxyshop_save_meta_data('_inventory_levels',serialize($inventory_array));
+		} else {
+			foxyshop_save_meta_data('_inventory_levels',"");
+		}
 	}
 	
 	//Save Product Variations
@@ -910,6 +937,10 @@ function foxyshop_product_meta_save($post_id) {
 				$_variationValue = $_POST['_variation_uploadinstructions_'.$i];
 			} elseif ($_variationType == 'dropdown') {
 				$_variationValue = $_POST['_variation_value_'.$i];
+			} elseif ($_variationType == 'checkbox') {
+				$_variationValue = $_POST['_variation_checkbox_'.$i];
+			} elseif ($_variationType == 'radio') {
+				$_variationValue = $_POST['_variation_radio_'.$i];
 			}
 		} else {
 			$_variationName = "";

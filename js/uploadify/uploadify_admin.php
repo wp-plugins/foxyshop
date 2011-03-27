@@ -29,7 +29,11 @@ if (!empty($_FILES)) {
 	$targetPath = $_SERVER['DOCUMENT_ROOT'] . '/'.$_REQUEST['folder'].'/';
 	$targetPath = str_replace('//','/',$targetPath);
 	
-	$newfilename = sanitize_file_name($_FILES['Filedata']['name']);
+	$newfilename = urldecode($_FILES['Filedata']['name']);
+	$newfilename = str_replace('[1]','',$newfilename);
+	$newfilename = str_replace('[2]','',$newfilename);
+	$newfilename = str_replace('[3]','',$newfilename);
+	$newfilename = sanitize_file_name($newfilename);
 	
 	$targetFile =  $targetPath . $newfilename;
 

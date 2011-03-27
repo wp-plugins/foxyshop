@@ -31,7 +31,7 @@ global $product;
 	foxyshop_category_children($currentCategoryID);
 	
 	//Run the query for all products in this category
-	$args = array('post_type' => 'foxyshop_product', "foxyshop_categories" => $currentCategorySlug, 'posts_per_page' => foxyshop_products_per_page(), 'paged' => get_query_var('paged'));
+	$args = array('post_type' => 'foxyshop_product', "foxyshop_categories" => $currentCategorySlug, 'post_status' => 'publish', 'posts_per_page' => foxyshop_products_per_page(), 'paged' => get_query_var('paged'));
 	$args = array_merge($args,foxyshop_sort_order_array());
 	$args = array_merge($args,foxyshop_hide_children_array($currentCategoryID));
 	query_posts($args);

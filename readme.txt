@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 2.0
+Stable tag: 2.1
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -47,7 +47,7 @@ Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for full documentation and 
 * Creates Google Product Search datafeed
 * Automated product sitemaps
 * Product importing and duplication support available
-* Supports FoxyCart versions 0.70 and 0.7.1 and includes product images in the shopping cart
+* Supports FoxyCart versions 0.7.0 and 0.7.1 and includes product images in the shopping cart
 
 
 
@@ -82,6 +82,9 @@ define('FOXYSHOP_PRODUCT_CATEGORY_SLUG','yourproductcategoryslug');
 
 After making this change, be sure that you flush your permalink structure to enable the new settings. To do this, go to Settings / Permalinks and click "Save Changes".
 
+= Can I use a WordPress Framework with FoxyShop? =
+FoxyShop uses get_header() and some WordPress frameworks (Thesis among them) bypass these default WordPress features. So without customization, FoxyShop will show up unstyled for some frameworks. A workaround is to put a static version of your site in header.php and footer.php.
+
 
 == Screenshots ==
 
@@ -104,6 +107,20 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 2.1 =
+* Checkboxes and Radio Buttons now available as product variation options.
+* Standardized browser bar title string. Title can now be customized on settings page. UPGRADE NOTE: Please check your page titles and make sure they do not need to be adjusted.
+* Inventory level manager added so you can now view inventory levels for all products on one page.
+* The system now checks for a datafeed endpoint file in your theme folder before using the default. This allows you to customize the datafeed endpoint for your own nefarious purposes.
+* Added paging for API returns on the orders, subscriptions, and customers admin pages. Paging sets at 50 for 0.7.0 and 300 for 0.7.1
+* Compatibility issues resolved with Google product feed. Feed also now saves your txt file automatically (no need to copy and paste).
+* Security fix: Only published products will now appear on the site and feeds. Previously products would appear regardless of their status.
+* Product image bar throws a warning if the upload directory is not writeable. Helpful for site setup.
+* Some product image updates to fix malformed alt tags and to catch url encoded values in image names.
+* Updated Multi-ship Javascript to version 2.1.
+* Bug fix for Windows installs: rolls back money_format to number_format if money_format isn't available (no localization support for Windows, though).
+* See [Release Notes](http://www.foxy-shop.com/2011/03/version-2-1-radio-buttons-and-checkboxes/) for more details
 
 = 2.0 =
 * New Feature: Order Management (Using FoxyCart API)

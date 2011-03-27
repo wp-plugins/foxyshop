@@ -18,7 +18,7 @@ global $product;
 
 	
 	//Run the query for all products in this category
-	$args = array('post_type' => 'foxyshop_product', 'posts_per_page' => -1);
+	$args = array('post_type' => 'foxyshop_product', 'post_status' => 'publish', 'posts_per_page' => -1);
 	$args = array_merge($args,foxyshop_sort_order_array());
 	query_posts($args);
 	echo '<ul class="foxyshop_product_list">';

@@ -130,6 +130,7 @@ function foxyshop_deactivation() {
 function foxyshop_create_product_sitemap() {
 	$args = array(
 		'post_type' => array('foxyshop_product'),
+		'post_status' => 'publish',
 		'numberposts' => -1
 	);
 	$products = get_posts($args);
@@ -202,6 +203,7 @@ function foxyshop_list_table_setup($tabletype) {
 	echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/datatables/css/demo_table.css" type="text/css" media="screen" />'."\n";
 	echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/datatables/css/demo_table_jui.css" type="text/css" media="screen" />'."\n";
 	echo '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/datatables/jquery.dataTables.min.js"></script>'."\n";
+	if ($tabletype == "inventory") return false;
 	
 	$sortColumn = 1;
 	if ($tabletype == "orders") {

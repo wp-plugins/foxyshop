@@ -17,7 +17,7 @@ global $product;
 
 	<?php
 	$search = (isset($_REQUEST['search']) ? urlencode($_REQUEST['search']) : "sdafasdfasdfasdfasdfasdf");
-	$args = array('post_type' => 'foxyshop_product', 'posts_per_page' => foxyshop_products_per_page(), 's' => $search, 'paged' => get_query_var('paged'));
+	$args = array('post_type' => 'foxyshop_product', 'post_status' => 'publish', 'posts_per_page' => foxyshop_products_per_page(), 's' => $search, 'paged' => get_query_var('paged'));
 	$args = array_merge($args,foxyshop_sort_order_array());
 	query_posts($args);
 	if (!have_posts() & isset($_REQUEST['search'])) {

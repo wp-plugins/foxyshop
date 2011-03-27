@@ -1,8 +1,8 @@
 jQuery(document).ready(function($){
-	$("form.foxyshop_product select").change(function(){
+	$("form.foxyshop_product select, form.foxyshop_product input:checkbox, form.foxyshop_product input:radio").change(function(){
 		updateVariations($(this));
 	});
-	updateVariations($("form.foxyshop_product select"));
+	updateVariations($("form.foxyshop_product select, form.foxyshop_product input:checkbox, form.foxyshop_product input:radio"));
 
 	function updateVariations(elSelect) {
 		price = $("#price").val();
@@ -10,7 +10,7 @@ jQuery(document).ready(function($){
 		price = parseFloat(price.replace(",","")) * 100;
 		price1 = parseFloat(price1.replace(",","")) * 100;
 		displayKey = new Array();
-		elSelect.parents("form").find(".foxyshop_variations select option:selected").each(function(){
+		elSelect.parents("form").find(".foxyshop_variations select option:selected, .foxyshop_variations input:checkbox:checked, .foxyshop_variations input:radio:checked").each(function(){
 			var thisEl = $(this);
 			var selectedValue = thisEl.val();
 			

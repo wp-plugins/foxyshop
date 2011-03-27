@@ -1,6 +1,5 @@
 <?php
 add_action('admin_menu', 'foxyshop_customer_management_menu');
-//add_action('admin_init', 'set_foxyshop_settings');
 
 function foxyshop_customer_management_menu() {
 	add_submenu_page('edit.php?post_type=foxyshop_product', __('Customer Management'), __('Customers'), 'manage_options', 'foxyshop_customer_management', 'foxyshop_customer_management');
@@ -20,12 +19,18 @@ function foxyshop_customer_management() {
 		"customer_state_filter" => ""
 	);
 	$foxy_data = wp_parse_args(array("api_action" => "customer_list"), $foxy_data_defaults);
-	
+	$querystring = "?post_type=foxyshop_product&amp;page=foxyshop_customer_management&amp;foxyshop_search=1";
+
 	if (isset($_GET['foxyshop_search'])) {
 		$fields = array("customer_id_filter", "customer_email_filter", "customer_first_name_filter", "customer_last_name_filter", "customer_state_filter");
 		foreach ($fields as $field) {
-			if (isset($_GET[$field])) $foxy_data[$field] = $_GET[$field];
+			if (isset($_GET[$field])) {
+				$foxy_data[$field] = $_GET[$field];
+				$querystring .= "&amp;$field=" . urlencode($_GET[$field]);
+			}
 		}
+		$foxy_data['pagination_start'] = (isset($_GET['pagination_start']) ? $_GET['pagination_start'] : 0);
+		if ($foxyshop_settings['version'] != "0.7.0") $foxy_data['entries_per_page'] = 50;
 	}	
 
 
@@ -70,10 +75,11 @@ function foxyshop_customer_management() {
 
 	<?php
 	if (!isset($_GET['foxyshop_search'])) return;
-	$foxyResponse = foxyshop_get_foxycart_data($foxy_data);
-	$xml = simplexml_load_string($foxyResponse, NULL, LIBXML_NOCDATA);
-	//echo "<pre>" . $foxyResponse . "</pre>";
-	
+	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
+	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
+	//print_r($foxy_data);
+	//echo "<pre>" . substr($foxy_response,1,2000) . "</pre>";
+
 	if ($xml->result == "ERROR") {
 		echo '<h3>' . $xml->messages->message . '</h3>';
 		return;
@@ -108,7 +114,26 @@ function foxyshop_customer_management() {
 		echo '</tr>'."\n";
 	}
 
-	echo '</tbody></table></div>';
+	echo '</tbody></table>';
+	
+	//Pagination
+	$p = (int)($foxyshop_settings['version'] == "0.7.0" ? 50 : 50);
+	$total_records = (int)$xml->statistics->total_customers;
+	$filtered_total = (int)$xml->statistics->filtered_total;
+	$pagination_start = (int)$xml->statistics->pagination_start;
+	$pagination_end = (int)$xml->statistics->pagination_end;
+	if ($pagination_start > 1 || $filtered_total > $pagination_end) {
+		echo '<div id="admin_list_pagination">';
+		echo $xml->messages->message[1] . '<br />';
+		if ($pagination_start > 1) echo '<a href="edit.php' . $querystring . '&amp;pagination_start=' . ($pagination_start - $p - 1) . '">&laquo; Previous</a>';
+		if ($pagination_end < $filtered_total) {
+			if ($pagination_start > 1) echo ' | ';
+			echo '<a href="edit.php' . $querystring . '&amp;pagination_start=' . $pagination_end . '">Next &raquo;</a>';
+		}
+		echo '</div>';
+	}
+
+	echo '</div>';
 }
 
 

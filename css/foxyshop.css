@@ -265,6 +265,30 @@ input.foxyshop_quantity {
 .foxyshop_variations input, .foxyshop_variations select {
 	float: left;
 }
+.foxyshop_short_element_holder {
+	float: left;
+	margin: 3px 7px 10px 0;
+}
+.foxyshop_short_element_holder input {
+	float: none;
+	margin-left: 0;
+}
+.foxyshop_radio_wrapper label, .foxyshop_radio_wrapper input {
+	margin: 3px 7px 0 0;
+}
+label.foxyshop_no_width {
+	width: auto;
+}
+.foxyshop_radio_wrapper .foxyshop_short_element_holder {
+	margin: 0;
+}
+.foxyshop_radio_wrapper {
+	margin-bottom: 10px;
+}
+.foxyshop_radio_title {
+	clear: both;
+	font-weight: bold;
+}
 .foxyshop_uploaded_file img {
 	max-width: 400px;
 	max-height: 400px;
@@ -282,6 +306,9 @@ input.foxyshop_quantity {
 }
 .foxyshop_uploaded_file {
 	margin-bottom: 10px;
+}
+.shipto_name {
+	clear: both;
 }
 
 

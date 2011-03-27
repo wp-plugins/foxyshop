@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 2.0
+Version: 2.1
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -39,7 +39,24 @@ define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 if (!defined('FOXYSHOP_PRODUCTS_SLUG')) define('FOXYSHOP_PRODUCTS_SLUG','products');
 if (!defined('FOXYSHOP_PRODUCT_CATEGORY_SLUG')) define('FOXYSHOP_PRODUCT_CATEGORY_SLUG','product-cat');
-$foxyshop_settings_defaults = array('sort_key' => "menu_order", 'generate_feed' => "", "products_per_page" => -1, "hide_subcat_children" => "on", "generate_product_sitemap" => "", "manage_inventory_levels" => "", "inventory_url_key" => "", "inventory_alert_level" => 3, "ga_advanced" => "", "enable_sso" => "", "sso_account_required" => "");
+$foxyshop_settings_defaults = array(
+	'sort_key' => "menu_order",
+	'generate_feed' => "",
+	"products_per_page" => -1,
+	"hide_subcat_children" => "on",
+	"generate_product_sitemap" => "",
+	"manage_inventory_levels" => "",
+	"inventory_url_key" => "",
+	"inventory_alert_level" => 3,
+	"ga_advanced" => "",
+	"enable_sso" => "",
+	"sso_account_required" => "",
+	"browser_title_1" => "Products | " . get_bloginfo("name"),
+	"browser_title_2" => "Product Categories | " . get_bloginfo("name"),
+	"browser_title_3" => "%c | " . get_bloginfo("name"),
+	"browser_title_4" => "%p | " . get_bloginfo("name"),
+	"browser_title_5" => "Product Search | " . get_bloginfo("name")
+);
 $foxyshop_settings = wp_parse_args(unserialize(get_option("foxyshop_settings")), $foxyshop_settings_defaults);
 $foxyshop_category_sort = (get_option('foxyshop_category_sort') ? unserialize(get_option('foxyshop_category_sort')) : array());
 if ($foxyshop_settings['version'] == "0.70") $foxyshop_settings['version'] = "0.7.0";
@@ -76,7 +93,7 @@ include_once('customsorting.php');
 //Custom Category Sorting
 include_once('categorysorting.php');
 
-//FoxyCart Data Feeds
+//FoxyCart API Feeds
 if ($foxyshop_settings['domain']) {
 
 	//Orders
@@ -91,8 +108,15 @@ if ($foxyshop_settings['domain']) {
 	}
 }
 
+//Inventory Management
+if ($foxyshop_settings['manage_inventory_levels']) {
+	include_once('inventory.php');
+}
+
 //Generate Product Feed
-include_once('productfeed.php');
+if ($foxyshop_settings['generate_feed']) {
+	include_once('productfeed.php');
+}
 
 //Settings Page
 include_once('settings.php');

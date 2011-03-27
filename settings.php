@@ -18,7 +18,7 @@ function set_foxyshop_settings() {
 		}
 		
 		$new_settings = array();
-		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_custom_file_uploads","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "ga_advanced", "generate_feed", "hide_subcat_children", "generate_product_sitemap", "manage_inventory_levels", "inventory_url_key", "inventory_alert_level", "enable_sso", "sso_account_required");
+		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "ga_advanced", "generate_feed", "hide_subcat_children", "generate_product_sitemap", "manage_inventory_levels", "inventory_url_key", "inventory_alert_level", "enable_sso", "sso_account_required", "browser_title_1","browser_title_2","browser_title_3","browser_title_4","browser_title_5");
 		foreach ($fields as $field1) {
 			$val = (isset($_POST['foxyshop_'.$field1]) ? $_POST['foxyshop_'.$field1] : '');
 			$new_settings[$field1] = $val;
@@ -142,6 +142,35 @@ function foxyshop_options() {
 		</tbody>
 	</table>
 	<p><input type="submit" class="button-primary" value="<?php _e('Save Settings'); ?>" /></p>
+	<br /><br />
+
+
+	<table class="widefat">
+		<thead>
+			<tr>
+				<th><?php _e('Browser Page Titles'); ?></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>
+					<div class="small" style="margin-bottom: 8px;"><?php _e('This is what will be displayed in the title bar of your web browser.'); ?></div>
+
+					<label for="foxyshop_browser_title_1" style="width: 112px;"><?php _e('All Products'); ?>:</label> <input type="text" name="foxyshop_browser_title_1" value="<?php echo $foxyshop_settings['browser_title_1']; ?>" size="50" />
+					<div style="clear: both;"></div>
+					<label for="foxyshop_browser_title_2" style="width: 112px;"><?php _e('All Categories'); ?>:</label> <input type="text" name="foxyshop_browser_title_2" value="<?php echo $foxyshop_settings['browser_title_2']; ?>" size="50" />
+					<div style="clear: both;"></div>
+					<label for="foxyshop_browser_title_3" style="width: 112px;"><?php _e('Single Category'); ?>:</label> <input type="text" name="foxyshop_browser_title_3" value="<?php echo $foxyshop_settings['browser_title_3']; ?>" size="50" /> <small>Use %c for Category Name</small>
+					<div style="clear: both;"></div>
+					<label for="foxyshop_browser_title_4" style="width: 112px;"><?php _e('Single Product'); ?>:</label> <input type="text" name="foxyshop_browser_title_4" value="<?php echo $foxyshop_settings['browser_title_4']; ?>" size="50" /> <small>Use %p for Product Name</small>
+					<div style="clear: both;"></div>
+					<label for="foxyshop_browser_title_5" style="width: 112px;"><?php _e('Search Results'); ?>:</label> <input type="text" name="foxyshop_browser_title_5" value="<?php echo $foxyshop_settings['browser_title_5']; ?>" size="50" />
+					
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<p><input type="submit" class="button-primary" value="<?php _e('Save Settings'); ?>" /></p>
 	
 	<br /><br />
 
@@ -164,13 +193,6 @@ function foxyshop_options() {
 					<input type="checkbox" id="foxyshop_shipto" name="foxyshop_enable_ship_to"<?php checked($foxyshop_settings['enable_ship_to'], "on"); ?> />
 					<label for="foxyshop_shipto"><?php _e('Enable Multi-Ship'); ?></label>
 					<div class="small"><?php _e('Remember that FoxyCart charges an extra fee for this service. You must enable it on your FoxyCart account or it will not work.'); ?></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<input type="checkbox" id="foxyshop_enable_custom_file_uploads" name="foxyshop_enable_custom_file_uploads"<?php checked($foxyshop_settings['enable_custom_file_uploads'], "on"); ?> />
-					<label for="foxyshop_enable_custom_file_uploads"><?php _e('Enable Custom File Uploading'); ?></label>
-					<div class="small"><?php _e('Allow customers to upload custom files as a product variation.'); ?></div>
 				</td>
 			</tr>
 			<tr>
@@ -254,7 +276,7 @@ function foxyshop_options() {
 					<div style="padding: 5px 0 0 15px;">
 						<input type="checkbox" id="foxyshop_ga_advanced" name="foxyshop_ga_advanced"<?php checked($foxyshop_settings['ga_advanced'], "on"); ?> />
 						<label for="foxyshop_ga_advanced"><?php _e('Advanced Google Analytics Code'); ?></label>
-						<div class="small"><?php _e('Check this box if you are using the amazing FoxyCart Google Analytics Sync. We will put the appropriate code in your footer (but you\'ll still have to setup Google Analytics and your template. Read more about it:'); ?> <a href="http://wiki.foxycart.com/integration/googleanalytics_async" target="_blank">here</a> and see our handy code guide <a href="http://www.foxy-shop.com/wp-content/uploads/2011/02/FoxyCart_Google_Analytics.txt" target="_blank">here</a>.</div>
+						<div class="small"><?php _e('Check this box if you are using the amazing FoxyCart Google Analytics Sync. We will put the appropriate code in your footer (but you\'ll still have to setup Google Analytics and your template). Read more about it:'); ?> <a href="http://wiki.foxycart.com/integration/googleanalytics_async" target="_blank">here</a> and see our handy code guide <a href="http://www.foxy-shop.com/wp-content/uploads/2011/02/FoxyCart_Google_Analytics.txt" target="_blank">here</a>.</div>
 					</div>
 				</td>
 			</tr>
@@ -322,9 +344,13 @@ function set_foxyshop_defaults() {
 		"ship_categories" => "",
 		"max_variations" => 10,
 		"enable_ship_to" => "",
-		"enable_custom_file_uploads" => "",
 		"enable_subscriptions" => "",
 		"enable_bundled_products" => "",
+		"browser_title_1" => "Products | " . get_bloginfo("name"),
+		"browser_title_2" => "Product Categories | " . get_bloginfo("name"),
+		"browser_title_3" => "%c | " . get_bloginfo("name"),
+		"browser_title_4" => "%p | " . get_bloginfo("name"),
+		"browser_title_5" => "Product Search | " . get_bloginfo("name"),
 		"weight_type" => "english",
 		"default_weight" => "1 0",
 		"use_jquery" => "on",

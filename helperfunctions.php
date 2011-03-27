@@ -239,63 +239,27 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 		} elseif ($variationType == "upload") {
 			include('customupload.php');
 		
-		//Dropdown Box
-		} elseif ($variationType == "dropdown") {
-			$write .= '<label for="' . esc_attr($product['code']) . '_' . $i . '" class="' . $className . $dkeyclass . '"'. $dkey . '>' . esc_attr(str_replace('_',' ',$variationName)) . '</label>'."\n";
-
-			$write .= '<select name="' . esc_attr($variationName) . '" id="' . esc_attr($product['code']) . '_' . $i . '" class="' . $className . $dkeyclass . '"' . $dkey . '>'."\n";
-			$variations = preg_split("/(\r\n|\n)/", $variationValue);
-			foreach($variations as $val) {
-				if ($val != '') {
-					$strSelected = "";
-					$displaykey = "";
-					$imagekey = "";
-					$pricechange = "";
-					$displaypricechange = "";
-					$priceset = "";
-					$code = "";
-					if (strpos($val,"*") !== false) $strSelected = ' selected="selected"';
-
-					if (strpos($val,"{") !== false) {
-						$valtemp = explode("|",substr($val, strpos($val,"{")+1, strpos($val,"}") - (strpos($val,"{")+1)));
-						foreach ($valtemp as $valtemp1) {
-							if (substr($valtemp1,0,4) == "dkey") $displaykey = substr($valtemp1,5);
-							if (substr($valtemp1,0,2) == "p:") {
-								$priceset = substr($valtemp1,2);
-							} elseif (substr($valtemp1,0,1) == "p") {
-								$pricechange = substr($valtemp1,1);
-							}
-							if (substr($valtemp1,0,1) == "c") $code = substr($valtemp1,2);
-							if (substr($valtemp1,0,7) == "price:x") $pricechange = substr($valtemp1,7);
-							if (substr($valtemp1,0,4) == "ikey") $imagekey = substr($valtemp1,5);
-						}
-					}
-					if ($pricechange != "") {
-						if (substr($pricechange,0,1) == '-') {
-							$displaypricechange = foxyshop_currency($pricechange);
-							$pricechange = $pricechange * 100;
-						} else {
-							$displaypricechange = "+" . foxyshop_currency($pricechange);
-							$pricechange = "+" . ($pricechange * 100);
-						}
-					} elseif ($priceset != "") {
-						$displaypricechange = foxyshop_currency($priceset);
-						$priceset = $priceset * 100;
-					}
-					$val = str_replace("*","",$val);
-					$variationVal = $val;
-					if (strpos($variationVal,"{") !== false) $variationVal = substr($variationVal,0,strpos($variationVal,"{"));
-					$write .= '<option value="' . esc_attr($val) . foxyshop_get_verification($variationName,$val) . '"';
-					$write .= $strSelected;
-					$write .= ($priceset ? ' priceset="' . $priceset . '"' : '');
-					$write .= ($pricechange ? ' pricechange="' . $pricechange . '"' : '');
-					$write .= ($displaykey ? ' displaykey="' . $displaykey . '"' : '');
-					$write .= ($imagekey ? ' imagekey="' . $imagekey . '"' : '');
-					$write .= ($code && $foxyshop_settings['manage_inventory_levels'] ? " code=\"$code\"" : "");
-					$write .= '>' . $variationVal . ($showPriceVariations && $displaypricechange ? ' (' . $displaypricechange . ')' : '') . '</option>'."\n";
-				}
+		//Select, Checkbox, Radio
+		} elseif ($variationType == "dropdown" || $variationType == "checkbox" || $variationType == "radio") {
+			
+			//Select
+			if ($variationType == "dropdown") {
+				$write .= '<label for="' . esc_attr($product['code']) . '_' . $i . '" class="' . $className . $dkeyclass . '"'. $dkey . '>' . esc_attr(str_replace('_',' ',$variationName)) . '</label>'."\n";
+				$write .= '<select name="' . esc_attr($variationName) . '" id="' . esc_attr($product['code']) . '_' . $i . '" class="' . $className . $dkeyclass . '"' . $dkey . '>'."\n";
+				$write .= foxyshop_run_variations($variationValue, $variationName, $showPriceVariations, $variationType, $dkey, $dkeyclass, $i, $className);
+				$write .= "</select>\n";
+			
+			//Radio Buttons
+			} elseif ($variationType == "radio") {
+				$write .= '<div class="foxyshop_radio_wrapper">';
+				$write .= '<div class="foxyshop_radio_title">' . str_replace("_", " ", $variationName) . '</div>';
+				$write .= foxyshop_run_variations($variationValue, $variationName, $showPriceVariations, $variationType, $dkey, $dkeyclass, $i, $className);
+				$write .= '</div>';
+			
+			//Checkbox
+			} elseif ($variationType == "checkbox") {
+				$write .= foxyshop_run_variations($variationValue, $variationName, $showPriceVariations, $variationType, $dkey, $dkeyclass, $i, $className);
 			}
-			$write .= '</select>'."\n";
 			$write .= '<div class="clr"></div>'."\n";
 		}
 		$i++;
@@ -310,6 +274,92 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 		$write .= '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/variation.process.jquery.js"></script>'."\n";
 		echo '<div class="foxyshop_variations">' . $write . '</div>'."\n"."\n";
 	}
+
+}
+
+
+
+
+function foxyshop_run_variations($variationValue, $variationName, $showPriceVariations, $variationType, $dkey, $dkeyclass, $i, $className) {
+	global $product, $foxyshop_settings;
+
+	$write1 = "";
+	$variations = preg_split("/(\r\n|\n)/", $variationValue);
+	$k = 0;
+	foreach($variations as $val) {
+		if ($val == '') continue;
+		$option_attributes = "";
+		$option_show_price_change = "";
+		$displaykey = "";
+		$imagekey = "";
+		$pricechange = "";
+		$displaypricechange = "";
+		$priceset = "";
+		$code = "";
+		if (strpos($val,"*") !== false) {
+			$val = str_replace("*","",$val);
+			if ($variationType == "dropdown") {
+				$option_attributes .= ' selected="selected"';
+			} else {
+				$option_attributes .= ' checked="checked"';
+			}
+		}
+		if ($variationType == "radio" && $k == 0) $option_attributes .= ' checked="checked"';
+		$variation_display_name = $val;
+		if (strpos($val,"{") !== false) {
+			$variation_display_name = substr($variation_display_name,0,strpos($variation_display_name,"{"));
+			$valtemp = explode("|",substr($val, strpos($val,"{")+1, strpos($val,"}") - (strpos($val,"{")+1)));
+			foreach ($valtemp as $valtemp1) {
+				if (substr($valtemp1,0,4) == "dkey") $displaykey = substr($valtemp1,5);
+				if (substr($valtemp1,0,2) == "p:") {
+					$priceset = substr($valtemp1,2);
+				} elseif (substr($valtemp1,0,1) == "p") {
+					$pricechange = substr($valtemp1,1);
+				}
+				if (substr($valtemp1,0,1) == "c") $code = substr($valtemp1,2);
+				if (substr($valtemp1,0,7) == "price:x") $pricechange = substr($valtemp1,7);
+				if (substr($valtemp1,0,4) == "ikey") $imagekey = substr($valtemp1,5);
+			}
+
+			if ($pricechange != "") {
+				if (substr($pricechange,0,1) == '-') {
+					$displaypricechange = foxyshop_currency($pricechange);
+					$pricechange = $pricechange * 100;
+				} else {
+					$displaypricechange = "+" . foxyshop_currency($pricechange);
+					$pricechange = "+" . ($pricechange * 100);
+				}
+			} elseif ($priceset != "") {
+				$displaypricechange = foxyshop_currency($priceset);
+				$priceset = $priceset * 100;
+			}
+			if ($showPriceVariations && $displaypricechange) $option_show_price_change = ' (' . $displaypricechange . ')';
+
+			if ($priceset) $option_attributes .= ' priceset="' . $priceset . '"';
+			if ($pricechange) $option_attributes .= ' pricechange="' . $pricechange . '"';
+			if ($displaykey) $option_attributes .= ' displaykey="' . $displaykey . '"';
+			if ($imagekey) $option_attributes .= ' imagekey="' . $imagekey . '"';
+			if ($code && $foxyshop_settings['manage_inventory_levels']) $option_attributes .= ' code="' . htmlspecialchars($code) . '"';
+		}
+
+
+		//Write the Line
+		if ($variationType == "dropdown") {
+			$write1 .= '<option value="' . esc_attr($val) . foxyshop_get_verification($variationName,$val) . '"' . $option_attributes;
+			$write1 .= '>' . $variation_display_name . $option_show_price_change . '</option>'."\n";
+		} elseif ($variationType == "checkbox") {
+			$write1 .= '<div class="foxyshop_short_element_holder"><input type="checkbox" name="' . esc_attr($variationName) . '" value="' . esc_attr($val) . foxyshop_get_verification($variationName,$val) . '" id="' . esc_attr($product['code']) . '_' . $i . '" class="' . $className . $dkeyclass . '"' . $dkey . $option_attributes . '></div>'."\n";
+			$write1 .= '<label for="' . esc_attr($product['code']) . '_' . $i . '" class="' . $className . $dkeyclass . ' foxyshop_no_width foxyshop_radio_margin"'. $dkey . '>' . $variation_display_name . $option_show_price_change . '</label>'."\n";
+
+		} elseif ($variationType == "radio") {
+			$write1 .= '<div class="foxyshop_short_element_holder"><input type="radio" name="' . esc_attr($variationName) . '" value="' . esc_attr($val) . foxyshop_get_verification($variationName,$val) . '" id="' . esc_attr($product['code']) . '_' . $i . '_' . $k . '" class="' . $className . $dkeyclass . '"' . $dkey . $option_attributes . '></div>'."\n";
+			$write1 .= '<label for="' . esc_attr($product['code']) . '_' . $i . '_' . $k . '" class="' . $className . $dkeyclass . ' foxyshop_no_width"'. $dkey . '>' . $variation_display_name . $option_show_price_change . '</label>'."\n";
+			$write1 .= '<div class="clr"></div>';
+
+		}
+		$k++;
+	}
+	return $write1;
 }
 
 
@@ -842,7 +892,12 @@ function foxyshop_get_pagination($range = 4) {
 }
 
 function foxyshop_currency($input, $currencysymbol = true) {
-	$currency = utf8_encode(money_format("%" . ($currencysymbol ? "" : "!") . ".2n", (double)$input));
+	if (function_exists('money_format')) {
+		$currency = utf8_encode(money_format("%" . ($currencysymbol ? "" : "!") . ".2n", (double)$input));
+	} else {
+		//Windows: no internationalization support
+		$currency = utf8_encode('$'.number_format((double)$input,2,".",","));
+	}
 	return $currency;
 }
 ?>
