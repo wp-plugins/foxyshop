@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 2.1
+Stable tag: 2.1.1
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -108,12 +108,17 @@ Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
 
+= 2.1.1 =
+* Uploaded files are now displayed as a link in the order admin.
+* IMPORTANT: Fixed a bug in the product page which was not saving fil upload variation types (only used if you are letting customers upload files with a variation).
+
+
 = 2.1 =
 * Checkboxes and Radio Buttons now available as product variation options.
 * Standardized browser bar title string. Title can now be customized on settings page. UPGRADE NOTE: Please check your page titles and make sure they do not need to be adjusted.
 * Inventory level manager added so you can now view inventory levels for all products on one page.
 * The system now checks for a datafeed endpoint file in your theme folder before using the default. This allows you to customize the datafeed endpoint for your own nefarious purposes.
-* Added paging for API returns on the orders, subscriptions, and customers admin pages. Paging sets at 50 for 0.7.0 and 300 for 0.7.1
+* Added paging for API returns on the orders, subscriptions, and customers admin pages. Paging sets at 50.
 * Compatibility issues resolved with Google product feed. Feed also now saves your txt file automatically (no need to copy and paste).
 * Security fix: Only published products will now appear on the site and feeds. Previously products would appear regardless of their status.
 * Product image bar throws a warning if the upload directory is not writeable. Helpful for site setup.

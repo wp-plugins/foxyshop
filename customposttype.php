@@ -669,7 +669,7 @@ function foxyshop_product_variations_setup() {
 	global $post, $foxyshop_settings, $wp_version;
 	
 	$showNew = 0;
-	$var_type_array = array('dropdown' => "Dropdown List", 'radio' => "Radio Buttons", 'checkbox' => "Checkbox", 'text' => "Single Line of Text", 'textarea' => "Multiple Lines of Text", 'customupload' => "Custom File Upload");
+	$var_type_array = array('dropdown' => "Dropdown List", 'radio' => "Radio Buttons", 'checkbox' => "Checkbox", 'text' => "Single Line of Text", 'textarea' => "Multiple Lines of Text", 'upload' => "Custom File Upload");
 	
 	for ($i=1;$i<=$foxyshop_settings['max_variations'];$i++) {
 		$_variationName = get_post_meta($post->ID,'_variation_name_'.$i,TRUE);
@@ -750,7 +750,7 @@ function foxyshop_product_variations_setup() {
 			</div>
 			
 			<!-- Custom File Upload -->
-			<div class="foxyshop_field_control customupload variationoptions">
+			<div class="foxyshop_field_control upload variationoptions">
 				<label><?php _e('Instructions'); ?></label>
 				<textarea name="_variation_uploadinstructions_<?php echo $i; ?>" style="width: 500px; height: 40px;"><?php echo $_variationValue; ?></textarea>
 			</div>

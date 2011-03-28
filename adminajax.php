@@ -238,8 +238,13 @@ function foxyshop_display_ajax() {
 				}
 				foreach($transaction_details->transaction_detail_options->transaction_detail_option as $transaction_detail_option) {
 					echo '<li>';
-					echo $transaction_detail_option->product_option_name . ': ';
-					echo $transaction_detail_option->product_option_value;
+					echo str_replace("_", " ", $transaction_detail_option->product_option_name) . ': ';
+					if (substr($transaction_detail_option->product_option_value,0,5) == "file-") {
+						$upload_dir = wp_upload_dir();
+						echo '<a href="' . $upload_dir['baseurl'] . '/customuploads/' . $transaction_detail_option->product_option_value . '" target="_blank">' . $transaction_detail_option->product_option_value . '</a>';
+					} else {
+						echo $transaction_detail_option->product_option_value;
+					}
 					if ((string)$transaction_detail_option->price_mod != '0.000') echo ' (' . (strpos("-",$transaction_detail_option->price_mod) >= 0 ? '' : '+') . foxyshop_currency((double)$transaction_detail_option->price_mod) . ')';
 					echo '</li>';
 				}
