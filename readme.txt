@@ -110,7 +110,7 @@ Author URI: http://www.foxy-shop.com/<br />
 
 = 2.1.1 =
 * Uploaded files are now displayed as a link in the order admin.
-* IMPORTANT: Fixed a bug in the product page which was not saving fil upload variation types (only used if you are letting customers upload files with a variation).
+* IMPORTANT: Fixed a bug in the product page which was not saving file upload variation types (only used if you are letting customers upload files with a variation).
 
 
 = 2.1 =
