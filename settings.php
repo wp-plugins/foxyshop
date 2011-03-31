@@ -28,7 +28,7 @@ function set_foxyshop_settings() {
 		$new_settings["domain"] = str_replace("http://","",$_POST['foxyshop_domain']);
 		$new_settings["api_key"] = $foxyshop_settings['api_key'];
 		$new_settings["max_variations"] = (int)$_POST['foxyshop_max_variations'];
-		$new_settings["default_weight"] = (int)$_POST['foxyshop_default_weight1'] . ' ' . (int)$_POST['foxyshop_default_weight2'];
+		$new_settings["default_weight"] = (int)$_POST['foxyshop_default_weight1'] . ' ' . (double)$_POST['foxyshop_default_weight2'];
 		$new_settings["products_per_page"] = ((int)$_POST['foxyshop_products_per_page'] == 0 ? -1 : (int)$_POST['foxyshop_products_per_page']);
 
 		update_option("foxyshop_settings", serialize($new_settings));
@@ -258,11 +258,11 @@ function foxyshop_options() {
 					<?php
 					$arrweight = explode(" ",$foxyshop_settings['default_weight']);
 					$weight1 = (int)$arrweight[0];
-					$weight2 = (count($arrweight) > 1 ? (int)$arrweight[1] : 0);
+					$weight2 = (count($arrweight) > 1 ? (double)$arrweight[1] : "0.0");
 					if ($weight1 == 0 && $weight2 == 0) $weight1 = 1;
 					?>
-					<input type="text" id="foxyshop_default_weight1" name="foxyshop_default_weight1" value="<?php echo $weight1; ?>" style="width: 25px;" /><small id="weight_title1" style="width: 28px;">lbs</small>
-					<input type="text" id="foxyshop_default_weight2" name="foxyshop_default_weight2" value="<?php echo $weight2; ?>" style="width: 25px;" /><small id="weight_title2">oz</small>
+					<input type="text" id="foxyshop_default_weight1" name="foxyshop_default_weight1" value="<?php echo $weight1; ?>" style="width: 46px;" /><small id="weight_title1" style="width: 28px;">lbs</small>
+					<input type="text" id="foxyshop_default_weight2" name="foxyshop_default_weight2" value="<?php echo $weight2; ?>" style="width: 46px;" /><small id="weight_title2">oz</small>
 				</td>
 			</tr>
 			<tr>
