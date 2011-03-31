@@ -82,7 +82,7 @@ function foxyshop_theme_redirect() {
 		die();
 
 	//FoxyCart Datafeed Endpoint
-	} elseif ($currentPageName == 'foxycart-datafeed-'.$foxyshop_settings['inventory_url_key']) {
+	} elseif ($currentPageName == 'foxycart-datafeed-'.$foxyshop_settings['datafeed_url_key']) {
 		$templatefilename = 'foxyshop-datafeed-endpoint.php';
 		if (file_exists(TEMPLATEPATH . '/' . $templatefilename)) {
 			$return_template = TEMPLATEPATH . '/' . $templatefilename;
@@ -93,7 +93,7 @@ function foxyshop_theme_redirect() {
 		die();
 
 	//FoxyCart SSO Endpoint
-	} elseif ($currentPageName == 'foxycart-sso-'.$foxyshop_settings['inventory_url_key']) {
+	} elseif ($currentPageName == 'foxycart-sso-'.$foxyshop_settings['datafeed_url_key']) {
 		$templatefilename = 'ssoendpoint.php';
 		$return_template = FOXYSHOP_PATH . '/' . $templatefilename;
 		include($return_template);

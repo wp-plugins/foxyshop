@@ -200,13 +200,13 @@ function foxyshop_product_details_setup() {
 	$_quantity_max = get_post_meta($post->ID,'_quantity_max',TRUE);
 
 	$defaultweight = explode(" ",$foxyshop_settings['default_weight']);
-	$weight1 = (int)$defaultweight[0];
-	$weight2 = (count($defaultweight) > 1 ? (int)$defaultweight[1] : 0);
-	$_weight = (get_post_meta($post->ID,'_weight',TRUE) ? explode(" ", get_post_meta($post->ID,'_weight',TRUE)) : array("0","0"));
+	$defaultweight1 = (int)$defaultweight[0];
+	$defaultweight2 = (count($defaultweight) > 1 ? number_format($defaultweight[1],1) : "0.0");
+	$_weight = (get_post_meta($post->ID,'_weight',TRUE) ? explode(" ", get_post_meta($post->ID,'_weight',TRUE)) : array("0","0.0"));
 	
-	if ((int)$_weight[0] == 0 && (int)$_weight[1] == 0) {
-		$_weight[0] = $weight1;
-		$_weight[1] = $weight2;
+	if ((int)$_weight[0] == 0 && (double)$_weight[1] == 0) {
+		$_weight[0] = $defaultweight1;
+		$_weight[1] = $defaultweight2;
 	}
 	
 	$_hide_product = get_post_meta($post->ID,'_hide_product',TRUE);
@@ -222,16 +222,16 @@ function foxyshop_product_details_setup() {
 	</div>
 	<div class="foxyshop_field_control">
 		<label><?php _e('Weight'); ?></label>
-		<input type="text" name="_weight1" id="_weight1" value="<?php echo (int)$_weight[0]; ?>" style="width: 40px; float: left;" onblur="foxyshop_check_number_single(this);" />
+		<input type="text" name="_weight1" id="_weight1" value="<?php echo (int)$_weight[0]; ?>" style="width: 46px; float: left;" />
 		<span style="float: left; margin: 9px 0 0 5px; width: 34px;"><?php echo ($foxyshop_settings['weight_type'] == "metric" ? 'kg' : 'lbs'); ?></span>
-		<input type="text" name="_weight2" value="<?php echo (int)$_weight[1]; ?>" style="width: 40px; float: left;" onblur="check_oz(this);" />
+		<input type="text" name="_weight2" id="_weight2" value="<?php echo number_format($_weight[1],1); ?>" style="width: 46px; float: left;" />
 		<span style="float: left; margin: 9px 0 0 5px;"><?php echo ($foxyshop_settings['weight_type'] == "metric" ? 'gm' : 'oz'); ?></span>
 	</div>
 	<div class="foxyshop_field_control">
 		<label><?php _e('Qty Settings'); ?></label>
-		<input type="text" name="_quantity_min" id="_weight1" value="<?php echo $_quantity_min; ?>" style="width: 40px; float: left;" onblur="foxyshop_check_number_single(this);" />
+		<input type="text" name="_quantity_min" id="_quantity_min" value="<?php echo $_quantity_min; ?>" style="width: 46px; float: left;" onblur="foxyshop_check_number_single(this);" />
 		<span style="float: left; margin: 9px 0 0 5px; width: 34px;"><?php _e('min'); ?></span>
-		<input type="text" name="_quantity_max" value="<?php echo $_quantity_max; ?>" style="width: 40px; float: left;" onblur="foxyshop_check_number_single(this);" />
+		<input type="text" name="_quantity_max" id="_quantity_max" value="<?php echo $_quantity_max; ?>" style="width: 46px; float: left;" onblur="foxyshop_check_number_single(this);" />
 		<span style="float: left; margin: 9px 0 0 5px;"><?php _e('max'); ?></span>
 	</div>
 	<?php if ($foxyshop_settings['ship_categories']) { ?>
@@ -294,7 +294,7 @@ function foxyshop_product_pricing_setup() {
 	<h4><?php _e('Sale'); ?></h4>
 	<div class="foxyshop_field_control">
 		<label><?php _e('Sale Price'); ?></label>
-		<input type="text" name="_saleprice" value="<?php echo $_saleprice; ?>" onblur="foxyshop_check_number(this);" style="width: 87px; float: left;" />
+		<input type="text" name="_saleprice" id="_saleprice" value="<?php echo $_saleprice; ?>" style="width: 87px; float: left;" />
 		<span style="float: left; margin: 9px 0 0 5px;">0.00</span>
 	</div>
 	<div class="foxyshop_field_control">
@@ -691,7 +691,7 @@ function foxyshop_product_variations_setup() {
 			<!-- Variation Header -->
 			<div class="foxyshop_field_control">
 				<label><?php _e('Variation Name'); ?></label>
-				<input type="text" name="_variation_name_<?php echo $i; ?>" id="_variation_name_<?php echo $i; ?>" value="<?php echo esc_attr($_variationName); ?>" style="float: left; width: 200px;" />
+				<input type="text" name="_variation_name_<?php echo $i; ?>" class="variation_name" id="_variation_name_<?php echo $i; ?>" value="<?php echo esc_attr($_variationName); ?>" style="float: left; width: 200px;" />
 
 				<label for="_variation_type_<?php echo $i; ?>" style="margin-left: 40px; width: auto;"><?php _e('Variation Type'); ?>:</label> 
 				<select name="_variation_type_<?php echo $i; ?>" id="_variation_type_<?php echo $i; ?>" class="variationtype">
@@ -778,7 +778,15 @@ jQuery(document).ready(function($){
 		$("#variation" + variationID).slideUp();
 		return false;
 	});
-	
+
+	$("input.variation_name").keypress(function(e) {
+		if (e.which !== 0 && (e.charCode == 46 || e.charCode == 34)) {
+			alert("Sorry! You can't use this character in a variation name: " + String.fromCharCode(e.keyCode|e.charCode));
+			return false;
+		}
+	});
+
+
 	//Startup Setup
 	$('.product_variation').each(function() {
 		thisID = $(this).attr("rel");
@@ -811,20 +819,54 @@ jQuery(document).ready(function($){
 
 
 	
+	$("#_weight1").blur(function() {
+		var weight = $(this).val();
+		if (weight.indexOf(".") >= 0) {
+			secondstring = parseFloat(weight.substr(weight.indexOf("."))) * 100;
+			result = secondstring * <?php echo ($foxyshop_settings['weight_type'] == 'metric' ? 1000 : 16); ?>/100;
+			result = result.toFixed(1)
+			$("#_weight2").val(result);
+			//alert(secondstring + ' ' + result + ' ' + $("#_weight2").val());
+			foxyshop_check_number_single(this);
+		}
+		foxyshop_check_number_single(this);
+	});
+	$("#_weight2").blur(function() {
+		var weight = parseFloat($(this).val()).toFixed(1);
+		if (weight == 'NaN') weight = "0.0";
+		if (weight >= <?php echo ($foxyshop_settings['weight_type'] == 'metric' ? 1000 : 16); ?>) {
+			$("#_weight1").val(parseFloat(jQuery("#_weight1").val())+1);
+			$("#_weight2").val("0.0");
+		} else {
+			$(this).val(weight);
+		}
+	});
+	
+	$("#_saleprice").blur(function() {
+		saleprice = foxyshop_format_number($(this).val());
+		if (saleprice == "0.00") {
+			$(this).val("");
+		} else {
+			$(this).val(saleprice);
+		}
+	});
+	
+	$("#_quantity_min, #_quantity_max").blur(function() {
+		tempval = foxyshop_format_number_single($(this).val());
+		if (tempval == "0") {
+			$(this).val("");
+		} else {
+			$(this).val(tempval);
+		}
+		
+	});
+	
 });
 function foxyshop_format_number_single(num) { num = num.toString().replace(/\$|\,/g,''); if(isNaN(num)) num = "0"; sign = (num == (num = Math.abs(num))); num = Math.floor(num*100+0.50000000001); cents = num%100; num = Math.floor(num/100).toString(); if(cents<10) cents = "0" + cents; for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++) num = num.substring(0,num.length-(4*i+3))+','+ num.substring(num.length-(4*i+3)); return (((sign)?'':'-') + num); }
 function foxyshop_format_number(num) { num = num.toString().replace(/\$|\,/g,''); if(isNaN(num)) num = "0"; sign = (num == (num = Math.abs(num))); num = Math.floor(num*100+0.50000000001); cents = num%100; num = Math.floor(num/100).toString(); if(cents<10) cents = "0" + cents; for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++) num = num.substring(0,num.length-(4*i+3))+','+ num.substring(num.length-(4*i+3)); return (((sign)?'':'-') + num + '.' + cents); }
 function foxyshop_check_number_single(el) { el.value = foxyshop_format_number_single(el.value); }
 function foxyshop_check_number(el) { el.value = foxyshop_format_number(el.value); }
-function check_oz(el) {
-	oz = foxyshop_format_number_single(el.value);
-	if (oz >= <?php echo ($foxyshop_settings['weight_type'] == 'metric' ? 1000 : 16); ?>) {
-		el.value = 0;
-		jQuery("#_weight1").val(parseFloat(jQuery("#_weight1").val())+1);
-	} else {
-		el.value = oz;
-	}
-}
+
 </script>
 
 
@@ -838,17 +880,23 @@ function foxyshop_product_meta_save($post_id) {
 	if (!wp_verify_nonce((isset($_POST['products_meta_noncename']) ? $_POST['products_meta_noncename'] : ""),__FILE__)) return $post_id;
 	if (!current_user_can('edit_'.($_POST['post_type'] == 'page' ? 'page' : 'post'), $post_id)) return $post_id;
 	
-	$_weight = (int)$_POST['_weight1'] . ' ' . (int)$_POST['_weight2'];
+	$_weight = (int)$_POST['_weight1'] . ' ' . (double)$_POST['_weight2'];
 	if ($_weight == ' ') $_weight = $foxyshop_settings['default_weight']; //Set Default Weight
+
+	$_quantity_min = (int)$_POST['_quantity_min'];
+	$_quantity_max = (int)$_POST['_quantity_max'];
+	if ($_quantity_min > $_quantity_max) $_quantity_min = "";
+	if ($_quantity_min == 0) $_quantity_min = "";
+	if ($_quantity_max == 0) $_quantity_max = "";
 
 	//Save Product Detail Data
 	foxyshop_save_meta_data('_weight',$_weight);
-	if (isset($_POST['_price'])) foxyshop_save_meta_data('_price',number_format(str_replace(",","",$_POST['_price']),2,".",""));
-	if (isset($_POST['_code'])) foxyshop_save_meta_data('_code',$_POST['_code']);
+	foxyshop_save_meta_data('_price',number_format(str_replace(",","",$_POST['_price']),2,".",""));
+	foxyshop_save_meta_data('_code',$_POST['_code']);
 	if (isset($_POST['_category'])) foxyshop_save_meta_data('_category',$_POST['_category']);
-	if (isset($_POST['_quantity_min'])) foxyshop_save_meta_data('_quantity_min',(int)$_POST['_quantity_min']);
-	if (isset($_POST['_quantity_max'])) foxyshop_save_meta_data('_quantity_max',(int)$_POST['_quantity_max']);
-	if (isset($_POST['_hide_product'])) foxyshop_save_meta_data('_hide_product',$_POST['_hide_product']);
+	foxyshop_save_meta_data('_quantity_min',$_quantity_min);
+	foxyshop_save_meta_data('_quantity_max',$_quantity_max);
+	foxyshop_save_meta_data('_hide_product',$_POST['_hide_product']);
 
 	//Save Sale Pricing Data
 	foxyshop_save_meta_data('_saleprice',number_format(str_replace(",","",$_POST['_saleprice']),2,".",""));
@@ -920,7 +968,7 @@ function foxyshop_product_meta_save($post_id) {
 	//Save Product Variations
 	$currentID = 0;
 	for ($i=1;$i<=$foxyshop_settings['max_variations'];$i++) {
-		$_variationName = $_POST['_variation_name_'.$i];
+		$_variationName = trim(str_replace(".","",str_replace('"','',$_POST['_variation_name_'.$i])));
 		$_variationType = $_POST['_variation_type_'.$i];
 		$_variationDisplayKey = $_POST['_variation_dkey_'.$i];
 		$writeID = $i;

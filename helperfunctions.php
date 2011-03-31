@@ -45,21 +45,17 @@ function foxyshop_setup_product($thepost = false) {
 
 	//Convert Weight
 	$weight = explode(" ", get_post_meta($thepost->ID,'_weight',TRUE));
-	$lbs = (double)$weight[0];
-	$oz = (double)$weight[1];
-	if ($lbs == 0 && $oz == 0) {
+	$weight1 = (int)$weight[0];
+	$weight2 = (double)$weight[1];
+	if ($weight1 == 0 && $weight2 == 0) {
 		$defaultweight = explode(" ",$foxyshop_settings['default_weight']);
-		$lbs = (double)$defaultweight[0];
-		$oz = (count($defaultweight) > 1 ? (double)$defaultweight[1] : 0);
+		$weight1 = (int)$defaultweight[0];
+		$weight2 = (count($defaultweight) > 1 ? (double)$defaultweight[1] : 0);
 	}
 	
-	if ($foxyshop_settings['weight_type'] == 'metric') {
-		if ($oz > 0) $oz = number_format(($oz / 1000), 4);
-	} else {
-		if ($oz > 0) $oz = number_format(($oz / 16), 4);
-	}
-	$oz = ((strpos($oz, '.') !== false) ? end(explode('.', $oz)) : $oz);
-	$product['weight'] = $lbs . "." . $oz;
+	if ($weight2 > 0) $weight2 = number_format($weight2 / ($foxyshop_settings['weight_type'] == 'metric' ? 1000 : 16), 3);
+	$weight2 = ((strpos($weight2, '.') !== false) ? end(explode('.', $weight2)) : $weight2);
+	$product['weight'] = $weight1 . "." . $weight2;
 
 	
 	//Variations

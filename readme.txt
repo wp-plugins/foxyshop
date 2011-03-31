@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 2.1.1
+Stable tag: 2.2
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -75,15 +75,22 @@ FoxyShop works very nicely with the [CSV Importer](http://wordpress.org/extend/p
 The [Duplicate Posts](http://wordpress.org/extend/plugins/duplicate-post/) plugin works great for letting you quickly copy products.
 
 = Can I change the slug from 'products' to something else? =
-Sure! Starting in version 2.0 you can easily do this. Just put this code in your wp-config.php file:
+Sure! Just put this code in your wp-config.php file:
 
-define('FOXYSHOP_PRODUCTS_SLUG','yourproductslug');
-define('FOXYSHOP_PRODUCT_CATEGORY_SLUG','yourproductcategoryslug');
+* define('FOXYSHOP_PRODUCTS_SLUG','yourproductslug');
+* define('FOXYSHOP_PRODUCT_CATEGORY_SLUG','yourproductcategoryslug');
 
 After making this change, be sure that you flush your permalink structure to enable the new settings. To do this, go to Settings / Permalinks and click "Save Changes".
 
 = Can I use a WordPress Framework with FoxyShop? =
 FoxyShop uses get_header() and some WordPress frameworks (Thesis among them) bypass these default WordPress features. So without customization, FoxyShop will show up unstyled for some frameworks. A workaround is to put a static version of your site in header.php and footer.php.
+
+= Do I have to use the FoxyShop datafeed? =
+If you have more than one integration that needs to use the datafeed, there's a feature in the datafeed template file which will let you load in as many third-party datafeeds as you want. The FoxyData will be fed to each of these each time FoxyCart sends data to your endpoint. If there's an error, you'll get an email with the exact error details.
+
+= Is QuickBooks integration available? =
+Yes! Check out the [ConsoliBYTE's](https://secure.consolibyte.com/saas/signup/?stage=home/focus&application=foxycart) QuickBooks connector service. For $10/mo they will feed your content directly into QuickBooks.
+
 
 
 == Screenshots ==
@@ -107,6 +114,12 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 2.2 =
+* Secondary weight (oz/gm) can now be set with higher precision up to .1 oz or gm. (1 lb, 6.1 oz or 0.1 oz for very light items in bulk). You can also type in 1.8 in the lb box and the oz will automatically be calculated.
+* Additional third party datafeeds can now be set in the endpoint template. This allows you to use more than one integration at a time.
+* API keys can now be reset if you need a fresh one. Click the link at the bottom of the settings page. 
+* Added warning and prohibition for using quotes (") and periods (.) in variation names as these will throw FoxyCart validation errors. You can use a curly quote if you like, but periods are right out.
 
 = 2.1.1 =
 * Uploaded files are now displayed as a link in the order admin.

@@ -4,7 +4,7 @@ if (!$writeUploadInclude) {
 	echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/uploadify/uploadify.css" type="text/css" media="screen" />'."\n";
 	echo '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/uploadify/jquery.uploadify.v2.1.4.min.js"></script>'."\n";
 	echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>'."\n";
-	$imagefilename = substr(MD5(rand(1000, 99999)."{img}" . date("H:i:s")),1,10);
+	$imagefilename = "file-" . substr(MD5(rand(1000, 99999)."{img}" . date("H:i:s")),1,8);
 	$upload_dir = wp_upload_dir();
 	?>
 	<script type="text/javascript">

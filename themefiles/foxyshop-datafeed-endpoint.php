@@ -5,11 +5,68 @@ $foxyshop_settings = unserialize(get_option("foxyshop_settings"));
 
 //Get Post From FoxyCart
 if (isset($_POST["FoxyData"])) {
-    	$FoxyData_encrypted = urldecode($_POST["FoxyData"]);
+    	$FoxyData_received = $_POST["FoxyData"];
+    	$FoxyData_encrypted = urldecode($FoxyData_received);
 	$FoxyData_decrypted = rc4crypt::decrypt($foxyshop_settings['api_key'],$FoxyData_encrypted);
 } else {
 	die('No Content Received');
 }
+
+
+/*
+-------------------------------------------
+SET THIRD-PARTY DATAFEEDS HERE
+-------------------------------------------
+If you need to use more than one datafeed with FoxyCart (let's say you have different types of integrations), you can
+use this template to resend the FoxyData to your other integrations.
+
+Caution: If you are using more than one integration and one of them fails, the entire process will fail and that failure will
+be sent to FoxyCart. They'll then try to submit the datafeed again. So if your integrations aren't checking to see if
+data has already been written in, they could be processing data twice.
+
+If you have more than one additional datafeed and one is more unreliable than another, put the most unreliable one first so that
+any failures will result in a full retry from FoxyCart.
+
+This template will send the WordPress admin an email if any datafeeds fail.
+*/
+
+$third_party_feeds = array(
+	''
+);
+foreach($third_party_feeds as $feedurl) {
+	if ($feedurl) {
+		//Initialize cURL
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $feedurl);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, array("FoxyData" => urlencode($FoxyData_encrypted)));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+		// If you get SSL errors, you can uncomment the following, or ask your host to add the appropriate CA bundle
+		// curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		$response = trim(curl_exec($ch));
+
+		//If Error, Send Email and Kill Process
+		if ($response == false || $response != 'foxy') {
+			$error_msg = ($response == false ? "CURL Error: " . curl_error($ch) : $response);
+			$to_email = get_bloginfo('admin_email');
+			$message = "A FoxyCart datafeed error was encountered at " . date("F j, Y, g:i a") . ".\n\n";
+			$message .= "The feed that failed was $feedurl.\n\n";
+			$message .= "The error is listed below:\n\n";
+			$message .= $error_msg;
+			$headers = 'From: ' . get_bloginfo('name') . ' Server Admin <' . $to_email . '>' . "\r\n";
+			wp_mail($to_email, 'Data Feed Error on ' . get_bloginfo('name'), $message, $headers);
+			die($error_msg);
+		}
+		curl_close($ch);
+	}
+}
+/*
+-------------------------------------------
+END THIRD-PARTY DATAFEEDS
+-------------------------------------------
+*/
+
 
 //Import Response and Parse with SimpleXML
 $xml = simplexml_load_string($FoxyData_decrypted, NULL, LIBXML_NOCDATA);
