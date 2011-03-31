@@ -89,7 +89,7 @@ FoxyShop uses get_header() and some WordPress frameworks (Thesis among them) byp
 If you have more than one integration that needs to use the datafeed, there's a feature in the datafeed template file which will let you load in as many third-party datafeeds as you want. The FoxyData will be fed to each of these each time FoxyCart sends data to your endpoint. If there's an error, you'll get an email with the exact error details.
 
 = Is QuickBooks integration available? =
-Yes! Check out the [ConsoliBYTE's](https://secure.consolibyte.com/saas/signup/?stage=home/focus&application=foxycart) QuickBooks connector service. For $10/mo they will feed your content directly into QuickBooks.
+Yes! Check out the [ConsoliBYTE's](https://secure.consolibyte.com/saas/signup/?stage=home/focus&application=foxycart) QuickBooks connector service. For $10/mo they will feed your orders directly into QuickBooks.
 
 
 
@@ -120,6 +120,7 @@ Author URI: http://www.foxy-shop.com/<br />
 * Additional third party datafeeds can now be set in the endpoint template. This allows you to use more than one integration at a time.
 * API keys can now be reset if you need a fresh one. Click the link at the bottom of the settings page. 
 * Added warning and prohibition for using quotes (") and periods (.) in variation names as these will throw FoxyCart validation errors. You can use a curly quote if you like, but periods are right out.
+* See [Release Notes](http://www.foxy-shop.com/2011/03/version-2-2-weight-precision/) for more details
 
 = 2.1.1 =
 * Uploaded files are now displayed as a link in the order admin.
