@@ -10,7 +10,7 @@ FoxyShop is a full integration for FoxyCart and WordPress, providing a robust sh
 
 == Description ==
 
-FoxyShop is a complete shopping cart solution for WordPress. This plugin connects to FoxyCart's excellent shopping cart service and will allow you to manage your inventory from a WordPress backend. FoxyShop is designed for complete flexibility so that WordPress developers can use the plugin's helpful library and sample code to quickly configure and implement almost any type of ecommerce solution. 
+FoxyShop is a complete shopping cart solution for WordPress. This plugin connects to FoxyCart's excellent shopping cart service and will allow you to manage your inventory from a WordPress backend. FoxyShop is designed for complete flexibility so that WordPress developers can use the plugin's helpful library and sample code to quickly configure and implement almost any type of ecommerce solution.
 
 Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for full documentation and instructions.
 
@@ -116,7 +116,7 @@ Author URI: http://www.foxy-shop.com/<br />
 == Changelog ==
 
 = 2.2.1 =
-* Added option to make variation fields required. Words on text fields and image upload. Thanks to Laura for the suggestion.
+* Added option to make variation fields required. Works on text fields and image upload. Thanks to Laura for the suggestion.
 
 = 2.2 =
 * Secondary weight (oz/gm) can now be set with higher precision up to .1 oz or gm. (1 lb, 6.1 oz or 0.1 oz for very light items in bulk). You can also type in 1.8 in the lb box and the oz will automatically be calculated.
