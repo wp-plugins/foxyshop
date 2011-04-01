@@ -25,11 +25,14 @@ if (!$writeUploadInclude) {
 						if (response == "unsupported file type") {
 							$("#uploadedFile_" + variationID).html('<span style="color: red;"><?php _e('Invalid File Type'); ?></span>').show();
 						} else {
-							$("#FileNameHolder_"+variationID).val(response);
-							if (response.indexOf("jpg") >= 0 || response.indexOf("gif") >= 0 || response.indexOf("png") >= 0 || response.indexOf("jpeg") >= 0) {
+							if (response.indexOf("move_uploaded_file") >= 0) {
+								$("#uploadedFile_" + variationID).html('There was an error uploading your image: ' + response);
+							} else if (response.indexOf("jpg") >= 0 || response.indexOf("gif") >= 0 || response.indexOf("png") >= 0 || response.indexOf("jpeg") >= 0) {
 								$("#uploadedFile_" + variationID).html('<img src="/wp-content/uploads/customuploads/' + response + '?rand=<?php echo rand(35450, 97534); ?>" alt="" />').show();
+								$("#FileNameHolder_"+variationID).val(response);
 							} else {
 								$("#uploadedFile_" + variationID).html('<?php _e('File Uploaded Successfuly.'); ?> <a href="/wp-content/uploads/customuploads/' + response + '?rand=<?php echo rand(35450, 97534); ?>"><?php _e('Click here to view.'); ?></a>').show();
+								$("#FileNameHolder_"+variationID).val(response);
 							}
 						}
 					}
@@ -44,10 +47,12 @@ $write .= '<div class="foxyshop_custom_upload_container' . $dkeyclass . '"'. $dk
 
 $write .= '<label for="' . esc_attr($product['code']) . '_' . $i . '">' . esc_attr(str_replace('_',' ',$variationName)) . '</label>'."\n";
 
+$uploadRequiredClassName = ($variationRequired ? ' foxyshop_required' : '');
+
 $write .= '<input type="file" class="foxyshop_file_upload" rel="' . $i . '" id="' . esc_attr($product['code']) . '_' . $i . '">'."\n";
 if ($variationValue) $write .= '<p>' . $variationValue . '</p>'."\n";
 $write .= '<div id="uploadedFile_' . $i . '" class="foxyshop_uploaded_file" style="display: none;"></div>'."\n";
-$write .= '<input type="hidden" name="' . esc_attr($variationName) . foxyshop_get_verification($variationName,'--OPEN--') . '" id="FileNameHolder_' . $i . '" value="" class="' . $dkeyclass . '"'. $dkey . ' />'."\n";
+$write .= '<input type="hidden" name="' . esc_attr($variationName) . foxyshop_get_verification($variationName,'--OPEN--') . '" id="FileNameHolder_' . $i . '" value="" class="hiddenimageholder ' . $uploadRequiredClassName . $dkeyclass . '"'. $dkey . ' />'."\n";
 $write .= '<div class="clr"></div>';
 $write .= '</div>';
 

@@ -44,6 +44,17 @@
 .product_variation label {
 	 width: 100px;
 }
+.variation_required_container {
+	float: left;
+	padding: 5px 0 0 46px;
+}
+.variation_required_container label {
+	width: auto;
+	margin: 2px 0 0 6px;
+}
+.variation_required_container input {
+	float: left;
+}
 
 .small {
 	font-size: 10px;

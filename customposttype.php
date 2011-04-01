@@ -676,6 +676,7 @@ function foxyshop_product_variations_setup() {
 		$_variationType = get_post_meta($post->ID,'_variation_type_'.$i,TRUE);
 		$_variationValue = get_post_meta($post->ID,'_variation_value_'.$i,TRUE);
 		$_variationDisplayKey = get_post_meta($post->ID,'_variation_dkey_'.$i,TRUE);
+		$_variationRequired = get_post_meta($post->ID,'_variation_required_'.$i,TRUE);
 		$variationTextSize = "";
 		if ($_variationType == "text") {
 			$arrVariationTextSize = explode("|",esc_attr($_variationValue));
@@ -759,6 +760,12 @@ function foxyshop_product_variations_setup() {
 			<div class="foxyshop_field_control">
 				<label style="width: auto; margin-right: 40px; padding-bottom: 2px; cursor: help; border-bottom: 1px dotted darkgray;" title="Enter a value here if you want your variation to be invisible until called by another variation.">Display Key</label>
 				<input type="text" name="_variation_dkey_<?php echo $i; ?>" id="_variation_dkey_<?php echo $i; ?>" value="<?php echo esc_attr($_variationDisplayKey); ?>" style="float: left; width: 100px;" />
+
+				<!-- Required -->
+				<div class="variation_required_container" rel="<?php echo $i; ?>">
+					<input type="checkbox" name="_variation_required_<?php echo $i; ?>" id="_variation_required_<?php echo $i; ?>"<?php echo checked($_variationRequired,"on"); ?> />
+					<label for="_variation_required_<?php echo $i; ?>">Make Field Required</label>
+				</div>
 			</div>
 			
 			<div style="clear: both;"></div>
@@ -793,12 +800,25 @@ jQuery(document).ready(function($){
 		thisType = $(this).find(".variationtype").val();
 		$(this).find(".variationoptions").hide();
 		$(this).find("." + thisType).show();
+		if (thisType == 'text' || thisType == 'textarea' || thisType == 'upload') {
+			$(this).find(".variation_required_container").show();
+		} else {
+			$(this).find(".variation_required_container").hide();
+			$(this).find(".variation_required_container").find('input[type=checkbox]').attr('checked', false);
+		}
 	});
 	
 	//On Change Listener
 	$(".variationtype").change(function() {
+		var thisType = $(this).val();
 		$(this).parents(".product_variation").find(".variationoptions").hide();
-		$(this).parents(".product_variation").find("." + $(this).val()).show();
+		$(this).parents(".product_variation").find("." + thisType).show();
+		if (thisType == 'text' || thisType == 'textarea' || thisType == 'upload') {
+			$(this).parents(".product_variation").find(".variation_required_container").show();
+		} else {
+			$(this).parents(".product_variation").find(".variation_required_container").hide();
+			$(this).parents(".product_variation").find(".variation_required_container").find('input[type=checkbox]').attr('checked', false);
+		}
 	});
 	
 	if (lastNewOne <= <?php echo $foxyshop_settings['max_variations']; ?>) $("#AddVariation").show();
@@ -971,6 +991,7 @@ function foxyshop_product_meta_save($post_id) {
 		$_variationName = trim(str_replace(".","",str_replace('"','',$_POST['_variation_name_'.$i])));
 		$_variationType = $_POST['_variation_type_'.$i];
 		$_variationDisplayKey = $_POST['_variation_dkey_'.$i];
+		$_variationRequired = $_POST['_variation_required_'.$i];
 		$writeID = $i;
 		if ($_variationName != '') {
 			$currentID++;
@@ -1000,6 +1021,7 @@ function foxyshop_product_meta_save($post_id) {
 		foxyshop_save_meta_data('_variation_name_'.$writeID,$_variationName);
 		foxyshop_save_meta_data('_variation_value_'.$writeID,$_variationValue);
 		foxyshop_save_meta_data('_variation_dkey_'.$writeID,$_variationDisplayKey);
+		foxyshop_save_meta_data('_variation_required_'.$writeID,$_variationRequired);
 	}
 	
 	//Rewrite Product Sitemap

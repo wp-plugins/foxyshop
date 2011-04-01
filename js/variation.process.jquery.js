@@ -128,6 +128,30 @@ jQuery(document).ready(function($){
 
 });
 
+//Code to Check For Required Fields Before Adding to Cart
+foxycart_required_fields_check = function(e, arr) {
+	var strFailed = false;
+	jQuery("form.foxyshop_product input.foxyshop_required, form.foxyshop_product textarea.foxyshop_required").each(function() {
+		if (!$(this).val()) {
+			if ($(this).hasClass('hiddenimageholder') && $(this).parents('.foxyshop_custom_upload_container').is(':visible')) {
+				strFailed = true;
+				alert('Error: You must upload a file before adding to cart.');
+			} else if ($(this).is(':visible')) {
+				strFailed = true;
+				alert("Error: You have not completed a required field.");
+				$(this).focus();
+			}
+		}
+	});
+	if (strFailed) {
+		return false;
+	} else {
+		return true;
+	}
+}
+fcc.events.cart.preprocess.add(foxycart_required_fields_check);
+
+
 function foxyshop_is_array(obj) {
 	if (obj.constructor.toString().indexOf("Array") == -1)
 		return false;

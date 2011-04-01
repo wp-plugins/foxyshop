@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 2.2
+Stable tag: 2.2.1
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -114,6 +114,9 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 2.2.1 =
+* Added option to make variation fields required. Words on text fields and image upload. Thanks to Laura for the suggestion.
 
 = 2.2 =
 * Secondary weight (oz/gm) can now be set with higher precision up to .1 oz or gm. (1 lb, 6.1 oz or 0.1 oz for very light items in bulk). You can also type in 1.8 in the lb box and the oz will automatically be calculated.

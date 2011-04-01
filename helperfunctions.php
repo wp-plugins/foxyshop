@@ -66,7 +66,8 @@ function foxyshop_setup_product($thepost = false) {
 			"name" => str_replace(' ','_',get_post_meta($thepost->ID,'_variation_name_'.$i,TRUE)),
 			"type" => get_post_meta($thepost->ID,'_variation_type_'.$i,TRUE),
 			"value" => get_post_meta($thepost->ID,'_variation_value_'.$i,TRUE),
-			"displayKey" => get_post_meta($thepost->ID,'_variation_dkey_'.$i,TRUE)
+			"displayKey" => get_post_meta($thepost->ID,'_variation_dkey_'.$i,TRUE),
+			"required" => get_post_meta($thepost->ID,'_variation_required_'.$i,TRUE)
 		);
 		$i++;
 	}
@@ -196,6 +197,7 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 		$variationType = $product_variation['type'];
 		$variationValue = $product_variation['value'];
 		$variationDisplayKey = $product_variation['displayKey'];
+		$variationRequired = $product_variation['required'];
 
 		$variationTextSize = "";
 		if (!$variationName) break;
@@ -210,9 +212,11 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 			$dkey = "";
 			$dkeyclass = "";
 		}
-		
+
 		$className = "variation-" . sanitize_title_with_dashes($variationName);
-		
+		if ($variationRequired) {
+			$className .= ' foxyshop_required';
+		}
 		
 		//Text
 		if ($variationType == "text") {
@@ -267,7 +271,7 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 	}
 	
 	if ($write) {
-		$write .= '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/variation.process.jquery.js"></script>'."\n";
+		$write .= '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/variation.process.jquery.js" charset="utf-8"></script>'."\n";
 		echo '<div class="foxyshop_variations">' . $write . '</div>'."\n"."\n";
 	}
 
