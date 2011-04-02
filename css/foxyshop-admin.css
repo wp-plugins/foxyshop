@@ -99,7 +99,7 @@
 	clear: both;
 }
 
-#foxyshop_settings_wrap div.updated {
+#foxyshop_settings_wrap div.updated, #foxyshop_settings_wrap div.error {
 	margin: 5px 0 17px 0;
 }
 #foxyshop_settings_wrap label {
@@ -395,4 +395,13 @@
 }
 #admin_list_pagination {
 	padding: 20px 5px;
+}
+table.infoonly label {
+	width: 100px;
+}
+table.infoonly input {
+	width: 630px;
+}
+table.widefat tr:last-child td {
+	border-bottom: 0 none;
 }

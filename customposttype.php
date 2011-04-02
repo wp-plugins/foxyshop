@@ -1,6 +1,6 @@
 <?php
 //Post Type
-add_action('init', 'foxyshop_create_post_type');
+add_action('init', 'foxyshop_create_post_type', 1);
 function foxyshop_create_post_type() {
 	$labels = array(
 		'name' => _x('Products', 'post type general name'),
@@ -147,6 +147,7 @@ function foxyshop_restrict_manage_posts() {
 
 
 //Custom Taxonomy: Product Categories
+add_action('init', 'foxyshop_product_category_init', 1);
 function foxyshop_product_category_init() {
 	$labels = array(
 		'name' => __('Product Categories'),
@@ -167,7 +168,6 @@ function foxyshop_product_category_init() {
 		'rewrite' => array('slug' => FOXYSHOP_PRODUCT_CATEGORY_SLUG, 'hierarchical' => true)
 	));
 }
-add_action('init', 'foxyshop_product_category_init');
 
 
 

@@ -31,7 +31,7 @@ function foxyshop_theme_redirect() {
 		do_theme_redirect($return_template);
 
 	//All Categories Page
-	} elseif ($currentPageName == 'product-cat' || $currentName == 'product-cat') {
+	} elseif ($currentPageName == FOXYSHOP_PRODUCT_CATEGORY_SLUG || $currentName == FOXYSHOP_PRODUCT_CATEGORY_SLUG) {
 		$templatefilename = 'foxyshop-all-categories.php';
 		if (file_exists(TEMPLATEPATH . '/' . $templatefilename)) {
 			$return_template = TEMPLATEPATH . '/' . $templatefilename;
@@ -110,7 +110,7 @@ function title_filter_all_products() {
 	return $foxyshop_settings['browser_title_1'];
 }
 function title_filter_single_categories() {
-	global $wp;
+	global $wp, $foxyshop_settings;
 	$currentCategory = (isset($wp->query_vars["foxyshop_categories"]) ? $wp->query_vars["foxyshop_categories"] : "");
 	$currentCategory = explode("/",$currentCategory);
 	$currentCategory = end($currentCategory);

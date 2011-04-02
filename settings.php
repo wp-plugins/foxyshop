@@ -7,7 +7,6 @@ function foxyshop_settings_menu() {
 }
 
 function set_foxyshop_settings() {
-	if (get_option("foxyshop_settings") == "") set_foxyshop_defaults();
 	$foxyshop_settings_update_key = (isset($_POST['action']) ? $_POST['action'] : "");
 	$foxyshop_api_reset_key = (isset($_GET['action']) ? $_GET['action'] : "");
 	if ($foxyshop_settings_update_key == "" && $foxyshop_api_reset_key == "") return;
@@ -15,18 +14,17 @@ function set_foxyshop_settings() {
 		global $foxyshop_settings;
 		
 		//Do initial product sitemap creation
-		if ($_POST['foxyshop_generate_product_sitemap'] == "on") {
-			foxyshop_create_product_sitemap();
-		}
+		if ($_POST['foxyshop_generate_product_sitemap'] == "on") foxyshop_create_product_sitemap();
 		
 		$new_settings = array();
-		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "ga_advanced", "generate_feed", "hide_subcat_children", "generate_product_sitemap", "manage_inventory_levels", "datafeed_url_key", "inventory_alert_level", "enable_sso", "sso_account_required", "browser_title_1", "browser_title_2", "browser_title_3", "browser_title_4", "browser_title_5");
+		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "ga_advanced", "generate_feed", "hide_subcat_children", "generate_product_sitemap", "manage_inventory_levels", "inventory_alert_level", "enable_sso", "sso_account_required", "browser_title_1", "browser_title_2", "browser_title_3", "browser_title_4", "browser_title_5");
 		foreach ($fields as $field1) {
 			$val = (isset($_POST['foxyshop_'.$field1]) ? $_POST['foxyshop_'.$field1] : '');
 			$new_settings[$field1] = $val;
 		}
 		$new_settings["domain"] = str_replace("http://","",$_POST['foxyshop_domain']);
 		$new_settings["api_key"] = $foxyshop_settings['api_key'];
+		$new_settings["datafeed_url_key"] = $foxyshop_settings['datafeed_url_key'];
 		$new_settings["max_variations"] = (int)$_POST['foxyshop_max_variations'];
 		$new_settings["default_weight"] = (int)$_POST['foxyshop_default_weight1'] . ' ' . (double)$_POST['foxyshop_default_weight2'];
 		$new_settings["products_per_page"] = ((int)$_POST['foxyshop_products_per_page'] == 0 ? -1 : (int)$_POST['foxyshop_products_per_page']);
@@ -35,7 +33,7 @@ function set_foxyshop_settings() {
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_options&saved=1');
 	} elseif ($foxyshop_api_reset_key == "foxyshop_api_key_reset" && check_admin_referer('reset-foxyshop-api-key')) {
 		global $foxyshop_settings;
-		$foxyshop_settings['api_key'] = set_foxyshop_api_key();
+		$foxyshop_settings['api_key'] = "sp92fx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time());
 		update_option("foxyshop_settings", serialize($foxyshop_settings));
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_options&key=1');
 	}
@@ -43,18 +41,6 @@ function set_foxyshop_settings() {
 
 function foxyshop_options() {
 	global $foxyshop_settings;
-	
-	//Products won't load until this settings page has been loaded for the first time and the rewrite rules have been flushed..
-	if (get_option('foxyshop_set_rewrite_rules') == "1") {
-		flush_rewrite_rules(false);
-		delete_option('foxyshop_set_rewrite_rules');
-	}
-	
-	//Set Datafeed URL Key if Not Set
-	if ($foxyshop_settings['datafeed_url_key'] == "") {
-		$foxyshop_settings['datafeed_url_key'] = substr(MD5(rand(1000, 99999)."{urlkey}" . date("H:i:s")),1,12);
-		update_option("foxyshop_settings", serialize($foxyshop_settings));
-	}
 ?>
 <div id="foxyshop_settings_wrap">
 	
@@ -63,8 +49,86 @@ function foxyshop_options() {
 	<p><?php _e('For more information on FoxyShop and complete documentation, please visit'); ?> <a href="http://www.foxy-shop.com/" target="_blank">www.foxy-shop.com</a>.<br />
 	<?php _e('If you need a FoxyCart account or to access your admin panel, please <a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211" target="_blank">click here</a>.'); ?></p>
 
-	<?php  if (isset($_GET['saved'])) echo '<div class="updated"><p>' . __('Your Settings Have Been Saved.') . '</p></div>'; ?>
-	<?php  if (isset($_GET['key'])) echo '<div class="updated"><p>' . __('Your API Key Has Been Reset. Please Update FoxyCart With Your New Key.') . '</p></div>'; ?>
+	<?php
+	//Confirmation Saved
+	if (isset($_GET['saved'])) echo '<div class="updated"><p>' . __('Your Settings Have Been Saved.') . '</p></div>';
+	
+	//Confirmation Key Reset
+	if (isset($_GET['key'])) echo '<div class="updated"><p>' . __('Your API Key Has Been Reset. Please Update FoxyCart With Your New Key.') . '</p></div>';
+	
+	//Warning Header/Footer Missing
+	if (!file_exists(TEMPLATEPATH.'/header.php') || !file_exists(TEMPLATEPATH.'/footer.php')) echo '<div class="error"><p>' . __('<strong>Warning:</strong> Your theme does not appear to be using header.php or footer.php. Without these files FoxyShop pages will show up unstyled. This error can often show up if you are using a WordPress framework that is bypassing the get_header() and get_footer() functions.') . '</p></div>';
+	
+	//Warning Sitemap Not Writeable
+	if ($foxyshop_settings['generate_product_sitemap']) {
+		$sitemap_filename = $_SERVER['DOCUMENT_ROOT'].'/sitemap-products.xml';
+		if (file_exists($sitemap_filename)) {
+			if (!is_writeable($sitemap_filename)) echo '<div class="error"><p><strong>Warning:</strong> ' . $_SERVER['DOCUMENT_ROOT'].'/sitemap-products.xml not writeable.</p></div>';
+		} else {
+			$sitemap_directory = $_SERVER['DOCUMENT_ROOT'];
+			if (!is_writeable($sitemap_directory)) echo '<div class="error"><p><strong>Warning:</strong> ' . $_SERVER['DOCUMENT_ROOT'].'/sitemap-products.xml does not exist and the directory is not writeable.</p></div>';
+		}
+	}
+
+	//Warning Permalinks
+	
+	$permalink_structure = get_option('permalink_structure');
+	if ($permalink_structure == '/archives/%post_id%' || $permalink_structure == "") {
+		echo '<div class="error"><p><strong>Warning:</strong> Your permalink structure should be set to Day and Name or Month and Name. Other settings will cause difficulties using FoxyShop.</p></div>';
+	}
+	
+	
+	
+	//Warning Upload Folders
+	$upload_dir = wp_upload_dir();
+	if (!file_exists($upload_dir['basedir'] . '/customuploads')) {
+		if (!is_writeable($upload_dir['basedir'])) echo '<div class="error"><p><strong>Warning:</strong> ' . $upload_dir['basedir'].' is not writeable. You may encounter problems uploading images or allowing the custom upload of files by customers. (To hide this notice, add a folder under <em>wp-content/uploads</em> called <em>customupload</em>.)</p></div>';
+	}
+	?>
+
+	<form>
+	
+	<table class="widefat infoonly">
+		<thead>
+			<tr>
+				<th><?php _e('Setup Information'); ?></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="border-bottom: 0 none;">
+					<label for="foxyshop_key"><?php _e('API Key'); ?>:</label>
+					<input type="text" id="foxyshop_key" name="key" value="<?php echo $foxyshop_settings['api_key']; ?>" readonly="readonly" onclick="this.select();" />
+					<div class="small" style="margin-bottom: 5px;"><?php echo __('Note: this is a required step for security reasons and utilizes FoxyCart\'s HMAC product verification to avoid link tampering.<br /><span style="color: red;"><strong>Enter this API key on the advanced menu of your FoxyCart admin and check the box to enable cart validation.</strong></span><br />This API key is generated automatically and cannot be edited. Scroll to the bottom of the page if you need to reset the key.'); ?></div>
+					
+					<div style="clear: both;"></div>
+
+					<label for="foxyshop_datafeed_url"><?php _e('Datafeed URL'); ?>:</label>
+					<input type="text" id="foxyshop_datafeed_url" name="foxyshop_datafeed_url" value="<?php echo get_bloginfo('wpurl') . '/foxycart-datafeed-' . $foxyshop_settings['datafeed_url_key']; ?>/" readonly="readonly" onclick="this.select();" />
+					
+					<div style="clear: both;margin-bottom: 5px;"></div>
+
+					<label for="foxyshop_sso_url"><?php _e('SSO Endpoint'); ?>:</label>
+					<input type="text" id="foxyshop_sso_url" name="foxyshop_sso_url" value="<?php echo get_bloginfo('wpurl') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key']; ?>/" readonly="readonly" onclick="this.select();" />
+					
+					<div style="clear: both;margin-bottom: 5px;"></div>
+
+					<label for="foxyshop_theme_dir"><?php _e('Template Path'); ?>:</label>
+					<input type="text" id="foxyshop_theme_dir" name="foxyshop_theme_dir" value="<?php echo TEMPLATEPATH; ?>/" readonly="readonly" />
+					<div class="small" style="margin-bottom: 5px;"><?php echo __('FoxyShop will look in this folder for customized theme files.'); ?></div>
+
+					<?php if ($foxyshop_settings['generate_product_sitemap']) { ?>
+						<label for="foxyshop_sitemap"><?php _e('Sitemap'); ?>:</label>
+						<input type="text" id="foxyshop_sitemap" name="foxyshop_sitemap" value="http://<?php echo $_SERVER['SERVER_NAME'] . '/sitemap-products.xml'; ?>" readonly="readonly" onclick="this.select();" />
+					<?php } ?>
+
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	</form>
+
+	<br /><br />
 
 	<form method="post" name="foxycart_settings_form" action="options.php">
 
@@ -79,13 +143,6 @@ function foxyshop_options() {
 				<td>
 					<label for="foxyshop_domain"><?php _e('Your FoxyCart Domain'); ?>:</label> <input type="text" name="foxyshop_domain" value="<?php echo $foxyshop_settings['domain']; ?>" size="50" /> <small>(example: yourname.foxycart.com)</small>
 					<div class="small"><?php _e('If you have your own custom domain, you may enter that as well (cart.yourdomain.com). Do not include the "http://". The FoxyCart include files will be inserted automatically so you won\'t need to add anything to the header of your site.'); ?></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="foxyshop_key"><?php _e('API Key'); ?>:</label>
-					<input type="text" id="foxyshop_key" name="key" value="<?php echo $foxyshop_settings['api_key']; ?>" readonly="readonly" onclick="this.select();" size="88" />
-					<div class="small"><?php echo __('Note: this is a required step for security reasons and utilizes FoxyCart\'s HMAC product verification to avoid link tampering.<br /><span style="color: red;"><strong>Enter this API key on the advanced menu of your FoxyCart admin and check the box to enable cart validation.</strong></span><br />This API key is generated automatically and cannot be edited. Scroll to the bottom of the page if you need to reset the key.'); ?></div>
 				</td>
 			</tr>
 			<tr>
@@ -223,8 +280,7 @@ function foxyshop_options() {
 				<td>
 					<input type="checkbox" id="foxyshop_enable_sso" name="foxyshop_enable_sso"<?php checked($foxyshop_settings['enable_sso'], "on"); ?> />
 					<label for="foxyshop_enable_sso"><?php _e('Enable WordPress Single-Sign-On'); ?></label>
-					<div class="small"><?php _e('If enabled, your WordPress users will not have to login again to complete a FoxyCart checkout. WordPress accounts and FoxyCart accounts are kept in sync. You must be using FoxyCart 0.7.1 or above and in the FoxyCart admin you must set the "customer password hash type" to "phpass, portable mode" and the hash config to 8. Check the "enable single sign on" option and put this url in the "single sign on url" box:'); ?></div>
-					<div style="height: 30px;"><input type="text" name="ssourlkey_notused" value="<?php echo get_bloginfo('wpurl') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key']; ?>/" readonly="readonly" onclick="this.select();" size="88" /></div>
+					<div class="small"><?php _e('If enabled, your WordPress users will not have to login again to complete a FoxyCart checkout. WordPress accounts and FoxyCart accounts are kept in sync. You must be using FoxyCart 0.7.1 or above and in the FoxyCart admin you must set the "customer password hash type" to "phpass, portable mode" and the hash config to 8. Check the "enable single sign on" option and put the SSO Endpoint url in the appropriate box.'); ?></div>
 					<div style="padding: 0 0 0 15px;">
 						<input type="checkbox" id="foxyshop_sso_account_required" name="foxyshop_sso_account_required"<?php checked($foxyshop_settings['sso_account_required'], "on"); ?> />
 						<label for="foxyshop_sso_account_required"><?php _e('Require a WordPress Account to check out'); ?></label>
@@ -237,9 +293,7 @@ function foxyshop_options() {
 				<td>
 					<input type="checkbox" id="foxyshop_manage_inventory_levels" name="foxyshop_manage_inventory_levels"<?php checked($foxyshop_settings['manage_inventory_levels'], "on"); ?> />
 					<label for="foxyshop_manage_inventory_levels"><?php _e('Manage Inventory Levels'); ?></label>
-					<input type="hidden" name="foxyshop_datafeed_url_key" value="<?php echo $foxyshop_settings['datafeed_url_key']; ?>" />
-					<div class="small"><?php _e('If enabled, you will be able to set inventory levels per product code. In the FoxyCart admin, you need to check the box to enable your datafeed and enter the following url in the "datafeed url" box. Note that if you are using the datafeed endpoint template for anything else, this is the url to put into FoxyCart for your endpoint.'); ?></div>
-					<div style="height: 30px;"><input type="text" name="datafeedurlkey_notused" value="<?php echo get_bloginfo('wpurl') . '/foxycart-datafeed-' . $foxyshop_settings['datafeed_url_key']; ?>/" readonly="readonly" onclick="this.select();" size="88" /></div>
+					<div class="small"><?php _e('If enabled, you will be able to set inventory levels per product code. In the FoxyCart admin, you need to check the box to enable your datafeed and enter the datafeed url from the top of this page in the "datafeed url" box.'); ?></div>
 					<label for="foxyshop_inventory_alert_level"><?php _e('Default Inventory Alert Level'); ?>:</label> <input type="text" id="foxyshop_inventory_alert_level" name="foxyshop_inventory_alert_level" value="<?php echo $foxyshop_settings['inventory_alert_level']; ?>" style="width: 50px;" />
 				</td>
 			</tr>
@@ -300,7 +354,7 @@ function foxyshop_options() {
 				<td>
 					<input type="checkbox" id="foxyshop_generate_product_sitemap" name="foxyshop_generate_product_sitemap"<?php checked($foxyshop_settings['generate_product_sitemap'], "on"); ?> />
 					<label for="foxyshop_generate_product_sitemap"><?php _e('Generate Product Sitemap'); ?></label>
-					<div class="small"><?php _e('If checked, a sitemap file will be created in your root folder. Please make sure that the root folder is writeable or that this file exists and is writeable:'); echo ' <a href="' . get_bloginfo('url') . '/sitemap-products.xml" target="blank">' . get_bloginfo('url') . '/sitemap-products.xml</a>'; ?></div>
+					<div class="small"><?php _e('If checked, a sitemap file with all of your products will be created in your root folder.'); ?></div>
 				</td>
 			</tr>
 
@@ -314,6 +368,8 @@ function foxyshop_options() {
 		<strong>Reset API Key</strong><br />
 		If you believe that your API key has been compromised or would like to reset it with a fresh one, please click this link below and a new one will be created for you: <a href="options.php?action=foxyshop_api_key_reset&_wpnonce=<?php echo wp_create_nonce('reset-foxyshop-api-key'); ?>" onclick="return apiresetcheck();">Reset API Key</a>
 	</p>
+	
+	<p>&nbsp;</p>
 
 	<input type="hidden" name="action" value="foxyshop_settings_update" />
 	<?php wp_nonce_field('update-foxyshop-options'); ?>
@@ -355,45 +411,4 @@ function apiresetcheck() {
 }
 </script>
 <?php }
-
-function set_foxyshop_defaults() {
-	global $foxyshop_settings;
-	$foxyshop_settings = array(
-		"domain" => "",
-		"version" => "0.7.1",
-		"ship_categories" => "",
-		"max_variations" => 10,
-		"enable_ship_to" => "",
-		"enable_subscriptions" => "",
-		"enable_bundled_products" => "",
-		"browser_title_1" => "Products | " . get_bloginfo("name"),
-		"browser_title_2" => "Product Categories | " . get_bloginfo("name"),
-		"browser_title_3" => "%c | " . get_bloginfo("name"),
-		"browser_title_4" => "%p | " . get_bloginfo("name"),
-		"browser_title_5" => "Product Search | " . get_bloginfo("name"),
-		"weight_type" => "english",
-		"default_weight" => "1 0",
-		"use_jquery" => "on",
-		"hide_subcat_children" => "on",
-		"generate_product_sitemap" => "",
-		"sort_key" => "menu_order",
-		"enable_sso" => "",
-		"sso_account_required" => "",
-		"ga" => "",
-		"ga_advanced" => "",
-		"manage_inventory_levels" => "",
-		"inventory_alert_level" => 3,
-		"datafeed_url_key" => substr(MD5(rand(1000, 99999)."{urlkey}" . date("H:i:s")),1,12),
-		"generate_feed" => "",
-		"default_image" => FOXYSHOP_DIR."/images/no-photo.png",
-		"products_per_page" => -1,
-		"api_key" => set_foxyshop_api_key()
-	);
-	update_option("foxyshop_settings", serialize($foxyshop_settings));
-}
-
-function set_foxyshop_api_key() {
-	return "sp92fx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time());
-}
-
 ?>

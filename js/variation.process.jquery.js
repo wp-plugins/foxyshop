@@ -132,14 +132,14 @@ jQuery(document).ready(function($){
 foxycart_required_fields_check = function(e, arr) {
 	var strFailed = false;
 	jQuery("form.foxyshop_product input.foxyshop_required, form.foxyshop_product textarea.foxyshop_required").each(function() {
-		if (!$(this).val()) {
-			if ($(this).hasClass('hiddenimageholder') && $(this).parents('.foxyshop_custom_upload_container').is(':visible')) {
+		if (!jQuery(this).val()) {
+			if (jQuery(this).hasClass('hiddenimageholder') && jQuery(this).parents('.foxyshop_custom_upload_container').is(':visible')) {
 				strFailed = true;
 				alert('Error: You must upload a file before adding to cart.');
-			} else if ($(this).is(':visible')) {
+			} else if (jQuery(this).is(':visible')) {
 				strFailed = true;
 				alert("Error: You have not completed a required field.");
-				$(this).focus();
+				jQuery(this).focus();
 			}
 		}
 	});

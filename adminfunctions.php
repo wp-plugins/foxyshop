@@ -118,11 +118,72 @@ function foxyshop_plugin_action_links($links, $file) {
 
 //Plugin Activation Function
 function foxyshop_activation() {
-	add_option('foxyshop_set_rewrite_rules',"1");
+
+	//Initialize Category Sort Holder If Not Set
+	add_option('foxyshop_category_sort',serialize(array()));
+	
+	//Defaults For Settings
+	$default_foxyshop_settings = array(
+		"domain" => "",
+		"version" => "0.7.1",
+		"ship_categories" => "",
+		"max_variations" => 10,
+		"enable_ship_to" => "",
+		"enable_subscriptions" => "",
+		"enable_bundled_products" => "",
+		"browser_title_1" => "Products | " . get_bloginfo("name"),
+		"browser_title_2" => "Product Categories | " . get_bloginfo("name"),
+		"browser_title_3" => "%c | " . get_bloginfo("name"),
+		"browser_title_4" => "%p | " . get_bloginfo("name"),
+		"browser_title_5" => "Product Search | " . get_bloginfo("name"),
+		"weight_type" => "english",
+		"default_weight" => "1 0.0",
+		"use_jquery" => "on",
+		"hide_subcat_children" => "on",
+		"generate_product_sitemap" => "",
+		"sort_key" => "menu_order",
+		"enable_sso" => "",
+		"sso_account_required" => "",
+		"ga" => "",
+		"ga_advanced" => "",
+		"manage_inventory_levels" => "",
+		"inventory_alert_level" => 3,
+		"datafeed_url_key" => substr(MD5(rand(1000, 99999)."{urlkey}" . date("H:i:s")),1,12),
+		"generate_feed" => "",
+		"default_image" => WP_PLUGIN_URL."/foxyshop/images/no-photo.png",
+		"products_per_page" => -1,
+		"api_key" => "sp92fx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time())
+	);
+	
+	//Set For the First Time
+	if (!get_option("foxyshop_settings")) {
+		update_option("foxyshop_settings", serialize($default_foxyshop_settings));
+	
+	//Upgrade Tasks
+	} else {
+		
+		$foxyshop_settings = unserialize(get_option("foxyshop_settings"));
+		
+		//Run Some Upgrades
+		if ($foxyshop_settings['version'] == "0.70") $foxyshop_settings['version'] = "0.7.0";
+		if (array_key_exists('inventory_url_key',$foxyshop_settings)) {
+			$foxyshop_settings['datafeed_url_key'] = $foxyshop_settings['inventory_url_key'];
+			unset($foxyshop_settings['inventory_url_key']);
+		}
+		
+		//Load in New Defaults
+		$foxyshop_settings = wp_parse_args($foxyshop_settings,$default_foxyshop_settings);
+
+		//Save Settings
+		update_option("foxyshop_settings", serialize($foxyshop_settings));
+	}
+	//print_r($foxyshop_settings);
+	//die;
 }
 
 //Plugin Deactivation Function
 function foxyshop_deactivation() {
+	delete_option('foxyshop_rewrite_rules');
 	flush_rewrite_rules();
 }
 
@@ -171,6 +232,14 @@ function foxyshop_create_product_sitemap() {
 	}
 	$write .= '</urlset>';
 	file_put_contents($_SERVER['DOCUMENT_ROOT'].'/sitemap-products.xml', $write);
+}
+
+//Flushes Rewrite Rules if Structure Has Changed
+function foxyshop_check_rewrite_rules() {
+	if (get_option('foxyshop_rewrite_rules') != FOXYSHOP_PRODUCTS_SLUG."|".FOXYSHOP_PRODUCT_CATEGORY_SLUG) {
+		flush_rewrite_rules(false);
+		update_option('foxyshop_rewrite_rules', FOXYSHOP_PRODUCTS_SLUG."|".FOXYSHOP_PRODUCT_CATEGORY_SLUG);
+	}
 }
 
 //Access the FoxyCart API

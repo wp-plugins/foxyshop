@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 2.2.1
+Version: 2.2.2
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -39,33 +39,16 @@ define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 if (!defined('FOXYSHOP_PRODUCTS_SLUG')) define('FOXYSHOP_PRODUCTS_SLUG','products');
 if (!defined('FOXYSHOP_PRODUCT_CATEGORY_SLUG')) define('FOXYSHOP_PRODUCT_CATEGORY_SLUG','product-cat');
-$foxyshop_settings_defaults = array(
-	'sort_key' => "menu_order",
-	'generate_feed' => "",
-	"products_per_page" => -1,
-	"hide_subcat_children" => "on",
-	"generate_product_sitemap" => "",
-	"manage_inventory_levels" => "",
-	"datafeed_url_key" => "",
-	"inventory_alert_level" => 3,
-	"ga_advanced" => "",
-	"enable_sso" => "",
-	"sso_account_required" => "",
-	"browser_title_1" => "Products | " . get_bloginfo("name"),
-	"browser_title_2" => "Product Categories | " . get_bloginfo("name"),
-	"browser_title_3" => "%c | " . get_bloginfo("name"),
-	"browser_title_4" => "%p | " . get_bloginfo("name"),
-	"browser_title_5" => "Product Search | " . get_bloginfo("name")
-);
-$foxyshop_settings = wp_parse_args(unserialize(get_option("foxyshop_settings")), $foxyshop_settings_defaults);
-$foxyshop_category_sort = (get_option('foxyshop_category_sort') ? unserialize(get_option('foxyshop_category_sort')) : array());
-if ($foxyshop_settings['version'] == "0.70") $foxyshop_settings['version'] = "0.7.0";
-if (array_key_exists('inventory_url_key', $foxyshop_settings)) $foxyshop_settings['datafeed_url_key'] = $foxyshop_settings['inventory_url_key'];
+$foxyshop_settings = unserialize(get_option("foxyshop_settings"));
+$foxyshop_category_sort = unserialize(get_option('foxyshop_category_sort'));
 
 //Sets the Locale for Currency Internationalization
 setlocale(LC_MONETARY, get_locale());
 $foxyshop_localsettings = localeconv();
 if ($foxyshop_localsettings['int_curr_symbol'] == "") setlocale(LC_MONETARY, 'en_US');
+
+//Flushes Rewrite Rules if Structure Has Changed
+add_action('init', 'foxyshop_check_rewrite_rules', 99);
 
 //Widgets and Shortcodes support
 include('widgetcode.php');
@@ -137,7 +120,7 @@ include('adminajax.php');
 //Frontend Helper Functions
 include('helperfunctions.php');
 
-//Template Redirector (files are in /themefiles/)
+//Template Redirect (files are in /themefiles/)
 include('templateredirect.php');
 
 //Plugin Activation Functions
