@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 2.2.2
+Version: 2.2.3
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -35,12 +35,17 @@ the most out of FoxyShop.
 **************************************************************************/
 
 //Setup Plugin Variables
+define('FOXYSHOP_VERSION', "2.2.3");
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 if (!defined('FOXYSHOP_PRODUCTS_SLUG')) define('FOXYSHOP_PRODUCTS_SLUG','products');
 if (!defined('FOXYSHOP_PRODUCT_CATEGORY_SLUG')) define('FOXYSHOP_PRODUCT_CATEGORY_SLUG','product-cat');
 $foxyshop_settings = unserialize(get_option("foxyshop_settings"));
+if (!array_key_exists('foxyshop_version',$foxyshop_settings)) $foxyshop_settings['foxyshop_version'] = '';
 $foxyshop_category_sort = unserialize(get_option('foxyshop_category_sort'));
+
+//Checks for Old Plugin Version and Perform Upgrade
+if ($foxyshop_settings['foxyshop_version'] != FOXYSHOP_VERSION) add_action('admin_init', 'foxyshop_activation');
 
 //Sets the Locale for Currency Internationalization
 setlocale(LC_MONETARY, get_locale());

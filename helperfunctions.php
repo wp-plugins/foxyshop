@@ -237,7 +237,11 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 		
 		//Upload
 		} elseif ($variationType == "upload") {
-			include('customupload.php');
+			if (file_exists(TEMPLATEPATH . '/foxyshop-custom-upload.php')) {
+				include(TEMPLATEPATH . '/foxyshop-custom-upload.php');
+			} else {
+				include(FOXYSHOP_PATH . '/themefiles/foxyshop-custom-upload.php');
+			}
 		
 		//Select, Checkbox, Radio
 		} elseif ($variationType == "dropdown" || $variationType == "checkbox" || $variationType == "radio") {

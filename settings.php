@@ -24,6 +24,7 @@ function set_foxyshop_settings() {
 		}
 		$new_settings["domain"] = str_replace("http://","",$_POST['foxyshop_domain']);
 		$new_settings["api_key"] = $foxyshop_settings['api_key'];
+		$new_settings["foxyshop_version"] = $foxyshop_settings['foxyshop_version'];
 		$new_settings["datafeed_url_key"] = $foxyshop_settings['datafeed_url_key'];
 		$new_settings["max_variations"] = (int)$_POST['foxyshop_max_variations'];
 		$new_settings["default_weight"] = (int)$_POST['foxyshop_default_weight1'] . ' ' . (double)$_POST['foxyshop_default_weight2'];
@@ -94,7 +95,7 @@ function foxyshop_options() {
 	<table class="widefat infoonly">
 		<thead>
 			<tr>
-				<th><?php _e('Setup Information'); ?></th>
+				<th><?php _e('Setup Information (Version '); echo $foxyshop_settings['foxyshop_version'] .")"; ?></th>
 			</tr>
 		</thead>
 		<tbody>

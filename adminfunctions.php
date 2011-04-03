@@ -126,6 +126,7 @@ function foxyshop_activation() {
 	$default_foxyshop_settings = array(
 		"domain" => "",
 		"version" => "0.7.1",
+		"foxyshop_version" => FOXYSHOP_VERSION,
 		"ship_categories" => "",
 		"max_variations" => 10,
 		"enable_ship_to" => "",
@@ -171,18 +172,19 @@ function foxyshop_activation() {
 			unset($foxyshop_settings['inventory_url_key']);
 		}
 		
-		//Load in New Defaults
+		//Load in New Defaults and Save New Version
 		$foxyshop_settings = wp_parse_args($foxyshop_settings,$default_foxyshop_settings);
+		$foxyshop_settings['foxyshop_version'] = FOXYSHOP_VERSION;
 
 		//Save Settings
 		update_option("foxyshop_settings", serialize($foxyshop_settings));
 	}
-	//print_r($foxyshop_settings);
-	//die;
 }
 
 //Plugin Deactivation Function
 function foxyshop_deactivation() {
+	global $wp_post_types;
+	if (isset($wp_post_types['foxyshop_product'])) unset($wp_post_types['foxyshop_product']);
 	delete_option('foxyshop_rewrite_rules');
 	flush_rewrite_rules();
 }

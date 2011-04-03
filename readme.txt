@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 2.2.2
+Stable tag: 2.2.3
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -112,6 +112,11 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 2.2.3 =
+* The file that includes for the Custom File Upload has been moved into the themefiles folder so that you can now store a customized version in your theme folder without risking an overwrite during upgrade.
+* When upgrading in WP 3.1, the register_activation_hook doesn't fire. A FoxyShop version number has been added to the settings and if out of date, the plugin runs upgrade tasks.
+* On de-activation the custom post types is removed before de-activation so that the rule flushing will be effective: cleaner uninstalls.
 
 = 2.2.2 =
 * Settings page now gives warnings if your configuration will cause FoxyShop problems

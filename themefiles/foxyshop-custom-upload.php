@@ -28,10 +28,10 @@ if (!$writeUploadInclude) {
 							if (response.indexOf("move_uploaded_file") >= 0) {
 								$("#uploadedFile_" + variationID).html('There was an error uploading your image: ' + response);
 							} else if (response.indexOf("jpg") >= 0 || response.indexOf("gif") >= 0 || response.indexOf("png") >= 0 || response.indexOf("jpeg") >= 0) {
-								$("#uploadedFile_" + variationID).html('<img src="/wp-content/uploads/customuploads/' + response + '?rand=<?php echo rand(35450, 97534); ?>" alt="" />').show();
+								$("#uploadedFile_" + variationID).html('<img src="<?php echo $upload_dir['baseurl']; ?>/customuploads/' + response + '?rand=<?php echo rand(35450, 97534); ?>" alt="" />').show();
 								$("#FileNameHolder_"+variationID).val(response);
 							} else {
-								$("#uploadedFile_" + variationID).html('<?php _e('File Uploaded Successfuly.'); ?> <a href="/wp-content/uploads/customuploads/' + response + '?rand=<?php echo rand(35450, 97534); ?>"><?php _e('Click here to view.'); ?></a>').show();
+								$("#uploadedFile_" + variationID).html('<?php _e('File Uploaded Successfuly.'); ?> <a href="<?php echo $upload_dir['baseurl']; ?>/customuploads/' + response + '?rand=<?php echo rand(35450, 97534); ?>"><?php _e('Click here to view.'); ?></a>').show();
 								$("#FileNameHolder_"+variationID).val(response);
 							}
 						}
