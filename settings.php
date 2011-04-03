@@ -81,9 +81,12 @@ function foxyshop_options() {
 	
 	//Warning Upload Folders
 	$upload_dir = wp_upload_dir();
-	if (!file_exists($upload_dir['basedir'] . '/customuploads')) {
+	if ($upload_dir['error'] != '') {
+		echo '<div class="error"><p><strong>Warning:</strong> ' . $upload_dir['error'].'</p></div>';
+	} elseif (!file_exists($upload_dir['basedir'] . '/customuploads')) {
 		if (!is_writeable($upload_dir['basedir'])) echo '<div class="error"><p><strong>Warning:</strong> ' . $upload_dir['basedir'].' is not writeable. You may encounter problems uploading images or allowing the custom upload of files by customers. (To hide this notice, add a folder under <em>wp-content/uploads</em> called <em>customupload</em>.)</p></div>';
 	}
+	
 	?>
 
 	<form>
