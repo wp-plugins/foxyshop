@@ -48,7 +48,7 @@ foreach($third_party_feeds as $feedurl) {
 
 		//If Error, Send Email and Kill Process
 		if ($response == false || $response != 'foxy') {
-			$error_msg = ($response == false ? "CURL Error: " . curl_error($ch) : $response);
+			$error_msg = ($response == false ? "cURL Error: " . curl_error($ch) : $response);
 			$to_email = get_bloginfo('admin_email');
 			$message = "A FoxyCart datafeed error was encountered at " . date("F j, Y, g:i a") . ".\n\n";
 			$message .= "The feed that failed was $feedurl.\n\n";
@@ -66,6 +66,8 @@ foreach($third_party_feeds as $feedurl) {
 END THIRD-PARTY DATAFEEDS
 -------------------------------------------
 */
+
+
 
 
 //Import Response and Parse with SimpleXML

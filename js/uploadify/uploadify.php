@@ -27,13 +27,13 @@ THE SOFTWARE.
 if (!empty($_FILES)) {
 	$tempFile = $_FILES['Filedata']['tmp_name'];
 	if (isset($_REQUEST['folder'])) {
-		$targetPath = $_SERVER['DOCUMENT_ROOT'] . '/'.$_REQUEST['folder'].'/';
+		$targetPath = realpath($_SERVER['DOCUMENT_ROOT']) . '/'.$_REQUEST['folder'].'/';
 	} else {
-		$targetPath = $_SERVER['DOCUMENT_ROOT'] . '/customuploads/';
+		$targetPath = realpath($_SERVER['DOCUMENT_ROOT']) . '/customuploads/';
 	}
 	
 	$ext = strtolower(substr($_FILES['Filedata']['name'], strrpos($_FILES['Filedata']['name'], '.') + 1));
-	$allowed_extensions = array("jpg","gif","jpeg","png","doc","docx","xmls","xlsx","txt","tif","psd","pdf");
+	$allowed_extensions = array("jpg","gif","jpeg","png","doc","docx","odt","xmls","xlsx","txt","tif","psd","pdf");
 	
 	if (!in_array($ext, $allowed_extensions)) {
 		die('unsupported file type');

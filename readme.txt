@@ -3,8 +3,8 @@ Contributors: sparkweb
 Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
-Tested up to: 3.1
-Stable tag: 2.2.3
+Tested up to: 3.1.1
+Stable tag: 2.3
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -47,7 +47,7 @@ Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for full documentation and 
 * Creates Google Product Search datafeed
 * Automated product sitemaps
 * Product importing and duplication support available
-* Supports FoxyCart versions 0.7.0 and 0.7.1 and includes product images in the shopping cart.
+* Supports FoxyCart versions 0.7.0 and 0.7.1 and includes product images in the shopping cart
 
 
 
@@ -83,6 +83,8 @@ Sure! Just put this code in your wp-config.php file:
 = Can I use a WordPress Framework with FoxyShop? =
 FoxyShop uses get_header() and get_footer() and some WordPress frameworks (Thesis among them) bypass these default WordPress features. So without customization, FoxyShop will show up unstyled for some frameworks. A workaround is to put a static version of your site in header.php and footer.php.
 
+There are some working code samples for the Genesis framework so hit me up if you need those.
+
 = Do I have to use the FoxyShop datafeed? =
 If you have more than one integration that needs to use the datafeed, there's a feature in the datafeed template file which will let you load in as many third-party datafeeds as you want. The FoxyData will be fed to each of these each time FoxyCart sends data to your endpoint. If there's an error, you'll get an email with the exact error details.
 
@@ -113,10 +115,24 @@ Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
 
+= 2.3 =
+* Added ability for variation intersections to have their own inventory values. See documentation for instructions.
+* Added ID attributes to hidden form fields to make it easier to grab values with JavaScript if needed.
+* Added FOXYSHOP_TEMPLATE_PATH constant which you can set in wp-config if you need to have a custom template path. See FAQ for similar code example.
+* Product image array now returns all intermediate sizes, not just thumbnail, medium, large, and full. So if you have some custom file sizes you can now use those.
+* PrettyPhoto upgraded to version 3.1. Fixed error in PrettyPhoto CSS where all image refs had been broken.
+* Tested in WordPress 3.1.1 with no issues
+* Added ODT as file upload type
+* Image uploading from the image bar (and custom file upload) now automatically sets based on your php config's max file upload size
+* Updated FoxyCart include files so that CSS comes before Javascript to prevent any weird ColorBox issues.
+* Resolved upload errors where paths with aliases were not being translated
+* Fixed image rename bug on the image bar
+* See [Release Notes](http://www.foxy-shop.com/2011/04/version-2-3-variation-inventory-updates/) for more details
+
 = 2.2.3 =
 * The file that includes for the Custom File Upload has been moved into the themefiles folder so that you can now store a customized version in your theme folder without risking an overwrite during upgrade.
-* When upgrading in WP 3.1, the register_activation_hook doesn't fire. A FoxyShop version number has been added to the settings and if out of date, the plugin runs upgrade tasks.
-* On de-activation the custom post types is removed before de-activation so that the rule flushing will be effective: cleaner uninstalls.
+* When upgrading in WP 3.1 the register_activation_hook doesn't fire. A FoxyShop version number has been added to the settings and if out of date, the plugin runs upgrade tasks.
+* On de-activation the custom post types are removed before de-activation so that the rule flushing will be effective: cleaner uninstalls.
 
 = 2.2.2 =
 * Settings page now gives warnings if your configuration will cause FoxyShop problems

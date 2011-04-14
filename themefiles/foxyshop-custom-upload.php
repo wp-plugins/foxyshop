@@ -6,6 +6,15 @@ if (!$writeUploadInclude) {
 	echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>'."\n";
 	$imagefilename = "file-" . substr(MD5(rand(1000, 99999)."{img}" . date("H:i:s")),1,8);
 	$upload_dir = wp_upload_dir();
+
+	//Get Max Upload Limit
+	$max_upload = (int)(ini_get('upload_max_filesize'));
+	$max_post = (int)(ini_get('post_max_size'));
+	$memory_limit = (int)(ini_get('memory_limit'));
+	$upload_mb = min($max_upload, $max_post, $memory_limit);
+	$foxyshop_max_upload = $upload_mb * 1048576;
+	if ($foxyshop_max_upload == 0) $foxyshop_max_upload = "8000000";
+
 	?>
 	<script type="text/javascript">
 	jQuery(document).ready(function($){
@@ -19,7 +28,7 @@ if (!$writeUploadInclude) {
 				width     : '130',
 				height    : '29',
 				folder    : '<?php echo str_replace("http" . ($_SERVER['SERVER_PORT'] == 443 ? 's' : '') . "://" . $_SERVER['SERVER_NAME'],"",$upload_dir['baseurl']); ?>/customuploads',
-				sizeLimit : '800000',
+				sizeLimit : '<?php echo $foxyshop_max_upload; ?>',
 				scriptData: { 'newfilename': '<?php echo $imagefilename; ?>_' + $(this).attr("rel") },
 				onComplete: function(event,queueID,fileObj,response,data) {
 						if (response == "unsupported file type") {

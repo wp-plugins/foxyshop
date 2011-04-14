@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 if (!empty($_FILES)) {
 	$tempFile = $_FILES['Filedata']['tmp_name'];
-	$targetPath = $_SERVER['DOCUMENT_ROOT'] . '/'.$_REQUEST['folder'].'/';
+	$targetPath = realpath($_SERVER['DOCUMENT_ROOT']) . '/'.$_REQUEST['folder'].'/';
 	$targetPath = str_replace('//','/',$targetPath);
 	
 	$newfilename = urldecode($_FILES['Filedata']['name']);

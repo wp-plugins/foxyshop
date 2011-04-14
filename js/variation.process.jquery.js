@@ -5,48 +5,36 @@ jQuery(document).ready(function($){
 	updateVariations($("form.foxyshop_product select, form.foxyshop_product input:checkbox, form.foxyshop_product input:radio"));
 
 	function updateVariations(elSelect) {
-		price = $("#price").val();
-		price1 = $("#originalprice").val();
-		price = parseFloat(price.replace(",","")) * 100;
-		price1 = parseFloat(price1.replace(",","")) * 100;
 		displayKey = new Array();
+		var new_price = $("#price").val();
+		var new_price_original = $("#originalprice").val();
+		new_price = parseFloat(new_price.replace(",","")) * 100;
+		new_price_original = parseFloat(new_price_original.replace(",","")) * 100;
+
+		var new_code = '';
+		var new_codeadd = '';
+		var new_ikey = '';
+		var new_inventory = '';
+
+		//For Each Element
 		elSelect.parents("form").find(".foxyshop_variations select option:selected, .foxyshop_variations input:checkbox:checked, .foxyshop_variations input:radio:checked").each(function(){
 			var thisEl = $(this);
-			var selectedValue = thisEl.val();
 			
-			//Set Image Key
+			//Get New Image Key
 			imagekey = thisEl.attr("imagekey");
 			if (imagekey != "" && typeof imagekey != "undefined") {
 				for (i=0; i<ikey.length; i++) {
-					if (ikey[i][0] == imagekey) {
-						$("#foxyshop_main_product_image").attr("src",ikey[i][2]).attr("alt",ikey[i][4]).parent().attr("href",ikey[i][3]);
-						$("#foxyshop_cart_product_image").attr("name",'image'+ikey[i][5]).val(ikey[i][1]);
-					}
+					if (ikey[i][0] == imagekey) new_ikey = i;
 				}
 			}
+
+			//Code Additions
+			varcodeadd = thisEl.attr("codeadd");
+			if (varcodeadd != "" && typeof varcodeadd != 'undefined') new_codeadd += varcodeadd;
 
 			//Check Inventory
 			varcode = thisEl.attr("code");
-			if (varcode != "" && typeof varcode != "undefined" && typeof arr_foxyshop_inventory != 'undefined') {
-				match = 0;
-				for (i=0; i<arr_foxyshop_inventory.length; i++) {
-					if (arr_foxyshop_inventory[i][0] == varcode) {
-						if (arr_foxyshop_inventory[i][1] > 0) {
-							$(".foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").text(update_inventory_alert_language(foxyshop_inventory_stock_alert,arr_foxyshop_inventory[i][1])).show();
-							$("#productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
-						} else {
-							$(".foxyshop_stock_alert").addClass("foxyshop_out_of_stock").text(update_inventory_alert_language(foxyshop_inventory_stock_none,arr_foxyshop_inventory[i][1])).show();
-							if (!foxyshop_allow_backorder) $("#productsubmit").attr("disabled","disabled").addClass("foxyshop_disabled");
-						}
-						match = 1;
-					}
-				}
-				if (match == 0) {
-					$("#productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
-					$(".foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").hide();
-				}
-			}
-
+			if (varcode != "" && typeof varcode != 'undefined') new_code = varcode;
 
 			//Set Display Key
 			thisdisplaykey = thisEl.attr("displaykey");
@@ -58,17 +46,18 @@ jQuery(document).ready(function($){
 			if (priceChange) {
 				priceChangeAmount = parseFloat(priceChange);
 				if (priceChange.substr(1,2) == "-") {
-					price = price - priceChangeAmount;
-					price1 = price1 - priceChangeAmount;
+					new_price = new_price - priceChangeAmount;
+					new_price_original = new_price_original - priceChangeAmount;
 				} else {
-					price = price + priceChangeAmount;
-					price1 = price1 + priceChangeAmount;
+					new_price = new_price + priceChangeAmount;
+					new_price_original = new_price_original + priceChangeAmount;
 				}
 			} else if (priceSet) {
-				price = parseFloat(priceSet);
-				price1 = price;
+				new_price = parseFloat(priceSet);
+				new_price_original = new_price;
 			}
 		});
+
 		
 		$(".dkey").hide();
 		for (i=0;i<displayKey.length;i++) {
@@ -84,27 +73,66 @@ jQuery(document).ready(function($){
 
 		});
 		
+		setModifiers(new_code, new_codeadd, new_price, new_price_original, new_ikey);
+
+
+		
+	
+
+	}
+	
+	function setModifiers(new_code, new_codeadd, new_price, new_price_original, new_ikey) {
+		
+		//Change Image
+		if (new_ikey != '') {
+			$("#foxyshop_main_product_image").attr("src",ikey[new_ikey][2]).attr("alt",ikey[new_ikey][4]).parent().attr("href",ikey[new_ikey][3]);
+			$("#foxyshop_cart_product_image").attr("name",'image'+ikey[new_ikey][5]).val(ikey[new_ikey][1]);
+		}
+		//Check Inventory
+		inventory_code = new_code;
+		if (new_codeadd) inventory_code = $("#fs_code").val() + new_codeadd; 
+		if (inventory_code != "" && typeof arr_foxyshop_inventory != 'undefined') {
+			inventory_match_count = "";
+			for (i=0; i<arr_foxyshop_inventory.length; i++) {
+				if (arr_foxyshop_inventory[i][0] == inventory_code) inventory_match_count = arr_foxyshop_inventory[i][1];
+			}
+		}
+		if (inventory_match_count != "") {
+			if (inventory_match_count > 0) {
+				$(".foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").text(update_inventory_alert_language(foxyshop_inventory_stock_alert,inventory_match_count)).show();
+				$("#productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
+			} else {
+				$(".foxyshop_stock_alert").addClass("foxyshop_out_of_stock").text(update_inventory_alert_language(foxyshop_inventory_stock_none,inventory_match_count)).show();
+				if (!foxyshop_allow_backorder) $("#productsubmit").attr("disabled","disabled").addClass("foxyshop_disabled");
+			}
+		} else {
+			$("#productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
+			$(".foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").hide();
+		}
+
+
+		//Change Price
 		l18n_settings = $("#foxyshop_l18n").val();
-		arrl18n_settings = l18n_settings.split("|")
+		arrl18n_settings = l18n_settings.split("|");
 		currencySymbol = arrl18n_settings[0];
 		decimalSeparator = arrl18n_settings[1];
 		thousandsSeparator = arrl18n_settings[2];
 		p_precedes = arrl18n_settings[3];
 		n_sep_by_space = arrl18n_settings[4];
-		$("#foxyshop_main_price .foxyshop_currentprice").text(toCurrency(price, currencySymbol, thousandsSeparator, decimalSeparator, p_precedes, n_sep_by_space));
-		$("#foxyshop_main_price .foxyshop_oldprice").text(toCurrency(price1, currencySymbol, thousandsSeparator, decimalSeparator, p_precedes, n_sep_by_space));
-	
-		function update_inventory_alert_language(strlang,itemcount) {
-			strlang = strlang.replace('%c',itemcount);
-			if (itemcount == 1) {
-				strlang = strlang.replace('%s',"");
-			} else {
-				strlang = strlang.replace('%s',"s");
-			}
-			strlang = strlang.replace('%n',$("#input[name^='name||']").val());
-			return strlang;
-		}
+		$("#foxyshop_main_price .foxyshop_currentprice").text(toCurrency(new_price, currencySymbol, thousandsSeparator, decimalSeparator, p_precedes, n_sep_by_space));
+		$("#foxyshop_main_price .foxyshop_oldprice").text(toCurrency(new_price_original, currencySymbol, thousandsSeparator, decimalSeparator, p_precedes, n_sep_by_space));
 
+	}
+
+	function update_inventory_alert_language(strlang, itemcount) {
+		strlang = strlang.replace('%c',itemcount);
+		if (itemcount == 1) {
+			strlang = strlang.replace('%s',"");
+		} else {
+			strlang = strlang.replace('%s',"s");
+		}
+		strlang = strlang.replace('%n',$("#input[name^='name||']").val());
+		return strlang;
 	}
 	
 	function toCurrency(n, c, g, d, first, separator) {

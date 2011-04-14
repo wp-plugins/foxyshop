@@ -405,3 +405,18 @@ table.infoonly input {
 table.widefat tr:last-child td {
 	border-bottom: 0 none;
 }
+
+#advanced_variations {
+	width: 100%;
+}
+#advanced_variations thead th {
+	text-align: left;
+	font-weight: bold;
+}
+#advanced_variations td input {
+	width: 90%;
+}
+#advanced_variations td, #advanced_variations th {
+	padding: 3px;
+}
+

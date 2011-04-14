@@ -1,5 +1,7 @@
 <?php
+//-------------------------------------------
 //Post Type
+//-------------------------------------------
 add_action('init', 'foxyshop_create_post_type', 1);
 function foxyshop_create_post_type() {
 	$labels = array(
@@ -27,7 +29,11 @@ function foxyshop_create_post_type() {
 	));
 }
 
+
+
+//-------------------------------------------
 //Setup Thumbnail Support
+//-------------------------------------------
 add_action('after_setup_theme','foxyshop_setup_post_thumbnails', 9999);
 function foxyshop_setup_post_thumbnails(){
 	add_theme_support('post-thumbnails');
@@ -35,7 +41,11 @@ function foxyshop_setup_post_thumbnails(){
 
 
 
+
+
+//-------------------------------------------
 //Custom Columns
+//-------------------------------------------
 add_filter('manage_edit-foxyshop_product_columns', 'add_new_foxyshop_product_columns');
 function add_new_foxyshop_product_columns($cols) {
 	$new_columns['cb'] = '<input type="checkbox" />';
@@ -48,7 +58,13 @@ function add_new_foxyshop_product_columns($cols) {
 	return $new_columns;
 }
 
+
+
+
+
+//-------------------------------------------
 //Rewrite Columns
+//-------------------------------------------
 add_action('manage_posts_custom_column', 'manage_custom_columns', 10, 2);
 function manage_custom_columns($column_name, $id) {
 	global $wpdb, $foxyshop_settings;
@@ -112,7 +128,12 @@ function manage_custom_columns($column_name, $id) {
 }
 
 
+
+
+
+//-------------------------------------------
 //Add Filter Box to Top of Product List
+//-------------------------------------------
 add_action('restrict_manage_posts', 'foxyshop_restrict_manage_posts');
 function foxyshop_restrict_manage_posts() {
 
@@ -146,7 +167,11 @@ function foxyshop_restrict_manage_posts() {
 
 
 
+
+
+//-------------------------------------------
 //Custom Taxonomy: Product Categories
+//-------------------------------------------
 add_action('init', 'foxyshop_product_category_init', 1);
 function foxyshop_product_category_init() {
 	$labels = array(
@@ -172,7 +197,11 @@ function foxyshop_product_category_init() {
 
 
 
+
+
+//-------------------------------------------
 //Meta Box for Product Info
+//-------------------------------------------
 add_action('admin_init','foxyshop_product_meta_init');
 function foxyshop_product_meta_init() {
 	global $wp_version;
@@ -190,7 +219,13 @@ function foxyshop_product_meta_init() {
 	add_action('save_post','foxyshop_product_meta_save');
 }
 
+
+
+
+
+//-------------------------------------------
 //Main Product Details
+//-------------------------------------------
 function foxyshop_product_details_setup() {
 	global $post, $foxyshop_settings;
 	$_price = number_format((double)get_post_meta($post->ID,'_price',TRUE),2,".",",");
@@ -268,7 +303,12 @@ function foxyshop_product_details_setup() {
 	echo '<input type="hidden" name="products_meta_noncename" value="' . wp_create_nonce(__FILE__) . '" />';
 }
 
+
+
+
+//-------------------------------------------
 //Secondary Product Details
+//-------------------------------------------
 function foxyshop_product_pricing_setup() {
 	global $post, $foxyshop_settings;
 	$_saleprice = number_format((double)get_post_meta($post->ID,'_saleprice',TRUE),2,".",",");
@@ -409,7 +449,11 @@ function foxyshop_product_pricing_setup() {
 }
 
 
+
+
+//-------------------------------------------
 //Secondary Product Features
+//-------------------------------------------
 function foxyshop_product_secondary_setup() {
 	global $post, $foxyshop_settings;
 	$_related_products = get_post_meta($post->ID,'_related_products',TRUE);
@@ -497,10 +541,24 @@ jQuery(document).ready(function($){
 }
 
 
+
+
+
+//-------------------------------------------
 //Product Images
+//-------------------------------------------
 function foxyshop_product_images_setup() {
 	global $post, $foxyshop_settings;
 	$upload_dir = wp_upload_dir();
+
+	//Get Max Upload Limit
+	$max_upload = (int)(ini_get('upload_max_filesize'));
+	$max_post = (int)(ini_get('post_max_size'));
+	$memory_limit = (int)(ini_get('memory_limit'));
+	$upload_mb = min($max_upload, $max_post, $memory_limit);
+	$foxyshop_max_upload = $upload_mb * 1048576;
+	if ($foxyshop_max_upload == 0) $foxyshop_max_upload = "8000000";
+
 	if (array_key_exists('error', $upload_dir)) {
 		if ($upload_dir['error'] != '') {
 			echo '<p style="color: red;"><strong>Warning:</strong> Images cannot be uploaded at this time. The error given is below.<br />Please attempt to correct the error and reload this page.</p>';
@@ -546,7 +604,7 @@ function foxyshop_product_images_setup() {
 			}
 		});
 
-		$("#foxyshop_product_image_list input").live("keyup, blur", function(e) {
+		$("#foxyshop_product_image_list input").live("keyup blur", function(e) {
 			var thisID = $(this).attr("rel");
 			var newTitle = $(this).val();
 			if (e.keyCode == 27) {
@@ -614,7 +672,7 @@ function foxyshop_product_images_setup() {
 				buttonImg	: '<?php echo FOXYSHOP_DIR; ?>/images/add-new-image.png',
 				width     : '132',
 				height    : '23',
-				sizeLimit : '5000000',
+				sizeLimit : '<?php echo $foxyshop_max_upload; ?>',
 				onComplete: function(event,queueID,fileObj,response,data) {
 						var data = {
 							action: 'foxyshop_product_ajax_action',
@@ -664,7 +722,15 @@ function foxyshop_product_images_setup() {
 
 }
 
+
+
+
+
+
+
+//-------------------------------------------
 //Product Variations
+//-------------------------------------------
 function foxyshop_product_variations_setup() {
 	global $post, $foxyshop_settings, $wp_version;
 	
@@ -846,7 +912,6 @@ jQuery(document).ready(function($){
 			result = secondstring * <?php echo ($foxyshop_settings['weight_type'] == 'metric' ? 1000 : 16); ?>/100;
 			result = result.toFixed(1)
 			$("#_weight2").val(result);
-			//alert(secondstring + ' ' + result + ' ' + $("#_weight2").val());
 			foxyshop_check_number_single(this);
 		}
 		foxyshop_check_number_single(this);
@@ -894,7 +959,13 @@ function foxyshop_check_number(el) { el.value = foxyshop_format_number(el.value)
 <?php
 }
 
+
+
+
+
+//-------------------------------------------
 //Save All Product Info
+//-------------------------------------------
 function foxyshop_product_meta_save($post_id) {
 	global $foxyshop_settings;
 	if (!wp_verify_nonce((isset($_POST['products_meta_noncename']) ? $_POST['products_meta_noncename'] : ""),__FILE__)) return $post_id;
@@ -916,7 +987,10 @@ function foxyshop_product_meta_save($post_id) {
 	if (isset($_POST['_category'])) foxyshop_save_meta_data('_category',$_POST['_category']);
 	foxyshop_save_meta_data('_quantity_min',$_quantity_min);
 	foxyshop_save_meta_data('_quantity_max',$_quantity_max);
-	foxyshop_save_meta_data('_hide_product',$_POST['_hide_product']);
+	
+	$hide_product = "";
+	if (isset($_POST['_hide_product'])) $hide_product = $_POST['_hide_product'];
+	foxyshop_save_meta_data('_hide_product',$hide_product);
 
 	//Save Sale Pricing Data
 	foxyshop_save_meta_data('_saleprice',number_format(str_replace(",","",$_POST['_saleprice']),2,".",""));
@@ -991,7 +1065,8 @@ function foxyshop_product_meta_save($post_id) {
 		$_variationName = trim(str_replace(".","",str_replace('"','',$_POST['_variation_name_'.$i])));
 		$_variationType = $_POST['_variation_type_'.$i];
 		$_variationDisplayKey = $_POST['_variation_dkey_'.$i];
-		$_variationRequired = $_POST['_variation_required_'.$i];
+		$_variationRequired = "";
+		if (isset($_POST['_variation_required_'.$i])) $_variationRequired = $_POST['_variation_required_'.$i];
 		$writeID = $i;
 		if ($_variationName != '') {
 			$currentID++;
@@ -1023,6 +1098,7 @@ function foxyshop_product_meta_save($post_id) {
 		foxyshop_save_meta_data('_variation_dkey_'.$writeID,$_variationDisplayKey);
 		foxyshop_save_meta_data('_variation_required_'.$writeID,$_variationRequired);
 	}
+
 	
 	//Rewrite Product Sitemap
 	if ($foxyshop_settings['generate_product_sitemap']) {
@@ -1034,6 +1110,11 @@ function foxyshop_product_meta_save($post_id) {
 
 
 
+
+
+//-------------------------------------------
+//Extra Functions
+//-------------------------------------------
 function foxyshop_save_meta_data($fieldname,$input) {
 	global $post_id;
 	$current_data = get_post_meta($post_id, $fieldname, TRUE);	
