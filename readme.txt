@@ -127,7 +127,7 @@ Author URI: http://www.foxy-shop.com/<br />
 * Updated FoxyCart include files so that CSS comes before Javascript to prevent any weird ColorBox issues.
 * Resolved upload errors where paths with aliases were not being translated
 * Fixed image rename bug on the image bar
-* See [Release Notes](http://www.foxy-shop.com/2011/04/version-2-3-variation-inventory-updates/) for more details
+* See [Release Notes](http://www.foxy-shop.com/2011/04/version-2-3-variation-inventory-update/) for more details
 
 = 2.2.3 =
 * The file that includes for the Custom File Upload has been moved into the themefiles folder so that you can now store a customized version in your theme folder without risking an overwrite during upgrade.
