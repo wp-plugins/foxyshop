@@ -306,7 +306,7 @@ function foxyshop_product_ajax() {
 		);
 		require_once(ABSPATH . "wp-admin" . '/includes/image.php');
 		$attach_id = wp_insert_attachment($attachment, $filename, $productID);
-		$attach_data = wp_generate_attachment_metadata($attach_id, $_SERVER['DOCUMENT_ROOT'] . $filename);
+		$attach_data = wp_generate_attachment_metadata($attach_id, FOXYSHOP_DOCUMENT_ROOT . $filename);
 		wp_update_attachment_metadata($attach_id, $attach_data);
 		
 		if ($product_count == 0) {

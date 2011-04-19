@@ -25,11 +25,15 @@ THE SOFTWARE.
 */
 
 if (!empty($_FILES)) {
+
+	$foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
+	if ($foxyshop_document_root == "" || $foxyshop_document_root == "/") $foxyshop_document_root = str_replace("/wp-content/plugins/foxyshop/js/uploadify","",dirname(__FILE__));
+
 	$tempFile = $_FILES['Filedata']['tmp_name'];
 	if (isset($_REQUEST['folder'])) {
-		$targetPath = realpath($_SERVER['DOCUMENT_ROOT']) . '/'.$_REQUEST['folder'].'/';
+		$targetPath = realpath($foxyshop_document_root) . '/'.$_REQUEST['folder'].'/';
 	} else {
-		$targetPath = realpath($_SERVER['DOCUMENT_ROOT']) . '/customuploads/';
+		$targetPath = realpath($foxyshop_document_root) . '/customuploads/';
 	}
 	
 	$ext = strtolower(substr($_FILES['Filedata']['name'], strrpos($_FILES['Filedata']['name'], '.') + 1));

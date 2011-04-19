@@ -25,8 +25,13 @@ THE SOFTWARE.
 */
 
 if (!empty($_FILES)) {
+	
+	$foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
+	if ($foxyshop_document_root == "" || $foxyshop_document_root == "/") $foxyshop_document_root = str_replace("/wp-content/plugins/foxyshop/js/uploadify","",dirname(__FILE__));
+
+	
 	$tempFile = $_FILES['Filedata']['tmp_name'];
-	$targetPath = realpath($_SERVER['DOCUMENT_ROOT']) . '/'.$_REQUEST['folder'].'/';
+	$targetPath = realpath($foxyshop_document_root) . '/'.$_REQUEST['folder'].'/';
 	$targetPath = str_replace('//','/',$targetPath);
 	
 	$newfilename = urldecode($_FILES['Filedata']['name']);
@@ -55,7 +60,7 @@ if (!empty($_FILES)) {
 
 
 	move_uploaded_file($tempFile,$targetFile);
-	echo str_replace($_SERVER['DOCUMENT_ROOT'],'',$targetFile);
+	echo str_replace($foxyshop_document_root,'',$targetFile);
 } else {
 	echo '1';
 }

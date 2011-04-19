@@ -90,9 +90,9 @@ jQuery(document).ready(function($){
 		}
 		//Check Inventory
 		inventory_code = new_code;
+		inventory_match_count = "";
 		if (new_codeadd) inventory_code = $("#fs_code").val() + new_codeadd; 
 		if (inventory_code != "" && typeof arr_foxyshop_inventory != 'undefined') {
-			inventory_match_count = "";
 			for (i=0; i<arr_foxyshop_inventory.length; i++) {
 				if (arr_foxyshop_inventory[i][0] == inventory_code) inventory_match_count = arr_foxyshop_inventory[i][1];
 			}

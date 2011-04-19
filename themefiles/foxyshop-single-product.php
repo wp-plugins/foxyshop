@@ -67,7 +67,7 @@ while (have_posts()) : the_post();
 	foxyshop_inventory_management("There are only %c item%s left in stock.", "Item is not in stock.", false);
 	
 	//Add To Cart Button
-	echo '<button type="submit" name="productsubmit" id="productsubmit" class="foxyshop_button">Add To Cart</button>';
+	echo '<button type="submit" name="x:productsubmit" id="productsubmit" class="foxyshop_button">Add To Cart</button>';
 	
 	//Shows the Price (includes sale price if applicable)
 	echo '<div id="foxyshop_main_price">';

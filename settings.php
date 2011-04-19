@@ -62,12 +62,12 @@ function foxyshop_options() {
 	
 	//Warning Sitemap Not Writeable
 	if ($foxyshop_settings['generate_product_sitemap']) {
-		$sitemap_filename = $_SERVER['DOCUMENT_ROOT'].'/sitemap-products.xml';
+		$sitemap_filename = FOXYSHOP_DOCUMENT_ROOT.'/sitemap-products.xml';
 		if (file_exists($sitemap_filename)) {
-			if (!is_writeable($sitemap_filename)) echo '<div class="error"><p><strong>Warning:</strong> ' . $_SERVER['DOCUMENT_ROOT'].'/sitemap-products.xml not writeable.</p></div>';
+			if (!is_writeable($sitemap_filename)) echo '<div class="error"><p><strong>Warning:</strong> ' . FOXYSHOP_DOCUMENT_ROOT.'/sitemap-products.xml not writeable.</p></div>';
 		} else {
-			$sitemap_directory = $_SERVER['DOCUMENT_ROOT'];
-			if (!is_writeable($sitemap_directory)) echo '<div class="error"><p><strong>Warning:</strong> ' . $_SERVER['DOCUMENT_ROOT'].'/sitemap-products.xml does not exist and the directory is not writeable.</p></div>';
+			$sitemap_directory = FOXYSHOP_DOCUMENT_ROOT;
+			if (!is_writeable($sitemap_directory)) echo '<div class="error"><p><strong>Warning:</strong> ' . FOXYSHOP_DOCUMENT_ROOT.'/sitemap-products.xml does not exist and the directory is not writeable.</p></div>';
 		}
 	}
 

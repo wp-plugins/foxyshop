@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1.1
-Stable tag: 2.3
+Stable tag: 2.3.1
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -114,6 +114,12 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 2.3.1 =
+* BUGFIX: Corrected javascript error with installs not using inventory
+* Added x: to cart button to ensure no "Add To Cart" variation values in cart
+* Updated upgrade procedure to set datafeed key if one hadn't been set
+* Added upload workaround for systems that don't set $_SERVER['DOCUMENT_ROOT']
 
 = 2.3 =
 * Added ability for variation intersections to have their own inventory values. See documentation for instructions.

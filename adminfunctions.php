@@ -175,6 +175,7 @@ function foxyshop_activation() {
 		//Load in New Defaults and Save New Version
 		$foxyshop_settings = wp_parse_args($foxyshop_settings,$default_foxyshop_settings);
 		$foxyshop_settings['foxyshop_version'] = FOXYSHOP_VERSION;
+		if (!$foxyshop_settings['datafeed_url_key']) $foxyshop_settings['datafeed_url_key'] = substr(MD5(rand(1000, 99999)."{urlkey}" . date("H:i:s")),1,12);
 
 		//Save Settings
 		update_option("foxyshop_settings", serialize($foxyshop_settings));
@@ -233,7 +234,7 @@ function foxyshop_create_product_sitemap() {
 		$write .= '</url>'."\n";
 	}
 	$write .= '</urlset>';
-	file_put_contents($_SERVER['DOCUMENT_ROOT'].'/sitemap-products.xml', $write);
+	file_put_contents(FOXYSHOP_DOCUMENT_ROOT.'/sitemap-products.xml', $write);
 }
 
 //Flushes Rewrite Rules if Structure Has Changed
@@ -261,7 +262,7 @@ function foxyshop_get_foxycart_data($foxyData) {
 	 
 	// The following if block will print any CURL errors you might have
 	if ($response == false) {
-		die("CURL Error: \n" . curl_error($ch));
+		die("cURL Error: \n" . curl_error($ch));
 	}
 	curl_close($ch);
 	return $response;
