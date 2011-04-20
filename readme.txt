@@ -47,7 +47,7 @@ Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for full documentation and 
 * Creates Google Product Search datafeed
 * Automated product sitemaps
 * Product importing and duplication support available
-* Supports FoxyCart versions 0.7.0 and 0.7.1 and includes product images in the shopping cart
+* Supports FoxyCart versions 0.7.0 and 0.7.1 and includes product images in the shopping cart.
 
 
 
