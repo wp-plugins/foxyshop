@@ -120,6 +120,7 @@ Author URI: http://www.foxy-shop.com/<br />
 * jQuery updated to 1.5.2. Version can now be set as a constant in wp-config to allow a different version.
 * Compatibility updated to WordPress 3.1.2.
 * Fixed errant var_dump in sso.php
+* See [Release Notes](http://www.foxy-shop.com/2011/05/version-2-4-product-sorting-dropdown/) for more details
 
 = 2.3.1 =
 * BUGFIX: Corrected javascript error with installs not using inventory
