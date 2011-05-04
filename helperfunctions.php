@@ -840,6 +840,8 @@ function foxyshop_related_products($sectiontitle = "-1") {
 //Get Sort Order
 function foxyshop_sort_order_array() {
 	global $foxyshop_settings;
+	if (isset($_COOKIE['sort_key'])) $foxyshop_settings['sort_key'] = $_COOKIE['sort_key'];
+	if (isset($_GET['sort_key'])) $foxyshop_settings['sort_key'] = $_GET['sort_key'];
 	if ($foxyshop_settings['sort_key'] == "name") {
 		return array('orderby' => 'title', 'order' => 'ASC');
 	} elseif ($foxyshop_settings['sort_key'] == "price_asc") {
@@ -853,6 +855,43 @@ function foxyshop_sort_order_array() {
 	} else {
 		return array('orderby' => 'menu_order', 'order' => 'ASC');
 	}
+}
+
+
+//Product Sort Dropdown
+function foxyshop_sort_dropdown($title = "Sort Products") {
+	global $arr_dropdown_sort, $foxyshop_settings;
+	if (!isset($arr_dropdown_sort)) $arr_dropdown_sort = array(
+		"default" => 'Default',
+		"price_asc" => 'Price (Low to High)',
+		"price_desc" => 'Price (High to Low)',
+		"date_desc" => 'Newer Products First',
+		"date_asc" => 'Older Products First'
+	);
+	if (isset($_COOKIE['sort_key'])) $current_sort_key = $_COOKIE['sort_key'];
+	if (isset($_GET['sort_key'])) $current_sort_key = $_GET['sort_key'];
+	if (!isset($current_sort_key)) $current_sort_key = $foxyshop_settings['sort_key'];
+	echo '<form id="foxyshop_sort_dropdown">'."\n";
+	echo '<label for="sort_key">' . $title . '</label>'."\n";
+	echo '<select name="sort_key" id="sort_key" onchange="foxyshop_sort_dropdown(this);">'."\n";
+	foreach ($arr_dropdown_sort AS $key=>$val) {
+		echo '<option value="' . $key . '"' . ($current_sort_key == $key ? ' selected="selected"' : '') . '>' . $val . '</option>'."\n";
+	}
+	echo '</select>'."\n";
+	echo '</form>'."\n";
+	
+	?>
+	<script type="text/javascript">
+	function foxyshop_sort_dropdown(el) {
+		var current_url = document.location.href;
+		var current_sort_key = el.options[el.selectedIndex].value;
+		foxyshop_set_cookie('sort_key',current_sort_key,1)
+		document.location.href = current_url.split('?')[0] + '?sort_key=' + current_sort_key;
+	}
+	function foxyshop_set_cookie(c_name,value,exdays) { var exdate=new Date();exdate.setDate(exdate.getDate() + exdays);var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString()) + '; path=/';document.cookie=c_name + "=" + c_value; }
+	</script>
+	<?php
+	
 }
 
 

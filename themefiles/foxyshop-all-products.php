@@ -12,6 +12,9 @@ global $product;
 
 	//Write Category Title
 	echo '<h1 id="foxyshop_category_title">Products</h1>'."\n";
+
+	//Write Product Sort Dropdown
+	//foxyshop_sort_dropdown();
 	
 	//Feel free to put a store description here
 	//echo '<p></p>'."\n";

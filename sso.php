@@ -16,8 +16,6 @@ function foxyshop_profile_update($user_id) {
 	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
 	$foxycart_customer_id = (string)$xml->customer_id;
 	if ($foxycart_customer_id) add_user_meta($user_id, 'foxycart_customer_id', $foxycart_customer_id, true);
-	var_dump($foxy_response);
-	die();
 }
 function foxyshop_profile_add($user_id) {
 	if (isset($_POST['pass1'])) {
@@ -38,20 +36,20 @@ if (isset($_GET['foxycart_checkout'])) {
 	add_action('login_head','foxyshop_login_head');
 }
 function foxyshop_login_head() { ?>
-	<style type="text/css">
-	#login_error, .message { display:none; }
-	.custom-message {
+<style type="text/css">
+#login_error, .message { display:none; }
+.custom-message {
 	-moz-border-radius:3px 3px 3px 3px;
 	border-style:solid;
 	border-width:1px;
 	margin:0 0 16px 8px;
 	padding:12px;
-	}
-	.login .custom-message {
+}
+.login .custom-message {
 	background-color:#FFFFE0;
 	border-color:#E6DB55;
-	}
-	</STYLE><?php
+}
+</style><?php
 }
 
 function foxyshop_login_message() {

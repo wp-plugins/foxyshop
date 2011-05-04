@@ -165,8 +165,8 @@ function foxyshop_options() {
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_use_jquery" name="foxyshop_use_jquery"<?php checked($foxyshop_settings['use_jquery'], "on"); ?> />
-					<label for="foxyshop_use_jquery"><?php _e('Automatically Insert jQuery 1.4.4 from Google CDN'); ?></label>
-					<div class="small"><?php _e('If you are already manually inserting jQuery you can uncheck this option. It should be noted that jQuery needs to be inserted before wp_head() is called or FoxyCart won\'t function properly. Please note that currently FoxyCart\'s Colorbox has a problem with jQuery 1.5 and above so we\'ll use 1.4.4. This will be upgraded to the latest stable version once the Colorbox issue is resolved.'); ?></div>
+					<label for="foxyshop_use_jquery"><?php echo __('Automatically Insert jQuery ') . FOXYSHOP_JQUERY_VERSION . __(' from Google CDN'); ?></label>
+					<div class="small"><?php _e('If you are already manually inserting jQuery you can uncheck this option. If you need a different version, you can define the constant FOXYSHOP_JQUERY_VERSION in your wp-config file with the version you want and we will fetch it from Google.'); ?></div>
 				</td>
 			</tr>
 		</tbody>

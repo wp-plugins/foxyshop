@@ -1,9 +1,8 @@
 <?php
 //Insert jQuery
 function foxyshop_insert_jquery() {
-	$jquery_version = "1.4.4";
 	wp_deregister_script('jquery');
-	wp_register_script('jquery', ("http".($_SERVER['SERVER_PORT'] == 443 ? 's' : '')."://ajax.googleapis.com/ajax/libs/jquery/".$jquery_version."/jquery.min.js"), false, $jquery_version);
+	wp_register_script('jquery', ("http".($_SERVER['SERVER_PORT'] == 443 ? 's' : '')."://ajax.googleapis.com/ajax/libs/jquery/".FOXYSHOP_JQUERY_VERSION."/jquery.min.js"), false, FOXYSHOP_JQUERY_VERSION);
 	wp_enqueue_script('jquery');
 }
 

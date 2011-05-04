@@ -23,7 +23,10 @@ global $product;
 
 	//Write Category Title
 	echo '<h1 id="foxyshop_category_title">' . str_replace("_","",$currentCategoryName) . '</h1>'."\n";
-	
+
+	//Write Product Sort Dropdown
+	//foxyshop_sort_dropdown();
+
 	//If there's a category description, write it here
 	if ($currentCategoryDescription) echo '<p>' . $currentCategoryDescription . '</p>'."\n";
 
