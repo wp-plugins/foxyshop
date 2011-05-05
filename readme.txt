@@ -117,6 +117,7 @@ Author URI: http://www.foxy-shop.com/<br />
 
 = 2.4 =
 * New Feature: Product sorting drop-down now available for public pages. Can be enabled in theme files.
+* Localization codes added as a setting.
 * jQuery updated to 1.5.2. Version can now be set as a constant in wp-config to allow a different version.
 * Compatibility updated to WordPress 3.1.2.
 * Fixed errant var_dump in sso.php
@@ -274,4 +275,6 @@ Author URI: http://www.foxy-shop.com/<br />
 * Initial release
 
 == Upgrade Notice ==
-None
+
+= 2.4 =
+New Dropdown Feature and jQuery update to 1.5.2
