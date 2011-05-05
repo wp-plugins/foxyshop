@@ -52,7 +52,7 @@ if (!defined('FOXYSHOP_JQUERY_VERSION')) define('FOXYSHOP_JQUERY_VERSION','1.5.2
 if ($foxyshop_settings['foxyshop_version'] != FOXYSHOP_VERSION) add_action('admin_init', 'foxyshop_activation');
 
 //Sets the Locale for Currency Internationalization
-setlocale(LC_MONETARY, get_locale());
+setlocale(LC_MONETARY, (array_key_exists('locale_code',$foxyshop_settings) ? $foxyshop_settings['locale_code'] : get_locale()));
 $foxyshop_localsettings = localeconv();
 if ($foxyshop_localsettings['int_curr_symbol'] == "") setlocale(LC_MONETARY, 'en_US');
 

@@ -950,11 +950,13 @@ function foxyshop_get_pagination($range = 4) {
 }
 
 function foxyshop_currency($input, $currencysymbol = true) {
+	global $foxyshop_settings;
 	if (function_exists('money_format')) {
 		$currency = utf8_encode(money_format("%" . ($currencysymbol ? "" : "!") . ".2n", (double)$input));
 	} else {
 		//Windows: no internationalization support
-		$currency = utf8_encode('$'.number_format((double)$input,2,".",","));
+		$currency_code = ($foxyshop_settings['locale_code'] == "en_GB" ? "£" : "$");
+		$currency = utf8_encode($currency_code.number_format((double)$input,2,".",","));
 	}
 	return $currency;
 }

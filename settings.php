@@ -17,7 +17,7 @@ function set_foxyshop_settings() {
 		if ($_POST['foxyshop_generate_product_sitemap'] == "on") foxyshop_create_product_sitemap();
 		
 		$new_settings = array();
-		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "ga_advanced", "generate_feed", "hide_subcat_children", "generate_product_sitemap", "manage_inventory_levels", "inventory_alert_level", "enable_sso", "sso_account_required", "browser_title_1", "browser_title_2", "browser_title_3", "browser_title_4", "browser_title_5");
+		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "ga_advanced", "generate_feed", "hide_subcat_children", "generate_product_sitemap", "manage_inventory_levels", "inventory_alert_level", "enable_sso", "sso_account_required", "browser_title_1", "browser_title_2", "browser_title_3", "browser_title_4", "browser_title_5", "locale_code");
 		foreach ($fields as $field1) {
 			$val = (isset($_POST['foxyshop_'.$field1]) ? $_POST['foxyshop_'.$field1] : '');
 			$new_settings[$field1] = $val;
@@ -327,6 +327,13 @@ function foxyshop_options() {
 				<td>
 					<label for="foxyshop_max_variations"><?php _e('Maximum Variations'); ?>:</label> <input type="text" id="foxyshop_max_variations" name="foxyshop_max_variations" value="<?php echo $foxyshop_settings['max_variations']; ?>" style="width: 50px;" />  <small>(per product)</small>
 					<div class="small"><?php _e('This is an arbitrary number to save resources and should be sufficient in most cases. Raise only if necessary.'); ?></div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="foxyshop_locale_code"><?php _e('Currency Locale Code'); ?>:</label> <input type="text" id="foxyshop_locale_code" name="foxyshop_locale_code" value="<?php echo $foxyshop_settings['locale_code']; ?>" style="width: 150px;" />  <small>(Default: en_US)</small>
+					<div class="small"><?php _e('If you would like to use something other than $ for your currency, enter your locale code here. For the British Pound, enter "en_GB". <a href="http://www.roseindia.net/tutorials/I18N/locales-list.shtml" target="_blank">Full list of locale codes here.</a>'); ?></div>
+					<?php if (!function_exists('money_format')) echo '<div>' . __('Attention, you are using Windows which does not support internationalization. You will be limited to $ or £.') . '</div>'; ?>
 				</td>
 			</tr>
 			<tr>

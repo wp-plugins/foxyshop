@@ -121,6 +121,10 @@ function foxyshop_activation() {
 	//Initialize Category Sort Holder If Not Set
 	add_option('foxyshop_category_sort',serialize(array()));
 	
+	//Get Locale
+	$current_locale = get_locale();
+	if (!$current_locale) $current_locale = "en_US";
+	
 	//Defaults For Settings
 	$default_foxyshop_settings = array(
 		"domain" => "",
@@ -146,6 +150,7 @@ function foxyshop_activation() {
 		"sso_account_required" => "",
 		"ga" => "",
 		"ga_advanced" => "",
+		"locale_code" => $current_locale,
 		"manage_inventory_levels" => "",
 		"inventory_alert_level" => 3,
 		"datafeed_url_key" => substr(MD5(rand(1000, 99999)."{urlkey}" . date("H:i:s")),1,12),
@@ -166,11 +171,12 @@ function foxyshop_activation() {
 		
 		//Run Some Upgrades
 		if ($foxyshop_settings['version'] == "0.70") $foxyshop_settings['version'] = "0.7.0";
+		if (!array_key_exists('locale_code',$foxyshop_settings)) $foxyshop_settings['locale_code'] = $current_locale;
 		if (array_key_exists('inventory_url_key',$foxyshop_settings)) {
 			$foxyshop_settings['datafeed_url_key'] = $foxyshop_settings['inventory_url_key'];
 			unset($foxyshop_settings['inventory_url_key']);
 		}
-		
+
 		//Load in New Defaults and Save New Version
 		$foxyshop_settings = wp_parse_args($foxyshop_settings,$default_foxyshop_settings);
 		$foxyshop_settings['foxyshop_version'] = FOXYSHOP_VERSION;
