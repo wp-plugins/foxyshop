@@ -274,6 +274,4 @@ Author URI: http://www.foxy-shop.com/<br />
 * Initial release
 
 == Upgrade Notice ==
-
-= 2.4 =
-New Dropdown Feature and jQuery update to 1.5.2
+None
