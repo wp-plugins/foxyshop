@@ -120,6 +120,7 @@ Author URI: http://www.foxy-shop.com/<br />
 * Updated to PrettyPhoto 3.1.2
 * Changed bloginfo('wpurl') to 'url' in a few places where it was not correct
 * Fixed a missing set of quotes in a dKey JavaScript selector
+* Updated product loop file in themefiles to avoid problems on Windows installs
 
 = 2.4 =
 * New Feature: Product sorting drop-down now available for public pages. Can be enabled in theme files.
