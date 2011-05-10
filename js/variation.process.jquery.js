@@ -61,7 +61,7 @@ jQuery(document).ready(function($){
 		
 		$(".dkey").hide();
 		for (i=0;i<displayKey.length;i++) {
-			$(".dkey[dkey=" + displayKey[i] + "]").show();
+			$('.dkey[dkey="' + displayKey[i] + '"]').show();
 		}
 		$(".dkey:hidden").each(function() {
 			var thisEl = $(this);

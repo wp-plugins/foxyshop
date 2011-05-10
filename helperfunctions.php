@@ -542,7 +542,7 @@ function foxyshop_image_slideshow($size = "thumbnail", $includeFeatured = true, 
 			$ikey .= "]);\n";
 		}
 		if (!$imageArray['featured'] || $includeFeatured) {
-			$write .= '<li><a href="' . $imageArray['large'] . '" rel="foxyshop_gallery[fs_gall]"><img src="' . $imageArray[$size] . '" alt="' . esc_attr($imageArray['title']) . '" /></a></li>'."\n";
+			$write .= '<li><a href="' . $imageArray['large'] . '" rel="foxyshop_gallery[fs_gall]" title=""><img src="' . $imageArray[$size] . '" alt="' . esc_attr($imageArray['title']) . '" /></a></li>'."\n";
 		}
 	}
 	if ($write && (count($product['images']) != 1 || $includeFeatured)) {
@@ -650,7 +650,7 @@ function foxyshop_breadcrumbs($sep = " &raquo; ", $product_fallback = "&laquo; B
 		}
 		$breadcrumbarray = array_reverse($breadcrumbarray);
 
-		$write1 = '<li><a href="' . get_bloginfo('wpurl') . '/' . FOXYSHOP_PRODUCT_CATEGORY_SLUG . '/">'. $base_name . '</a></li>';
+		$write1 = '<li><a href="' . get_bloginfo('url') . '/' . FOXYSHOP_PRODUCT_CATEGORY_SLUG . '/">'. $base_name . '</a></li>';
 		foreach($breadcrumbarray as $termid) {
 			$write1 .= '<li class="foxyshop_category_separator">' . $sep .'</li>';
 			$terminfo = get_term_by('id',$termid,"foxyshop_categories");
@@ -671,7 +671,7 @@ function foxyshop_breadcrumbs($sep = " &raquo; ", $product_fallback = "&laquo; B
 	
 	//Product Fallback
 	} elseif ($post->ID && $product_fallback != "") {
-		echo '<ul id="foxyshop_breadcrumbs"><li><a href="' . get_bloginfo('wpurl') . '/' . FOXYSHOP_PRODUCTS_SLUG . '/">'. $product_fallback . '</a></li><li style="float: none; text-indent: -99999px; width: 1px; margin: 0;">-</li></ul>';
+		echo '<ul id="foxyshop_breadcrumbs"><li><a href="' . get_bloginfo('url') . '/' . FOXYSHOP_PRODUCTS_SLUG . '/">'. $product_fallback . '</a></li><li style="float: none; text-indent: -99999px; width: 1px; margin: 0;">-</li></ul>';
 	}
 
 }

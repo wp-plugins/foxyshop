@@ -12,12 +12,13 @@ while (have_posts()) : the_post();
 	//PrettyPhoto Includes (can be removed if you want to use a different javascript slideshow plugin)
 	echo '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/prettyphoto/jquery.prettyPhoto.js"></script>'."\n";
 	echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/prettyphoto/prettyPhoto.css" type="text/css" media="screen" />'."\n";
-	echo '<script type="text/javascript">jQuery(document).ready(function($){$("a[rel^=\'foxyshop_gallery\']").prettyPhoto({theme: \'light_square\', overlay_gallery: false});});</script>'."\n";
+	?><script type="text/javascript">jQuery(document).ready(function($){$("a[rel^='foxyshop_gallery']").prettyPhoto({theme: 'light_square', overlay_gallery: false, social_tools: ''});});</script><?php
 
 	//Initialize Product
 	global $product;
 	$product = foxyshop_setup_product();
 	
+	//This is for testing to see what is included in the $product array
 	//print_r($product);
 	
 	//Initialize Form
@@ -34,8 +35,8 @@ while (have_posts()) : the_post();
 	$imagecount = count($product['images']);
 	if ($mediumSRC) {
 		echo '<div class="foxyshop_product_image">';
-		if ($mediumSRC != $largeSRC || $imagecount > 1) echo '<a href="' . $largeSRC . '" rel="foxyshop_gallery' . ($imagecount > 1 ? '[fs_gall]' : '') . '">';
-		echo '<img src="' . $mediumSRC . '" id="foxyshop_main_product_image" alt="' . htmlspecialchars($mediumSRCtitle) . '" title="" /></a>';
+		if ($mediumSRC != $largeSRC || $imagecount > 1) echo '<a href="' . $largeSRC . '" rel="foxyshop_gallery' . ($imagecount > 1 ? '[fs_gall]' : '') . '"  title="">';
+		echo '<img src="' . $mediumSRC . '" id="foxyshop_main_product_image" alt="' . htmlspecialchars($mediumSRCtitle) . '" title="" />';
 		if ($mediumSRC != $largeSRC || $imagecount > 1) echo '</a>';
 		foxyshop_image_slideshow("thumbnail", false, "Click Below For More Images:");
 		echo "</div>\n";

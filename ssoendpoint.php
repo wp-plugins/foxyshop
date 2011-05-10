@@ -6,7 +6,7 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 	
 	if(!is_user_logged_in()) {
 		if ($foxyshop_settings['sso_account_required']) {
-			header('Location: ' . get_bloginfo('wpurl') . '/wp-login.php?redirect_to=' . urlencode(get_bloginfo('wpurl') . '/foxycart-sso-' . $foxyshop_settings['inventory_url_key'] . '/?timestamp=' . $_GET['timestamp'] . '&fcsid=' . $_GET['fcsid']) . '&foxycart_checkout=1&&reauth=1');
+			header('Location: ' . get_bloginfo('wpurl') . '/wp-login.php?redirect_to=' . urlencode(get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['inventory_url_key'] . '/?timestamp=' . $_GET['timestamp'] . '&fcsid=' . $_GET['fcsid']) . '&foxycart_checkout=1&&reauth=1');
 			die;
 		} else {
 			$customer_id = 0;

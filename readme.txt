@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1.2
-Stable tag: 2.4
+Stable tag: 2.4.1
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -114,6 +114,12 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 2.4.1 =
+* Updated to jQuery 1.6
+* Updated to PrettyPhoto 3.1.2
+* Changed bloginfo('wpurl') to 'url' in a few places where it was not correct
+* Fixed a missing set of quotes in a dKey JavaScript selector
 
 = 2.4 =
 * New Feature: Product sorting drop-down now available for public pages. Can be enabled in theme files.
@@ -275,6 +281,9 @@ Author URI: http://www.foxy-shop.com/<br />
 * Initial release
 
 == Upgrade Notice ==
+
+= 2.4.1 =
+Javascript update and adjustments
 
 = 2.4 =
 New Dropdown Feature and jQuery update to 1.5.2

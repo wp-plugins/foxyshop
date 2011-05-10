@@ -108,12 +108,12 @@ function foxyshop_options() {
 					<div style="clear: both;"></div>
 
 					<label for="foxyshop_datafeed_url"><?php _e('Datafeed URL'); ?>:</label>
-					<input type="text" id="foxyshop_datafeed_url" name="foxyshop_datafeed_url" value="<?php echo get_bloginfo('wpurl') . '/foxycart-datafeed-' . $foxyshop_settings['datafeed_url_key']; ?>/" readonly="readonly" onclick="this.select();" />
+					<input type="text" id="foxyshop_datafeed_url" name="foxyshop_datafeed_url" value="<?php echo get_bloginfo('url') . '/foxycart-datafeed-' . $foxyshop_settings['datafeed_url_key']; ?>/" readonly="readonly" onclick="this.select();" />
 					
 					<div style="clear: both;margin-bottom: 5px;"></div>
 
 					<label for="foxyshop_sso_url"><?php _e('SSO Endpoint'); ?>:</label>
-					<input type="text" id="foxyshop_sso_url" name="foxyshop_sso_url" value="<?php echo get_bloginfo('wpurl') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key']; ?>/" readonly="readonly" onclick="this.select();" />
+					<input type="text" id="foxyshop_sso_url" name="foxyshop_sso_url" value="<?php echo get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key']; ?>/" readonly="readonly" onclick="this.select();" />
 					
 					<div style="clear: both;margin-bottom: 5px;"></div>
 
