@@ -75,7 +75,7 @@ function foxyshop_options() {
 	
 	$permalink_structure = get_option('permalink_structure');
 	if ($permalink_structure == '/archives/%post_id%' || $permalink_structure == "") {
-		echo '<div class="error"><p><strong>Warning:</strong> Your permalink structure should be set to Day and Name or Month and Name. Other settings will cause difficulties using FoxyShop.</p></div>';
+		echo '<div class="error"><p><strong>Warning:</strong> Your <a href="/wp-admin/options-permalink.php">permalink structure</a> should be set to Day and Name or Month and Name. Other settings will cause difficulties using FoxyShop.</p></div>';
 	}
 	
 	
