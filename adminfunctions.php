@@ -147,7 +147,7 @@ function foxyshop_activation() {
 		"generate_product_sitemap" => "",
 		"sort_key" => "menu_order",
 		"enable_sso" => "",
-		"sso_account_required" => "",
+		"sso_account_required" => "0",
 		"ga" => "",
 		"ga_advanced" => "",
 		"locale_code" => $current_locale,
@@ -176,6 +176,9 @@ function foxyshop_activation() {
 			$foxyshop_settings['datafeed_url_key'] = $foxyshop_settings['inventory_url_key'];
 			unset($foxyshop_settings['inventory_url_key']);
 		}
+		if ($foxyshop_settings['sso_account_required'] == "") $foxyshop_settings['sso_account_required'] = 0;
+		if ($foxyshop_settings['sso_account_required'] == "on") $foxyshop_settings['sso_account_required'] = 1;
+
 
 		//Load in New Defaults and Save New Version
 		$foxyshop_settings = wp_parse_args($foxyshop_settings,$default_foxyshop_settings);

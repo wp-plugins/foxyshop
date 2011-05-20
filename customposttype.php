@@ -294,6 +294,12 @@ function foxyshop_product_details_setup() {
 		</select>
 	</div>
 	<?php } ?>
+	<?php if ($foxyshop_settings['enable_sso'] && $foxyshop_settings['sso_account_required'] == 2) { ?>
+	<div class="foxyshop_field_control">
+		<input type="checkbox" name="_require_sso" id="_require_sso" style="float: left; margin: 5px 0 0 10px;"<?php echo checked(get_post_meta($post->ID,'_require_sso',TRUE),"on"); ?> />
+		<label style="width: 210px;" for="_require_sso"><?php _e('Require Account For Checkout'); ?></label>
+	</div>
+	<?php } ?>
 	<div class="foxyshop_field_control">
 		<input type="checkbox" name="_hide_product" id="_hide_product" style="float: left; margin: 5px 0 0 10px;"<?php echo checked($_hide_product,"on"); ?> />
 		<label style="width: 210px;" for="_hide_product"><?php _e('Hide This Product From List View'); ?></label>
@@ -991,6 +997,11 @@ function foxyshop_product_meta_save($post_id) {
 	$hide_product = "";
 	if (isset($_POST['_hide_product'])) $hide_product = $_POST['_hide_product'];
 	foxyshop_save_meta_data('_hide_product',$hide_product);
+
+	//Require SSO
+	if ($foxyshop_settings['enable_sso'] && $foxyshop_settings['sso_account_required'] == 2) {
+		foxyshop_save_meta_data('_require_sso',$_POST['_require_sso']);
+	}
 
 	//Save Sale Pricing Data
 	foxyshop_save_meta_data('_saleprice',number_format(str_replace(",","",$_POST['_saleprice']),2,".",""));

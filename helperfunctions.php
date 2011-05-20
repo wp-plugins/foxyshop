@@ -560,7 +560,8 @@ function foxyshop_image_slideshow($size = "thumbnail", $includeFeatured = true, 
 
 
 //Writes the Children Categories of a Category (if available)
-function foxyshop_category_children($categoryID = 0, $showCount = false) {
+function foxyshop_category_children($categoryID = 0, $showCount = false, $showDescription = true, $categoryImageSize = "thumbnail") {
+	global $taxonomy_images_plugin;
 	$write = "";
 	if ($categoryID == 0) {
 		$termchildren = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&parent=0&orderby=name&order=ASC');
@@ -576,9 +577,17 @@ function foxyshop_category_children($categoryID = 0, $showCount = false) {
 			$term = get_term_by('id', $child->term_id, "foxyshop_categories");
 			if (substr($term->name,0,1) != "_") {
 				$productCount = ($showCount ? " (" . $term->count . ")" : "");
+				$url = get_term_link($term, "foxyshop_categories");
 				$write .= '<li id="foxyshop_category_' . $term->term_id . '">';
-				$write .= '<h2><a href="' . get_term_link($term, "foxyshop_categories") . '">' . $term->name . '</a>' . $productCount . '</h2>';
-				if ($term->description) $write .= apply_filters('the_content', $term->description);
+				$write .= '<h2><a href="' . $url . '">' . $term->name . '</a>' . $productCount . '</h2>';
+				if ($showDescription && $term->description) $write .= apply_filters('the_content', $term->description);
+
+				if (isset($taxonomy_images_plugin)) {
+					$img = $taxonomy_images_plugin->get_image_html($categoryImageSize, $term->term_taxonomy_id);
+					if(!empty($img)) $write .= '<a href="' . $url . '" class="foxyshop_category_image">' . $img . '</a>';
+				}
+
+
 				$write .= '</li>'."\n";
 			}
 		}

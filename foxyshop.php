@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 2.4.2
+Version: 2.5
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -35,7 +35,7 @@ the most out of FoxyShop.
 **************************************************************************/
 
 //Setup Plugin Variables
-define('FOXYSHOP_VERSION', "2.4.2");
+define('FOXYSHOP_VERSION', "2.5");
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 $foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
@@ -47,7 +47,7 @@ $foxyshop_settings = unserialize(get_option("foxyshop_settings"));
 if (!is_array($foxyshop_settings)) $foxyshop_settings = array("domain" => "", "sort_key" => "", "enable_sso" => "", "generate_feed" => "", "manage_inventory_levels" => "");
 if (!array_key_exists('foxyshop_version',$foxyshop_settings)) $foxyshop_settings['foxyshop_version'] = '';
 $foxyshop_category_sort = unserialize(get_option('foxyshop_category_sort'));
-if (!defined('FOXYSHOP_JQUERY_VERSION')) define('FOXYSHOP_JQUERY_VERSION','1.5.2');
+if (!defined('FOXYSHOP_JQUERY_VERSION')) define('FOXYSHOP_JQUERY_VERSION','1.6.1');
 
 //Checks for Old Plugin Version and Perform Upgrade
 if ($foxyshop_settings['foxyshop_version'] != FOXYSHOP_VERSION) add_action('admin_init', 'foxyshop_activation');

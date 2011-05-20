@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.1.2
-Stable tag: 2.4.2
+Stable tag: 2.5
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -72,7 +72,7 @@ Copy the files from the '*themefiles*' folder inside the plugin into your theme 
 FoxyShop works very nicely with the [CSV Importer](http://wordpress.org/extend/plugins/csv-importer/) plugin. [Click here](http://www.foxy-shop.com/2011/03/importing-products/) for a sample import file and lots of tips for a successful import.
 
 = Any other suggestioned plugins? =
-The [Duplicate Posts](http://wordpress.org/extend/plugins/duplicate-post/) plugin works great for letting you quickly copy products.
+The [Duplicate Posts](http://wordpress.org/extend/plugins/duplicate-post/) plugin works great for letting you quickly copy products. The [Taxonomy Images](http://wordpress.org/extend/plugins/taxonomy-images/) plugin will let you easily add product category images.
 
 = Can I change the slug from 'products' to something else? =
 Sure! Just put this code in your wp-config.php file:
@@ -114,6 +114,12 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 2.5 =
+* New Feature: Category Images. FoxyShop has been optimized to work with the [Taxonomy Images](http://wordpress.org/extend/plugins/taxonomy-images/) plugin.
+* New Feature: If you have some products that require a login and some that don't, you can now choose which products will trigger the SSO requirement.
+* You can choose to turn category descriptions on or off on the category display pages
+* The jQuery roller-coaster continues and we are now using 1.6.1 which works fine with IE7
 
 = 2.4.2 =
 * Downgraded to jQuery 1.5.2 for now since IE7 and jQuery 1.6 and FoxyCart's Colorbox aren't playing well together at this point
@@ -286,6 +292,9 @@ Author URI: http://www.foxy-shop.com/<br />
 * Initial release
 
 == Upgrade Notice ==
+
+= 2.5 =
+New features and jQuery updated to 1.6.1
 
 = 2.4.1 =
 Javascript update and adjustments

@@ -286,8 +286,15 @@ function foxyshop_options() {
 					<label for="foxyshop_enable_sso"><?php _e('Enable WordPress Single-Sign-On'); ?></label>
 					<div class="small"><?php _e('If enabled, your WordPress users will not have to login again to complete a FoxyCart checkout. WordPress accounts and FoxyCart accounts are kept in sync. You must be using FoxyCart 0.7.1 or above and in the FoxyCart admin you must set the "customer password hash type" to "phpass, portable mode" and the hash config to 8. Check the "enable single sign on" option and put the SSO Endpoint url in the appropriate box.'); ?></div>
 					<div style="padding: 0 0 0 15px;">
-						<input type="checkbox" id="foxyshop_sso_account_required" name="foxyshop_sso_account_required"<?php checked($foxyshop_settings['sso_account_required'], "on"); ?> />
-						<label for="foxyshop_sso_account_required"><?php _e('Require a WordPress Account to check out'); ?></label>
+
+						<label for="foxyshop_sso_account_required"><?php _e('SSO Type'); ?>:</label> 
+						<select name="foxyshop_sso_account_required" id="sort_key">
+						<?php
+						$sortArray = array("WordPress account optional", "Require WordPress account to check out", "Account required on product-by-product basis");
+						foreach ($sortArray as $key=>$val) {
+							echo '<option value="' . $key . '"' . ($foxyshop_settings['sso_account_required'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
+						} ?>
+						</select>
 					</div>
 				</td>
 			</tr>
