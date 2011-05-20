@@ -21,7 +21,7 @@ Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for full documentation and 
 * Full product information: name, price, product code, shipping weight, shipping category, minimum and maximum quantities, product description, and short product description and lots more.
 * Multiple images per product with popup slideshow
 * Dedicated image uploader, improves default WordPress process
-* Set up product categories and subcategories. Categories can be ordered alphabetically or by a custom sort.
+* Set up product categories and subcategories. Categories can be ordered alphabetically or by a custom sort and can have images assigned to them.
 * Complete flexibility for product variations and pricing. Chainable variations are supported so that some options aren't available until others are selected. Price is automatically updated when different selections are made. Images can be tied to variations.
 * Full product sorting capabilities: sort by name, price, date, or customize your sorting with a drag-and-drop sorter.
 * Widget support for featured categories
@@ -120,6 +120,7 @@ Author URI: http://www.foxy-shop.com/<br />
 * New Feature: If you have some products that require a login and some that don't, you can now choose which products will trigger the SSO requirement.
 * You can choose to turn category descriptions on or off on the category display pages
 * The jQuery roller-coaster continues and we are now using 1.6.1 which works fine with IE7
+* See [Release Notes](http://www.foxy-shop.com/2011/05/version-2-5-category-images/) for more details
 
 = 2.4.2 =
 * Downgraded to jQuery 1.5.2 for now since IE7 and jQuery 1.6 and FoxyCart's Colorbox aren't playing well together at this point
