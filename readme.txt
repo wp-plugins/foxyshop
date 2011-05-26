@@ -3,7 +3,7 @@ Contributors: sparkweb
 Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
-Tested up to: 3.1.2
+Tested up to: 3.1.3
 Stable tag: 2.5
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
