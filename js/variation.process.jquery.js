@@ -90,22 +90,30 @@ jQuery(document).ready(function($){
 		}
 		//Check Inventory
 		inventory_code = new_code;
-		inventory_match_count = "";
+		inventory_match_count = -1;
 		if (new_codeadd) inventory_code = $("#fs_code").val() + new_codeadd; 
 		if (inventory_code != "" && typeof arr_foxyshop_inventory != 'undefined') {
 			for (i=0; i<arr_foxyshop_inventory.length; i++) {
-				if (arr_foxyshop_inventory[i][0] == inventory_code) inventory_match_count = arr_foxyshop_inventory[i][1];
+				if (arr_foxyshop_inventory[i][0] == inventory_code) inventory_match_count = i;
 			}
 		}
-		if (inventory_match_count != "") {
-			if (inventory_match_count > 0) {
-				$(".foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").text(update_inventory_alert_language(foxyshop_inventory_stock_alert,inventory_match_count)).show();
+		
+		if (inventory_match_count >= 0) {
+			newcount = parseInt(arr_foxyshop_inventory[inventory_match_count][1]);
+			newalert = parseInt(arr_foxyshop_inventory[inventory_match_count][2]);
+			newhash = arr_foxyshop_inventory[inventory_match_count][3];
+			if (!foxyshop_allow_backorder) $("#fs_quantity_max").attr("name","quantity_max"+newhash).val(newcount);
+			if (newcount > 0 && newcount <= newalert) {
+				$(".foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").text(update_inventory_alert_language(foxyshop_inventory_stock_alert,newcount)).show();
 				$("#productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
-			} else {
+			} else if (newcount <= 0) {
 				$(".foxyshop_stock_alert").addClass("foxyshop_out_of_stock").text(update_inventory_alert_language(foxyshop_inventory_stock_none,inventory_match_count)).show();
 				if (!foxyshop_allow_backorder) $("#productsubmit").attr("disabled","disabled").addClass("foxyshop_disabled");
+			} else {
+				$(".foxyshop_stock_alert").hide();
 			}
-		} else {
+		} else if (typeof arr_foxyshop_inventory != 'undefined') {
+			if (!foxyshop_allow_backorder) $("#fs_quantity_max").attr("name","quantity_max"+$("#original_quantity_max").attr("rel")).val($("#original_quantity_max").val());
 			$("#productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
 			$(".foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").hide();
 		}

@@ -17,13 +17,15 @@ function foxyshop_create_post_type() {
 		'not_found_in_trash' => __('No Products Found in Trash'), 
 		'parent_item_colon' => ''
 	);
+	$post_type_support = array('title','editor','thumbnail', 'custom-fields', 'excerpt');
+	if (defined('FOXYSHOP_PRODUCT_COMMENTS')) array_push($post_type_support, "comments");
 	register_post_type('foxyshop_product', array(
 		'labels' => $labels,
 		'public' => true,
 		'show_ui' => true,
 		'capability_type' => 'page',
 		'hierarchical' => false,
-		'supports' => array('title','editor','thumbnail', 'custom-fields', 'excerpt'),
+		'supports' => $post_type_support,
 		'menu_icon' => FOXYSHOP_DIR . '/images/icon.png',
 		'rewrite' => array("slug" => FOXYSHOP_PRODUCTS_SLUG)
 	));
@@ -381,7 +383,7 @@ function foxyshop_product_pricing_setup() {
 
 	<?php if ($foxyshop_settings['manage_inventory_levels']) { ?>
 	<h4><?php _e('Set Inventory Levels'); ?></a></h4>
-	<div style="float: left; width: 160px; margin-bottom: 5px; font-size: 11px;">Product Code</div>
+	<div style="float: left; width: 155px; margin-bottom: 5px; font-size: 11px;">Product Code</div>
 	<div style="float: left; width: 52px; margin-bottom: 5px; font-size: 11px;">Count</div>
 	<div style="float: left; width: 50px; margin-bottom: 5px; font-size: 11px;" title="If not set, default value will be used (<?php echo $foxyshop_settings['inventory_alert_level']; ?>)">Alert Lvl</div>
 	<ul id="inventory_levels">
@@ -392,7 +394,7 @@ function foxyshop_product_pricing_setup() {
 		foreach ($inventory_levels as $ivcode => $iv) {
 			if ($ivcode) {
 				echo '<li>';
-				echo '<input type="text" id="inventory_code_' . $i . '" name="inventory_code_' . $i . '" value="' . $ivcode . '" class="inventory_code" rel="' . $i . '" style="width: 147px;" />';
+				echo '<input type="text" id="inventory_code_' . $i . '" name="inventory_code_' . $i . '" value="' . $ivcode . '" class="inventory_code" rel="' . $i . '" style="width: 142px;" />';
 				echo '<input type="text" id="inventory_count_' . $i . '" name="inventory_count_' . $i . '" value="' . $iv['count'] . '" class="inventory_count" rel="' . $i . '" />';
 				echo '<input type="text" id="inventory_alert_' . $i . '" name="inventory_alert_' . $i . '" value="' . $iv['alert'] . '" class="inventory_count" rel="' . $i . '" />';
 				echo "</li>\n";
@@ -400,7 +402,7 @@ function foxyshop_product_pricing_setup() {
 			}
 		}
 		?>
-		<li><input type="text" id="inventory_code_<?php echo $i; ?>" name="inventory_code_<?php echo $i; ?>" value="" class="inventory_code" rel="<?php echo $i; ?>" style="width: 147px;" /><input type="text" id="inventory_count_<?php echo $i; ?>" name="inventory_count_<?php echo $i; ?>" value="" class="inventory_count" rel="<?php echo $i; ?>" /><input type="text" id="inventory_alert_<?php echo $i; ?>" name="inventory_alert_<?php echo $i; ?>" value="" class="inventory_count" rel="<?php echo $i; ?>" /></li>
+		<li><input type="text" id="inventory_code_<?php echo $i; ?>" name="inventory_code_<?php echo $i; ?>" value="" class="inventory_code" rel="<?php echo $i; ?>" style="width: 142px;" /><input type="text" id="inventory_count_<?php echo $i; ?>" name="inventory_count_<?php echo $i; ?>" value="" class="inventory_count" rel="<?php echo $i; ?>" /><input type="text" id="inventory_alert_<?php echo $i; ?>" name="inventory_alert_<?php echo $i; ?>" value="" class="inventory_count" rel="<?php echo $i; ?>" /></li>
 	</ul>
 	<input type="hidden" name="max_inventory_count" id="max_inventory_count" value="<?php echo $i; ?>" />
 	<div style="clear:both;"></div>
@@ -422,7 +424,7 @@ function foxyshop_product_pricing_setup() {
 		});
 		
 		function addField(nextID) {
-			$("#inventory_levels").append('<li><input type="text" id="inventory_code_' + nextID + '" name="inventory_code_' + nextID + '" value="" class="inventory_code" rel="' + nextID + '" style="width: 147px;" /><input type="text" id="inventory_count_' + nextID + '" name="inventory_count_' + nextID + '" value="" class="inventory_count" rel="' + nextID + '" /><input type="text" id="inventory_alert_' + nextID + '" name="inventory_alert_' + nextID + '" value="" class="inventory_count" rel="' + nextID + '" /></li>');
+			$("#inventory_levels").append('<li><input type="text" id="inventory_code_' + nextID + '" name="inventory_code_' + nextID + '" value="" class="inventory_code" rel="' + nextID + '" style="width: 142px;" /><input type="text" id="inventory_count_' + nextID + '" name="inventory_count_' + nextID + '" value="" class="inventory_count" rel="' + nextID + '" /><input type="text" id="inventory_alert_' + nextID + '" name="inventory_alert_' + nextID + '" value="" class="inventory_count" rel="' + nextID + '" /></li>');
 			$("#max_inventory_count").val(nextID);
 		}
 	});
@@ -431,22 +433,23 @@ function foxyshop_product_pricing_setup() {
 
 
 	<?php if ($foxyshop_settings['enable_subscriptions']) { ?>
-	<h4><?php _e('Subscription Attributes'); ?> <a href="http://wiki.foxycart.com/v/0.7.0/cheat_sheet#subscription_product_options" target="_blank">(<?php _e('reference'); ?>)</a></h4>
+	<h4 style="margin-bottom: 3px;"><?php _e('Subscription Attributes'); ?> <a href="http://wiki.foxycart.com/v/0.7.0/cheat_sheet#subscription_product_options" target="_blank">(<?php _e('reference'); ?>)</a></h4>
+	<span style="color: #999999; display: block; line-height: 15px; margin-bottom: 5px;"><?php _e('You may also enter a'); ?> <a href="http://php.net/manual/en/function.strtotime.php" target="_blank" style="color: #999">strtotime</a> <?php _e('argument for start or end (like +3 months)'); ?></span>
 	<div id="foxyshop_subscription_attributes">
 		<div class="foxyshop_field_control">
-			<label><?php _e('Frequency'); ?></label>
+			<label style="width: 65px;"><?php _e('Frequency'); ?></label>
 			<input type="text" name="_sub_frequency" value="<?php echo $_sub_frequency; ?>" style="float: left; width: 35px;" />
 			<span style="float: left; margin: 7px 0pt 0pt 5px;">60d, 2w, 1m, 1y, .5m</span>
 		</div>
 		<div class="foxyshop_field_control">
-			<label><?php _e('Start Date'); ?></label>
-			<input type="text" id="_sub_startdate" name="_sub_startdate" value="<?php echo $_sub_startdate; ?>" style="width: 79px; float: left;" />
-			<span style="float: left; margin: 7px 0pt 0pt 5px;">YYMMDD or D</span>
+			<label style="width: 65px;"><?php _e('Start Date'); ?></label>
+			<input type="text" id="_sub_startdate" name="_sub_startdate" value="<?php echo $_sub_startdate; ?>" style="width: 75px; float: left;" />
+			<span style="float: left; margin: 7px 0pt 0pt 5px;">YYYYMMDD or D</span>
 		</div>
 		<div class="foxyshop_field_control">
-			<label><?php _e('End Date'); ?></label>
-			<input type="text" id="_sub_enddate" name="_sub_enddate" value="<?php echo $_sub_enddate; ?>" style="width: 79px; float: left;" />
-			<span style="float: left; margin: 7px 0pt 0pt 5px;">YYMMDD or D</span>
+			<label style="width: 65px;"><?php _e('End Date'); ?></label>
+			<input type="text" id="_sub_enddate" name="_sub_enddate" value="<?php echo $_sub_enddate; ?>" style="width: 75px; float: left;" />
+			<span style="float: left; margin: 7px 0pt 0pt 5px;">YYYYMMDD or D</span>
 		</div>
 		<div style="clear: both;"></div>
 	</div>
@@ -513,8 +516,8 @@ function foxyshop_product_secondary_setup() {
 <script type="text/javascript">
 jQuery(document).ready(function($){
 	$("#add_related_product").click(function() {
-		thisID = $("#_related_products_list option:selected").attr("value");
-		thisName = $("#_related_products_list option:selected").attr("text");
+		thisID = $("#_related_products_list option:selected").prop("value");
+		thisName = $("#_related_products_list option:selected").prop("text");
 		$("#related_product_listing").append('<span id="related_' + thisID + '"><a href="#" class="remove_related_product" rel="' + thisID + '"><?php _e('Delete'); ?></a>&nbsp;' + thisName + '</span>');
 		$("#_related_products").val($("#_related_products").val() + ',' + thisID + ',');
 		return false;
@@ -527,8 +530,8 @@ jQuery(document).ready(function($){
 		return false;
 	});
 	$("#add_bundled_product").click(function() {
-		thisID = $("#_bundled_products_list option:selected").attr("value");
-		thisName = $("#_bundled_products_list option:selected").attr("text");
+		thisID = $("#_bundled_products_list option:selected").prop("value");
+		thisName = $("#_bundled_products_list option:selected").prop("text");
 		$("#bundled_product_listing").append('<span id="bundled_' + thisID + '"><a href="#" class="remove_bundled_product" rel="' + thisID + '"><?php _e('Delete'); ?></a>&nbsp;' + thisName + '</span>');
 		$("#_bundled_products").val($("#_bundled_products").val() + ',' + thisID + ',');
 		return false;
@@ -876,7 +879,7 @@ jQuery(document).ready(function($){
 			$(this).find(".variation_required_container").show();
 		} else {
 			$(this).find(".variation_required_container").hide();
-			$(this).find(".variation_required_container").find('input[type=checkbox]').attr('checked', false);
+			$(this).find(".variation_required_container").find('input[type="checkbox"]').prop('checked', false);
 		}
 	});
 	
@@ -889,7 +892,7 @@ jQuery(document).ready(function($){
 			$(this).parents(".product_variation").find(".variation_required_container").show();
 		} else {
 			$(this).parents(".product_variation").find(".variation_required_container").hide();
-			$(this).parents(".product_variation").find(".variation_required_container").find('input[type=checkbox]').attr('checked', false);
+			$(this).parents(".product_variation").find(".variation_required_container").find('input[type="checkbox"]').prop('checked', false);
 		}
 	});
 	
@@ -906,7 +909,6 @@ jQuery(document).ready(function($){
 	
 	<?php if (version_compare($wp_version, '3.1', '>=')) { ?>
 	$("#_salestartdate, #_salenddate").datepicker({ dateFormat: 'm/d/yy' });
-	$("#_sub_startdate, #_sub_enddate").datepicker({ dateFormat: 'yyddmm' });
 	<?php } ?>
 
 

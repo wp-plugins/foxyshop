@@ -9,7 +9,7 @@ global $product;
 	<?php foxyshop_include('header'); ?>
 	<h1 id="foxyshop_category_title">Product Search</h1>
 
-	<form class="searchform" action="/product-search/" method="get">
+	<form class="searchform" action="<?php bloginfo("url"); ?>/product-search/" method="get">
 		<input type="text" name="search" value="" />
 		<button type="submit" name="submitsearch" id="submitsearch">Search Products</button>
 	</form>

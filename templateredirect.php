@@ -4,7 +4,6 @@ add_action("template_redirect", 'foxyshop_theme_redirect', 1);
 
 function foxyshop_theme_redirect() {
 	global $wp, $foxyshop_settings;
-	if (!defined('FOXYSHOP_TEMPLATE_PATH')) define('FOXYSHOP_TEMPLATE_PATH',TEMPLATEPATH);
 
 	$currentName = (isset($wp->query_vars["name"]) ? $wp->query_vars["name"] : "");
 	$currentPageName = (isset($wp->query_vars["pagename"]) ? $wp->query_vars["pagename"] : "");
@@ -21,82 +20,47 @@ function foxyshop_theme_redirect() {
 
 	//Single Product Page
 	if ($currentPostType = "foxyshop_product" && $currentProduct != "" && $currentProduct != 'page') {
-		$templatefilename = 'foxyshop-single-product.php';
-		if (file_exists(FOXYSHOP_TEMPLATE_PATH . '/' . $templatefilename)) {
-			$return_template = FOXYSHOP_TEMPLATE_PATH . '/' . $templatefilename;
-		} else {
-			$return_template = FOXYSHOP_PATH . '/themefiles/' . $templatefilename;
-		}
+		$return_template = foxyshop_get_template_file('foxyshop-single-product.php');
 		add_filter('wp_title', 'title_filter_single_product', 1, 3);
 		do_theme_redirect($return_template);
 
 	//All Categories Page
 	} elseif ($currentPageName == FOXYSHOP_PRODUCT_CATEGORY_SLUG || $currentName == FOXYSHOP_PRODUCT_CATEGORY_SLUG) {
-		$templatefilename = 'foxyshop-all-categories.php';
-		if (file_exists(FOXYSHOP_TEMPLATE_PATH . '/' . $templatefilename)) {
-			$return_template = FOXYSHOP_TEMPLATE_PATH . '/' . $templatefilename;
-		} else {
-			$return_template = FOXYSHOP_PATH . '/themefiles/' . $templatefilename;
-		}
-		
+		$return_template = foxyshop_get_template_file('foxyshop-all-categories.php');
 		add_filter('wp_title', 'title_filter_all_categories', 1, 3);
 		include($return_template);
 		die();
 
 	//Single Category Page
 	} elseif ($currentCategory != '') {
-		$templatefilename = 'foxyshop-single-category.php';
-		if (file_exists(FOXYSHOP_TEMPLATE_PATH . '/' . $templatefilename)) {
-			$return_template = FOXYSHOP_TEMPLATE_PATH . '/' . $templatefilename;
-		} else {
-			$return_template = FOXYSHOP_PATH . '/themefiles/' . $templatefilename;
-		}
+		$return_template = foxyshop_get_template_file('foxyshop-single-category.php');
 		add_filter('wp_title', 'title_filter_single_categories', 1, 3);
 		do_theme_redirect($return_template);
 	
 
 	//All Products Page
 	} elseif ($currentPageName == FOXYSHOP_PRODUCTS_SLUG || $currentName == FOXYSHOP_PRODUCTS_SLUG || $currentPostType == 'foxyshop_product') {
-		$templatefilename = 'foxyshop-all-products.php';
-		if (file_exists(FOXYSHOP_TEMPLATE_PATH . '/' . $templatefilename)) {
-			$return_template = FOXYSHOP_TEMPLATE_PATH . '/' . $templatefilename;
-		} else {
-			$return_template = FOXYSHOP_PATH . '/themefiles/' . $templatefilename;
-		}
-		
+		$return_template = foxyshop_get_template_file('foxyshop-all-products.php');
 		add_filter('wp_title', 'title_filter_all_products', 1, 3);
 		include($return_template);
 		die();
 	
 	//Search Product Page
 	} elseif ($currentPageName == 'product-search') {
-		$templatefilename = 'foxyshop-search.php';
-		if (file_exists(FOXYSHOP_TEMPLATE_PATH . '/' . $templatefilename)) {
-			$return_template = FOXYSHOP_TEMPLATE_PATH . '/' . $templatefilename;
-		} else {
-			$return_template = FOXYSHOP_PATH . '/themefiles/' . $templatefilename;
-		}
-		
+		$return_template = foxyshop_get_template_file('foxyshop-search.php');
 		add_filter('wp_title', 'title_filter_product_search', 1, 3);
 		include($return_template);
 		die();
 
 	//FoxyCart Datafeed Endpoint
 	} elseif ($currentPageName == 'foxycart-datafeed-'.$foxyshop_settings['datafeed_url_key']) {
-		$templatefilename = 'foxyshop-datafeed-endpoint.php';
-		if (file_exists(FOXYSHOP_TEMPLATE_PATH . '/' . $templatefilename)) {
-			$return_template = FOXYSHOP_TEMPLATE_PATH . '/' . $templatefilename;
-		} else {
-			$return_template = FOXYSHOP_PATH . '/themefiles/' . $templatefilename;
-		}
+		$return_template = foxyshop_get_template_file('foxyshop-datafeed-endpoint.php');
 		include($return_template);
 		die();
 
 	//FoxyCart SSO Endpoint
 	} elseif ($currentPageName == 'foxycart-sso-'.$foxyshop_settings['datafeed_url_key']) {
-		$templatefilename = 'ssoendpoint.php';
-		$return_template = FOXYSHOP_PATH . '/' . $templatefilename;
-		include($return_template);
+		include(FOXYSHOP_PATH . '/ssoendpoint.php');
 		die();
 	
 	}

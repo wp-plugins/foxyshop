@@ -17,7 +17,7 @@ function set_foxyshop_settings() {
 		if ($_POST['foxyshop_generate_product_sitemap'] == "on") foxyshop_create_product_sitemap();
 		
 		$new_settings = array();
-		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "ga_advanced", "generate_feed", "hide_subcat_children", "generate_product_sitemap", "manage_inventory_levels", "inventory_alert_level", "enable_sso", "sso_account_required", "browser_title_1", "browser_title_2", "browser_title_3", "browser_title_4", "browser_title_5", "locale_code");
+		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "ga_advanced", "generate_feed", "hide_subcat_children", "generate_product_sitemap", "manage_inventory_levels", "inventory_alert_level", "inventory_alert_email", "enable_sso", "sso_account_required", "browser_title_1", "browser_title_2", "browser_title_3", "browser_title_4", "browser_title_5", "locale_code");
 		foreach ($fields as $field1) {
 			$val = (isset($_POST['foxyshop_'.$field1]) ? $_POST['foxyshop_'.$field1] : '');
 			$new_settings[$field1] = $val;
@@ -57,6 +57,9 @@ function foxyshop_options() {
 	//Confirmation Key Reset
 	if (isset($_GET['key'])) echo '<div class="updated"><p>' . __('Your API Key Has Been Reset. Please Update FoxyCart With Your New Key.') . '</p></div>';
 	
+	//Warning PHP Version
+	if (version_compare(PHP_VERSION, '5.1.2', "<")) echo '<div class="error"><p>' . __('<strong>Warning:</strong> You are using PHP version ') . PHP_VERSION . __('. FoxyShop requires PHP version 5.1.2 or higher to utilize the required hmac_has() functions. Without upgrading you will experience problems adding items to the cart and completing other tasks. After upgrading, make sure that you reset your API key (scroll to the bottom of the page) to ensure that you have a fully secure key.') . '</p></div>';
+
 	//Warning Header/Footer Missing
 	if (!file_exists(TEMPLATEPATH.'/header.php') || !file_exists(TEMPLATEPATH.'/footer.php')) echo '<div class="error"><p>' . __('<strong>Warning:</strong> Your theme does not appear to be using header.php or footer.php. Without these files FoxyShop pages will show up unstyled. This error can often show up if you are using a WordPress framework that is bypassing the get_header() and get_footer() functions.') . '</p></div>';
 	
@@ -118,7 +121,7 @@ function foxyshop_options() {
 					<div style="clear: both;margin-bottom: 5px;"></div>
 
 					<label for="foxyshop_theme_dir"><?php _e('Template Path'); ?>:</label>
-					<input type="text" id="foxyshop_theme_dir" name="foxyshop_theme_dir" value="<?php echo TEMPLATEPATH; ?>/" readonly="readonly" />
+					<input type="text" id="foxyshop_theme_dir" name="foxyshop_theme_dir" value="<?php echo STYLESHEETPATH; ?>/" readonly="readonly" />
 					<div class="small" style="margin-bottom: 5px;"><?php echo __('FoxyShop will look in this folder for customized theme files.'); ?></div>
 
 					<?php if ($foxyshop_settings['generate_product_sitemap']) { ?>
@@ -305,7 +308,10 @@ function foxyshop_options() {
 					<input type="checkbox" id="foxyshop_manage_inventory_levels" name="foxyshop_manage_inventory_levels"<?php checked($foxyshop_settings['manage_inventory_levels'], "on"); ?> />
 					<label for="foxyshop_manage_inventory_levels"><?php _e('Manage Inventory Levels'); ?></label>
 					<div class="small"><?php _e('If enabled, you will be able to set inventory levels per product code. In the FoxyCart admin, you need to check the box to enable your datafeed and enter the datafeed url from the top of this page in the "datafeed url" box.'); ?></div>
-					<label for="foxyshop_inventory_alert_level"><?php _e('Default Inventory Alert Level'); ?>:</label> <input type="text" id="foxyshop_inventory_alert_level" name="foxyshop_inventory_alert_level" value="<?php echo $foxyshop_settings['inventory_alert_level']; ?>" style="width: 50px;" />
+					<div style="padding: 0 0 0 15px;">
+						<label for="foxyshop_inventory_alert_level"><?php _e('Default Inventory Alert Level'); ?>:</label> <input type="text" id="foxyshop_inventory_alert_level" name="foxyshop_inventory_alert_level" value="<?php echo $foxyshop_settings['inventory_alert_level']; ?>" style="width: 50px;" />
+						<input type="checkbox" id="foxyshop_inventory_alert_email" name="foxyshop_inventory_alert_email"<?php checked($foxyshop_settings['inventory_alert_email'], "on"); ?> style="clear: left;" /><label for="foxyshop_inventory_alert_email"><?php _e('Send Email to Admin When Alert Level Reached'); ?></label>
+					</div>
 				</td>
 			</tr>
 			<tr>
@@ -395,7 +401,7 @@ function foxyshop_options() {
 
 <script type="text/javascript">
 jQuery(document).ready(function($){
-	$("input[name=foxyshop_weight_type]").change(function() {
+	$("input[name='foxyshop_weight_type']").change(function() {
 		if ($("#foxyshop_weight_type_english").is(":checked")) {
 			$("#weight_title1").text("lbs");
 			$("#weight_title2").text("oz");

@@ -3,8 +3,8 @@ Contributors: sparkweb
 Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
-Tested up to: 3.1.3
-Stable tag: 2.5
+Tested up to: 3.2
+Stable tag: 2.6
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -114,6 +114,21 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 2.6 =
+* Subscription data is now stored in the WordPress user record when you are using SSO. Admins can see current subscriptions in the User Profile.
+* Updated subscription start and end date fields to accept natural language strtotime() arguments.
+* Now passing quantity_max and quantity_min to the cart
+* Added option to send inventory alert emails
+* Updated inventory feature so that quantities can't be added to the cart above what is in stock
+* Added customer order history function for WordPress developers.
+* Fixed some WordPress 3.2 styling and jQuery issues. Now fully compatible.
+* You may set bundled products to use their full value rather than $0 by putting this in your wp-config.php file: define('FOXYSHOP_BUNDLED_PRODUCT_FULL_PRICE', 1);
+* Added warning for PHP users whose version is less than 5.1.2. The HMAC hash will break!
+* If you absolutely need to disable the HMAC verification, you can now set this constant in your wp-config.php file: define('FOXYSHOP_SKIP_VERIFICATION', 1) - but this is NOT recommended!
+* Constant TEMPLATEPATH changed to STYLESHEETPATH - if you are using a child theme the template files can now live in the child theme, though the parent theme will still be checked.
+* Set constant FOXYSHOP_PRODUCT_COMMENTS in wp-config to allow comments on products.
+* See [Release Notes](http://www.foxy-shop.com/2011/06/version-2-6-inventory-and-subscription-upgrades/) for more details
 
 = 2.5 =
 * New Feature: Category Images. FoxyShop has been optimized to work with the [Taxonomy Images](http://wordpress.org/extend/plugins/taxonomy-images/) plugin.
@@ -293,6 +308,9 @@ Author URI: http://www.foxy-shop.com/<br />
 * Initial release
 
 == Upgrade Notice ==
+
+= 2.6 =
+Subscription and Inventory Features Update
 
 = 2.5 =
 New features and jQuery updated to 1.6.1

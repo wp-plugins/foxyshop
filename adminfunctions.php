@@ -153,6 +153,7 @@ function foxyshop_activation() {
 		"locale_code" => $current_locale,
 		"manage_inventory_levels" => "",
 		"inventory_alert_level" => 3,
+		"inventory_alert_email" => "on",
 		"datafeed_url_key" => substr(MD5(rand(1000, 99999)."{urlkey}" . date("H:i:s")),1,12),
 		"generate_feed" => "",
 		"default_image" => WP_PLUGIN_URL."/foxyshop/images/no-photo.png",
@@ -172,6 +173,7 @@ function foxyshop_activation() {
 		//Run Some Upgrades
 		if ($foxyshop_settings['version'] == "0.70") $foxyshop_settings['version'] = "0.7.0";
 		if (!array_key_exists('locale_code',$foxyshop_settings)) $foxyshop_settings['locale_code'] = $current_locale;
+		if (!array_key_exists('inventory_alert_email',$foxyshop_settings)) $foxyshop_settings['inventory_alert_email'] = "on";
 		if (array_key_exists('inventory_url_key',$foxyshop_settings)) {
 			$foxyshop_settings['datafeed_url_key'] = $foxyshop_settings['inventory_url_key'];
 			unset($foxyshop_settings['inventory_url_key']);
@@ -475,12 +477,12 @@ jQuery(document).ready(function($) {
 			$.post(ajaxurl, data, function(response) {
 				if (response.indexOf('SUCCESS') != -1) {
 					if (action == "sub_off") {
-						$("a.button[actionid=" + id + "][rel=sub_on]").show();
-						$("a.button[actionid=" + id + "][rel=sub_off]").hide();
+						$("a.button[actionid=" + id + "][rel='sub_on']").show();
+						$("a.button[actionid=" + id + "][rel='sub_off']").hide();
 						$("tr[rel=" + id + "]").removeClass().addClass("gradeU");
 					} else if (action == "sub_on") {
-						$("a.button[actionid=" + id + "][rel=sub_on]").hide();
-						$("a.button[actionid=" + id + "][rel=sub_off]").show();
+						$("a.button[actionid=" + id + "][rel='sub_on']").hide();
+						$("a.button[actionid=" + id + "][rel='sub_off']").show();
 						$("tr[rel=" + id + "]").removeClass().addClass("gradeA");
 
 					} else {
