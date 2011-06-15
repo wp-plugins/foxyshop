@@ -516,8 +516,8 @@ function foxyshop_product_secondary_setup() {
 <script type="text/javascript">
 jQuery(document).ready(function($){
 	$("#add_related_product").click(function() {
-		thisID = $("#_related_products_list option:selected").prop("value");
-		thisName = $("#_related_products_list option:selected").prop("text");
+		thisID = $("#_related_products_list option:selected").attr("value");
+		thisName = $("#_related_products_list option:selected").attr("text");
 		$("#related_product_listing").append('<span id="related_' + thisID + '"><a href="#" class="remove_related_product" rel="' + thisID + '"><?php _e('Delete'); ?></a>&nbsp;' + thisName + '</span>');
 		$("#_related_products").val($("#_related_products").val() + ',' + thisID + ',');
 		return false;
@@ -530,8 +530,8 @@ jQuery(document).ready(function($){
 		return false;
 	});
 	$("#add_bundled_product").click(function() {
-		thisID = $("#_bundled_products_list option:selected").prop("value");
-		thisName = $("#_bundled_products_list option:selected").prop("text");
+		thisID = $("#_bundled_products_list option:selected").attr("value");
+		thisName = $("#_bundled_products_list option:selected").attr("text");
 		$("#bundled_product_listing").append('<span id="bundled_' + thisID + '"><a href="#" class="remove_bundled_product" rel="' + thisID + '"><?php _e('Delete'); ?></a>&nbsp;' + thisName + '</span>');
 		$("#_bundled_products").val($("#_bundled_products").val() + ',' + thisID + ',');
 		return false;
