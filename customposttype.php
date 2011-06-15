@@ -879,7 +879,7 @@ jQuery(document).ready(function($){
 			$(this).find(".variation_required_container").show();
 		} else {
 			$(this).find(".variation_required_container").hide();
-			$(this).find(".variation_required_container").find('input[type="checkbox"]').prop('checked', false);
+			$(this).find(".variation_required_container").find('input[type="checkbox"]').not(':checked');
 		}
 	});
 	
@@ -892,7 +892,7 @@ jQuery(document).ready(function($){
 			$(this).parents(".product_variation").find(".variation_required_container").show();
 		} else {
 			$(this).parents(".product_variation").find(".variation_required_container").hide();
-			$(this).parents(".product_variation").find(".variation_required_container").find('input[type="checkbox"]').prop('checked', false);
+			$(this).parents(".product_variation").find(".variation_required_container").find('input[type="checkbox"]').not(':checked');
 		}
 	});
 	

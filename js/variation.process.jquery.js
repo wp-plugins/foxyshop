@@ -110,6 +110,7 @@ jQuery(document).ready(function($){
 				$(".foxyshop_stock_alert").addClass("foxyshop_out_of_stock").text(update_inventory_alert_language(foxyshop_inventory_stock_none,inventory_match_count)).show();
 				if (!foxyshop_allow_backorder) $("#productsubmit").attr("disabled","disabled").addClass("foxyshop_disabled");
 			} else {
+				$("#productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
 				$(".foxyshop_stock_alert").hide();
 			}
 		} else if (typeof arr_foxyshop_inventory != 'undefined') {
