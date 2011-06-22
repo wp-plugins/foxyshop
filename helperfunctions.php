@@ -263,6 +263,12 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 		} elseif ($variationType == "upload") {
 			include(foxyshop_get_template_file('foxyshop-custom-upload.php'));
 		
+		//Description Field
+		} elseif ($variationType == "descriptionfield") {
+			$write .= '<div id="fs_title_' . esc_attr($product['code']) . '_' . $i . '" class="foxyshop_descriptionfield_title ' . $className . $dkeyclass . '"'. $dkey . '>' . esc_attr(str_replace('_',' ',$variationName)) . '</div>'."\n";
+			$write .= '<div id="fs_text_' . esc_attr($product['code']) . '_' . $i . '" class="foxyshop_descriptionfield_text ' . $className . $dkeyclass . '"'. $dkey . '>' . $variationValue . '</div>'."\n";
+			$write .= '<div class="clr"></div>'."\n";
+
 		//Select, Checkbox, Radio
 		} elseif ($variationType == "dropdown" || $variationType == "checkbox" || $variationType == "radio") {
 			
@@ -440,10 +446,9 @@ function foxyshop_quantity($qty = "1") {
 
 
 //Writes a Straight Text Link
-function foxyshop_product_link($AddText = "-1", $linkOnly = false) {
+function foxyshop_product_link($AddText = "Add To Cart", $linkOnly = false) {
 	global $product, $foxyshop_settings;
 	
-	if ($AddText == "-1") $AddText = __("Add To Cart");
 	$url = 'price' . foxyshop_get_verification('price') . '=' . urlencode($product['price']);
 	if (foxyshop_get_main_image() && $foxyshop_settings['version'] != "0.7.0") $url .= '&amp;image' . foxyshop_get_verification('image',foxyshop_get_main_image()) . '=' . urlencode(foxyshop_get_main_image());
 	if ($foxyshop_settings['version'] != "0.7.0") $url .= '&amp;url' . foxyshop_get_verification('url') . '=' . urlencode($product['url']);
@@ -609,11 +614,38 @@ function foxyshop_category_children($categoryID = 0, $showCount = false, $showDe
 }
 
 
+//Writes a Simple List of Children Categories of a Category (if available)
+function foxyshop_simple_category_children($categoryID = 0) {
+	$write = "";
+	if ($categoryID == 0) {
+		$termchildren = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&parent=0&orderby=name&order=ASC');
+	} else {
+		$termchildren = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&parent='.$categoryID.'&orderby=name&order=ASC');
+	}
+
+	if ($termchildren) {
+		//Sort Categories
+		$termchildren = foxyshop_sort_categories($termchildren, $categoryID);
+
+		foreach ($termchildren as $child) {
+			$term = get_term_by('id', $child->term_id, "foxyshop_categories");
+			if (substr($term->name,0,1) != "_") {
+				$url = get_term_link($term, "foxyshop_categories");
+				$write .= '<li id="foxyshop_category_' . $term->term_id . '">';
+				$write .= '<a href="' . $url . '">' . $term->name . '</a>';
+				$write .= "</li>\n";
+			}
+		}
+		if ($write) echo $write;
+	}
+}
+
+
 
 //Generates Verification Code for HMAC Anti-Tampering
 function foxyshop_get_verification($varname, $varvalue = "") {
 	global $product, $foxyshop_settings;
-	if (defined('FOXYSHOP_SKIP_VERIFICATION')) return $varvalue;
+	if (defined('FOXYSHOP_SKIP_VERIFICATION')) return "";
 	$encodingval = $product['code'] . htmlspecialchars($varname) . htmlspecialchars($varvalue ? $varvalue : $product[$varname]);
 	return '||'.hash_hmac('sha256', $encodingval, $foxyshop_settings['api_key']).($varvalue == "--OPEN--" ? "||open" : "");
 }
@@ -813,9 +845,8 @@ function foxyshop_featured_category($categoryName, $showAddToCart = false, $show
 
 
 //Shopping Cart Link
-function foxyshop_cart_link($linkText = "-1", $hideEmpty = false) {
+function foxyshop_cart_link($linkText = "View Cart", $hideEmpty = false) {
 	global $foxyshop_settings;
-	if ($linkText == "-1") $linkText = __("View Cart");
 	$linkText = str_replace('%q%','<span id="fc_quantity">0</span>',$linkText);
 	$linkText = str_replace('%p%','<span id="fc_total_price">' . number_format(0,2) . '</span>',$linkText);
 	if ($hideEmpty) echo '<div id="fc_minicart">';
@@ -826,9 +857,8 @@ function foxyshop_cart_link($linkText = "-1", $hideEmpty = false) {
 
 
 //Shows Related Products
-function foxyshop_related_products($sectiontitle = "-1") {
+function foxyshop_related_products($sectiontitle = "Related Products") {
 	global $product, $post;
-	if ($sectiontitle == "-1") $sectiontitle = __('Related Products');
 	$args = array('post_type' => 'foxyshop_product', "post__not_in" => array($post->ID), 'posts_per_page' => -1, 'post__in' => explode(",",$product['related_products']));
 	$args = array_merge($args,foxyshop_sort_order_array());
 	$relatedlist = get_posts($args);

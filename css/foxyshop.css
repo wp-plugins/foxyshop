@@ -146,6 +146,7 @@
 #foxyshop_breadcrumbs li {
 	float: left;
 	margin: 0 10px 0 0;
+	list-style: none;
 }
 
 
@@ -312,6 +313,12 @@ label.foxyshop_no_width {
 }
 .shipto_name {
 	clear: both;
+}
+.foxyshop_descriptionfield_title {
+	font-weight: bold;
+}
+.foxyshop_descriptionfield_text {
+	margin-bottom: 10px;
 }
 
 

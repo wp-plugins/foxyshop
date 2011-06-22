@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.2
-Stable tag: 2.6.1
+Stable tag: 2.7
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -114,6 +114,15 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 2.7 =
+* Added a variation field called Descriptive Text to allow text-only areas in the variation groups -- describe your variations or give instructions.
+* Added new function foxyshop_simple_category_children() for simple category listing.
+* Updated multiship.jquery.js to version 2.2 for better compatibility with hmac verification
+* Small CSS change for more consistent non-bullets in breadcrumbs
+* Removing sale price no longer causes PHP number_format error
+* Fixed FOXYSHOP_SKIP_VERIFICATION feature
+* See [Release Notes](http://www.foxy-shop.com/2011/06/version-2-7-variation-upgrades-and-other-tweaks/) for more details
 
 = 2.6.1 =
 * Corrected .prop() issue which was causing the admin product tool not to load completely in Internet Explorer.
@@ -312,6 +321,9 @@ Author URI: http://www.foxy-shop.com/<br />
 * Initial release
 
 == Upgrade Notice ==
+
+= 2.7 =
+Description Field as Variations and Bugfixes
 
 = 2.6 =
 Subscription and Inventory Features Update

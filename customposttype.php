@@ -744,7 +744,7 @@ function foxyshop_product_variations_setup() {
 	global $post, $foxyshop_settings, $wp_version;
 	
 	$showNew = 0;
-	$var_type_array = array('dropdown' => "Dropdown List", 'radio' => "Radio Buttons", 'checkbox' => "Checkbox", 'text' => "Single Line of Text", 'textarea' => "Multiple Lines of Text", 'upload' => "Custom File Upload");
+	$var_type_array = array('dropdown' => "Dropdown List", 'radio' => "Radio Buttons", 'checkbox' => "Checkbox", 'text' => "Single Line of Text", 'textarea' => "Multiple Lines of Text", 'upload' => "Custom File Upload", 'descriptionfield' => "Description Field");
 	
 	for ($i=1;$i<=$foxyshop_settings['max_variations'];$i++) {
 		$_variationName = get_post_meta($post->ID,'_variation_name_'.$i,TRUE);
@@ -814,6 +814,15 @@ function foxyshop_product_variations_setup() {
 			<div class="foxyshop_field_control textarea variationoptions">
 				<label><?php _e('Lines of Text'); ?></label>
 				<input type="text" name="_variation_textareasize_<?php echo $i; ?>" value="<?php if (isset($_variationTextSize)) echo $_variationTextSize; ?>" style="width: 45px;" /> (default is 3)
+			</div>
+
+			<!-- Description Field -->
+			<div class="foxyshop_field_control descriptionfield variationoptions">
+				<label><?php _e('Descriptive Text'); ?></label>
+				<textarea name="_variation_description_<?php echo $i; ?>" style="width: 500px; height: 130px;"><?php echo $_variationValue; ?></textarea>
+				<br />
+				<div style="margin: 2px 0 15px 114px; font-size: 10px;"><?php _e('This is descriptive text for your variations and does not accept any user input.'); ?>
+				</div>
 			</div>
 			
 			<!-- Checkbox -->
@@ -990,7 +999,7 @@ function foxyshop_product_meta_save($post_id) {
 
 	//Save Product Detail Data
 	foxyshop_save_meta_data('_weight',$_weight);
-	foxyshop_save_meta_data('_price',number_format(str_replace(",","",$_POST['_price']),2,".",""));
+	foxyshop_save_meta_data('_price',number_format((double)str_replace(",","",$_POST['_price']),2,".",""));
 	foxyshop_save_meta_data('_code',$_POST['_code']);
 	if (isset($_POST['_category'])) foxyshop_save_meta_data('_category',$_POST['_category']);
 	foxyshop_save_meta_data('_quantity_min',$_quantity_min);
@@ -1006,7 +1015,7 @@ function foxyshop_product_meta_save($post_id) {
 	}
 
 	//Save Sale Pricing Data
-	foxyshop_save_meta_data('_saleprice',number_format(str_replace(",","",$_POST['_saleprice']),2,".",""));
+	foxyshop_save_meta_data('_saleprice',number_format((double)str_replace(",","",$_POST['_saleprice']),2,".",""));
 	if (($_salestartdate = strtotime($_POST['_salestartdate'])) === false) foxyshop_save_meta_data('_salestartdate',"999999999999999999");
 	else foxyshop_save_meta_data('_salestartdate',$_salestartdate);
 	if (($_saleenddate = strtotime($_POST['_saleenddate'])) === false) foxyshop_save_meta_data('_saleenddate',"999999999999999999");
@@ -1092,6 +1101,8 @@ function foxyshop_product_meta_save($post_id) {
 				if ($_variationValue == 0) $_variationValue = 3;
 			} elseif ($_variationType == 'upload') {
 				$_variationValue = $_POST['_variation_uploadinstructions_'.$i];
+			} elseif ($_variationType == 'descriptionfield') {
+				$_variationValue = $_POST['_variation_description_'.$i];
 			} elseif ($_variationType == 'dropdown') {
 				$_variationValue = $_POST['_variation_value_'.$i];
 			} elseif ($_variationType == 'checkbox') {
@@ -1111,7 +1122,6 @@ function foxyshop_product_meta_save($post_id) {
 		foxyshop_save_meta_data('_variation_dkey_'.$writeID,$_variationDisplayKey);
 		foxyshop_save_meta_data('_variation_required_'.$writeID,$_variationRequired);
 	}
-
 	
 	//Rewrite Product Sitemap
 	if ($foxyshop_settings['generate_product_sitemap']) {
