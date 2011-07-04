@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 2.7
+Version: 2.7.1
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -35,7 +35,7 @@ the most out of FoxyShop.
 **************************************************************************/
 
 //Setup Plugin Variables
-define('FOXYSHOP_VERSION', "2.7");
+define('FOXYSHOP_VERSION', "2.7.1");
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 $foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
@@ -43,7 +43,7 @@ if ($foxyshop_document_root == "" || $foxyshop_document_root == "/") $foxyshop_d
 if (!defined('FOXYSHOP_DOCUMENT_ROOT')) define('FOXYSHOP_DOCUMENT_ROOT', $foxyshop_document_root);
 if (!defined('FOXYSHOP_PRODUCTS_SLUG')) define('FOXYSHOP_PRODUCTS_SLUG','products');
 if (!defined('FOXYSHOP_PRODUCT_CATEGORY_SLUG')) define('FOXYSHOP_PRODUCT_CATEGORY_SLUG','product-cat');
-if (!defined('FOXYSHOP_JQUERY_VERSION')) define('FOXYSHOP_JQUERY_VERSION','1.6.1');
+if (!defined('FOXYSHOP_JQUERY_VERSION')) define('FOXYSHOP_JQUERY_VERSION','1.6.2');
 $foxyshop_settings = unserialize(get_option("foxyshop_settings"));
 if (!is_array($foxyshop_settings)) $foxyshop_settings = array("domain" => "", "sort_key" => "", "enable_sso" => "", "generate_feed" => "", "manage_inventory_levels" => "", "enable_subscriptions" => "");
 if (!array_key_exists('foxyshop_version',$foxyshop_settings)) $foxyshop_settings['foxyshop_version'] = '';
@@ -51,14 +51,6 @@ $foxyshop_category_sort = unserialize(get_option('foxyshop_category_sort'));
 
 //Checks for Old Plugin Version and Perform Upgrade
 if ($foxyshop_settings['foxyshop_version'] != FOXYSHOP_VERSION) add_action('admin_init', 'foxyshop_activation');
-
-//Checks for Subscription Features and Sets Up Array
-require (ABSPATH . WPINC . '/pluggable.php');
-if ($foxyshop_settings['enable_subscriptions'] && is_user_logged_in()) {
-	$current_user = wp_get_current_user();
-	$foxyshop_subscription = unserialize(get_user_meta($current_user->ID, 'foxyshop_subscription', true));
-	if (!is_array($foxyshop_subscription)) $foxyshop_subscription = array();
-}
 
 //Sets the Locale for Currency Internationalization
 setlocale(LC_MONETARY, (array_key_exists('locale_code',$foxyshop_settings) ? $foxyshop_settings['locale_code'] : get_locale()));

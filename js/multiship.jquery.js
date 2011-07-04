@@ -65,12 +65,12 @@ function shipto_select() {
 		if (jQuery(this).val() == 'add_new') {
 			jQuery(this).parents('form').find('div.shipto_name').show();
 			// Set any shipto values. Done this way in case you're adding more than one product at a time.
-			jQuery(this).parents('form').find('input[name~="shipto"]').val('');
+			jQuery(this).parents('form').find('input[name*="shipto"]').val('');
 			// alert(jQuery('input[name^="shipto"]').attr('name') + jQuery('input[name^="shipto"]').val())
 		} else {
 			jQuery(this).parents('form').find('div.shipto_name').hide();
 			// Set any shipto values. Done this way in case you're adding more than one product at a time.
-			jQuery(this).parents('form').find('input[name~="shipto"]').val(jQuery(this).val());
+			jQuery(this).parents('form').find('input[name*="shipto"]').val(jQuery(this).val());
 		}
 		// console.info(jQuery('input[name^="shipto"]').val());
 		// console.info(jQuery('input[name^="2:shipto"]').val());
@@ -83,13 +83,13 @@ function shipto_select() {
 		jQuery('div.shipto_select select').selectOptions('me');
 	//}
  
-	// console.info(jQuery('input[name~="shipto"]').val())
+	// console.info(jQuery('input[name*="shipto"]').val())
 }
  
 // Tie any additional product shipto's to the primary shipto
 function shipto_multiples() {
-	jQuery('input[name~="shipto"]').change(function(){
-		jQuery(this).parents('form').find('input[name~="shipto"]').val(jQuery(this).val());
+	jQuery('input[name*="shipto"]').change(function(){
+		jQuery(this).parents('form').find('input[name*="shipto"]').val(jQuery(this).val());
 	});
 }
  

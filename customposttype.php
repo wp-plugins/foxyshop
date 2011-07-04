@@ -27,7 +27,8 @@ function foxyshop_create_post_type() {
 		'hierarchical' => false,
 		'supports' => $post_type_support,
 		'menu_icon' => FOXYSHOP_DIR . '/images/icon.png',
-		'rewrite' => array("slug" => FOXYSHOP_PRODUCTS_SLUG)
+		'rewrite' => array("slug" => FOXYSHOP_PRODUCTS_SLUG),
+		'taxonomies' => (defined('FOXYSHOP_PRODUCT_TAGS') ? array("post_tag") : array())
 	));
 }
 
@@ -1000,7 +1001,7 @@ function foxyshop_product_meta_save($post_id) {
 	//Save Product Detail Data
 	foxyshop_save_meta_data('_weight',$_weight);
 	foxyshop_save_meta_data('_price',number_format((double)str_replace(",","",$_POST['_price']),2,".",""));
-	foxyshop_save_meta_data('_code',$_POST['_code']);
+	foxyshop_save_meta_data('_code',trim($_POST['_code']));
 	if (isset($_POST['_category'])) foxyshop_save_meta_data('_category',$_POST['_category']);
 	foxyshop_save_meta_data('_quantity_min',$_quantity_min);
 	foxyshop_save_meta_data('_quantity_max',$_quantity_max);

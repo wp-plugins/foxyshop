@@ -43,8 +43,9 @@ if (!empty($_FILES)) {
 		die('unsupported file type');
 	}
 	
-	$targetFile =  str_replace('//','/',$targetPath) . $_REQUEST['newfilename'].'.'.$ext;
-	echo $_REQUEST['newfilename'].'.'.$ext;
+	$newfilename = str_replace('.','',$_REQUEST['newfilename']).'.'.$ext;
+	$targetFile =  str_replace('//','/',$targetPath) . $newfilename;
+	echo $newfilename;
 	move_uploaded_file($tempFile,$targetFile);
 
 } else {

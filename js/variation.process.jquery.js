@@ -73,8 +73,8 @@ jQuery(document).ready(function($){
 
 		});
 		
+		if (!new_code) new_code = $("#fs_code").val();
 		setModifiers(new_code, new_codeadd, new_price, new_price_original, new_ikey);
-
 
 		
 	
@@ -82,6 +82,7 @@ jQuery(document).ready(function($){
 	}
 	
 	function setModifiers(new_code, new_codeadd, new_price, new_price_original, new_ikey) {
+
 		
 		//Change Image
 		if (new_ikey != '') {
@@ -97,7 +98,7 @@ jQuery(document).ready(function($){
 				if (arr_foxyshop_inventory[i][0] == inventory_code) inventory_match_count = i;
 			}
 		}
-		
+
 		if (inventory_match_count >= 0) {
 			newcount = parseInt(arr_foxyshop_inventory[inventory_match_count][1]);
 			newalert = parseInt(arr_foxyshop_inventory[inventory_match_count][2]);

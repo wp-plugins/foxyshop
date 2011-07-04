@@ -44,6 +44,7 @@ if (!empty($_FILES)) {
 
 	$ext = strtolower(substr($newfilename, strrpos($newfilename, '.') + 1));
 	if (stristr($ext, '.php')) die('unsupported file type');
+	if (strpos($newfilename,"php") !== false) die('unsupported file type');
 
 	$i = 0;
 	while (file_exists($targetFile)) {

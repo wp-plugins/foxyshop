@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.2
-Stable tag: 2.7
+Stable tag: 2.7.1
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -114,6 +114,15 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 2.7.1 =
+* Removed 404 headers that WordPress was generating on some FoxyShop store pages.
+* Added "foxyshop" class to the WordPress body_class() function for some styling assistance.
+* Bugfix: Products without variations or product code changes weren't getting inventory updates. Fixed!
+* Upgraded to jQuery 1.6.2
+* Removed pluggable.php early include and subscription array setup on every page load. Only loaded when necessary.
+* You can now set constant FOXYSHOP_PRODUCT_TAGS in wp-config to allow tags on products.
+* Added security feature to harden custom variation uploads.
 
 = 2.7 =
 * Added a variation field called Descriptive Text to allow text-only areas in the variation groups -- describe your variations or give instructions.

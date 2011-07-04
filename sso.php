@@ -53,22 +53,23 @@ function foxyshop_login_head() { ?>
 }
 
 function foxyshop_login_message() {
-	$message = 'Please Login Before Checking Out';
+	$message = 'Please login before checking out. <a href="' . get_bloginfo("wpurl") . '/wp-login.php?action=register">Click here to register.</a>';
 	return '<p class="custom-message">' . $message . '</p><br />';
 }
 
 
-
- 
-if (is_admin() && current_user_can('administrator')) {
+//Setup Actions
+add_action('admin_init', 'foxyshop_user_init');
+function foxyshop_user_init() {
 	add_action('show_user_profile', 'action_show_user_profile');
 	add_action('edit_user_profile', 'action_show_user_profile');
 	add_action('personal_options_update', 'action_process_option_update');
 	add_action('edit_user_profile_update', 'action_process_option_update');
 }
- 
+
 function action_show_user_profile($user) {
 	global $foxyshop_settings;
+	if (!current_user_can('administrator')) return;
 	?>
 	<h3><?php _e('FoxyCart User Data') ?></h3>
 	<table class="form-table">
@@ -119,6 +120,7 @@ function action_show_user_profile($user) {
 }
 
 function action_process_option_update($user_id) {
-	update_usermeta($user_id, 'foxycart_customer_id', (isset($_POST['foxycart_customer_id']) ? $_POST['foxycart_customer_id'] : ''));
+	if (!current_user_can('administrator')) return;
+	update_user_meta($user_id, 'foxycart_customer_id', (isset($_POST['foxycart_customer_id']) ? $_POST['foxycart_customer_id'] : ''));
 }
 ?>

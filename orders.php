@@ -158,7 +158,7 @@ function foxyshop_order_management() {
 			
 			<div style="clear: both;"></div>
 			<button type="submit" id="foxyshop_search_submit" name="foxyshop_search_submit" class="button-primary" style="clear: left; margin-top: 10px;">Search Records Now</button>
-			<button type="button" class="button" style="margin-left: 15px;" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_order_management';">Reset Form</button>
+			<button type="button" class="button submitcancel" style="margin-left: 15px;" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_order_management';">Reset Form</button>
 			
 		</td></tr></tbody></table>
 			
