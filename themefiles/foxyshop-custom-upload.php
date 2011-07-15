@@ -21,13 +21,12 @@ if (!$writeUploadInclude) {
 		$('.foxyshop_file_upload').each(function() {
 			var variationID = $(this).attr("rel");
 			$(this).uploadify({
-				uploader  : '<?php  echo FOXYSHOP_DIR; ?>/js/uploadify/uploadify.swf',
-				script    : '<?php  echo FOXYSHOP_DIR; ?>/js/uploadify/uploadify.php',
-				cancelImg : '<?php  echo FOXYSHOP_DIR; ?>/js/uploadify/cancel.png',
+				uploader  : '<?php echo FOXYSHOP_DIR; ?>/js/uploadify/uploadify.swf',
+				script    : '<?php bloginfo("url"); ?>/upload-<?php echo $foxyshop_settings['datafeed_url_key']; ?>/',
+				cancelImg : '<?php echo FOXYSHOP_DIR; ?>/js/uploadify/cancel.png',
 				auto      : true,
 				width     : '130',
 				height    : '29',
-				folder    : '<?php echo str_replace("http" . ($_SERVER['SERVER_PORT'] == 443 ? 's' : '') . "://" . $_SERVER['SERVER_NAME'],"",$upload_dir['baseurl']); ?>/customuploads',
 				sizeLimit : '<?php echo $foxyshop_max_upload; ?>',
 				scriptData: { 'newfilename': '<?php echo $imagefilename; ?>_' + $(this).attr("rel") },
 				onComplete: function(event,queueID,fileObj,response,data) {
@@ -37,10 +36,10 @@ if (!$writeUploadInclude) {
 							if (response.indexOf("move_uploaded_file") >= 0) {
 								$("#uploadedFile_" + variationID).html('There was an error uploading your image: ' + response);
 							} else if (response.indexOf("jpg") >= 0 || response.indexOf("gif") >= 0 || response.indexOf("png") >= 0 || response.indexOf("jpeg") >= 0) {
-								$("#uploadedFile_" + variationID).html('<img src="<?php echo $upload_dir['baseurl']; ?>/customuploads/' + response + '?rand=<?php echo rand(35450, 97534); ?>" alt="" />').show();
+								$("#uploadedFile_" + variationID).html('<img src="<?php echo $upload_dir['baseurl']; ?>/customuploads/' + response + '?rand=' + Math.floor(Math.random()*1000) + '" alt="" />').show();
 								$("#FileNameHolder_"+variationID).val(response);
 							} else {
-								$("#uploadedFile_" + variationID).html('<?php _e('File Uploaded Successfuly.'); ?> <a href="<?php echo $upload_dir['baseurl']; ?>/customuploads/' + response + '?rand=<?php echo rand(35450, 97534); ?>"><?php _e('Click here to view.'); ?></a>').show();
+								$("#uploadedFile_" + variationID).html('<?php _e('File Uploaded Successfuly.'); ?> <a href="<?php echo $upload_dir['baseurl']; ?>/customuploads/' + response + '"><?php _e('Click here to view.'); ?></a>').show();
 								$("#FileNameHolder_"+variationID).val(response);
 							}
 						}

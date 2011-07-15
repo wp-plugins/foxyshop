@@ -1029,6 +1029,7 @@ function foxyshop_customer_order_history($customer_id = 0, $date_filter = 'n/j/Y
 
 //Gets Subscription Status (0 = Not Found Or Inactive, 1 = active)
 function foxyshop_subscription_active($product_code) {
+	if (!function_exists('wp_get_current_user')) return 0;
 	$current_user = wp_get_current_user();
 	$current_user_id = $current_user->ID;
 	if ($current_user_id == 0) return 0;

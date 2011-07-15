@@ -1,6 +1,56 @@
 <?php
-add_action('admin_menu', 'foxyshop_order_management_menu');
+if (isset($_GET['foxyshop_print_invoice'])) add_action('admin_init', 'foxyshop_print_invoice');
+function foxyshop_print_invoice() {
+	global $foxyshop_settings;
+	
+	//Setup Fields and Defaults
+	$foxy_data_defaults = array(
+		"is_test_filter" => "0",
+		"hide_transaction_filter" => "0",
+		"data_is_fed_filter" => "",
+		"id_filter" => "",
+		"order_total_filter" => "",
+		"coupon_code_filter" => "",
+		"transaction_date_filter_begin" => date("Y-m-d", strtotime("-10 days")),
+		"transaction_date_filter_end" => date("Y-m-d"),
+		"customer_id_filter" => "",
+		"customer_email_filter" => "",
+		"customer_first_name_filter" => "",
+		"customer_last_name_filter" => "",
+		"customer_state_filter" => "",
+		"shipping_state_filter" => "",
+		"customer_ip_filter" => "",
+		"product_code_filter" => "",
+		"product_name_filter" => "",
+		"product_option_name_filter" => "",
+		"product_option_value_filter" => ""
+	);
+	$foxy_data = wp_parse_args(array("api_action" => "transaction_list"), $foxy_data_defaults);
 
+	if (isset($_GET['foxyshop_search'])) {
+		$fields = array("is_test_filter", "hide_transaction_filter", "data_is_fed_filter", "id_filter", "order_total_filter", "coupon_code_filter", "transaction_date_filter_begin", "transaction_date_filter_end", "customer_id_filter", "customer_email_filter", "customer_first_name_filter", "customer_last_name_filter","customer_state_filter", "shipping_state_filter", "customer_ip_filter", "product_code_filter", "product_name_filter", "product_option_name_filter", "product_option_value_filter");
+		foreach ($fields as $field) {
+			if (isset($_GET[$field])) {
+				$foxy_data[$field] = $_GET[$field];
+			}
+		}
+		$foxy_data['pagination_start'] = (isset($_GET['pagination_start']) ? $_GET['pagination_start'] : 0);
+		if ($foxyshop_settings['version'] != "0.7.0") $foxy_data['entries_per_page'] = 50;
+	}	
+
+	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
+	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
+
+	if ($xml->result == "ERROR") {
+		echo '<h3>' . $xml->messages->message . '</h3>';
+		return;
+	}
+
+	include(foxyshop_get_template_file('/foxyshop-receipt.php'));
+	die;
+}
+
+add_action('admin_menu', 'foxyshop_order_management_menu');
 function foxyshop_order_management_menu() {
 	add_submenu_page('edit.php?post_type=foxyshop_product', __('Order Management'), __('Orders'), 'manage_options', 'foxyshop_order_management', 'foxyshop_order_management');
 }
@@ -159,13 +209,26 @@ function foxyshop_order_management() {
 			<div style="clear: both;"></div>
 			<button type="submit" id="foxyshop_search_submit" name="foxyshop_search_submit" class="button-primary" style="clear: left; margin-top: 10px;">Search Records Now</button>
 			<button type="button" class="button submitcancel" style="margin-left: 15px;" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_order_management';">Reset Form</button>
+			<button type="submit" class="button" style="margin-left: 15px;" name="foxyshop_print_invoice" id="foxyshop_print_invoice">Print Invoices</button>
 			
 		</td></tr></tbody></table>
 			
 		
 		</form>
+		<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			$("#foxyshop_searchform button").live("click", function() {
+				if ($(this).attr("id") == "foxyshop_print_invoice") {
+					$("#foxyshop_searchform").attr("target","_blank");
+				} else {
+					$("#foxyshop_searchform").attr("target","_self");
+				}
+			});
+		});
+		</script>
+
 		<?php if (version_compare($wp_version, '3.1', '>=')) { ?>
-		<script type="text/javascript" charset="utf-8">
+		<script type="text/javascript">
 		jQuery(document).ready(function($) {
 			$("#transaction_date_filter_begin, #transaction_date_filter_end").datepicker({ dateFormat: 'yy-mm-dd' });
 		});

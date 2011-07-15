@@ -292,26 +292,6 @@ function foxyshop_product_ajax() {
 	if (!isset($_POST['foxyshop_action'])) die;
 	
 	if ($_POST['foxyshop_action'] == "add_new_image") {
-		$filename = $_POST['foxyshop_new_product_image'];
-		$upload_dir = wp_upload_dir();
-		$product_count = (isset($_POST['foxyshop_product_count']) ? (int)$_POST['foxyshop_product_count'] : 0);
-		$wp_filetype = wp_check_filetype(basename($filename), null);
-		$attachment = array(
-			'post_mime_type' => $wp_filetype['type'],
-			'post_title' => $_POST['foxyshop_product_title'],
-			'guid' => $upload_dir['url'] . "/" . basename($filename),
-			'menu_order' => $product_count + 1,
-			'post_content' => '',
-			'post_status' => 'inherit'
-		);
-		require_once(ABSPATH . "wp-admin" . '/includes/image.php');
-		$attach_id = wp_insert_attachment($attachment, $filename, $productID);
-		$attach_data = wp_generate_attachment_metadata($attach_id, FOXYSHOP_DOCUMENT_ROOT . $filename);
-		wp_update_attachment_metadata($attach_id, $attach_data);
-		
-		if ($product_count == 0) {
-			update_post_meta($productID,"_thumbnail_id",$attach_id);
-		}
 
 		echo foxyshop_redraw_images($productID);
 		

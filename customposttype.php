@@ -670,28 +670,29 @@ function foxyshop_product_images_setup() {
 			});
 			return false;
 		});
-		
+
 		$('#foxyshop_new_product_image').show().each(function() {
 			var variationID = $(this).attr("rel");
 			$(this).uploadify({
 				uploader  : '<?php echo FOXYSHOP_DIR; ?>/js/uploadify/uploadify.swf',
-				script    : '<?php echo FOXYSHOP_DIR; ?>/js/uploadify/uploadify_admin.php',
+				script    : '/upload-<?php echo $foxyshop_settings['datafeed_url_key']; ?>/',
 				cancelImg : '<?php echo FOXYSHOP_DIR; ?>/js/uploadify/cancel.png',
-				folder    : '<?php echo str_replace("http" . ($_SERVER['SERVER_PORT'] == 443 ? 's' : '') . "://" . $_SERVER['SERVER_NAME'],"",$upload_dir['url']); ?>',
 				auto      : true,
 				buttonImg	: '<?php echo FOXYSHOP_DIR; ?>/images/add-new-image.png',
 				width     : '132',
 				height    : '23',
+				scriptData: {
+					'foxyshop_image_uploader':'1',
+					'foxyshop_product_id':'<?php echo $post->ID; ?>',
+					'foxyshop_product_title': $("#title").val()
+				},
 				sizeLimit : '<?php echo $foxyshop_max_upload; ?>',
 				onComplete: function(event,queueID,fileObj,response,data) {
 						var data = {
-							action: 'foxyshop_product_ajax_action',
-							security: '<?php echo $ajax_nonce; ?>',
-							foxyshop_action: 'add_new_image',
-							foxyshop_new_product_image: response,
-							foxyshop_product_id: <?php echo $post->ID; ?>,
-							foxyshop_product_title: $("#title").val(),
-							foxyshop_product_count: $("#foxyshop_product_image_list li").length
+							'action': 'foxyshop_product_ajax_action',
+							'security': '<?php echo $ajax_nonce; ?>',
+							'foxyshop_product_id':'<?php echo $post->ID; ?>',
+							'foxyshop_action': 'add_new_image'
 						};
 
 						$("#foxyshop_image_waiter").show();
@@ -699,7 +700,6 @@ function foxyshop_product_images_setup() {
 							$("#foxyshop_product_image_list").html(response)
 							$("#foxyshop_image_waiter").hide();
 						});
-						
 				}
 			});
 		});
@@ -731,9 +731,6 @@ function foxyshop_product_images_setup() {
 
 
 }
-
-
-
 
 
 

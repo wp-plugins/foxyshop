@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 2.7.1
+Stable tag: 2.8
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -29,6 +29,7 @@ Visit [www.foxy-shop.com](http://www.foxy-shop.com/) for full documentation and 
 * Sale pricing with optional date controls
 * Coupon code support
 * Multiple shipping recipients
+* Printable, customizable invoices/packing slips
 * Custom file upload lets your customers send you a file when adding to the shopping cart
 * Assign related product for product upselling
 * Bundled products let you add more than one product to the cart at once
@@ -114,6 +115,12 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 2.8 =
+* Added printable invoices to order page. Template is foxyshop-receipt.php.
+* Editors can now see the Category and Product sorting screens.
+* Completely rebuilt upload functions for further security upgrades. Those using custom user uploads will need to read the release notes for upgrade instructions.
+* See [Release Notes](http://www.foxy-shop.com/2011/07/version-2-8-printable-invoices-and-security-updates/) for more details
 
 = 2.7.1 =
 * Removed 404 headers that WordPress was generating on some FoxyShop store pages.
@@ -330,6 +337,9 @@ Author URI: http://www.foxy-shop.com/<br />
 * Initial release
 
 == Upgrade Notice ==
+
+= 2.8 =
+If using custom user uploads and a customized foxyshop-custom-upload.php file, you will need to make one update.
 
 = 2.7 =
 Description Field as Variations and Bugfixes
