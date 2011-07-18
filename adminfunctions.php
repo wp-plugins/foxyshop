@@ -258,13 +258,12 @@ function foxyshop_check_rewrite_rules() {
 //Access the FoxyCart API
 function foxyshop_get_foxycart_data($foxyData) {
 	global $foxyshop_settings;
-	//print_r($foxyData);
 	$foxyData = array_merge(array("api_token" => $foxyshop_settings['api_key']), $foxyData);
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, "https://" . $foxyshop_settings['domain'] . "/api");
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $foxyData);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 	// If you get SSL errors, you can uncomment the following, or ask your host to add the appropriate CA bundle
 	// curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);

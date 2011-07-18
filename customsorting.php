@@ -7,7 +7,7 @@ if ($foxyshop_settings['sort_key'] == "menu_order") {
 
 //Put in Sidebar
 function foxyshop_custom_sorting_menu() {    
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Custom Product Sorting'), __('Set Product Order'), 'editor', 'foxyshop_custom_sort', 'foxyshop_custom_sort');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Custom Product Sorting'), __('Set Product Order'), 'edit_others_pages', 'foxyshop_custom_sort', 'foxyshop_custom_sort');
 }
 
 //Load JS Libaries

@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 2.8
+Stable tag: 2.8.1
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -116,9 +116,12 @@ Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
 
+= 2.8.1 =
+* Fixed bug where product and category sorting was only showing up for editors. Now available for editors and above.
+
 = 2.8 =
 * Added printable invoices to order page. Template is foxyshop-receipt.php.
-* Editors can now see the Category and Product sorting screens.
+* editors can now see the Category and Product sorting screens.
 * Completely rebuilt upload functions for further security upgrades. Those using custom user uploads will need to read the release notes for upgrade instructions.
 * See [Release Notes](http://www.foxy-shop.com/2011/07/version-2-8-printable-invoices-and-security-updates/) for more details
 

@@ -4,7 +4,7 @@ add_action('admin_print_scripts', 'foxyshop_category_sort_js_libs');
 
 //Put in Sidebar
 function foxyshop_category_sorting_menu() {    
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Category Sorting'), __('Set Category Order'), 'editor', 'foxyshop_category_sort', 'foxyshop_category_sort');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Category Sorting'), __('Set Category Order'), 'edit_others_pages', 'foxyshop_category_sort', 'foxyshop_category_sort');
 }
 
 //Load JS Libaries
