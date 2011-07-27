@@ -66,32 +66,7 @@ Copy the folder to your WordPress
 
 == Frequently Asked Questions ==
 
-= How can I edit product pages? =
-Copy the files from the '*themefiles*' folder inside the plugin into your theme file. You may now edit these files. Refer to the documentation or comments within these theme files for directions.
-
-= Can I import my products? =
-FoxyShop works very nicely with the [CSV Importer](http://wordpress.org/extend/plugins/csv-importer/) plugin. [Click here](http://www.foxy-shop.com/2011/03/importing-products/) for a sample import file and lots of tips for a successful import.
-
-= Any other suggestioned plugins? =
-The [Duplicate Posts](http://wordpress.org/extend/plugins/duplicate-post/) plugin works great for letting you quickly copy products. The [Taxonomy Images](http://wordpress.org/extend/plugins/taxonomy-images/) plugin will let you easily add product category images.
-
-= Can I change the slug from 'products' to something else? =
-Sure! Just put this code in your wp-config.php file:
-
-* define('FOXYSHOP_PRODUCTS_SLUG','yourproductslug');
-* define('FOXYSHOP_PRODUCT_CATEGORY_SLUG','yourproductcategoryslug');
-
-= Can I use a WordPress Framework with FoxyShop? =
-FoxyShop uses get_header() and get_footer() and some WordPress frameworks (Thesis among them) bypass these default WordPress features. So without customization, FoxyShop will show up unstyled for some frameworks. A workaround is to put a static version of your site in header.php and footer.php.
-
-There are some working code samples for the Genesis framework so hit me up if you need those.
-
-= Do I have to use the FoxyShop datafeed? =
-If you have more than one integration that needs to use the datafeed, there's a feature in the datafeed template file which will let you load in as many third-party datafeeds as you want. The FoxyData will be fed to each of these each time FoxyCart sends data to your endpoint. If there's an error, you'll get an email with the exact error details.
-
-= Is QuickBooks integration available? =
-Yes! Check out the [ConsoliBYTE's](https://secure.consolibyte.com/saas/signup/?stage=home/focus&application=foxycart) QuickBooks connector service. For $10/mo they will feed your orders directly into QuickBooks.
-
+There's a thorough FAQ section located at (http://www.foxy-shop.com/faq/).
 
 
 == Screenshots ==
