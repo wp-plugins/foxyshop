@@ -14,7 +14,7 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 		
 		//Force a Straight Redirect
 		if ($foxyshop_settings['sso_account_required'] == 1) {
-			header('Location: ' . $login_url . '?redirect_to=' . urlencode(get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['inventory_url_key'] . '/?timestamp=' . $_GET['timestamp'] . '&fcsid=' . $_GET['fcsid']) . '&foxycart_checkout=1&reauth=1');
+			header('Location: ' . $login_url . '?redirect_to=' . urlencode(get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key'] . '/?timestamp=' . $_GET['timestamp'] . '&fcsid=' . $_GET['fcsid']) . '&foxycart_checkout=1&reauth=1');
 			die;
 
 		//Check Cart Contents to Decide on Redirect
@@ -22,7 +22,7 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, "https://" . esc_attr($foxyshop_settings['domain']) . "/cart?fcsid=" . $_GET['fcsid'] . "&output=json");
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 			// If you get SSL errors, you can uncomment the following, or ask your host to add the appropriate CA bundle
 			// curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -62,7 +62,7 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 
 			//Do the Signup Redirect
 			if ($sso_required) {
-				header('Location: ' . $login_url . '?redirect_to=' . urlencode(get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['inventory_url_key'] . '/?timestamp=' . $_GET['timestamp'] . '&fcsid=' . $_GET['fcsid']) . '&foxycart_checkout=1&reauth=1');
+				header('Location: ' . $login_url . '?redirect_to=' . urlencode(get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key'] . '/?timestamp=' . $_GET['timestamp'] . '&fcsid=' . $_GET['fcsid']) . '&foxycart_checkout=1&reauth=1');
 				die;
 			
 			//No Redirect Required

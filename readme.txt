@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 2.8.1
+Stable tag: 2.8.2
 
 FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 
@@ -115,6 +115,11 @@ Author: David Hollander<br />
 Author URI: http://www.foxy-shop.com/<br />
 
 == Changelog ==
+
+= 2.8.2 =
+* Gorgeous new FoxyShop logo on settings page
+* New option available in datafeed endpoint to add WordPress accounts after checkout
+* Bugfix: SSO redirects were failing after login.
 
 = 2.8.1 =
 * Fixed bug where product and category sorting was only showing up for editors. Now available for editors and above.

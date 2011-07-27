@@ -46,9 +46,13 @@ function foxyshop_options() {
 <div id="foxyshop_settings_wrap">
 	
 
-	<p><img src="<?php echo FOXYSHOP_DIR; ?>/images/logo.png" alt="FoxyShop" /></p>
-	<p><?php _e('For more information on FoxyShop and complete documentation, please visit'); ?> <a href="http://www.foxy-shop.com/" target="_blank">www.foxy-shop.com</a>.<br />
-	<?php _e('If you need a FoxyCart account or to access your admin panel, please <a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211" target="_blank">click here</a>.'); ?></p>
+	<div style="padding: 17px 0 10px 0;">
+		<a href="http://www.foxy-shop.com/" target="_blank"><img src="<?php echo FOXYSHOP_DIR; ?>/images/logo.png" alt="FoxyShop" style="float: left; margin-right: 20px;" /></a>
+		<p style="float: left; margin: 3px 0 1em 0;"><strong><?php _e('Helpful Links:'); ?></strong><br />
+		<a href="http://www.foxy-shop.com/documentation/" target="_blank"><?php _e('Complete FoxyShop Documentation:'); ?></a><br />
+		<a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211" target="_blank"><?php _e('FoxyCart Account Access:'); ?></a></p>
+		<div style="clear: both;"></div>
+	</div>
 
 	<?php
 	//Confirmation Saved

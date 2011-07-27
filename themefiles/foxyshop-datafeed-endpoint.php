@@ -15,6 +15,11 @@ if (isset($_POST["FoxyData"]) OR isset($_POST['FoxySubscriptionData'])) {
 	die('No Content Received');
 }
 
+//Add WordPress User
+//If you want to check for and add a new WP user to match the FoxyCart user (if one doesn't exist) then set the following value to true
+$add_wordpress_user = false;
+
+
 
 //For testing, write datafeed to file in foxyshop or theme folder
 //$file = FOXYSHOP_PATH.'/themefiles/datafeed.xml';
@@ -97,7 +102,11 @@ if (isset($_POST["FoxyData"])) {
 	foreach($xml->transactions->transaction as $transaction) {
 
 		//Get FoxyCart Customer ID
-		$customer_id = $transaction->customer_id;
+		$customer_id = (string)$transaction->customer_id;
+		$customer_first_name = (string)$transaction->customer_first_name;
+		$customer_last_name = (string)$transaction->customer_last_name;
+		$customer_email = (string)$transaction->customer_email;
+		$customer_password = (string)$transaction->customer_password;
 
 		//For Each Transaction Detail
 		foreach($transaction->transaction_details->transaction_detail as $transactiondetails) {
@@ -173,6 +182,33 @@ if (isset($_POST["FoxyData"])) {
 
 
 		}
+		
+		//Add WordPress User
+		if ($add_wordpress_user && $customer_id != '') {
+			
+			//Check To See if WordPress User Already Exists
+			$current_user = get_user_by_email($customer_email);
+			
+			//No Return, Add New User, Username will be email address
+			if (!$current_user) {
+				$new_user_id = wp_insert_user(array(
+					'user_login' => $customer_email,
+					'user_email' => $customer_email,
+					'first_name' => $customer_first_name,
+					'last_name' => $customer_last_name,
+					'user_email' => $customer_email,
+					'user_pass' => wp_generate_password(),
+					'user_nicename' => $customer_first_name . ' ' . $customer_last_name,
+					'dispaly_name' => $customer_first_name . ' ' . $customer_last_name,
+					'nickname' => $customer_first_name . ' ' . $customer_last_name,
+					'role' => 'subscriber'
+				));
+				add_user_meta($new_user_id, 'foxycart_customer_id', $customer_id, true);
+				$wpdb->query("UPDATE $wpdb->users SET user_pass = '$customer_password' WHERE ID = $new_user_id");
+			}
+		}
+		
+		
 
 		//If you have custom code to run for each order, put it here:
 
