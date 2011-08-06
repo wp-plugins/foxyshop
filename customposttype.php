@@ -5,22 +5,25 @@
 add_action('init', 'foxyshop_create_post_type', 1);
 function foxyshop_create_post_type() {
 	$labels = array(
-		'name' => _x('Products', 'post type general name'),
-		'singular_name' => _x('Product', 'post type singular name'),
-		'add_new' => _x('Add New', 'Add New'),
-		'add_new_item' => __('Add New Product'),
-		'edit_item' => __('Edit Product'),
-		'new_item' => __('New Product'),
-		'view_item' => __('View Product'),
-		'search_items' => __('Search Products'),
-		'not_found' =>  __('No Products Found'),
-		'not_found_in_trash' => __('No Products Found in Trash'), 
+		'name' => FOXYSHOP_PRODUCT_NAME_PLURAL,
+		'singular_name' => FOXYSHOP_PRODUCT_NAME_SINGULAR,
+		'add_new' => __('Add New').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR,
+		'add_new_item' => __('Add New ').FOXYSHOP_PRODUCT_NAME_SINGULAR,
+		'all_items' => __('Manage').' '.FOXYSHOP_PRODUCT_NAME_PLURAL,
+		'edit_item' => __('Edit').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR,
+		'new_item' => __('New').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR,
+		'view_item' => __('View').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR,
+		'menu_name' => (function_exists("is_multi_author") ? FOXYSHOP_PRODUCT_NAME_PLURAL : FOXYSHOP_PRODUCT_NAME_PLURAL),
+		'not_found' =>  __('No').' '.FOXYSHOP_PRODUCT_NAME_PLURAL.' '.__('Found'),
+		'not_found_in_trash' => __('No').' '.FOXYSHOP_PRODUCT_NAME_PLURAL.' '.__('Found in Trash'), 
+		'search_items' => __('Search').' '.FOXYSHOP_PRODUCT_NAME_PLURAL,
 		'parent_item_colon' => ''
 	);
 	$post_type_support = array('title','editor','thumbnail', 'custom-fields', 'excerpt');
 	if (defined('FOXYSHOP_PRODUCT_COMMENTS')) array_push($post_type_support, "comments");
 	register_post_type('foxyshop_product', array(
 		'labels' => $labels,
+		'description' => "FoxyShop ".FOXYSHOP_PRODUCT_NAME_PLURAL,
 		'public' => true,
 		'show_ui' => true,
 		'capability_type' => 'page',
@@ -53,11 +56,11 @@ add_filter('manage_edit-foxyshop_product_columns', 'add_new_foxyshop_product_col
 function add_new_foxyshop_product_columns($cols) {
 	$new_columns['cb'] = '<input type="checkbox" />';
 	$new_columns['id'] = __('ID');
-	$new_columns['title'] = _x('Product Title', 'column name');
+	$new_columns['title'] = FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Title', 'column name');
 	$new_columns['productimage'] = __('Image');
 	$new_columns['productcode'] = __('Code');
 	$new_columns['price'] = __('Price');
-	$new_columns['productcategory'] = __('Product Category');
+	$new_columns['productcategory'] = FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category');
 	return $new_columns;
 }
 
@@ -167,7 +170,26 @@ function foxyshop_restrict_manage_posts() {
 }
 
 
+//-------------------------------------------
+//Add Filter For Language
+//-------------------------------------------
+add_filter('post_updated_messages', 'foxyshop_updated_messages');
+function foxyshop_updated_messages($messages) {
+	global $post, $post_ID;
 
+	$messages['foxyshop_product'] = array(
+		1 => FOXYSHOP_PRODUCT_NAME_SINGULAR.' updated. <a href="'.esc_url(get_permalink($post_ID)).'">View '.strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR).'</a>',
+		2 => __('Custom field updated.'),
+		3 => __('Custom field deleted.'),
+		4 => FOXYSHOP_PRODUCT_NAME_SINGULAR.__(' updated.'),
+		6 => sprintf(__(FOXYSHOP_PRODUCT_NAME_SINGULAR.' published. <a href="%s">View '.strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR).'</a>'), esc_url(get_permalink($post_ID))),
+		7 => FOXYSHOP_PRODUCT_NAME_SINGULAR.__(' saved.'),
+		8 => FOXYSHOP_PRODUCT_NAME_SINGULAR.' submitted. <a target="_blank" href="'.esc_url(add_query_arg('preview', 'true', get_permalink($post_ID))).'">Preview '.strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR).'</a>',
+		9 => FOXYSHOP_PRODUCT_NAME_SINGULAR.' scheduled for: <strong>'.date_i18n( __('M j, Y @ G:i'), strtotime($post->post_date)).'</strong>. <a target="_blank" href="'.esc_url(get_permalink($post_ID)).'">Preview '.strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR).'</a>',
+		10 => FOXYSHOP_PRODUCT_NAME_SINGULAR.' draft updated. <a target="_blank" href="'.esc_url(add_query_arg( 'preview', 'true', get_permalink($post_ID))).'">Preview '.strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR).'</a>'
+	);
+	return $messages;
+}
 
 
 
@@ -178,15 +200,15 @@ function foxyshop_restrict_manage_posts() {
 add_action('init', 'foxyshop_product_category_init', 1);
 function foxyshop_product_category_init() {
 	$labels = array(
-		'name' => __('Product Categories'),
-		'singular_name' => __('Product Category'),
+		'name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Categories'),
+		'singular_name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category'),
 		'parent_item' => __('Parent Category'),
-		'all_items' => __('All Product Categories'),
-		'edit_item' => __('Edit Product Category'),
-		'update_item' => __('Update Product Category'),
-		'add_new_item' => __('Add New Product Category'),
-		'new_item_name' => __('New Product Category Name'),
-		'menu_name' => __('Product Categories')
+		'all_items' => __('All').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Categories'),
+		'edit_item' => __('Edit').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category'),
+		'update_item' => __('Update').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category'),
+		'add_new_item' => __('Add New').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category'),
+		'new_item_name' => __('New').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category Name'),
+		'menu_name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Categories')
 	);
 	register_taxonomy('foxyshop_categories', 'foxyshop_product', array(
 		'hierarchical' => true,
@@ -214,11 +236,11 @@ function foxyshop_product_meta_init() {
 		wp_enqueue_style('datepickerStyle', FOXYSHOP_DIR . '/css/ui-smoothness/jquery-ui-1.8.10.custom.css');
 	}
 	
-	add_meta_box('product_details_meta', 'Product Details', 'foxyshop_product_details_setup', 'foxyshop_product', 'side', 'high');
+	add_meta_box('product_details_meta', FOXYSHOP_PRODUCT_NAME_SINGULAR.' Details', 'foxyshop_product_details_setup', 'foxyshop_product', 'side', 'high');
 	add_meta_box('product_pricing_meta', 'Pricing Details', 'foxyshop_product_pricing_setup', 'foxyshop_product', 'side', 'low');
-	add_meta_box('product_secondary_meta', 'Secondary Product Features', 'foxyshop_product_secondary_setup', 'foxyshop_product', 'normal', 'low');
-	add_meta_box('product_images_meta', 'Product Images', 'foxyshop_product_images_setup', 'foxyshop_product', 'normal', 'high');
-	add_meta_box('product_variations_meta', 'Product Variations', 'foxyshop_product_variations_setup', 'foxyshop_product', 'normal', 'high');
+	add_meta_box('product_secondary_meta', 'Secondary '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' Features', 'foxyshop_product_secondary_setup', 'foxyshop_product', 'normal', 'low');
+	add_meta_box('product_images_meta', FOXYSHOP_PRODUCT_NAME_SINGULAR.' Images', 'foxyshop_product_images_setup', 'foxyshop_product', 'normal', 'high');
+	add_meta_box('product_variations_meta', FOXYSHOP_PRODUCT_NAME_SINGULAR.' Variations', 'foxyshop_product_variations_setup', 'foxyshop_product', 'normal', 'high');
 	add_action('save_post','foxyshop_product_meta_save');
 }
 
@@ -305,7 +327,7 @@ function foxyshop_product_details_setup() {
 	<?php } ?>
 	<div class="foxyshop_field_control">
 		<input type="checkbox" name="_hide_product" id="_hide_product" style="float: left; margin: 5px 0 0 10px;"<?php echo checked($_hide_product,"on"); ?> />
-		<label style="width: 210px;" for="_hide_product"><?php _e('Hide This Product From List View'); ?></label>
+		<label style="width: 210px;" for="_hide_product"><?php echo __('Hide This').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('From List View'); ?></label>
 	</div>
 	<div style="clear:both"></div>
 	<?php
@@ -492,9 +514,9 @@ function foxyshop_product_secondary_setup() {
 	?>
 	<div class="foxyshop_field_control" style="float: left; width: 48%;">
 		<input type="hidden" name="_related_products" id="_related_products" value=",<?php echo $_related_products; ?>," />
-		<div style="padding: 4px;"><strong><?php _e('Related Products'); ?></strong></div>
+		<div style="padding: 4px;"><strong><?php echo __('Related ').FOXYSHOP_PRODUCT_NAME_PLURAL; ?></strong></div>
 		<select name="_related_products_list" id="_related_products_list" style="width: 210px;">
-			<option value=""><?php _e('- - Select Products Below - -'); ?></option>
+			<option value=""><?php echo __('- - Select ').FOXYSHOP_PRODUCT_NAME_PLURAL.__(' Below - -'); ?></option>
 			<?php echo $productList; ?>
 		</select>
 		<a href="#" class="button" id="add_related_product"><?php _e('Add'); ?></a>
@@ -503,9 +525,9 @@ function foxyshop_product_secondary_setup() {
 	<?php if ($foxyshop_settings['enable_bundled_products']) { ?>
 	<div class="foxyshop_field_control" style="float: right; width: 48%; clear: none;">
 		<input type="hidden" name="_bundled_products" id="_bundled_products" value=",<?php echo $_bundled_products; ?>," />
-		<div style="padding: 4px;"><strong><?php _e('Bundled Products'); ?></strong></div>
+		<div style="padding: 4px;"><strong><?php echo __('Bundled').' '.FOXYSHOP_PRODUCT_NAME_PLURAL; ?></strong></div>
 		<select name="_bundled_products_list" id="_bundled_products_list" style="width: 210px;">
-			<option value=""><?php _e('- - Select Products Below - -'); ?></option>
+			<option value=""><?php echo __('- - Select ').FOXYSHOP_PRODUCT_NAME_PLURAL.__(' Below - -'); ?></option>
 			<?php echo $productList; ?>
 		</select>
 		<a href="#" class="button" id="add_bundled_product"><?php _e('Add'); ?></a>
@@ -518,7 +540,7 @@ function foxyshop_product_secondary_setup() {
 jQuery(document).ready(function($){
 	$("#add_related_product").click(function() {
 		thisID = $("#_related_products_list option:selected").attr("value");
-		thisName = $("#_related_products_list option:selected").attr("text");
+		thisName = $("#_related_products_list option:selected").prop("text");
 		$("#related_product_listing").append('<span id="related_' + thisID + '"><a href="#" class="remove_related_product" rel="' + thisID + '"><?php _e('Delete'); ?></a>&nbsp;' + thisName + '</span>');
 		$("#_related_products").val($("#_related_products").val() + ',' + thisID + ',');
 		return false;
@@ -532,7 +554,7 @@ jQuery(document).ready(function($){
 	});
 	$("#add_bundled_product").click(function() {
 		thisID = $("#_bundled_products_list option:selected").attr("value");
-		thisName = $("#_bundled_products_list option:selected").attr("text");
+		thisName = $("#_bundled_products_list option:selected").prop("text");
 		$("#bundled_product_listing").append('<span id="bundled_' + thisID + '"><a href="#" class="remove_bundled_product" rel="' + thisID + '"><?php _e('Delete'); ?></a>&nbsp;' + thisName + '</span>');
 		$("#_bundled_products").val($("#_bundled_products").val() + ',' + thisID + ',');
 		return false;
@@ -675,7 +697,7 @@ function foxyshop_product_images_setup() {
 			var variationID = $(this).attr("rel");
 			$(this).uploadify({
 				uploader  : '<?php echo FOXYSHOP_DIR; ?>/js/uploadify/uploadify.swf',
-				script    : '/upload-<?php echo $foxyshop_settings['datafeed_url_key']; ?>/',
+				script    : '<?php echo get_bloginfo("url") . FOXYSHOP_URL_BASE; ?>/upload-<?php echo $foxyshop_settings['datafeed_url_key']; ?>/',
 				cancelImg : '<?php echo FOXYSHOP_DIR; ?>/js/uploadify/cancel.png',
 				auto      : true,
 				buttonImg	: '<?php echo FOXYSHOP_DIR; ?>/images/add-new-image.png',

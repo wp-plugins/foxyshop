@@ -1,13 +1,7 @@
-<?php get_header(); ?>
-
-<?php
-//Hide page content if plugin is disabled
-if (function_exists('foxyshop_insert_foxycart_files')) {
-?>
 <div id="foxyshop_container">
 <?php
 foxyshop_include('header');
-while (have_posts()) : the_post();
+
 	
 	//PrettyPhoto Includes (can be removed if you want to use a different javascript slideshow plugin)
 	echo '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/prettyphoto/jquery.prettyPhoto.js"></script>'."\n";
@@ -15,8 +9,12 @@ while (have_posts()) : the_post();
 	?><script type="text/javascript">jQuery(document).ready(function($){$("a[rel^='foxyshop_gallery']").prettyPhoto({theme: 'light_square', overlay_gallery: false, social_tools: ''});});</script><?php
 
 	//Initialize Product
-	global $product;
-	$product = foxyshop_setup_product();
+	global $product, $prod;
+	$product = foxyshop_setup_product($prod);
+	
+	//Just for the widget, since url links are no longer available
+	global $foxyshop_skip_url_link;
+	$foxyshop_skip_url_link = 1;
 	
 	//This is for testing to see what is included in the $product array
 	//print_r($product);
@@ -24,8 +22,9 @@ while (have_posts()) : the_post();
 	//Initialize Form
 	foxyshop_start_form();
 	
+	
 	//Write Breadcrumbs
-	foxyshop_breadcrumbs(" &raquo; ", "&laquo; Back to Products");
+	//foxyshop_breadcrumbs(" &raquo; ", "&laquo; Back to Products");
 	
 
 	//Show the Main Image and Slideshow if Available
@@ -84,12 +83,7 @@ while (have_posts()) : the_post();
 	echo '</form>';
 
 
-endwhile;
-?>
+	?>
 	<div class="clr"></div>
 	<?php foxyshop_include('footer'); ?>
 </div>
-<?php } ?>
-
-<?php
-get_footer(); ?>

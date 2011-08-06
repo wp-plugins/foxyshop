@@ -92,7 +92,7 @@ function action_show_user_profile($user) {
     <thead>
     <tr>
         <tr>
-            <th class="manage-column column-columnname" scope="col">Product Code</th>
+            <th class="manage-column column-columnname" scope="col"><?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?> Code</th>
             <th class="manage-column column-columnname" scope="col">Active</th>
             <th class="manage-column column-columnname" scope="col">Actions</th>
         </tr>

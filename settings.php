@@ -43,16 +43,8 @@ function set_foxyshop_settings() {
 function foxyshop_options() {
 	global $foxyshop_settings;
 ?>
-<div id="foxyshop_settings_wrap">
+<div id="foxyshop_settings_wrap" class="wrap">
 	
-
-	<div style="padding: 17px 0 10px 0;">
-		<a href="http://www.foxy-shop.com/" target="_blank"><img src="<?php echo FOXYSHOP_DIR; ?>/images/logo.png" alt="FoxyShop" style="float: left; margin-right: 20px;" /></a>
-		<p style="float: left; margin: 3px 0 1em 0;"><strong><?php _e('Helpful Links:'); ?></strong><br />
-		<a href="http://www.foxy-shop.com/documentation/" target="_blank"><?php _e('Complete FoxyShop Documentation:'); ?></a><br />
-		<a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211" target="_blank"><?php _e('FoxyCart Account Access:'); ?></a></p>
-		<div style="clear: both;"></div>
-	</div>
 
 	<?php
 	//Confirmation Saved
@@ -97,6 +89,37 @@ function foxyshop_options() {
 	
 	?>
 
+	<table class="widefat infoonly" id="foxyshop_settings_header">
+		<thead>
+			<tr>
+				<th>
+					<div id="settings_title">FoxyShop <?php echo $foxyshop_settings['foxyshop_version']; ?></div>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="border-bottom: 0 none;">
+					<a href="http://www.foxy-shop.com/" target="_blank"><img src="<?php echo FOXYSHOP_DIR; ?>/images/logo.png" alt="FoxyShop" style="float: right; margin-left: 20px;" /></a>
+					
+					<p>Stay up to date with the latest updates from FoxyShop by following on Twitter and Facebook.</p>
+					<a href="http://twitter.com/FoxyShopWP" class="twitter-follow-button" data-show-count="false">Follow @FoxyShopWP</a>
+					<script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
+					<iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo urlencode('https://www.facebook.com/pages/FoxyShop/188079417920111'); ?>&amp;layout=button_count&amp;show_faces=false&amp;width=190&amp;action=like&amp;colorscheme=light&amp;font=arial" scrolling="no" frameborder="0" allowTransparency="true" style="border:none; overflow:hidden; width:190px; height:26px;"></iframe>
+					
+					<p>
+					<a href="http://www.foxy-shop.com/documentation/" target="_blank" class="button"><?php _e('FoxyShop Documentation'); ?></a>
+					<a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&url=http://www.foxycart.com/" target="_blank" class="button"><?php _e('FoxyCart Information'); ?></a>
+					<a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&url=http://wiki.foxycart.com/" target="_blank" class="button"><?php _e('FoxyCart Wiki'); ?></a>
+					<a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&url=http://admin.foxycart.com/" target="_blank" class="button"><?php _e('FoxyCart Admin Panel'); ?></a>
+					
+					</p>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<br /><br />
 	<form>
 	
 	<table class="widefat infoonly">
@@ -192,10 +215,10 @@ function foxyshop_options() {
 		<tbody>
 			<tr>
 				<td>
-					<label for="sort_key"><?php _e('Product Sorting'); ?>:</label> 
+					<label for="sort_key"><?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Sorting'); ?>:</label> 
 					<select name="foxyshop_sort_key" id="sort_key">
 					<?php
-					$sortArray = array("menu_order" => "Custom Order", "name" => "Product Name", "price_asc" => "Price (Lowest to Highest)", "price_desc" => "Price (Highest to Lowest)", "date_asc" => "Date (Oldest to Newest)", "date_desc" => "Date (Newest to Oldest)");
+					$sortArray = array("menu_order" => "Custom Order", "name" => FOXYSHOP_PRODUCT_NAME_SINGULAR . " Name", "price_asc" => "Price (Lowest to Highest)", "price_desc" => "Price (Highest to Lowest)", "date_asc" => "Date (Oldest to Newest)", "date_desc" => "Date (Newest to Oldest)");
 					foreach ($sortArray as $key=>$val) {
 						echo '<option value="' . $key . '"' . ($foxyshop_settings['sort_key'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
 					} ?>
@@ -204,7 +227,7 @@ function foxyshop_options() {
 			</tr>
 			<tr>
 				<td>
-					<label for="foxyshop_products_per_page"><?php _e('Products Per Page'); ?>:</label> <input type="text" id="foxyshop_products_per_page" name="foxyshop_products_per_page" value="<?php echo ($foxyshop_settings['products_per_page'] < 0 ? 0 : $foxyshop_settings['products_per_page']); ?>" style="width: 50px;" /> <small><?php _e('Enter 0 to show all products (no paging). Paging does not apply to the All Products page.'); ?></small>
+					<label for="foxyshop_products_per_page"><?php echo FOXYSHOP_PRODUCT_NAME_PLURAL . ' ' . __('Per Page'); ?>:</label> <input type="text" id="foxyshop_products_per_page" name="foxyshop_products_per_page" value="<?php echo ($foxyshop_settings['products_per_page'] < 0 ? 0 : $foxyshop_settings['products_per_page']); ?>" style="width: 50px;" /> <small><?php _e('Enter 0 to show all products (no paging). Paging does not apply to the All ') . FOXYSHOP_PRODUCT_NAME_SINGULAR . __(' page.'); ?></small>
 				</td>
 			</tr>
 			<tr>
@@ -233,13 +256,13 @@ function foxyshop_options() {
 				<td>
 					<div class="small" style="margin-bottom: 8px;"><?php _e('This is what will be displayed in the title bar of your web browser.'); ?></div>
 
-					<label for="foxyshop_browser_title_1" style="width: 112px;"><?php _e('All Products'); ?>:</label> <input type="text" name="foxyshop_browser_title_1" value="<?php echo $foxyshop_settings['browser_title_1']; ?>" size="50" />
+					<label for="foxyshop_browser_title_1" style="width: 112px;"><?php echo __('All ') . FOXYSHOP_PRODUCT_NAME_PLURAL; ?>:</label> <input type="text" name="foxyshop_browser_title_1" value="<?php echo $foxyshop_settings['browser_title_1']; ?>" size="50" />
 					<div style="clear: both;"></div>
 					<label for="foxyshop_browser_title_2" style="width: 112px;"><?php _e('All Categories'); ?>:</label> <input type="text" name="foxyshop_browser_title_2" value="<?php echo $foxyshop_settings['browser_title_2']; ?>" size="50" />
 					<div style="clear: both;"></div>
 					<label for="foxyshop_browser_title_3" style="width: 112px;"><?php _e('Single Category'); ?>:</label> <input type="text" name="foxyshop_browser_title_3" value="<?php echo $foxyshop_settings['browser_title_3']; ?>" size="50" /> <small>Use %c for Category Name</small>
 					<div style="clear: both;"></div>
-					<label for="foxyshop_browser_title_4" style="width: 112px;"><?php _e('Single Product'); ?>:</label> <input type="text" name="foxyshop_browser_title_4" value="<?php echo $foxyshop_settings['browser_title_4']; ?>" size="50" /> <small>Use %p for Product Name</small>
+					<label for="foxyshop_browser_title_4" style="width: 112px;"><?php echo __('Single ') . FOXYSHOP_PRODUCT_NAME_SINGULAR; ?>:</label> <input type="text" name="foxyshop_browser_title_4" value="<?php echo $foxyshop_settings['browser_title_4']; ?>" size="50" /> <small>Use %p for <?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?> Name</small>
 					<div style="clear: both;"></div>
 					<label for="foxyshop_browser_title_5" style="width: 112px;"><?php _e('Search Results'); ?>:</label> <input type="text" name="foxyshop_browser_title_5" value="<?php echo $foxyshop_settings['browser_title_5']; ?>" size="50" />
 					
@@ -262,7 +285,7 @@ function foxyshop_options() {
 				<td>
 					<label for="foxyshop_ship_categories" style="vertical-align: top;"><?php _e('Your Shipping Categories'); ?>:</label>
 					<textarea id="name="foxyshop_ship_categories" name="foxyshop_ship_categories" wrap="auto" style="width:500px;height: 80px;"><?php echo $foxyshop_settings['ship_categories']; ?></textarea><br />
-					<div class="small"><?php _e('These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your product setup page. Separate each category with a line break. If you only use one category this is not required. If you would like to also display a nice name in the dropdown menu, use a pipe sign "|" like this: free_shipping|Free Shipping.'); ?></div>
+					<div class="small"><?php _e('These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your ') . strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR) . __(' setup page. Separate each category with a line break. If you only use one category this is not required. If you would like to also display a nice name in the dropdown menu, use a pipe sign "|" like this: free_shipping|Free Shipping.'); ?></div>
 				</td>
 			</tr>
 			<tr>
@@ -275,7 +298,7 @@ function foxyshop_options() {
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_enable_bundled_products" name="foxyshop_enable_bundled_products"<?php checked($foxyshop_settings['enable_bundled_products'], "on"); ?> />
-					<label for="foxyshop_enable_bundled_products"><?php _e('Enable Bundled Products'); ?></label>
+					<label for="foxyshop_enable_bundled_products"><?php echo __('Enable Bundled ').FOXYSHOP_PRODUCT_NAME_PLURAL; ?></label>
 					<div class="small"><?php _e('Allow multiple items to be added to the cart at once (extra items will be added with a price of $0.00)'); ?></div>
 				</td>
 			</tr>
@@ -283,7 +306,7 @@ function foxyshop_options() {
 				<td>
 					<input type="checkbox" id="foxyshop_enable_subscriptions" name="foxyshop_enable_subscriptions"<?php checked($foxyshop_settings['enable_subscriptions'], "on"); ?> />
 					<label for="foxyshop_enable_subscriptions"><?php _e('Enable Subscriptions'); ?></label>
-					<div class="small"><?php _e('Show fields to allow the creation of subscription products.'); ?></div>
+					<div class="small"><?php _e('Show fields to allow the creation of subscription ').strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL); ?>.</div>
 				</td>
 			</tr>
 
@@ -311,7 +334,7 @@ function foxyshop_options() {
 				<td>
 					<input type="checkbox" id="foxyshop_manage_inventory_levels" name="foxyshop_manage_inventory_levels"<?php checked($foxyshop_settings['manage_inventory_levels'], "on"); ?> />
 					<label for="foxyshop_manage_inventory_levels"><?php _e('Manage Inventory Levels'); ?></label>
-					<div class="small"><?php _e('If enabled, you will be able to set inventory levels per product code. In the FoxyCart admin, you need to check the box to enable your datafeed and enter the datafeed url from the top of this page in the "datafeed url" box.'); ?></div>
+					<div class="small"><?php _e('If enabled, you will be able to set inventory levels per ').strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR). __('code. In the FoxyCart admin, you need to check the box to enable your datafeed and enter the datafeed url from the top of this page in the "datafeed url" box.'); ?></div>
 					<div style="padding: 0 0 0 15px;">
 						<label for="foxyshop_inventory_alert_level"><?php _e('Default Inventory Alert Level'); ?>:</label> <input type="text" id="foxyshop_inventory_alert_level" name="foxyshop_inventory_alert_level" value="<?php echo $foxyshop_settings['inventory_alert_level']; ?>" style="width: 50px;" />
 						<input type="checkbox" id="foxyshop_inventory_alert_email" name="foxyshop_inventory_alert_email"<?php checked($foxyshop_settings['inventory_alert_email'], "on"); ?> style="clear: left;" /><label for="foxyshop_inventory_alert_email"><?php _e('Send Email to Admin When Alert Level Reached'); ?></label>
@@ -342,7 +365,7 @@ function foxyshop_options() {
 			</tr>
 			<tr>
 				<td>
-					<label for="foxyshop_max_variations"><?php _e('Maximum Variations'); ?>:</label> <input type="text" id="foxyshop_max_variations" name="foxyshop_max_variations" value="<?php echo $foxyshop_settings['max_variations']; ?>" style="width: 50px;" />  <small>(per product)</small>
+					<label for="foxyshop_max_variations"><?php _e('Maximum Variations'); ?>:</label> <input type="text" id="foxyshop_max_variations" name="foxyshop_max_variations" value="<?php echo $foxyshop_settings['max_variations']; ?>" style="width: 50px;" />  <small>(per <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?>)</small>
 					<div class="small"><?php _e('This is an arbitrary number to save resources and should be sufficient in most cases. Raise only if necessary.'); ?></div>
 				</td>
 			</tr>
@@ -356,7 +379,7 @@ function foxyshop_options() {
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_hide_subcat_children" name="foxyshop_hide_subcat_children"<?php checked($foxyshop_settings['hide_subcat_children'], "on"); ?> />
-					<label for="foxyshop_hide_subcat_children"><?php _e('Hide Child Products From Parent Categories (recommended)'); ?></label>
+					<label for="foxyshop_hide_subcat_children"><?php _e('Hide Child ') . FOXYSHOP_PRODUCT_NAME_PLURAL . __(' From Parent Categories (recommended)'); ?></label>
 					<div class="small"><?php _e('By default, WordPress treats children a little differently than you would expect in that products in child categories also show up in parent categories. FoxyShop removes these products, but if you would like to have all products from sub-categories show up in parent categories, uncheck this box.'); ?></div>
 				</td>
 			</tr>
@@ -374,15 +397,15 @@ function foxyshop_options() {
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_generate_feed" name="foxyshop_generate_feed"<?php checked($foxyshop_settings['generate_feed'], "on"); ?> />
-					<label for="foxyshop_generate_feed"><?php _e('Generate Product Feed'); ?></label>
-					<div class="small"><?php _e('Selecting this option will add a sidebar to the menu which will allow you to export a file suitable for uploading to Google\'s Product Search system.'); ?></div>
+					<label for="foxyshop_generate_feed"><?php echo __('Generate ') . FOXYSHOP_PRODUCT_NAME_SINGULAR . __(' Feed'); ?></label>
+					<div class="small"><?php echo __('Selecting this option will add a sidebar to the menu which will allow you to export a file suitable for uploading to Google\'s Product Search system.'); ?></div>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_generate_product_sitemap" name="foxyshop_generate_product_sitemap"<?php checked($foxyshop_settings['generate_product_sitemap'], "on"); ?> />
-					<label for="foxyshop_generate_product_sitemap"><?php _e('Generate Product Sitemap'); ?></label>
-					<div class="small"><?php _e('If checked, a sitemap file with all of your products will be created in your root folder.'); ?></div>
+					<label for="foxyshop_generate_product_sitemap"><?php echo __('Generate ') . FOXYSHOP_PRODUCT_NAME_SINGULAR . __(' Sitemap'); ?></label>
+					<div class="small"><?php echo __('If checked, a sitemap file with all of your ') . strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR) . __(' will be created in your root folder.'); ?></div>
 				</td>
 			</tr>
 

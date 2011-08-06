@@ -7,7 +7,7 @@ if ($foxyshop_settings['sort_key'] == "menu_order") {
 
 //Put in Sidebar
 function foxyshop_custom_sorting_menu() {    
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Custom Product Sorting'), __('Set Product Order'), 'edit_others_pages', 'foxyshop_custom_sort', 'foxyshop_custom_sort');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Custom ') . FOXYSHOP_PRODUCT_NAME_SINGULAR . __(' Sorting'), __('Set ').FOXYSHOP_PRODUCT_NAME_SINGULAR.(' Order'), 'edit_others_pages', 'foxyshop_custom_sort', 'foxyshop_custom_sort');
 }
 
 //Load JS Libaries
@@ -31,7 +31,7 @@ function foxyshop_update_order() {
 			$str = str_replace("id_", "", $IDs[$i]);
 			$wpdb->query("UPDATE $wpdb->posts SET menu_order = '$i' WHERE id ='$str'");
 		}
-		return '<div id="message" class="updated fade"><p>'. __('Product order updated successfully.').'</p></div>';
+		return '<div id="message" class="updated fade"><p>'. FOXYSHOP_PRODUCT_NAME_SINGULAR . __(' order updated successfully.').'</p></div>';
 	} else {
 		return '<div id="message" class="updated fade"><p>'. __('An error occured, order has not been saved.').'</p></div>';
 	}
@@ -48,7 +48,7 @@ function foxyshop_revert_order() {
 		$str = str_replace("id_", "", $IDs[$i]);
 		$wpdb->query("UPDATE $wpdb->posts SET menu_order = '0' WHERE id ='$str'");
 	}
-	return '<div id="message" class="updated fade"><p>'. __('Product order reverted to original.').'</p></div>';
+	return '<div id="message" class="updated fade"><p>'. FOXYSHOP_PRODUCT_NAME_SINGULAR . __(' order reverted to original.').'</p></div>';
 }
 
 //The Main Function
@@ -65,16 +65,16 @@ function foxyshop_custom_sort() {
 	?>
 
 	<div class="wrap">
-	<h2><?php _e('Custom Product Order'); ?></h2>
+	<h2><?php echo __('Custom ') . FOXYSHOP_PRODUCT_NAME_SINGULAR . __(' Order'); ?></h2>
 	<?php if ($success) echo $success; ?>
 	
 	<?php
 	$product_categories = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&orderby=name&order=ASC');
 	if ($product_categories) {
-		echo '<p>' . __('Select a category from the drop down to order the products in that category.') . '</p>';
+		echo '<p>' . __("Select a category from the drop down to order the ") . strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL) . __(' in that category.')."</p>\n";
 		echo '<form name="form_product_category_order" method="post" action="">';
 		echo '<select name="categoryID" id="categoryID">'."\n";
-		echo '<option value="0"' . ($categoryID == 0 ? ' selected="selected"' : '') . '>All Products</option>'."\n";
+		echo '<option value="0"' . ($categoryID == 0 ? ' selected="selected"' : '') . '>All ' . FOXYSHOP_PRODUCT_NAME_PLURAL . '</option>'."\n";
 		foreach($product_categories as $cat) {
 			echo '<option value="' . $cat->term_id . '"' . ($categoryID == $cat->term_id ? ' selected="selected"' : '') . '>' . $cat->name . ' (' . $cat->count . ')' . '</option>'."\n";
 		}
@@ -95,7 +95,7 @@ function foxyshop_custom_sort() {
 			$unwanted_post_ids = get_objects_in_term($unwanted_children, "foxyshop_categories");
 			$args = array('post_type' => 'foxyshop_product', "post__not_in" => $unwanted_post_ids, "foxyshop_categories" => $current_category_slug, 'numberposts' => -1, 'orderby' => "menu_order", 'order' => "ASC");
 		} else {
-			$current_category_name = __("All Products");
+			$current_category_name = __("All ") . FOXYSHOP_PRODUCT_NAME_PLURAL;
 			$args = array('post_type' => 'foxyshop_product', 'numberposts' => -1, 'orderby' => "menu_order", 'order' => "ASC");
 		}
 	
@@ -104,7 +104,7 @@ function foxyshop_custom_sort() {
 		if ($product_list) {
 
 			echo '<h3>' . $current_category_name . '</h3>'."\n";
-			echo '<p>Drag products to the preferred order and then click the Save button at the bottom of the page.</p>';
+			echo '<p>Drag ' . strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL) . ' to the preferred order and then click the Save button at the bottom of the page.</p>';
 			echo '<form name="form_product_order" method="post" action="">'."\n";
 			echo '<ul id="foxyshop_product_order_list" class="foxyshop_sort_list">'."\n";
 			foreach ($product_list as $prod) {
@@ -130,7 +130,7 @@ function foxyshop_custom_sort() {
 			<?php
 
 		} else {
-			echo '<p><em>No Products Found For This Category.</em></p>';
+			echo '<p><em>No ' . FOXYSHOP_PRODUCT_NAME_PLURAL . ' Found For This Category.</em></p>';
 		}
 
 	}

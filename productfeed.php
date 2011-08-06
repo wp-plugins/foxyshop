@@ -12,7 +12,7 @@ if (isset($_GET['create_google_product_feed'])) {
 
 //Put in Sidebar
 function foxyshop_product_feed_menu() {    
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Product Feed'), __('Product Feed'), 'manage_options', 'foxyshop_product_feed', 'foxyshop_product_feed');
+	add_submenu_page('edit.php?post_type=foxyshop_product', FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Feed'), FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Feed'), 'manage_options', 'foxyshop_product_feed', 'foxyshop_product_feed');
 }
 
 function createFeed() {
@@ -72,7 +72,7 @@ function dblquotes($str) {
 //The Main Function
 function foxyshop_product_feed() {
 		echo '<div class="wrap">';
-		echo '<h2>' . __('Product Feed') . '</h2>'."\n";
+		echo '<h2>' . FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Feed') . '</h2>'."\n";
 		echo "<p>" . __('If you would like to <a href="http://www.google.com/merchants" target="_blank">submit your products to Google</a>, you may do so by creating a product feed on this page. Make sure that you check the option that <a href="http://www.google.com/support/merchants/bin/answer.py?answer=160037" target="_blank">enables double quotes</a>.') . "</p>";
 		echo '<p><a href="edit.php?post_type=foxyshop_product&amp;page=foxyshop_product_feed&amp;create_google_product_feed=1" class="button">Create Google Product Feed</a></p>';
 }

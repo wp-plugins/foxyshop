@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 2.8.2
+Version: 2.9
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -35,7 +35,7 @@ the most out of FoxyShop.
 **************************************************************************/
 
 //Setup Plugin Variables
-define('FOXYSHOP_VERSION', "2.8.2");
+define('FOXYSHOP_VERSION', "2.9");
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 $foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
@@ -44,6 +44,9 @@ if (!defined('FOXYSHOP_DOCUMENT_ROOT')) define('FOXYSHOP_DOCUMENT_ROOT', $foxysh
 if (!defined('FOXYSHOP_PRODUCTS_SLUG')) define('FOXYSHOP_PRODUCTS_SLUG','products');
 if (!defined('FOXYSHOP_PRODUCT_CATEGORY_SLUG')) define('FOXYSHOP_PRODUCT_CATEGORY_SLUG','product-cat');
 if (!defined('FOXYSHOP_JQUERY_VERSION')) define('FOXYSHOP_JQUERY_VERSION','1.6.2');
+if (!defined('FOXYSHOP_PRODUCT_NAME_SINGULAR')) define('FOXYSHOP_PRODUCT_NAME_SINGULAR','Product');
+if (!defined('FOXYSHOP_PRODUCT_NAME_PLURAL')) define('FOXYSHOP_PRODUCT_NAME_PLURAL','Products');
+if (!defined('FOXYSHOP_URL_BASE')) define('FOXYSHOP_URL_BASE','');
 $foxyshop_settings = unserialize(get_option("foxyshop_settings"));
 if (!is_array($foxyshop_settings)) $foxyshop_settings = array("domain" => "", "sort_key" => "", "enable_sso" => "", "generate_feed" => "", "manage_inventory_levels" => "", "enable_subscriptions" => "");
 if (!array_key_exists('foxyshop_version',$foxyshop_settings)) $foxyshop_settings['foxyshop_version'] = '';
@@ -67,7 +70,7 @@ include('shortcodesettings.php');
 //Put FoxyCart includes and jQuery on public pages
 if (!is_admin()) {
 	if ($foxyshop_settings['use_jquery']) add_action('init', 'foxyshop_insert_jquery');
-	add_action('wp_head', 'foxyshop_insert_foxycart_files');
+	if (!defined('FOXYSHOP_SKIP_FOXYCART_INCLUDES')) add_action('wp_head', 'foxyshop_insert_foxycart_files');
 }
 
 //Put FoxyShop Styles on front pages and load in the admin styles as well

@@ -128,7 +128,7 @@ function foxyshop_display_ajax() {
 			echo '<div class="foxyshop_list_col">';
 			echo '<h4>Order Details</h4>';
 			echo '<ul>';
-			echo '<li>Products: ' . foxyshop_currency((double)$transaction->product_total) . '</li>';
+			echo '<li>' . FOXYSHOP_PRODUCT_NAME_PLURAL . ': ' . foxyshop_currency((double)$transaction->product_total) . '</li>';
 			echo '<li>Tax: ' . foxyshop_currency((double)$transaction->tax_total) . '</li>';
 			echo '<li>Shipping: ' . foxyshop_currency((double)$transaction->shipping_total) . '</li>';
 			echo '<li><strong>Order Total: ' . foxyshop_currency((double)$transaction->order_total) . '</strong></li>';

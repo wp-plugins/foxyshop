@@ -4,6 +4,7 @@ add_action('widgets_init', 'foxyshop_load_widgets');
 function foxyshop_load_widgets() {
 	register_widget('FoxyShop_Category');
 	register_widget('FoxyShop_Cart_Link');
+	register_widget('FoxyShop_Category_List');
 }
 
 
@@ -14,7 +15,7 @@ class FoxyShop_Category extends WP_Widget {
 	 */
 	function FoxyShop_Category() {
 		/* Widget settings. */
-		$widget_ops = array( 'classname' => 'foxyshop_category', 'description' => __('Show the contents of a FoxyShop product category.') );
+		$widget_ops = array( 'classname' => 'foxyshop_category', 'description' => __('Show the contents of a FoxyShop ') . strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR) . __(' category.') );
 
 		/* Widget control settings. */
 		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'foxyshop-category-widget' );
@@ -113,7 +114,7 @@ class FoxyShop_Category extends WP_Widget {
 
 		<!-- Max Entries -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'showMax' ); ?>"><?php _e('Max Products to Show:'); ?></label>
+			<label for="<?php echo $this->get_field_id( 'showMax' ); ?>"><?php _e('Max ') . FOXYSHOP_PRODUCT_NAME_PLURAL . __(' to Show:'); ?></label>
 			<input id="<?php echo $this->get_field_id( 'showMax' ); ?>" name="<?php echo $this->get_field_name( 'showMax' ); ?>" value="<?php echo ($instance['showMax'] != 0 ? $instance['showMax'] : ''); ?>" style="width:50px;" /> <span class="small">(optional)</span>
 		</p>
 
@@ -218,4 +219,98 @@ class FoxyShop_Cart_Link extends WP_Widget {
 	<?php
 	}
 }
+
+
+
+
+class FoxyShop_Category_List extends WP_Widget {
+
+	/**
+	 * Widget setup.
+	 */
+	function FoxyShop_Category_List() {
+		/* Widget settings. */
+		$widget_ops = array( 'classname' => 'foxyshop_category_list', 'description' => __('Show the FoxyShop category list.') );
+
+		/* Widget control settings. */
+		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'foxyshop-category-list-widget' );
+
+		/* Create the widget. */
+		$this->WP_Widget( 'foxyshop-category-list-widget', __('FoxyShop Category List'), $widget_ops, $control_ops );
+	}
+
+	/**
+	 * How to display the widget on the screen.
+	 */
+	function widget( $args, $instance ) {
+		extract( $args );
+
+		/* Our variables from the widget settings. */
+		$title = apply_filters('widget_title', $instance['title'] );
+		$categoryID = $instance['categoryID'];
+
+		echo $before_widget;
+		if ($title) echo $before_title . $title . $after_title;
+
+		echo '<ul>';
+		foxyshop_simple_category_children($categoryID);
+		echo '</ul>';
+
+		echo $after_widget;
+	}
+
+	/**
+	 * Update the widget settings.
+	 */
+	function update( $new_instance, $old_instance ) {
+		$instance = $old_instance;
+
+		/* Strip tags for title and name to remove HTML (important for text inputs). */
+		$instance['title'] = strip_tags($new_instance['title']);
+		$instance['categoryID'] = (int)strip_tags( $new_instance['categoryID']);
+
+		return $instance;
+	}
+
+	/**
+	 * Displays the widget settings controls on the widget panel.
+	 * Make use of the get_field_id() and get_field_name() function
+	 * when creating your form elements. This handles the confusing stuff.
+	 */
+	function form( $instance ) {
+
+		/* Set up some default widget settings. */
+		$defaults = array(
+			'title' => "",
+			'categoryID' => 0
+		);
+		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
+
+		<!-- Widget Title: Text Input -->
+		<p>
+			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e('Title:'); ?></label>
+			<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:260px;" />
+		</p>
+
+		<!-- Select Category -->
+		<p>
+			<label for="<?php echo $this->get_field_id( 'categoryID' ); ?>"><?php _e('Parent Category:'); ?></label> 
+			<select id="<?php echo $this->get_field_id( 'categoryID' ); ?>" name="<?php echo $this->get_field_name( 'categoryID' ); ?>" class="widefat" style="width:100%;">
+				<option value="0">Top Level Categories</option>
+				<?php
+				$toplevelterms = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0');
+				$arrCategory = array();
+				foreach ($toplevelterms as $toplevelterm) {
+					echo '<option value="' . $toplevelterm->slug .'"';
+					if ($instance['categoryName'] == $toplevelterm->term_id) echo ' selected="selected"';
+					echo '>' . str_replace("_","",$toplevelterm->name) . '</option>';
+				}
+				?>
+			</select>
+		</p>
+
+	<?php
+	}
+}
+
 ?>

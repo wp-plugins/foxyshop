@@ -135,11 +135,11 @@ function foxyshop_activation() {
 		"enable_ship_to" => "",
 		"enable_subscriptions" => "",
 		"enable_bundled_products" => "",
-		"browser_title_1" => "Products | " . get_bloginfo("name"),
-		"browser_title_2" => "Product Categories | " . get_bloginfo("name"),
+		"browser_title_1" => FOXYSHOP_PRODUCT_NAME_SINGULAR . " | " . get_bloginfo("name"),
+		"browser_title_2" => FOXYSHOP_PRODUCT_NAME_SINGULAR . " Categories | " . get_bloginfo("name"),
 		"browser_title_3" => "%c | " . get_bloginfo("name"),
 		"browser_title_4" => "%p | " . get_bloginfo("name"),
-		"browser_title_5" => "Product Search | " . get_bloginfo("name"),
+		"browser_title_5" => FOXYSHOP_PRODUCT_NAME_SINGULAR . " Search | " . get_bloginfo("name"),
 		"weight_type" => "english",
 		"default_weight" => "1 0.0",
 		"use_jquery" => "on",
@@ -265,8 +265,7 @@ function foxyshop_get_foxycart_data($foxyData) {
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-	// If you get SSL errors, you can uncomment the following, or ask your host to add the appropriate CA bundle
-	// curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	if (defined('FOXYSHOP_CURL_SSL_VERIFYPEER') curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FOXYSHOP_CURL_SSL_VERIFYPEER);
 	$response = trim(curl_exec($ch));
 	 
 	// The following if block will print any CURL errors you might have

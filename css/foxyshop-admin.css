@@ -89,7 +89,7 @@
 
 
 #foxyshop_settings_wrap {
-	width: 770px;
+	padding-top: 40px;
 }
 #foxyshop_settings_wrap td {
 	padding: 11px 7px 10px 7px;
@@ -420,3 +420,22 @@ table.widefat tr:last-child td {
 	padding: 3px;
 }
 
+
+
+/* Settings */
+#settings_title {
+	font-weight: normal;
+	font-size: 24px;
+	margin-bottom: 5px;
+}
+#foxyshop_settings_header iframe {
+	margin-bottom: 10px;
+	clear: left;
+	display: block;
+}
+#foxyshop_settings_header .button {
+	float: left;
+	margin-bottom: 7px;
+	margin-right: 15px;
+
+}

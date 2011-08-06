@@ -22,7 +22,7 @@ if (!$writeUploadInclude) {
 			var variationID = $(this).attr("rel");
 			$(this).uploadify({
 				uploader  : '<?php echo FOXYSHOP_DIR; ?>/js/uploadify/uploadify.swf',
-				script    : '<?php bloginfo("url"); ?>/upload-<?php echo $foxyshop_settings['datafeed_url_key']; ?>/',
+				script    : '<?php echo get_bloginfo("url") . FOXYSHOP_URL_BASE; ?>/upload-<?php echo $foxyshop_settings['datafeed_url_key']; ?>/',
 				cancelImg : '<?php echo FOXYSHOP_DIR; ?>/js/uploadify/cancel.png',
 				auto      : true,
 				width     : '130',

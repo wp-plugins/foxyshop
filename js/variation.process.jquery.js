@@ -187,8 +187,9 @@ foxycart_required_fields_check = function(e, arr) {
 		return true;
 	}
 }
-fcc.events.cart.preprocess.add(foxycart_required_fields_check);
-
+if (typeof fcc !== 'undefined') {
+	fcc.events.cart.preprocess.add(foxycart_required_fields_check);
+}
 
 function foxyshop_is_array(obj) {
 	if (obj.constructor.toString().indexOf("Array") == -1)

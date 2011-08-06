@@ -162,16 +162,16 @@ function foxyshop_order_management() {
 			</div>
 
 			<div class="foxyshop_field_control">
-				<label for="product_code_filter">Product Code</label><input type="text" name="product_code_filter" id="product_code_filter" value="<?php echo $foxy_data['product_code_filter']; ?>" />
+				<label for="product_code_filter"><?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?> Code</label><input type="text" name="product_code_filter" id="product_code_filter" value="<?php echo $foxy_data['product_code_filter']; ?>" />
 			</div>
 			<div class="foxyshop_field_control">
-				<label for="product_name_filter">Product Name</label><input type="text" name="product_name_filter" id="product_name_filter" value="<?php echo $foxy_data['product_name_filter']; ?>" />
+				<label for="product_name_filter"><?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?> Name</label><input type="text" name="product_name_filter" id="product_name_filter" value="<?php echo $foxy_data['product_name_filter']; ?>" />
 			</div>
 			<div class="foxyshop_field_control">
-				<label for="product_option_name_filter">Product Option Name</label><input type="text" name="product_option_name_filter" id="product_option_name_filter" value="<?php echo $foxy_data['product_option_name_filter']; ?>" />
+				<label for="product_option_name_filter"><?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?> Option Name</label><input type="text" name="product_option_name_filter" id="product_option_name_filter" value="<?php echo $foxy_data['product_option_name_filter']; ?>" />
 			</div>
 			<div class="foxyshop_field_control">
-				<label for="product_option_value_filter">Product Option Value</label><input type="text" name="product_option_value_filter" id="product_option_value_filter" value="<?php echo $foxy_data['product_option_value_filter']; ?>" />
+				<label for="product_option_value_filter"><?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?> Option Value</label><input type="text" name="product_option_value_filter" id="product_option_value_filter" value="<?php echo $foxy_data['product_option_value_filter']; ?>" />
 			</div>
 
 		</td><td>

@@ -9,7 +9,6 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 	//If you don't want to redirect to the wp-login screen for your login/create account page, define this constant in your wp-config.php file.
 	if (defined('FOXYSHOP_SSO_REDIRECT_URL')) $login_url = FOXYSHOP_SSO_REDIRECT_URL;
 
-
 	if(!is_user_logged_in()) {
 		
 		//Force a Straight Redirect
@@ -24,8 +23,7 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-			// If you get SSL errors, you can uncomment the following, or ask your host to add the appropriate CA bundle
-			// curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			if (defined('FOXYSHOP_CURL_SSL_VERIFYPEER') curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FOXYSHOP_CURL_SSL_VERIFYPEER);
 			$curlout = trim(curl_exec($ch));
 			$sso_required = 0;
 		

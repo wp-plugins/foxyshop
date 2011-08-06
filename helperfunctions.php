@@ -35,7 +35,7 @@ function foxyshop_setup_product($thepost = false) {
 	$product['quantity_max'] = (int)get_post_meta($thepost->ID,'_quantity_max', true);
 	$product['quantity_max_original'] = $product['quantity_max'];
 	$product['hide_product'] = get_post_meta($thepost->ID,'_hide_product', true);
-	$product['url'] = get_post_permalink($thepost->ID);
+	$product['url'] = get_bloginfo("url") . FOXYSHOP_URL_BASE . '/' . FOXYSHOP_PRODUCTS_SLUG . '/' . $thepost->post_name . '/';
 	$product['post_date'] = strtotime($thepost->post_date);
 
 	//All fields that are loaded straight in without changing or checking data
@@ -103,11 +103,10 @@ function foxyshop_setup_product($thepost = false) {
 	$product['images'] = array();
 	$imageNumber = 0;
 	$featuredImageID = (has_post_thumbnail($thepost->ID) ? get_post_thumbnail_id($thepost->ID) : 0);
-	$attachments = get_posts(array('numberposts' => -1, 'post_type' => 'attachment','post_status' => null,'post_parent' => $thepost->ID, 'order' => 'ASC','orderby' => 'menu_order'));
+	$attachments = get_posts(array('numberposts' => -1, 'post_type' => 'attachment','post_status' => null,'post_parent' => $thepost->ID, "post_mime_type" => "image", 'order' => 'ASC','orderby' => 'menu_order'));
 	$sizes = get_intermediate_image_sizes();
 	$sizes[] = 'full';
 	foreach ($attachments as $attachment) {
-
 		$thumbnailSRC = wp_get_attachment_image_src($attachment->ID, "thumbnail");
 		$mediumSRC = wp_get_attachment_image_src($attachment->ID, "medium");
 		$largeSRC = wp_get_attachment_image_src($attachment->ID, "large");
@@ -155,14 +154,14 @@ function foxyshop_setup_product($thepost = false) {
 
 //Starts the form
 function foxyshop_start_form() {
-	global $product, $foxyshop_settings;
+	global $product, $foxyshop_settings, $foxyshop_skip_url_link;
 	$localsettings = localeconv();
 	echo '<form action="https://' . esc_attr($foxyshop_settings['domain']) . '/cart" method="post" accept-charset="utf-8" class="foxyshop_product" id="foxyshop_product_form_' . $product['id'] . '">'."\n";
 	echo '<input type="hidden" name="price' . foxyshop_get_verification('price') . '" value="' . $product['price'] . '" id="price" />'."\n";
 	echo '<input type="hidden" name="x:originalprice" value="' . $product['originalprice'] . '" id="originalprice" />'."\n";
 	echo '<input type="hidden" name="x:l18n" value="' . utf8_encode($localsettings['currency_symbol'] . '|' . $localsettings['mon_decimal_point'] . '|' . $localsettings['mon_thousands_sep'] . '|' . $localsettings['p_cs_precedes'] . '|' . $localsettings['n_sep_by_space']) . '" id="foxyshop_l18n" />'."\n";
 	if (foxyshop_get_main_image() && $foxyshop_settings['version'] != "0.7.0") echo '<input type="hidden" name="image' . foxyshop_get_verification('image',foxyshop_get_main_image()) . '" value="' . foxyshop_get_main_image() . '" id="foxyshop_cart_product_image" />'."\n";
-	if ($foxyshop_settings['version'] != "0.7.0") echo '<input type="hidden" name="url' . foxyshop_get_verification('url') . '" value="' . $product['url'] . '" />'."\n";
+	if ($foxyshop_settings['version'] != "0.7.0" && !isset($foxyshop_skip_url_link)) echo '<input type="hidden" name="url' . foxyshop_get_verification('url') . '" value="' . $product['url'] . '" />'."\n";
 
 	echo '<input type="hidden" name="quantity_min' . foxyshop_get_verification('quantity_min') . '" value="' . $product['quantity_min'] . '" id="fs_quantity_min" />'."\n";
 	echo '<input type="hidden" name="quantity_max' . foxyshop_get_verification('quantity_max') . '" value="' . $product['quantity_max'] . '" id="fs_quantity_max" />'."\n";
@@ -192,7 +191,7 @@ function foxyshop_start_form() {
 				if ($product[$fieldname]) echo '<input type="hidden" name="' . $num . ':' . $fieldname . foxyshop_get_verification($fieldname) . '" value="' . esc_attr($product[$fieldname]) . '" />'."\n";
 			}
 			if (foxyshop_get_main_image() && $foxyshop_settings['version'] != "0.7.0") echo '<input type="hidden" name="' . $num . ':image' . foxyshop_get_verification('image',foxyshop_get_main_image()) . '" value="' . foxyshop_get_main_image() . '" />'."\n";
-			if ($foxyshop_settings['version'] != "0.7.0") echo '<input type="hidden" name="' . $num . ':url' . foxyshop_get_verification('url') . '" value="' . $product['url'] . '" />'."\n";
+			if ($foxyshop_settings['version'] != "0.7.0" && !isset($foxyshop_skip_url_link)) echo '<input type="hidden" name="' . $num . ':url' . foxyshop_get_verification('url') . '" value="' . $product['url'] . '" />'."\n";
 			$num++;	
 		}
 		$product = $original_product;
@@ -705,7 +704,7 @@ function foxyshop_breadcrumbs($sep = " &raquo; ", $product_fallback = "&laquo; B
 		}
 		$breadcrumbarray = array_reverse($breadcrumbarray);
 
-		$write1 = '<li><a href="' . get_bloginfo('url') . '/' . FOXYSHOP_PRODUCT_CATEGORY_SLUG . '/">'. $base_name . '</a></li>';
+		$write1 = '<li><a href="' . get_bloginfo('url') . FOXYSHOP_URL_BASE . '/' . FOXYSHOP_PRODUCT_CATEGORY_SLUG . '/">'. $base_name . '</a></li>';
 		foreach($breadcrumbarray as $termid) {
 			$write1 .= '<li class="foxyshop_category_separator">' . $sep .'</li>';
 			$terminfo = get_term_by('id',$termid,"foxyshop_categories");
@@ -726,7 +725,7 @@ function foxyshop_breadcrumbs($sep = " &raquo; ", $product_fallback = "&laquo; B
 	
 	//Product Fallback
 	} elseif ($post->ID && $product_fallback != "") {
-		echo '<ul id="foxyshop_breadcrumbs"><li><a href="' . get_bloginfo('url') . '/' . FOXYSHOP_PRODUCTS_SLUG . '/">'. $product_fallback . '</a></li><li style="float: none; text-indent: -99999px; width: 1px; margin: 0;">-</li></ul>';
+		echo '<ul id="foxyshop_breadcrumbs"><li><a href="' . get_bloginfo('url') . FOXYSHOP_URL_BASE . '/' . FOXYSHOP_PRODUCTS_SLUG . '/">'. $product_fallback . '</a></li><li style="float: none; text-indent: -99999px; width: 1px; margin: 0;">-</li></ul>';
 	}
 
 }
