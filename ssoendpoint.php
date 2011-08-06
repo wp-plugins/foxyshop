@@ -23,7 +23,7 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-			if (defined('FOXYSHOP_CURL_SSL_VERIFYPEER') curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FOXYSHOP_CURL_SSL_VERIFYPEER);
+			if (defined('FOXYSHOP_CURL_SSL_VERIFYPEER')) curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FOXYSHOP_CURL_SSL_VERIFYPEER);
 			$curlout = trim(curl_exec($ch));
 			$sso_required = 0;
 		

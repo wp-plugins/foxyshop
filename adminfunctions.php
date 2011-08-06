@@ -265,7 +265,7 @@ function foxyshop_get_foxycart_data($foxyData) {
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-	if (defined('FOXYSHOP_CURL_SSL_VERIFYPEER') curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FOXYSHOP_CURL_SSL_VERIFYPEER);
+	if (defined('FOXYSHOP_CURL_SSL_VERIFYPEER')) curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FOXYSHOP_CURL_SSL_VERIFYPEER);
 	$response = trim(curl_exec($ch));
 	 
 	// The following if block will print any CURL errors you might have
