@@ -145,7 +145,7 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 * Set constant FOXYSHOP_PRODUCT_COMMENTS in wp-config to allow comments on products.
 * See [Release Notes](http://www.foxy-shop.com/2011/06/version-2-6-inventory-and-subscription-upgrades/) for more details
 
-[View Archived Changelog](http://www.foxy-shop.com/changelog-archives/)
+[View Archived Changelog](http://www.foxy-shop.com/changelog-archives/) 
 
 
 == Upgrade Notice ==
