@@ -78,7 +78,10 @@ while (have_posts()) : the_post();
 	//Shows any related products
 	foxyshop_related_products("Related Products");
 
-
+	
+	//Custom Code Can Go Here
+	
+	
 	//Ends the form
 	echo '</div>';
 	echo '</form>';
@@ -86,6 +89,9 @@ while (have_posts()) : the_post();
 
 endwhile;
 ?>
+
+
+
 	<div class="clr"></div>
 	<?php foxyshop_include('footer'); ?>
 </div>

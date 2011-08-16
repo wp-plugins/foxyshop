@@ -17,16 +17,42 @@ function set_foxyshop_settings() {
 		if ($_POST['foxyshop_generate_product_sitemap'] == "on") foxyshop_create_product_sitemap();
 		
 		$new_settings = array();
-		$fields = array("version","ship_categories","weight_type","enable_ship_to","enable_subscriptions", "enable_bundled_products", "sort_key", "default_image", "use_jquery", "ga", "ga_advanced", "generate_feed", "hide_subcat_children", "generate_product_sitemap", "manage_inventory_levels", "inventory_alert_level", "inventory_alert_email", "enable_sso", "sso_account_required", "browser_title_1", "browser_title_2", "browser_title_3", "browser_title_4", "browser_title_5", "locale_code");
+		$fields = array(
+			"version",
+			"ship_categories",
+			"weight_type",
+			"enable_ship_to",
+			"enable_dashboard_stats",
+			"enable_subscriptions",
+			"enable_bundled_products",
+			"sort_key", "default_image",
+			"use_jquery",
+			"ga",
+			"ga_advanced",
+			"generate_feed",
+			"hide_subcat_children",
+			"generate_product_sitemap",
+			"manage_inventory_levels",
+			"inventory_alert_level",
+			"inventory_alert_email",
+			"enable_sso",
+			"sso_account_required",
+			"checkout_customer_create",
+			"browser_title_1",
+			"browser_title_2",
+			"browser_title_3",
+			"browser_title_4",
+			"browser_title_5",
+			"locale_code"
+		);
 		foreach ($fields as $field1) {
-			$val = (isset($_POST['foxyshop_'.$field1]) ? $_POST['foxyshop_'.$field1] : '');
+			$val = (isset($_POST['foxyshop_'.$field1]) ? stripslashes($_POST['foxyshop_'.$field1]) : '');
 			$new_settings[$field1] = $val;
 		}
 		$new_settings["domain"] = str_replace("http://","",$_POST['foxyshop_domain']);
 		$new_settings["api_key"] = $foxyshop_settings['api_key'];
 		$new_settings["foxyshop_version"] = $foxyshop_settings['foxyshop_version'];
 		$new_settings["datafeed_url_key"] = $foxyshop_settings['datafeed_url_key'];
-		$new_settings["max_variations"] = (int)$_POST['foxyshop_max_variations'];
 		$new_settings["default_weight"] = (int)$_POST['foxyshop_default_weight1'] . ' ' . (double)$_POST['foxyshop_default_weight2'];
 		$new_settings["products_per_page"] = ((int)$_POST['foxyshop_products_per_page'] == 0 ? -1 : (int)$_POST['foxyshop_products_per_page']);
 
@@ -54,7 +80,7 @@ function foxyshop_options() {
 	if (isset($_GET['key'])) echo '<div class="updated"><p>' . __('Your API Key Has Been Reset. Please Update FoxyCart With Your New Key.') . '</p></div>';
 	
 	//Warning PHP Version
-	if (version_compare(PHP_VERSION, '5.1.2', "<")) echo '<div class="error"><p>' . __('<strong>Warning:</strong> You are using PHP version ') . PHP_VERSION . __('. FoxyShop requires PHP version 5.1.2 or higher to utilize the required hmac_has() functions. Without upgrading you will experience problems adding items to the cart and completing other tasks. After upgrading, make sure that you reset your API key (scroll to the bottom of the page) to ensure that you have a fully secure key.') . '</p></div>';
+	if (version_compare(PHP_VERSION, '5.1.2', "<")) echo '<div class="error"><p>' . sprintf(__('<strong>Warning:</strong> You are using PHP version %s FoxyShop requires PHP version 5.1.2 or higher to utilize the required hmac_has() functions. Without upgrading you will experience problems adding items to the cart and completing other tasks. After upgrading, make sure that you reset your API key (scroll to the bottom of the page) to ensure that you have a fully secure key.'), PHP_VERSION) . '</p></div>';
 
 	//Warning Header/Footer Missing
 	if (!file_exists(TEMPLATEPATH.'/header.php') || !file_exists(TEMPLATEPATH.'/footer.php')) echo '<div class="error"><p>' . __('<strong>Warning:</strong> Your theme does not appear to be using header.php or footer.php. Without these files FoxyShop pages will show up unstyled. This error can often show up if you are using a WordPress framework that is bypassing the get_header() and get_footer() functions.') . '</p></div>';
@@ -70,15 +96,6 @@ function foxyshop_options() {
 		}
 	}
 
-	//Warning Permalinks
-	
-	$permalink_structure = get_option('permalink_structure');
-	if ($permalink_structure == '/archives/%post_id%' || $permalink_structure == "") {
-		echo '<div class="error"><p><strong>Warning:</strong> Your <a href="/wp-admin/options-permalink.php">permalink structure</a> should be set to Day and Name or Month and Name. Other settings will cause difficulties using FoxyShop.</p></div>';
-	}
-	
-	
-	
 	//Warning Upload Folders
 	$upload_dir = wp_upload_dir();
 	if ($upload_dir['error'] != '') {
@@ -87,6 +104,11 @@ function foxyshop_options() {
 		if (!is_writeable($upload_dir['basedir'])) echo '<div class="error"><p><strong>Warning:</strong> ' . $upload_dir['basedir'].' is not writeable. You may encounter problems uploading images or allowing the custom upload of files by customers. (To hide this notice, add a folder under <em>wp-content/uploads</em> called <em>customupload</em>.)</p></div>';
 	}
 	
+	$info_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAAKT2lDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVNnVFPpFj333vRCS4iAlEtvUhUIIFJCi4AUkSYqIQkQSoghodkVUcERRUUEG8igiAOOjoCMFVEsDIoK2AfkIaKOg6OIisr74Xuja9a89+bN/rXXPues852zzwfACAyWSDNRNYAMqUIeEeCDx8TG4eQuQIEKJHAAEAizZCFz/SMBAPh+PDwrIsAHvgABeNMLCADATZvAMByH/w/qQplcAYCEAcB0kThLCIAUAEB6jkKmAEBGAYCdmCZTAKAEAGDLY2LjAFAtAGAnf+bTAICd+Jl7AQBblCEVAaCRACATZYhEAGg7AKzPVopFAFgwABRmS8Q5ANgtADBJV2ZIALC3AMDOEAuyAAgMADBRiIUpAAR7AGDIIyN4AISZABRG8lc88SuuEOcqAAB4mbI8uSQ5RYFbCC1xB1dXLh4ozkkXKxQ2YQJhmkAuwnmZGTKBNA/g88wAAKCRFRHgg/P9eM4Ors7ONo62Dl8t6r8G/yJiYuP+5c+rcEAAAOF0ftH+LC+zGoA7BoBt/qIl7gRoXgugdfeLZrIPQLUAoOnaV/Nw+H48PEWhkLnZ2eXk5NhKxEJbYcpXff5nwl/AV/1s+X48/Pf14L7iJIEyXYFHBPjgwsz0TKUcz5IJhGLc5o9H/LcL//wd0yLESWK5WCoU41EScY5EmozzMqUiiUKSKcUl0v9k4t8s+wM+3zUAsGo+AXuRLahdYwP2SycQWHTA4vcAAPK7b8HUKAgDgGiD4c93/+8//UegJQCAZkmScQAAXkQkLlTKsz/HCAAARKCBKrBBG/TBGCzABhzBBdzBC/xgNoRCJMTCQhBCCmSAHHJgKayCQiiGzbAdKmAv1EAdNMBRaIaTcA4uwlW4Dj1wD/phCJ7BKLyBCQRByAgTYSHaiAFiilgjjggXmYX4IcFIBBKLJCDJiBRRIkuRNUgxUopUIFVIHfI9cgI5h1xGupE7yAAygvyGvEcxlIGyUT3UDLVDuag3GoRGogvQZHQxmo8WoJvQcrQaPYw2oefQq2gP2o8+Q8cwwOgYBzPEbDAuxsNCsTgsCZNjy7EirAyrxhqwVqwDu4n1Y8+xdwQSgUXACTYEd0IgYR5BSFhMWE7YSKggHCQ0EdoJNwkDhFHCJyKTqEu0JroR+cQYYjIxh1hILCPWEo8TLxB7iEPENyQSiUMyJ7mQAkmxpFTSEtJG0m5SI+ksqZs0SBojk8naZGuyBzmULCAryIXkneTD5DPkG+Qh8lsKnWJAcaT4U+IoUspqShnlEOU05QZlmDJBVaOaUt2ooVQRNY9aQq2htlKvUYeoEzR1mjnNgxZJS6WtopXTGmgXaPdpr+h0uhHdlR5Ol9BX0svpR+iX6AP0dwwNhhWDx4hnKBmbGAcYZxl3GK+YTKYZ04sZx1QwNzHrmOeZD5lvVVgqtip8FZHKCpVKlSaVGyovVKmqpqreqgtV81XLVI+pXlN9rkZVM1PjqQnUlqtVqp1Q61MbU2epO6iHqmeob1Q/pH5Z/YkGWcNMw09DpFGgsV/jvMYgC2MZs3gsIWsNq4Z1gTXEJrHN2Xx2KruY/R27iz2qqaE5QzNKM1ezUvOUZj8H45hx+Jx0TgnnKKeX836K3hTvKeIpG6Y0TLkxZVxrqpaXllirSKtRq0frvTau7aedpr1Fu1n7gQ5Bx0onXCdHZ4/OBZ3nU9lT3acKpxZNPTr1ri6qa6UbobtEd79up+6Ynr5egJ5Mb6feeb3n+hx9L/1U/W36p/VHDFgGswwkBtsMzhg8xTVxbzwdL8fb8VFDXcNAQ6VhlWGX4YSRudE8o9VGjUYPjGnGXOMk423GbcajJgYmISZLTepN7ppSTbmmKaY7TDtMx83MzaLN1pk1mz0x1zLnm+eb15vft2BaeFostqi2uGVJsuRaplnutrxuhVo5WaVYVVpds0atna0l1rutu6cRp7lOk06rntZnw7Dxtsm2qbcZsOXYBtuutm22fWFnYhdnt8Wuw+6TvZN9un2N/T0HDYfZDqsdWh1+c7RyFDpWOt6azpzuP33F9JbpL2dYzxDP2DPjthPLKcRpnVOb00dnF2e5c4PziIuJS4LLLpc+Lpsbxt3IveRKdPVxXeF60vWdm7Obwu2o26/uNu5p7ofcn8w0nymeWTNz0MPIQ+BR5dE/C5+VMGvfrH5PQ0+BZ7XnIy9jL5FXrdewt6V3qvdh7xc+9j5yn+M+4zw33jLeWV/MN8C3yLfLT8Nvnl+F30N/I/9k/3r/0QCngCUBZwOJgUGBWwL7+Hp8Ib+OPzrbZfay2e1BjKC5QRVBj4KtguXBrSFoyOyQrSH355jOkc5pDoVQfujW0Adh5mGLw34MJ4WHhVeGP45wiFga0TGXNXfR3ENz30T6RJZE3ptnMU85ry1KNSo+qi5qPNo3ujS6P8YuZlnM1VidWElsSxw5LiquNm5svt/87fOH4p3iC+N7F5gvyF1weaHOwvSFpxapLhIsOpZATIhOOJTwQRAqqBaMJfITdyWOCnnCHcJnIi/RNtGI2ENcKh5O8kgqTXqS7JG8NXkkxTOlLOW5hCepkLxMDUzdmzqeFpp2IG0yPTq9MYOSkZBxQqohTZO2Z+pn5mZ2y6xlhbL+xW6Lty8elQfJa7OQrAVZLQq2QqboVFoo1yoHsmdlV2a/zYnKOZarnivN7cyzytuQN5zvn//tEsIS4ZK2pYZLVy0dWOa9rGo5sjxxedsK4xUFK4ZWBqw8uIq2Km3VT6vtV5eufr0mek1rgV7ByoLBtQFr6wtVCuWFfevc1+1dT1gvWd+1YfqGnRs+FYmKrhTbF5cVf9go3HjlG4dvyr+Z3JS0qavEuWTPZtJm6ebeLZ5bDpaql+aXDm4N2dq0Dd9WtO319kXbL5fNKNu7g7ZDuaO/PLi8ZafJzs07P1SkVPRU+lQ27tLdtWHX+G7R7ht7vPY07NXbW7z3/T7JvttVAVVN1WbVZftJ+7P3P66Jqun4lvttXa1ObXHtxwPSA/0HIw6217nU1R3SPVRSj9Yr60cOxx++/p3vdy0NNg1VjZzG4iNwRHnk6fcJ3/ceDTradox7rOEH0x92HWcdL2pCmvKaRptTmvtbYlu6T8w+0dbq3nr8R9sfD5w0PFl5SvNUyWna6YLTk2fyz4ydlZ19fi753GDborZ752PO32oPb++6EHTh0kX/i+c7vDvOXPK4dPKy2+UTV7hXmq86X23qdOo8/pPTT8e7nLuarrlca7nuer21e2b36RueN87d9L158Rb/1tWeOT3dvfN6b/fF9/XfFt1+cif9zsu72Xcn7q28T7xf9EDtQdlD3YfVP1v+3Njv3H9qwHeg89HcR/cGhYPP/pH1jw9DBY+Zj8uGDYbrnjg+OTniP3L96fynQ89kzyaeF/6i/suuFxYvfvjV69fO0ZjRoZfyl5O/bXyl/erA6xmv28bCxh6+yXgzMV70VvvtwXfcdx3vo98PT+R8IH8o/2j5sfVT0Kf7kxmTk/8EA5jz/GMzLdsAAAAgY0hSTQAAeiUAAICDAAD5/wAAgOkAAHUwAADqYAAAOpgAABdvkl/FRgAAArVJREFUeNpckzuInFUUgL977//P85/NyGIyZdAQLcQopknapJNFFFQkrYiFzYKglaydpNlGRLQeS4usVYoQohZCfGElgrJL1OxOdpyZncf/uOcci9lZVi8cLvfe737nPjjOzDjdtndGAXgrBPdqvR6uJsHVY7RJXsjXqvbZ5kb31mnenRZs74ye8t71zz7efKHZCLRq4Jxh5piXMJtFHg3zW6r25uZGd/AfwfbO6Eq95u/2zrVq8zyyKCLzWYGoApBlDVqNlEYt4e/9+TBGfX5zo7sXdsM1fhu2O85xv3eu1R4dFeSlsJgXXL90hpcud2g3U359MEcVikp4bC1tTo6Ka1efbn3qAczs/bVO2p3lkbJURAxwHIwjeWXsjyJmjihGkUcWpdJsJs/e/HLwegIgUV9L08BkWmIABt4Hvv35gG9+jCS1Oq12mxgVDMbjgjNZyljk7eTCxSfXk8QulJUQ4/I9lhLj+uWzXLnY5M4vc374PQfsJEEVFRN9LhGRXvQwm5VEWS6uIBVFRI5DWX2YAdNZhWjMElUbFEVFCAlq/mQzGPFEYERZmZfniEBRxLnf/WP3YDHPxyJGWUZE9DjsuF9mVzFEbSmrIrGKiMieB3DO3V7kBVVVIVFRXcKrK6gu50wNVSVGYTad4RxfeYAQ/LuTf0Zl8J48L4hVBINJSLj3p6NspADEqqLIc0BZ5PlhCOGDBKDW6OyJyObho4OP17rrLopQliX3v89x3mOqiCpJCKgK0+GkyjrZy0mtXSWrOmi2u5+Y8WA8HPTTWiNrtjNCCIDDnMNMmYyGOM9f7az1YqO19hOAA/xW/6Fu3eidB7L13hPnX3nn8/eSeudSUZQd7z1mRpq48dHh7nf9m298BOTAETB1ZsaHX+yfVOTWjd4zgADVMdj937jY6j8crPh/BwBfXLyH3EX0OwAAAABJRU5ErkJggg==";
+	$settings_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAANkE3LLaAgAAAs1JREFUeJx9U11Ik2EYPTp1ueXU5dLpMvMnsEjnJq7yB5WyMEgIlTQVRU1YA/MiVpgEilPvugjUK2mKdhFNNiy0lQOxtilp7sJkKeq+YWvCN/Sz+bP2dpNh/p3L85xznsMDDwBAIpHkRkdHX8DRCKipqbmv1+vHNBrNRwDB/01LSko6JiYmfmVlZV05zN3Z2dlLCCEURf3OzMxU/KX9AZzY1bBbW1t14+PjVgC8vea0tLQcmqaJ2+0m1dXV7bt8V1fXy6Kiogd7tb6FhYUvVCrVWwABu2R+fn4lTdPE4XAQk8m0KJVKZUqlstnj8ZC8vLzaA3UrKip6GhsbNQBYABATEyObn58nNpuNrKysEIqitmmaJmaz2R0SEpLkuz9ArVbX0jRN6uvrewAENDQ0yLlcLgDA6/WCzWb72+12tLS0dLtcrhmfw44GwK+urq6/oKAgQya7LGTWXFCp2nTLFLUYFhYmNBqNI1arVQ1gy++IAHZKcgo3NjZOSK/+wLuxyYXuvj453G5qv5C1n+DxePzBwUHtpaSk69ubGzDZdvCZnRoqPHuO/31Mpz02QCDgRKjVAzpxcko6L+gkDIZR+6Nei3PdL5wfJ04Vh0dGnl4wDg8d2lkoFEaPDI9MLy0tE6fTSSwWy6ZIFHETQCInt8kmaZ4k5W9+kozapva9PhYAiESieK1W+z4+ISERIPB6vSgtLX04Ozs3AGB1x/bFvOYbcdsbKOAkXL2WEciGxz7zaQwAWDwej6/RaPT9/a+mGGZtXSwWn6mqquoYHR1t+7fGu23bsU9/XWOJChB4in0+PS/XZ8tFO+amTFAoFI83NjaIQqF4ZjAYvsnl8teHHRcAECi4w7313C1tNpPyQZok5BbfRVlZ2ROGYQjDMESpVA5h3y8cACeqIrhYTVKfflgPjbl4AwCCsrOz5RKJpBIA91jzLkLi77G4UTkA8AemGSncz8QQ2gAAAABJRU5ErkJggg==";
+	$display_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAGWSURBVDiNlZHNahRBFIW/0307isZItpmHUARB48Y/0LyEe3EjggOarQqOooJ7wbfQ6JDZuTLRp1BcxMX89qSqroueOJPJdCBnV12nvnvuab1++/J9DPG+u+ecQJJinufPLOyHB3c37qgoCtAhS3Vc9A0oyzL//GnriQFYYdx78e3olLrpmfj4dB0gM0lJZLm7c/vmZVDds0qeEu3ODqp8MsAlSDHR64/oDgNeNxlYPp2TYiRTBoBB5Y8p0RuM6A728ToCIC+IMaJskkBSAuHJ6fdGdPvjYwG5R1JMCOHuVQIBKU1W6Jb17QFLWSQmP+hgsoIEAndn9VwxaUtIqvZzB025gpkSRQI4e8r48+s3aPqv8cpd8aew5TNL0wRCPhj0+bB5rT73AvUHvSpB8jT+svX1RI9nJZ+r/M27V89DCE1JdnX9CuW45Mf3n8QUg5m1Hj18vDnrt3liCKF549Z129v7y87uLjni4qULrJxfse12pwkcDzhQo7FGo7H2/zwcDhf6jgDMrLXd7jTd/dCdpGBmrXn/PyMSrHB+wxAhAAAAAElFTkSuQmCC";
+	$pagetitle_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAhdJREFUeNqEk8tqVEEQhv/q7swMOmMwJqgQByRERBCEASGiiLgVd6ILfYBZCgHdKAFXrly4CCF5AEMewJWIKII3gihmo3iBWYkg4txO36zqmWMmJ14aDqe7q+qvr7qrKcaI0XFx4dFt/jX5q2D7eMLf4urC6bV8g4oCF248/LF07VQNxAs2iVk8Ak/aHYubK6/Q67tLE+OV1aX5OZhiirVbZ2rfOw5vvnRhQ4RzEdZHaE1oHNyJzAWUDd37+u1njd1XzJ+QtaKUdf9kFYdnJlHfN44x3mv3fLLbSCgZWj4/f3+PCT40/4d8slHHbH03iAgz9QlUKxr9zOHF+uem8c6VlMI/kR8//8gBludTmDt2AJ7FT8xWcfnZ+2nlrGMggjEEzRkUB0oJReSnLz/h9UYLY2wvaZWAXeasYQFGAxsUYwfeZQsfrTgUkdffttA4Og1xE7vNMhjHaCJgOGNgEa4+iUg5G63uFuQr1z8kMq9iimECEXBJzTBaSC2xKZJfsk5F8uF6n0pVfkAnyY1giFlzdiNs2C6SI0tA2ShYCoO1dTQgGJYQ8xIKIjmy5/M6tLeUrtn5IAKddAYiZ7T0AG0GjojkyJ12D7t2GBw5e6fLhp68C7kFSmFydYYzeS6IFBQNAhVtQe5Lx757cPV364tAx/tQnqqqYSfGhBijRpoNOzNHLr4d6cTF4+fu/u35jo6EXNz8JcAAvqMmox2nmLYAAAAASUVORK5CYII=";
+	$advanced_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAAKT2lDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVNnVFPpFj333vRCS4iAlEtvUhUIIFJCi4AUkSYqIQkQSoghodkVUcERRUUEG8igiAOOjoCMFVEsDIoK2AfkIaKOg6OIisr74Xuja9a89+bN/rXXPues852zzwfACAyWSDNRNYAMqUIeEeCDx8TG4eQuQIEKJHAAEAizZCFz/SMBAPh+PDwrIsAHvgABeNMLCADATZvAMByH/w/qQplcAYCEAcB0kThLCIAUAEB6jkKmAEBGAYCdmCZTAKAEAGDLY2LjAFAtAGAnf+bTAICd+Jl7AQBblCEVAaCRACATZYhEAGg7AKzPVopFAFgwABRmS8Q5ANgtADBJV2ZIALC3AMDOEAuyAAgMADBRiIUpAAR7AGDIIyN4AISZABRG8lc88SuuEOcqAAB4mbI8uSQ5RYFbCC1xB1dXLh4ozkkXKxQ2YQJhmkAuwnmZGTKBNA/g88wAAKCRFRHgg/P9eM4Ors7ONo62Dl8t6r8G/yJiYuP+5c+rcEAAAOF0ftH+LC+zGoA7BoBt/qIl7gRoXgugdfeLZrIPQLUAoOnaV/Nw+H48PEWhkLnZ2eXk5NhKxEJbYcpXff5nwl/AV/1s+X48/Pf14L7iJIEyXYFHBPjgwsz0TKUcz5IJhGLc5o9H/LcL//wd0yLESWK5WCoU41EScY5EmozzMqUiiUKSKcUl0v9k4t8s+wM+3zUAsGo+AXuRLahdYwP2SycQWHTA4vcAAPK7b8HUKAgDgGiD4c93/+8//UegJQCAZkmScQAAXkQkLlTKsz/HCAAARKCBKrBBG/TBGCzABhzBBdzBC/xgNoRCJMTCQhBCCmSAHHJgKayCQiiGzbAdKmAv1EAdNMBRaIaTcA4uwlW4Dj1wD/phCJ7BKLyBCQRByAgTYSHaiAFiilgjjggXmYX4IcFIBBKLJCDJiBRRIkuRNUgxUopUIFVIHfI9cgI5h1xGupE7yAAygvyGvEcxlIGyUT3UDLVDuag3GoRGogvQZHQxmo8WoJvQcrQaPYw2oefQq2gP2o8+Q8cwwOgYBzPEbDAuxsNCsTgsCZNjy7EirAyrxhqwVqwDu4n1Y8+xdwQSgUXACTYEd0IgYR5BSFhMWE7YSKggHCQ0EdoJNwkDhFHCJyKTqEu0JroR+cQYYjIxh1hILCPWEo8TLxB7iEPENyQSiUMyJ7mQAkmxpFTSEtJG0m5SI+ksqZs0SBojk8naZGuyBzmULCAryIXkneTD5DPkG+Qh8lsKnWJAcaT4U+IoUspqShnlEOU05QZlmDJBVaOaUt2ooVQRNY9aQq2htlKvUYeoEzR1mjnNgxZJS6WtopXTGmgXaPdpr+h0uhHdlR5Ol9BX0svpR+iX6AP0dwwNhhWDx4hnKBmbGAcYZxl3GK+YTKYZ04sZx1QwNzHrmOeZD5lvVVgqtip8FZHKCpVKlSaVGyovVKmqpqreqgtV81XLVI+pXlN9rkZVM1PjqQnUlqtVqp1Q61MbU2epO6iHqmeob1Q/pH5Z/YkGWcNMw09DpFGgsV/jvMYgC2MZs3gsIWsNq4Z1gTXEJrHN2Xx2KruY/R27iz2qqaE5QzNKM1ezUvOUZj8H45hx+Jx0TgnnKKeX836K3hTvKeIpG6Y0TLkxZVxrqpaXllirSKtRq0frvTau7aedpr1Fu1n7gQ5Bx0onXCdHZ4/OBZ3nU9lT3acKpxZNPTr1ri6qa6UbobtEd79up+6Ynr5egJ5Mb6feeb3n+hx9L/1U/W36p/VHDFgGswwkBtsMzhg8xTVxbzwdL8fb8VFDXcNAQ6VhlWGX4YSRudE8o9VGjUYPjGnGXOMk423GbcajJgYmISZLTepN7ppSTbmmKaY7TDtMx83MzaLN1pk1mz0x1zLnm+eb15vft2BaeFostqi2uGVJsuRaplnutrxuhVo5WaVYVVpds0atna0l1rutu6cRp7lOk06rntZnw7Dxtsm2qbcZsOXYBtuutm22fWFnYhdnt8Wuw+6TvZN9un2N/T0HDYfZDqsdWh1+c7RyFDpWOt6azpzuP33F9JbpL2dYzxDP2DPjthPLKcRpnVOb00dnF2e5c4PziIuJS4LLLpc+Lpsbxt3IveRKdPVxXeF60vWdm7Obwu2o26/uNu5p7ofcn8w0nymeWTNz0MPIQ+BR5dE/C5+VMGvfrH5PQ0+BZ7XnIy9jL5FXrdewt6V3qvdh7xc+9j5yn+M+4zw33jLeWV/MN8C3yLfLT8Nvnl+F30N/I/9k/3r/0QCngCUBZwOJgUGBWwL7+Hp8Ib+OPzrbZfay2e1BjKC5QRVBj4KtguXBrSFoyOyQrSH355jOkc5pDoVQfujW0Adh5mGLw34MJ4WHhVeGP45wiFga0TGXNXfR3ENz30T6RJZE3ptnMU85ry1KNSo+qi5qPNo3ujS6P8YuZlnM1VidWElsSxw5LiquNm5svt/87fOH4p3iC+N7F5gvyF1weaHOwvSFpxapLhIsOpZATIhOOJTwQRAqqBaMJfITdyWOCnnCHcJnIi/RNtGI2ENcKh5O8kgqTXqS7JG8NXkkxTOlLOW5hCepkLxMDUzdmzqeFpp2IG0yPTq9MYOSkZBxQqohTZO2Z+pn5mZ2y6xlhbL+xW6Lty8elQfJa7OQrAVZLQq2QqboVFoo1yoHsmdlV2a/zYnKOZarnivN7cyzytuQN5zvn//tEsIS4ZK2pYZLVy0dWOa9rGo5sjxxedsK4xUFK4ZWBqw8uIq2Km3VT6vtV5eufr0mek1rgV7ByoLBtQFr6wtVCuWFfevc1+1dT1gvWd+1YfqGnRs+FYmKrhTbF5cVf9go3HjlG4dvyr+Z3JS0qavEuWTPZtJm6ebeLZ5bDpaql+aXDm4N2dq0Dd9WtO319kXbL5fNKNu7g7ZDuaO/PLi8ZafJzs07P1SkVPRU+lQ27tLdtWHX+G7R7ht7vPY07NXbW7z3/T7JvttVAVVN1WbVZftJ+7P3P66Jqun4lvttXa1ObXHtxwPSA/0HIw6217nU1R3SPVRSj9Yr60cOxx++/p3vdy0NNg1VjZzG4iNwRHnk6fcJ3/ceDTradox7rOEH0x92HWcdL2pCmvKaRptTmvtbYlu6T8w+0dbq3nr8R9sfD5w0PFl5SvNUyWna6YLTk2fyz4ydlZ19fi753GDborZ752PO32oPb++6EHTh0kX/i+c7vDvOXPK4dPKy2+UTV7hXmq86X23qdOo8/pPTT8e7nLuarrlca7nuer21e2b36RueN87d9L158Rb/1tWeOT3dvfN6b/fF9/XfFt1+cif9zsu72Xcn7q28T7xf9EDtQdlD3YfVP1v+3Njv3H9qwHeg89HcR/cGhYPP/pH1jw9DBY+Zj8uGDYbrnjg+OTniP3L96fynQ89kzyaeF/6i/suuFxYvfvjV69fO0ZjRoZfyl5O/bXyl/erA6xmv28bCxh6+yXgzMV70VvvtwXfcdx3vo98PT+R8IH8o/2j5sfVT0Kf7kxmTk/8EA5jz/GMzLdsAAAAgY0hSTQAAeiUAAICDAAD5/wAAgOkAAHUwAADqYAAAOpgAABdvkl/FRgAAA0RJREFUeNo8k8trnFUchp9zzjfJhMxkZqBJGh3NxVprbk1DFSGJWg1utXYliGIC2iglVSi4cCEYUHBhQoMu2qLoQrEgtP+AeEWULmpajZmmSZrbTM2k6SSd23d+57io6bt/H3gWj/Les7uJqck9wOZ74yfdx599+nM8FhuIx+MUCoXy2Cuv1k1MTRorfs/777yd2/2oXcDE1OQ+Y8xfCnasyLAx5sfRN16vB/ji7DmM1s+UyuUzJjAPxurqB06MjPxxDzAxNdlhjJk9+uLRyOyVK2SuL7jWdFrvbWpGa1jL5lheXaOjrbXyaHd37cULF3Bie989MT4TAGith40xwfqNFVKJFI/3J7X34LzDi6K5sZGmxkaA2uzyMiYwVKrh08DMPYUPp09fS7e0PHR/y32gwAPee8RagiCCUnedV9fX2dzakvGR0QBAfTD5SQSIaK3z/b29UWMMALdu32Ytm60opQpG62TrA+lItDaKtZY/r14l0dDQtLiyVtRa63w8Ftvu7umOesCKUCqXuL6wWAnDMD0+MtpUKpefXVpeCa0IoOjq6qJaDf+J1gbbGtAdbe1aicdawYrlTrGI937u1PGxDYBTx8d+siLFahgiTvDiaG9rS3nxSnvQ67kshZ0CVgQrgjEBSqv2s998HQH4/Py3nUCd8x5rLdt3tsnezOE0BE4kVROJ1C0uLm3sf3i/UQq00SQTifp8frPw0fT0DpBsiMcCsRYPLCwt0fXIgVRgDMHBzs6KE1+54VcXNvIb+1KpFApIJZMqFo9HrbXRmkgEow0iwq2tLWojNZKqT2wl6urRDs+lmcs9Ym1HPB5HxP2v4lBAJAjw3mPFYp0jFotRKpfM97//MnRkaBDtQ4f3/oC1VqwVqmGFbC6HiMU5hziHtUIulyMMQ0SEMLTFYrHcDqAFT39Pz3kPo3OZOZeZy4Sb+fx3f8/OumoY4sSRuZahWC5fymQyW/Pz806hTg4PPfUlgA5tFRQ8dujQV2JtsxVJHO7rO2aM0UoprFgAnjjYd9h5ly5VKukjA4Nnnnty8G6NK2vr/PDbr2hjeOn5F9qAGLD3tbfefLm5peUYSql/b2YvnpuaPg1sAzve+8XdnP8bADKEsbGi0fzfAAAAAElFTkSuQmCC";
 	?>
 
 	<table class="widefat infoonly" id="foxyshop_settings_header">
@@ -125,7 +147,7 @@ function foxyshop_options() {
 	<table class="widefat infoonly">
 		<thead>
 			<tr>
-				<th><?php _e('Setup Information (Version '); echo $foxyshop_settings['foxyshop_version'] .")"; ?></th>
+				<th><img src="<?php echo $info_icon; ?>" alt="" /><?php _e('Setup Information'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -133,27 +155,32 @@ function foxyshop_options() {
 				<td style="border-bottom: 0 none;">
 					<label for="foxyshop_key"><?php _e('API Key'); ?>:</label>
 					<input type="text" id="foxyshop_key" name="key" value="<?php echo $foxyshop_settings['api_key']; ?>" readonly="readonly" onclick="this.select();" />
-					<div class="small" style="margin-bottom: 5px;"><?php echo __('Note: this is a required step for security reasons and utilizes FoxyCart\'s HMAC product verification to avoid link tampering.<br /><span style="color: red;"><strong>Enter this API key on the advanced menu of your FoxyCart admin and check the box to enable cart validation.</strong></span><br />This API key is generated automatically and cannot be edited. Scroll to the bottom of the page if you need to reset the key.'); ?></div>
+					<a href="#" class="help">The API key is saved here and stored on your FoxyCart account so that your cart information can be encrypted to avoid link tampering. The API key is also used to communicate with FoxyCart and retrieve your order inforamtion.<br /><br />This API key is generated automatically and cannot be edited. Scroll to the bottom of the page if you need to reset the key.</a>
+					<div style="clear: both; padding: 5px 0; font-style: italic;"><strong style="color: #BB1E1E;">Required Setup:</strong> Enter this API key on the advanced menu of your <a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&url=http://admin.foxycart.com/" target="_blank">FoxyCart admin</a> and check the box to enable cart validation.</div>
 					
 					<div style="clear: both;"></div>
 
 					<label for="foxyshop_datafeed_url"><?php _e('Datafeed URL'); ?>:</label>
 					<input type="text" id="foxyshop_datafeed_url" name="foxyshop_datafeed_url" value="<?php echo get_bloginfo('url') . '/foxycart-datafeed-' . $foxyshop_settings['datafeed_url_key']; ?>/" readonly="readonly" onclick="this.select();" />
+					<a href="#" class="help">FoxyCart can be configured to send order information to a url on your website. If you want to use FoxyShop's datafeed and take advantage of inventory, user management and more, copy this url and enable the datafeed in your FoxyCart admin panel.</a>
 					
 					<div style="clear: both;margin-bottom: 5px;"></div>
 
 					<label for="foxyshop_sso_url"><?php _e('SSO Endpoint'); ?>:</label>
 					<input type="text" id="foxyshop_sso_url" name="foxyshop_sso_url" value="<?php echo get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key']; ?>/" readonly="readonly" onclick="this.select();" />
+					<a href="#" class="help">FoxyShop can automatically sync your WordPress and FoxyCart users. If you want to take advantage of this feature, copy this url and enable the Single Sign On feature in the FoxyCart admin panel. Also, be sure to set the customer password hash to phpass.</a>
 					
 					<div style="clear: both;margin-bottom: 5px;"></div>
 
 					<label for="foxyshop_theme_dir"><?php _e('Template Path'); ?>:</label>
 					<input type="text" id="foxyshop_theme_dir" name="foxyshop_theme_dir" value="<?php echo STYLESHEETPATH; ?>/" readonly="readonly" />
-					<div class="small" style="margin-bottom: 5px;"><?php echo __('FoxyShop will look in this folder for customized theme files.'); ?></div>
+					<a href="#" class="help">FoxyShop will look in this folder for customized theme files.</a>
 
 					<?php if ($foxyshop_settings['generate_product_sitemap']) { ?>
+						<div style="clear: both;margin-bottom: 5px;"></div>
 						<label for="foxyshop_sitemap"><?php _e('Sitemap'); ?>:</label>
 						<input type="text" id="foxyshop_sitemap" name="foxyshop_sitemap" value="http://<?php echo $_SERVER['SERVER_NAME'] . '/sitemap-products.xml'; ?>" readonly="readonly" onclick="this.select();" />
+						<a href="#" class="help">This is the url where you can find your sitemap for submitting to search engines.</a>
 					<?php } ?>
 
 				</td>
@@ -169,14 +196,14 @@ function foxyshop_options() {
 	<table class="widefat">
 		<thead>
 			<tr>
-				<th><?php _e('FoxyCart Basic Settings'); ?></th>
+				<th><img src="<?php echo $settings_icon; ?>" alt="" /><?php _e('FoxyCart Basic Settings'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
 				<td>
-					<label for="foxyshop_domain"><?php _e('Your FoxyCart Domain'); ?>:</label> <input type="text" name="foxyshop_domain" value="<?php echo $foxyshop_settings['domain']; ?>" size="50" /> <small>(example: yourname.foxycart.com)</small>
-					<div class="small"><?php _e('If you have your own custom domain, you may enter that as well (cart.yourdomain.com). Do not include the "http://". The FoxyCart include files will be inserted automatically so you won\'t need to add anything to the header of your site.'); ?></div>
+					<label for="foxyshop_domain"><?php _e('Your FoxyCart Domain'); ?>:</label> <input type="text" name="foxyshop_domain" value="<?php echo $foxyshop_settings['domain']; ?>" size="50" />
+					<a href="#" class="help">Example: yourname.foxycart.com<br /><br />If you have your own custom domain, you may enter that as well (cart.yourdomain.com). Do not include the "http://". The FoxyCart include files will be inserted automatically so you won't need to add anything to the header of your site.</a>
 				</td>
 			</tr>
 			<tr>
@@ -188,15 +215,15 @@ function foxyshop_options() {
 					foreach ($versionArray as $version1) {
 						echo '<option value="' . $version1 . '"' . ($foxyshop_settings['version'] == $version1 ? ' selected="selected"' : '') . '>' . $version1 . '  </option>'."\n";
 					} ?>
-					</select><br />
-					<div class="small"><?php _e('Version 0.7.1 is recommended.'); ?></div>
+					</select>
+					<div class="small">Version 0.7.1 is recommended.</div>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_use_jquery" name="foxyshop_use_jquery"<?php checked($foxyshop_settings['use_jquery'], "on"); ?> />
 					<label for="foxyshop_use_jquery"><?php echo __('Automatically Insert jQuery ') . FOXYSHOP_JQUERY_VERSION . __(' from Google CDN'); ?></label>
-					<div class="small"><?php _e('If you are already manually inserting jQuery you can uncheck this option. If you need a different version, you can define the constant FOXYSHOP_JQUERY_VERSION in your wp-config file with the version you want and we will fetch it from Google.'); ?></div>
+					<a href="#" class="help">If you are already manually inserting jQuery you should uncheck this option.</a>
 				</td>
 			</tr>
 		</tbody>
@@ -209,7 +236,7 @@ function foxyshop_options() {
 	<table class="widefat">
 		<thead>
 			<tr>
-				<th><?php _e('Display Settings'); ?></th>
+				<th><img src="<?php echo $display_icon; ?>" alt="" /><?php _e('Display Settings'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -227,13 +254,15 @@ function foxyshop_options() {
 			</tr>
 			<tr>
 				<td>
-					<label for="foxyshop_products_per_page"><?php echo FOXYSHOP_PRODUCT_NAME_PLURAL . ' ' . __('Per Page'); ?>:</label> <input type="text" id="foxyshop_products_per_page" name="foxyshop_products_per_page" value="<?php echo ($foxyshop_settings['products_per_page'] < 0 ? 0 : $foxyshop_settings['products_per_page']); ?>" style="width: 50px;" /> <small><?php echo __('Enter 0 to show all products (no paging). Paging does not apply to the All ') . FOXYSHOP_PRODUCT_NAME_SINGULAR . __(' page.'); ?></small>
+					<label for="foxyshop_products_per_page"><?php echo FOXYSHOP_PRODUCT_NAME_PLURAL . ' ' . __('Per Page'); ?>:</label> <input type="text" id="foxyshop_products_per_page" name="foxyshop_products_per_page" value="<?php echo ($foxyshop_settings['products_per_page'] < 0 ? 0 : $foxyshop_settings['products_per_page']); ?>" style="width: 50px;" />
+					<small>Enter 0 to show all products (no paging)</small>
+					<a href="#" class="help">Note that paging does not apply to the "All <?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?>" page.</a>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<label for="foxyshop_default_image"><?php _e('Default Image'); ?>:</label> <input type="text" id="foxyshop_default_image" name="foxyshop_default_image" value="<?php echo $foxyshop_settings['default_image']; ?>" style="width:544px;" /><small><a href="#" id="resetimage">Reset To Default</a></small>
-					<div class="small"><?php _e('Enter the URL for the image that will be shown if no image is loaded. Or leave the default, it\'s up to you. (If you change the website URL, though, you\'ll have to come back and change it here.)'); ?></div>
+					<a href="#" class="help">Enter the URL for the image that will be shown if no image is loaded. Or leave the default, it's up to you. (If you change the website URL, though, you'll have to come back and change it here.</a>
 				</td>
 			</tr>
 
@@ -248,21 +277,19 @@ function foxyshop_options() {
 	<table class="widefat">
 		<thead>
 			<tr>
-				<th><?php _e('Browser Page Titles'); ?></th>
+				<th><img src="<?php echo $pagetitle_icon; ?>" alt="" /><?php _e('Browser Title Bar Settings'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
 				<td>
-					<div class="small" style="margin-bottom: 8px;"><?php _e('This is what will be displayed in the title bar of your web browser.'); ?></div>
-
-					<label for="foxyshop_browser_title_1" style="width: 112px;"><?php echo __('All ') . FOXYSHOP_PRODUCT_NAME_PLURAL; ?>:</label> <input type="text" name="foxyshop_browser_title_1" value="<?php echo $foxyshop_settings['browser_title_1']; ?>" size="50" />
+					<label for="foxyshop_browser_title_1" style="width: 112px;"><?php echo __('All') . ' ' . FOXYSHOP_PRODUCT_NAME_PLURAL; ?>:</label> <input type="text" name="foxyshop_browser_title_1" value="<?php echo $foxyshop_settings['browser_title_1']; ?>" size="50" />
 					<div style="clear: both;"></div>
 					<label for="foxyshop_browser_title_2" style="width: 112px;"><?php _e('All Categories'); ?>:</label> <input type="text" name="foxyshop_browser_title_2" value="<?php echo $foxyshop_settings['browser_title_2']; ?>" size="50" />
 					<div style="clear: both;"></div>
 					<label for="foxyshop_browser_title_3" style="width: 112px;"><?php _e('Single Category'); ?>:</label> <input type="text" name="foxyshop_browser_title_3" value="<?php echo $foxyshop_settings['browser_title_3']; ?>" size="50" /> <small>Use %c for Category Name</small>
 					<div style="clear: both;"></div>
-					<label for="foxyshop_browser_title_4" style="width: 112px;"><?php echo __('Single ') . FOXYSHOP_PRODUCT_NAME_SINGULAR; ?>:</label> <input type="text" name="foxyshop_browser_title_4" value="<?php echo $foxyshop_settings['browser_title_4']; ?>" size="50" /> <small>Use %p for <?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?> Name</small>
+					<label for="foxyshop_browser_title_4" style="width: 112px;"><?php echo __('Single') . ' ' . FOXYSHOP_PRODUCT_NAME_SINGULAR; ?>:</label> <input type="text" name="foxyshop_browser_title_4" value="<?php echo $foxyshop_settings['browser_title_4']; ?>" size="50" /> <small>Use %p for <?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?> Name</small>
 					<div style="clear: both;"></div>
 					<label for="foxyshop_browser_title_5" style="width: 112px;"><?php _e('Search Results'); ?>:</label> <input type="text" name="foxyshop_browser_title_5" value="<?php echo $foxyshop_settings['browser_title_5']; ?>" size="50" />
 					
@@ -277,36 +304,36 @@ function foxyshop_options() {
 	<table class="widefat">
 		<thead>
 			<tr>
-				<th><?php _e('Advanced Settings'); ?></th>
+				<th><img src="<?php echo $advanced_icon; ?>" alt="" /><?php _e('Advanced Settings'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
 				<td>
 					<label for="foxyshop_ship_categories" style="vertical-align: top;"><?php _e('Your Shipping Categories'); ?>:</label>
-					<textarea id="name="foxyshop_ship_categories" name="foxyshop_ship_categories" wrap="auto" style="width:500px;height: 80px;"><?php echo $foxyshop_settings['ship_categories']; ?></textarea><br />
-					<div class="small"><?php echo __('These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your ') . strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR) . __(' setup page. Separate each category with a line break. If you only use one category this is not required. If you would like to also display a nice name in the dropdown menu, use a pipe sign "|" like this: free_shipping|Free Shipping.'); ?></div>
+					<textarea id="name="foxyshop_ship_categories" name="foxyshop_ship_categories" wrap="auto" style="float: left; width:500px;height: 80px;"><?php echo $foxyshop_settings['ship_categories']; ?></textarea>
+					<a href="#" class="help">These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?> setup page. Separate each category with a line break. If you only use one category this is not required. If you would like to also display a nice name in the dropdown menu, use a pipe sign "|" like this: free_shipping|Free Shipping.</a>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_shipto" name="foxyshop_enable_ship_to"<?php checked($foxyshop_settings['enable_ship_to'], "on"); ?> />
 					<label for="foxyshop_shipto"><?php _e('Enable Multi-Ship'); ?></label>
-					<div class="small"><?php _e('Remember that FoxyCart charges an extra fee for this service. You must enable it on your FoxyCart account or it will not work.'); ?></div>
+					<a href="#" class="help">Remember that FoxyCart charges an extra fee for this service. You must enable it on your FoxyCart account or it will not work.</a>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_enable_bundled_products" name="foxyshop_enable_bundled_products"<?php checked($foxyshop_settings['enable_bundled_products'], "on"); ?> />
-					<label for="foxyshop_enable_bundled_products"><?php echo __('Enable Bundled ').FOXYSHOP_PRODUCT_NAME_PLURAL; ?></label>
-					<div class="small"><?php _e('Allow multiple items to be added to the cart at once (extra items will be added with a price of $0.00)'); ?></div>
+					<label for="foxyshop_enable_bundled_products"><?php echo __('Enable Bundled').' '.FOXYSHOP_PRODUCT_NAME_PLURAL; ?></label>
+					<a href="#" class="help">Allow multiple items to be added to the cart at once (extra items will be added with a price of $0.00, though this can be configured.)</a>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_enable_subscriptions" name="foxyshop_enable_subscriptions"<?php checked($foxyshop_settings['enable_subscriptions'], "on"); ?> />
 					<label for="foxyshop_enable_subscriptions"><?php _e('Enable Subscriptions'); ?></label>
-					<div class="small"><?php echo __('Show fields to allow the creation of subscription ').strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL); ?>.</div>
+					<a href="#" class="help">Show fields to allow the creation of subscription <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL); ?>.</a>
 				</td>
 			</tr>
 
@@ -314,8 +341,8 @@ function foxyshop_options() {
 				<td>
 					<input type="checkbox" id="foxyshop_enable_sso" name="foxyshop_enable_sso"<?php checked($foxyshop_settings['enable_sso'], "on"); ?> />
 					<label for="foxyshop_enable_sso"><?php _e('Enable WordPress Single-Sign-On'); ?></label>
-					<div class="small"><?php _e('If enabled, your WordPress users will not have to login again to complete a FoxyCart checkout. WordPress accounts and FoxyCart accounts are kept in sync. You must be using FoxyCart 0.7.1 or above and in the FoxyCart admin you must set the "customer password hash type" to "phpass, portable mode" and the hash config to 8. Check the "enable single sign on" option and put the SSO Endpoint url in the appropriate box.'); ?></div>
-					<div style="padding: 0 0 0 15px;">
+					<a href="#" class="help">If enabled, your WordPress users will not have to login again to complete a FoxyCart checkout. WordPress accounts and FoxyCart accounts are kept in sync. You must be using FoxyCart 0.7.1 or above and in the FoxyCart admin you must set the "customer password hash type" to "phpass, portable mode" and the hash config to 8. Check the "enable single sign on" option and put the SSO Endpoint url in the appropriate box.</a>
+					<div class="settings_indent">
 
 						<label for="foxyshop_sso_account_required"><?php _e('SSO Type'); ?>:</label> 
 						<select name="foxyshop_sso_account_required" id="sort_key">
@@ -325,6 +352,10 @@ function foxyshop_options() {
 							echo '<option value="' . $key . '"' . ($foxyshop_settings['sso_account_required'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
 						} ?>
 						</select>
+						<div style="clear: both;"></div>
+						<input type="checkbox" id="foxyshop_checkout_customer_create" name="foxyshop_checkout_customer_create"<?php checked($foxyshop_settings['checkout_customer_create'], "on"); ?> />
+						<label for="foxyshop_checkout_customer_create"><?php _e('Create/Update WordPress User After Checkout'); ?></label>
+						<a href="#" class="help"><?php _e('The datafeed must be enabled at FoxyCart for this feature to work properly.'); ?></a>
 					</div>
 				</td>
 			</tr>
@@ -334,8 +365,8 @@ function foxyshop_options() {
 				<td>
 					<input type="checkbox" id="foxyshop_manage_inventory_levels" name="foxyshop_manage_inventory_levels"<?php checked($foxyshop_settings['manage_inventory_levels'], "on"); ?> />
 					<label for="foxyshop_manage_inventory_levels"><?php _e('Manage Inventory Levels'); ?></label>
-					<div class="small"><?php echo __('If enabled, you will be able to set inventory levels per ').strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR). __('code. In the FoxyCart admin, you need to check the box to enable your datafeed and enter the datafeed url from the top of this page in the "datafeed url" box.'); ?></div>
-					<div style="padding: 0 0 0 15px;">
+					<a href="#" class="help">If enabled, you will be able to set inventory levels per <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL); ?> code. In the FoxyCart admin, you need to check the box to enable your datafeed and enter the datafeed url from the top of this page in the "datafeed url" box.</a>
+					<div class="settings_indent">
 						<label for="foxyshop_inventory_alert_level"><?php _e('Default Inventory Alert Level'); ?>:</label> <input type="text" id="foxyshop_inventory_alert_level" name="foxyshop_inventory_alert_level" value="<?php echo $foxyshop_settings['inventory_alert_level']; ?>" style="width: 50px;" />
 						<input type="checkbox" id="foxyshop_inventory_alert_email" name="foxyshop_inventory_alert_email"<?php checked($foxyshop_settings['inventory_alert_email'], "on"); ?> style="clear: left;" /><label for="foxyshop_inventory_alert_email"><?php _e('Send Email to Admin When Alert Level Reached'); ?></label>
 					</div>
@@ -365,53 +396,53 @@ function foxyshop_options() {
 			</tr>
 			<tr>
 				<td>
-					<label for="foxyshop_max_variations"><?php _e('Maximum Variations'); ?>:</label> <input type="text" id="foxyshop_max_variations" name="foxyshop_max_variations" value="<?php echo $foxyshop_settings['max_variations']; ?>" style="width: 50px;" />  <small>(per <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?>)</small>
-					<div class="small"><?php _e('This is an arbitrary number to save resources and should be sufficient in most cases. Raise only if necessary.'); ?></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="foxyshop_locale_code"><?php _e('Currency Locale Code'); ?>:</label> <input type="text" id="foxyshop_locale_code" name="foxyshop_locale_code" value="<?php echo $foxyshop_settings['locale_code']; ?>" style="width: 150px;" />  <small>(Default: en_US)</small>
-					<div class="small"><?php _e('If you would like to use something other than $ for your currency, enter your locale code here. For the British Pound, enter "en_GB". <a href="http://www.roseindia.net/tutorials/I18N/locales-list.shtml" target="_blank">Full list of locale codes here.</a>'); ?></div>
+					<label for="foxyshop_locale_code"><?php _e('Currency Locale Code'); ?>:</label> <input type="text" id="foxyshop_locale_code" name="foxyshop_locale_code" value="<?php echo $foxyshop_settings['locale_code']; ?>" style="width: 150px;" />
+					<a href="#" class="help"><?php _e('If you would like to use something other than $ for your currency, enter your locale code here. For the British Pound, enter "en_GB".'); ?></a>
+					<small><a href="http://www.roseindia.net/tutorials/I18N/locales-list.shtml" target="_blank">full list of locale codes</a></small>
 					<?php if (!function_exists('money_format')) echo '<div>' . __('Attention, you are using Windows which does not support internationalization. You will be limited to $ or £.') . '</div>'; ?>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_hide_subcat_children" name="foxyshop_hide_subcat_children"<?php checked($foxyshop_settings['hide_subcat_children'], "on"); ?> />
-					<label for="foxyshop_hide_subcat_children"><?php echo __('Hide Child ') . FOXYSHOP_PRODUCT_NAME_PLURAL . __(' From Parent Categories (recommended)'); ?></label>
-					<div class="small"><?php echo __('By default, WordPress treats children a little differently than you would expect in that products in child categories also show up in parent categories. FoxyShop removes these products, but if you would like to have all products from sub-categories show up in parent categories, uncheck this box.'); ?></div>
+					<label for="foxyshop_hide_subcat_children"><?php echo sprintf(__('Hide Child %s From Parent Categories (recommended)'), FOXYSHOP_PRODUCT_NAME_PLURAL); ?></label>
+					<a href="#" class="help"><?php echo sprintf(__('By default, WordPress treats children a little differently than you would expect in that products in child categories also show up in parent categories. FoxyShop removes these products, but if you would like to have all %s from sub-categories show up in parent categories, uncheck this box.'), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></a>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<label for="foxyshop_ga"><?php _e('Google Analytics Code'); ?>:</label> <input type="text" id="foxyshop_ga" name="foxyshop_ga" value="<?php echo $foxyshop_settings['ga']; ?>" size="20" /> <small>(UA-XXXXXXXX-X)</small>
-					<div class="small"><?php _e('Enter your UA code here and Google Analytics tracking will be installed in the footer. Tracking will only be initiated if the visitor is not a logged-in WordPress user so that admin usage won\'t be tracked.'); ?></div>
-					<div style="padding: 5px 0 0 15px;">
+					<a href="#" class="help"><?php _e('Enter your UA code here and Google Analytics tracking will be installed in the footer. Tracking will only be initiated if the visitor is not a logged-in WordPress user so that admin usage won\'t be tracked.'); ?></a>
+					<div class="settings_indent">
 						<input type="checkbox" id="foxyshop_ga_advanced" name="foxyshop_ga_advanced"<?php checked($foxyshop_settings['ga_advanced'], "on"); ?> />
 						<label for="foxyshop_ga_advanced"><?php _e('Advanced Google Analytics Code'); ?></label>
-						<div class="small"><?php _e('Check this box if you are using the amazing FoxyCart Google Analytics Sync. We will put the appropriate code in your footer (but you\'ll still have to setup Google Analytics and your template). Read more about it:'); ?> <a href="http://wiki.foxycart.com/integration/googleanalytics_async" target="_blank">here</a> and see our handy code guide <a href="http://www.foxy-shop.com/wp-content/uploads/2011/02/FoxyCart_Google_Analytics.txt" target="_blank">here</a>.</div>
+						<a href="#" class="help"><?php _e('Check this box if you are using the amazing FoxyCart Google Analytics Sync. We will put the appropriate code in your footer (but you\'ll still have to setup Google Analytics and your template).'); ?></a>
+						<small><a href="http://wiki.foxycart.com/integration/googleanalytics_async" target="_blank">instructions here</a></small>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<td>
+					<input type="checkbox" id="foxyshop_enable_dashboard_stats" name="foxyshop_enable_dashboard_stats"<?php checked($foxyshop_settings['enable_dashboard_stats'], "on"); ?> />
+					<label for="foxyshop_enable_dashboard_stats"><?php echo __('Show FoxyShop Stats on Dashboard'); ?></label>
+				</td>
+			</tr>
+			<tr>
+				<td>
 					<input type="checkbox" id="foxyshop_generate_feed" name="foxyshop_generate_feed"<?php checked($foxyshop_settings['generate_feed'], "on"); ?> />
-					<label for="foxyshop_generate_feed"><?php echo __('Generate ') . FOXYSHOP_PRODUCT_NAME_SINGULAR . __(' Feed'); ?></label>
-					<div class="small"><?php echo __('Selecting this option will add a sidebar to the menu which will allow you to export a file suitable for uploading to Google\'s Product Search system.'); ?></div>
+					<label for="foxyshop_generate_feed"><?php echo sprintf(__('Generate %s Feed'), FOXYSHOP_PRODUCT_NAME_SINGULAR); ?></label>
+					<a href="#" class="help"><?php echo __('Selecting this option will turn on an option which will allow you to export a file suitable for uploading to Google\'s Product Search system.'); ?></a>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_generate_product_sitemap" name="foxyshop_generate_product_sitemap"<?php checked($foxyshop_settings['generate_product_sitemap'], "on"); ?> />
-					<label for="foxyshop_generate_product_sitemap"><?php echo __('Generate ') . FOXYSHOP_PRODUCT_NAME_SINGULAR . __(' Sitemap'); ?></label>
-					<div class="small"><?php echo __('If checked, a sitemap file with all of your ') . strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR) . __(' will be created in your root folder.'); ?></div>
+					<label for="foxyshop_generate_product_sitemap"><?php echo sprintf(__('Generate %s Sitemap'), FOXYSHOP_PRODUCT_NAME_SINGULAR); ?></label>
+					<a href="#" class="help"><?php echo sprintf(__('If checked, a sitemap file with all of your %s will be created in your root folder.'), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></a>
 				</td>
 			</tr>
-
 		</tbody>
 	</table>
-	
 	
 	<p><input type="submit" class="button-primary" value="<?php _e('Save Settings'); ?>" /></p>
 	
@@ -450,7 +481,28 @@ jQuery(document).ready(function($){
 		$("#foxyshop_default_image").val("<?php echo FOXYSHOP_DIR."/images/no-photo.png"; ?>");
 		return false;
 	});
-	
+
+	//Tooltip
+	xOffset = -10;
+	yOffset = 10;		
+	$("a.help").hover(function(e) {											  
+		var tooltip_text = $(this).html();
+		$("body").append("<p id='tooltip'>"+ tooltip_text +"</p>");
+		$("#tooltip")
+			.css("top",(e.pageY - xOffset) + "px")
+			.css("left",(e.pageX + yOffset) + "px")
+			.fadeIn("fast");
+	}, function(){
+		$("#tooltip").remove();
+	}).mousemove(function(e){
+		$("#tooltip")
+			.css("top",(e.pageY - xOffset) + "px")
+			.css("left",(e.pageX + yOffset) + "px");
+	}).click(function() {
+		return false;
+	});			
+
+
 
 });
 function apiresetcheck() {

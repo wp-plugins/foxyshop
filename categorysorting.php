@@ -1,20 +1,9 @@
 <?php
-add_action('admin_menu', 'foxyshop_category_sorting_menu');
-add_action('admin_print_scripts', 'foxyshop_category_sort_js_libs');
-
 //Put in Sidebar
+add_action('admin_menu', 'foxyshop_category_sorting_menu');
 function foxyshop_category_sorting_menu() {    
 	add_submenu_page('edit.php?post_type=foxyshop_product', __('Category Sorting'), __('Set Category Order'), 'edit_others_pages', 'foxyshop_category_sort', 'foxyshop_category_sort');
 }
-
-//Load JS Libaries
-function foxyshop_category_sort_js_libs() {
-	if (isset($_GET['page']) && $_GET['page'] == "foxyshop_category_sort" ) {
-		wp_enqueue_script('jquery-ui-core');
-		wp_enqueue_script('jquery-ui-sortable');
-	}
-}
-
 
 //Update Order
 function foxyshop_category_update_order() {
@@ -136,36 +125,27 @@ function foxyshop_category_sort() {
 	}
 	?>
 	</div>
-	<script type="text/javascript">
-	// <![CDATA[
-
-		function foxyshop_custom_order_load_event(){
-			jQuery("#foxyshop_category_order_list").sortable({ 
-				placeholder: "sortable-placeholder-category", 
-				revert: false,
-				tolerance: "pointer",
-				update: function() {
-					var counter = 1;
-					jQuery("#foxyshop_category_order_list li").each(function() {
-						jQuery(this).find('.counter').html(counter);
-						counter++;
-					});
-				}
+<script type="text/javascript">
+function foxyshop_custom_order_load_event(){
+	jQuery("#foxyshop_category_order_list").sortable({ 
+		placeholder: "sortable-placeholder-category", 
+		revert: false,
+		tolerance: "pointer",
+		update: function() {
+			var counter = 1;
+			jQuery("#foxyshop_category_order_list li").each(function() {
+				jQuery(this).find('.counter').html(counter);
+				counter++;
 			});
-		};
-
-		addLoadEvent(foxyshop_custom_order_load_event);
-
-		function orderPages() {
-			jQuery("#updateText").html("<?php _e('Updating Category Order...') ?>");
-			jQuery("#foxyshop_category_order_value").val(jQuery("#foxyshop_category_order_list").sortable("toArray"));
 		}
-
-	// ]]>
-	</script>
+	});
+};
+addLoadEvent(foxyshop_custom_order_load_event);
+function orderPages() {
+	jQuery("#updateText").html("<?php _e('Updating Category Order...') ?>");
+	jQuery("#foxyshop_category_order_value").val(jQuery("#foxyshop_category_order_list").sortable("toArray"));
+}
+</script>
 <?php
 }
-
-
-
 ?>

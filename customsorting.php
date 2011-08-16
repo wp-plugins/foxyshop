@@ -1,22 +1,10 @@
 <?php
 //Only run this if sort key is set to custom
-if ($foxyshop_settings['sort_key'] == "menu_order") {
-	add_action('admin_menu', 'foxyshop_custom_sorting_menu');
-	add_action('admin_print_scripts', 'foxyshop_custom_sort_js_libs');
-}
-
-//Put in Sidebar
+if ($foxyshop_settings['sort_key'] == "menu_order") add_action('admin_menu', 'foxyshop_custom_sorting_menu');
 function foxyshop_custom_sorting_menu() {    
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Custom ') . FOXYSHOP_PRODUCT_NAME_SINGULAR . __(' Sorting'), __('Set ').FOXYSHOP_PRODUCT_NAME_SINGULAR.(' Order'), 'edit_others_pages', 'foxyshop_custom_sort', 'foxyshop_custom_sort');
+	add_submenu_page('edit.php?post_type=foxyshop_product', sprintf(__('Custom %s Sorting'), FOXYSHOP_PRODUCT_NAME_SINGULAR), sprintf(__('Set %s Order'), FOXYSHOP_PRODUCT_NAME_SINGULAR), 'edit_others_pages', 'foxyshop_custom_sort', 'foxyshop_custom_sort');
 }
 
-//Load JS Libaries
-function foxyshop_custom_sort_js_libs() {
-	if (isset($_GET['page']) && $_GET['page'] == "foxyshop_custom_sort") {
-		wp_enqueue_script('jquery-ui-core');
-		wp_enqueue_script('jquery-ui-sortable');
-	}
-}
 
 
 //Update Order
@@ -65,16 +53,16 @@ function foxyshop_custom_sort() {
 	?>
 
 	<div class="wrap">
-	<h2><?php echo __('Custom ') . FOXYSHOP_PRODUCT_NAME_SINGULAR . __(' Order'); ?></h2>
+	<h2><?php echo sprintf(__('Custom %s Order'), FOXYSHOP_PRODUCT_NAME_SINGULAR); ?></h2>
 	<?php if ($success) echo $success; ?>
 	
 	<?php
 	$product_categories = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&orderby=name&order=ASC');
 	if ($product_categories) {
-		echo '<p>' . __("Select a category from the drop down to order the ") . strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL) . __(' in that category.')."</p>\n";
+		echo '<p>' . sprintf(__("Select a category from the drop down to order the %s in that category."), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)) . "</p>\n";
 		echo '<form name="form_product_category_order" method="post" action="">';
 		echo '<select name="categoryID" id="categoryID">'."\n";
-		echo '<option value="0"' . ($categoryID == 0 ? ' selected="selected"' : '') . '>All ' . FOXYSHOP_PRODUCT_NAME_PLURAL . '</option>'."\n";
+		echo '<option value="0"' . ($categoryID == 0 ? ' selected="selected"' : '') . '>' . __('All') . ' ' . FOXYSHOP_PRODUCT_NAME_PLURAL . '</option>'."\n";
 		foreach($product_categories as $cat) {
 			echo '<option value="' . $cat->term_id . '"' . ($categoryID == $cat->term_id ? ' selected="selected"' : '') . '>' . $cat->name . ' (' . $cat->count . ')' . '</option>'."\n";
 		}
@@ -104,7 +92,7 @@ function foxyshop_custom_sort() {
 		if ($product_list) {
 
 			echo '<h3>' . $current_category_name . '</h3>'."\n";
-			echo '<p>Drag ' . strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL) . ' to the preferred order and then click the Save button at the bottom of the page.</p>';
+			echo '<p>' . sprintf(__('Drag %s to the preferred order and then click the Save button at the bottom of the page.'), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)) . '</p>';
 			echo '<form name="form_product_order" method="post" action="">'."\n";
 			echo '<ul id="foxyshop_product_order_list" class="foxyshop_sort_list">'."\n";
 			foreach ($product_list as $prod) {
@@ -144,31 +132,25 @@ function foxyshop_custom_sort() {
 
 
 <script type="text/javascript">
-// <![CDATA[
-
-	function foxyshop_custom_order_load_event(){
-		jQuery("#foxyshop_product_order_list").sortable({ 
-			placeholder: "sortable-placeholder", 
-			revert: false,
-			tolerance: "pointer",
-			update: function() {
-				var counter = 1;
-				jQuery("#foxyshop_product_order_list li").each(function() {
-					jQuery(this).find('.counter').html(counter);
-					counter++;
-				});
-			}
-		});
-	};
-
-	addLoadEvent(foxyshop_custom_order_load_event);
-	
-	function orderPages() {
-		jQuery("#updateText").html("<?php _e('Updating Product Order...') ?>");
-		jQuery("#foxyshop_product_order_value").val(jQuery("#foxyshop_product_order_list").sortable("toArray"));
-	}
-
-// ]]>
+function foxyshop_custom_order_load_event(){
+	jQuery("#foxyshop_product_order_list").sortable({ 
+		placeholder: "sortable-placeholder", 
+		revert: false,
+		tolerance: "pointer",
+		update: function() {
+			var counter = 1;
+			jQuery("#foxyshop_product_order_list li").each(function() {
+				jQuery(this).find('.counter').html(counter);
+				counter++;
+			});
+		}
+	});
+};
+addLoadEvent(foxyshop_custom_order_load_event);
+function orderPages() {
+	jQuery("#updateText").html("<?php echo sprintf(__('Updating %s Order...'), FOXYSHOP_PRODUCT_NAME_SINGULAR); ?>");
+	jQuery("#foxyshop_product_order_value").val(jQuery("#foxyshop_product_order_list").sortable("toArray"));
+}
 </script>
 <?php
 }

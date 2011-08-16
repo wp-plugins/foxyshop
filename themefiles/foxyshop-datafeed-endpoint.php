@@ -15,10 +15,6 @@ if (isset($_POST["FoxyData"]) OR isset($_POST['FoxySubscriptionData'])) {
 	die('No Content Received');
 }
 
-//Add WordPress User
-//If you want to check for and add a new WP user to match the FoxyCart user (if one doesn't exist) then set the following value to true
-$add_wordpress_user = false;
-
 
 
 //For testing, write datafeed to file in foxyshop or theme folder
@@ -184,7 +180,7 @@ if (isset($_POST["FoxyData"])) {
 		}
 		
 		//Add WordPress User
-		if ($add_wordpress_user && $customer_id != '') {
+		if ($foxyshop_settings['checkout_customer_create'] && $customer_id != '') {
 			
 			//Check To See if WordPress User Already Exists
 			$current_user = get_user_by_email($customer_email);

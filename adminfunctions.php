@@ -2,9 +2,53 @@
 //Insert jQuery
 function foxyshop_insert_jquery() {
 	wp_deregister_script('jquery');
-	wp_register_script('jquery', ("http".($_SERVER['SERVER_PORT'] == 443 ? 's' : '')."://ajax.googleapis.com/ajax/libs/jquery/".FOXYSHOP_JQUERY_VERSION."/jquery.min.js"), false, FOXYSHOP_JQUERY_VERSION);
+	wp_register_script('jquery', "http".($_SERVER['SERVER_PORT'] == 443 ? 's' : '')."://ajax.googleapis.com/ajax/libs/jquery/".FOXYSHOP_JQUERY_VERSION."/jquery.min.js", array(), NULL, false);
 	wp_enqueue_script('jquery');
 }
+
+//Loading in Admin Scripts
+function foxyshop_load_admin_scripts($hook) {
+	$page = (isset($_REQUEST['page']) ? $_REQUEST['page'] : '');
+	
+	//Style - Always Do This
+	wp_enqueue_style('foxyshop_admin_css', FOXYSHOP_DIR . '/css/foxyshop-admin.css');
+	
+	//Date Picker
+	if ($page == "foxyshop_order_management" || $page == "foxyshop_subscription_management") foxyshop_date_picker();
+	
+	//Custom Sorter
+	if ($page == "foxyshop_custom_sort" || $page == "foxyshop_category_sort") {
+		wp_enqueue_script('jquery-ui-core');
+		wp_enqueue_script('jquery-ui-sortable');
+	}
+
+	//Product
+	if($hook != 'post.php' && $hook != 'post-new.php') return;
+	wp_enqueue_script('swfobject');
+	wp_enqueue_script('chosenScript', FOXYSHOP_DIR . '/js/chosen.jquery.min.js', array('jquery'));
+	wp_enqueue_style('chosenStyle', FOXYSHOP_DIR . '/css/chosen.css');
+	foxyshop_date_picker();
+}
+
+function foxyshop_date_picker() {
+	global $wp_version;
+	if (version_compare($wp_version, '3.1', '>=')) {
+		wp_enqueue_style('datepickerStyle', FOXYSHOP_DIR . '/css/ui-smoothness/jquery-ui.custom.css');
+		wp_enqueue_script('datepickerScript', FOXYSHOP_DIR . '/js/jquery-ui.datepicker.min.js', array('jquery','jquery-ui-core'));
+	}
+}
+
+
+//Check Permalinks on all admin pages and warn if incorrect
+add_action('admin_notices', 'foxyshop_check_permalinks');
+function foxyshop_check_permalinks() {
+	$permalink_structure = (isset($_POST['permalink_structure']) ? $_POST['permalink_structure'] : get_option('permalink_structure'));
+	if ($permalink_structure == '') {
+		echo '<div class="error"><p><strong>Warning:</strong> Your <a href="options-permalink.php">permalink structure</a> is set to default. It is recommend that you set to Month and Name. Other settings may cause difficulties using FoxyShop.</p></div>';
+	}
+}
+
+
 
 //Insert Google Analytics
 function foxyshop_insert_google_analytics() {
@@ -12,23 +56,21 @@ function foxyshop_insert_google_analytics() {
 	
 	//Advanced
 	if ($foxyshop_settings['ga_advanced']) {
-		?><script type="text/javascript">
+		?><script type="text/javascript" charset="utf-8">
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', '<?php echo htmlspecialchars($foxyshop_settings['ga']); ?>']);
-  _gaq.push(['_setDomainName', 'none']);
-  _gaq.push(['_setAllowLinker', true]);
-  _gaq.push(['_trackPageview']);
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', '<?php echo htmlspecialchars($foxyshop_settings['ga']); ?>']);
+	_gaq.push(['_setDomainName', '<?php echo $_SERVER['SERVER_NAME']; ?>']);
+	_gaq.push(['_setAllowHash', 'false']);
+	<?php if (strpos($foxyshop_settings['domain'], '.foxycart.com') !== false) echo "_gaq.push(['_setAllowLinker', true]);\n"; ?>
+	_gaq.push(['_trackPageview']);
 
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	})();
 
-</script>
-
-<script type="text/javascript" charset="utf-8">
 	fcc.events.cart.preprocess.add(function(e, arr) {
 		if (arr['cart'] == 'checkout' || arr['cart'] == 'updateinfo' || arr['output'] == 'json') {
 			return true;
@@ -131,10 +173,10 @@ function foxyshop_activation() {
 		"version" => "0.7.1",
 		"foxyshop_version" => FOXYSHOP_VERSION,
 		"ship_categories" => "",
-		"max_variations" => 10,
 		"enable_ship_to" => "",
 		"enable_subscriptions" => "",
 		"enable_bundled_products" => "",
+		"enable_dashboard_stats" => "",
 		"browser_title_1" => FOXYSHOP_PRODUCT_NAME_SINGULAR . " | " . get_bloginfo("name"),
 		"browser_title_2" => FOXYSHOP_PRODUCT_NAME_SINGULAR . " Categories | " . get_bloginfo("name"),
 		"browser_title_3" => "%c | " . get_bloginfo("name"),
@@ -154,6 +196,7 @@ function foxyshop_activation() {
 		"manage_inventory_levels" => "",
 		"inventory_alert_level" => 3,
 		"inventory_alert_email" => "on",
+		"checkout_customer_create" => "",
 		"datafeed_url_key" => substr(MD5(rand(1000, 99999)."{urlkey}" . date("H:i:s")),1,12),
 		"generate_feed" => "",
 		"default_image" => WP_PLUGIN_URL."/foxyshop/images/no-photo.png",
@@ -171,16 +214,52 @@ function foxyshop_activation() {
 		$foxyshop_settings = unserialize(get_option("foxyshop_settings"));
 		
 		//Run Some Upgrades
+		if (!array_key_exists('version',$foxyshop_settings)) $foxyshop_settings['version'] = "0";
 		if ($foxyshop_settings['version'] == "0.70") $foxyshop_settings['version'] = "0.7.0";
 		if (!array_key_exists('locale_code',$foxyshop_settings)) $foxyshop_settings['locale_code'] = $current_locale;
 		if (!array_key_exists('inventory_alert_email',$foxyshop_settings)) $foxyshop_settings['inventory_alert_email'] = "on";
-		if (array_key_exists('inventory_url_key',$foxyshop_settings)) {
-			$foxyshop_settings['datafeed_url_key'] = $foxyshop_settings['inventory_url_key'];
-			unset($foxyshop_settings['inventory_url_key']);
-		}
+		if (array_key_exists('inventory_url_key',$foxyshop_settings)) { $foxyshop_settings['datafeed_url_key'] = $foxyshop_settings['inventory_url_key']; unset($foxyshop_settings['inventory_url_key']); }
 		if ($foxyshop_settings['sso_account_required'] == "") $foxyshop_settings['sso_account_required'] = 0;
 		if ($foxyshop_settings['sso_account_required'] == "on") $foxyshop_settings['sso_account_required'] = 1;
+		if (!array_key_exists('enable_dashboard_stats',$foxyshop_settings)) $foxyshop_settings['enable_dashboard_stats'] = "";
+		if (!array_key_exists('checkout_customer_create',$foxyshop_settings)) $foxyshop_settings['checkout_customer_create'] = "";
 
+		//Upgrade Variations in 3.0
+		if (version_compare($foxyshop_settings['version'], '3.0', "<")) {
+			$temp_max_variations = (array_key_exists('max_variations',$foxyshop_settings) ? $foxyshop_settings['max_variations'] : 10);
+			$products = get_posts(array('post_type' => 'foxyshop_product', 'numberposts' => -1, 'post_status' => null));
+			foreach ($products as $product) {
+				$variations = array();
+				for ($i=1; $i<=$temp_max_variations; $i++) {
+					$_variationName = get_post_meta($product->ID, '_variation_name_'.$i, 1);
+					$_variationType = get_post_meta($product->ID, '_variation_type_'.$i, 1);
+					$_variationValue = get_post_meta($product->ID, '_variation_value_'.$i, 1);
+					$_variationDisplayKey = get_post_meta($product->ID, '_variation_dkey_'.$i, 1);
+					$_variationRequired = get_post_meta($product->ID, '_variation_required_'.$i, 1);
+					if ($_variationName) {
+						$variations[$i] = array(
+							"name" => $_variationName,
+							"type" => $_variationType,
+							"value" => $_variationValue,
+							"displayKey" => $_variationDisplayKey,
+							"required" => $_variationRequired
+						);
+					}
+				}
+				if (count($variations) > 0) {
+					if (update_post_meta($product->ID, '_variations', serialize($variations))) {
+						for ($i=1; $i<=$temp_max_variations; $i++) {
+							delete_post_meta($product->ID,'_variation_name_'.$i);
+							delete_post_meta($product->ID,'_variation_type_'.$i);
+							delete_post_meta($product->ID,'_variation_value_'.$i);
+							delete_post_meta($product->ID,'_variation_dkey_'.$i);
+							delete_post_meta($product->ID,'_variation_required_'.$i);
+						}
+					}
+				}
+			}
+			unset($foxyshop_settings['max_variations']);
+		}
 
 		//Load in New Defaults and Save New Version
 		$foxyshop_settings = wp_parse_args($foxyshop_settings,$default_foxyshop_settings);
@@ -267,11 +346,7 @@ function foxyshop_get_foxycart_data($foxyData) {
 	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 	if (defined('FOXYSHOP_CURL_SSL_VERIFYPEER')) curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FOXYSHOP_CURL_SSL_VERIFYPEER);
 	$response = trim(curl_exec($ch));
-	 
-	// The following if block will print any CURL errors you might have
-	if ($response == false) {
-		die("cURL Error: \n" . curl_error($ch));
-	}
+	if ($response == false) die("cURL Error: \n" . curl_error($ch));
 	curl_close($ch);
 	return $response;
 }

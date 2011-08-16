@@ -1,24 +1,33 @@
 .foxyshop_field_control {
 	clear: both;
 }
-.foxyshop_field_control .description
-{ display:none; }
- 
-.foxyshop_field_control label
-{ float:left; width: 80px; margin:7px 6px 0; }
- 
-.foxyshop_field_control label span
-{ display:inline; font-weight:normal; }
- 
-.foxyshop_field_control span
-{ color:#999; float: left; margin: 9px 0 0 5px;  }
- 
-.foxyshop_field_control textarea, .foxyshop_field_control input[type='text']
-{ margin-bottom:3px; width:160px; }
- 
-.foxyshop_field_control h4
-{ color:#999; font-size:1em; margin:15px 6px; text-transform:uppercase; }
-
+.foxyshop_field_control .description {
+	display:none;
+}
+.foxyshop_field_control label {
+	float:left;
+	width: 80px;
+	margin:7px 6px 0 6px;
+}
+.foxyshop_field_control label span {
+	display:inline;
+	font-weight:normal;
+}
+.foxyshop_field_control span {
+	color:#999;
+	float: left;
+	margin: 9px 0 0 5px;
+}
+.foxyshop_field_control textarea, .foxyshop_field_control input[type='text'] {
+	margin-bottom:3px;
+	width: 160px;
+}
+.foxyshop_field_control h4 {
+	color: #999;
+	font-size: 1em;
+	margin:15px 6px;
+	text-transform:uppercase;
+}
 .discount_fields {
 	position: relative;
 	float: left;
@@ -34,15 +43,94 @@
 	z-index:999;
 	text-align: right;
 }
-
+#_weight1, #_weight2 {
+	width: 46px;
+	float: left;
+}
+#_hide_product {
+	float: left;
+	margin: 5px 0 0 10px;
+}
+#foxyshop_subscription_attributes .foxyshop_field_control label {
+	width: 65px;
+}
+#_sub_startdate, #_sub_enddate {
+	width: 75px;
+	float: left;
+}
+#_sub_frequency {
+	float: left;
+	width: 35px;
+}
+#foxyshop_subscription_attributes span {
+	float: left;
+	margin: 7px 0 0 5px;
+}
 .product_variation {
-	border: 1px solid #DFDFDF;
-	background: #F2F2F2;
+	border: 1px solid #ccc;
+	background-color: #F2F2F2;
 	padding: 7px 9px;
 	margin-bottom: 10px;
+	position: relative;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	box-shadow: 0 0 8px #DDDDDD inset;
+}
+.variationsortnum {
+	color: #DFDFDF;
+	font-size: 28px;
+	font-weight: bold;
+	position: absolute;
+	right: 5px;
+	bottom: 5px;
+	cursor: move;
 }
 .product_variation label {
 	 width: 100px;
+}
+.variationkey {
+	margin: 2px 0 15px 114px;
+	font-size: 11px;
+	clear: both;
+}
+.foxyshop_field_control input.dkeynamefield {
+	float: left;
+	width: 100px !important;
+}
+body label.dkeylabel {
+	width: auto;
+	margin-right: 42px;
+	padding-bottom: 2px;
+	cursor: help;
+	border-bottom: 1px dotted darkgray;
+}
+.variationoptions.text .foxyshop_field_control input, .variationoptions.textarea.foxyshop_field_control input {
+	width: 45px;
+}
+.checkbox.variationoptions {
+	background-color: transparent !important;
+}
+.variationoptions textarea {
+	width: 500px;
+	height: 130px;
+}
+.variationoptions.upload textarea {
+	height: 69px;
+}
+.deleteVariation {
+	float: right;
+}
+body input.variation_name {
+	float: left;
+	width: 200px;
+}
+.foxyshop_field_control input.variation_checkbox_text {
+	width: 500px !important;
+}
+body label.variationtypelabel {
+	margin-left: 40px;
+	width: auto;
 }
 .variation_required_container {
 	float: left;
@@ -54,6 +142,14 @@
 }
 .variation_required_container input {
 	float: left;
+}
+.foxyshop_field_control .chzn-choices span {
+	float: none;
+	margin: 0;
+	color: #000;
+}
+.chzn-container-multi .chzn-choices {
+	min-height: 58px;
 }
 
 .small {
@@ -131,8 +227,22 @@
 #foxyshop_settings_wrap option {
 	padding: 2px 6px 2px 2px;
 }
-
-
+#foxyshop_statsleft {
+	float: left;
+}
+#foxyshop_statsleft h4 {
+	border-bottom: 1px solid #ECECEC;
+	margin-bottom: 8px;
+	padding-bottom: 4px;
+}
+#foxyshop_statsleft ul {
+	margin-bottom: 10px;
+}
+#foxyshop_statsright {
+	float: right;
+	margin-left: 10px;
+	width: 230px;
+}
 
 #foxyshop_product_order_list {
 	width: 90%; 
@@ -179,6 +289,13 @@
 	margin-bottom:5px; 
 	padding: 5px;
 	height:50px
+}
+.sortable-variation-placeholder { 
+	border:1px dashed #B2B2B2;
+	margin-top:5px;
+	margin-bottom:5px; 
+	padding: 5px;
+	height:150px
 }
 .foxyshop_sort_list .sortable-placeholder-category { 
 	border:1px dashed #B2B2B2;
@@ -427,6 +544,7 @@ table.widefat tr:last-child td {
 	font-weight: normal;
 	font-size: 24px;
 	margin-bottom: 5px;
+	font-family: Georgia,"Times New Roman","Bitstream Charter",Times,serif;
 }
 #foxyshop_settings_header iframe {
 	margin-bottom: 10px;
@@ -438,4 +556,39 @@ table.widefat tr:last-child td {
 	margin-bottom: 7px;
 	margin-right: 15px;
 
+}
+.widefat th img {
+	float: left;
+	margin: 1px 5px 0 0;
+}
+.help {
+	width: 24px;
+	height: 24px;
+	float: left;
+	text-indent: -99999px;
+	background: url('../images/help.png') no-repeat;
+	margin-left: 3px;
+	opacity: 0.50;
+	filter: alpha(opacity=50);
+	overflow: hidden;
+}
+.help:hover {
+	opacity:1;
+	filter:alpha(opacity=100)
+}
+
+#tooltip {
+	position: absolute;
+	border-radius: 3px 3px 3px 3px;
+	padding: 5px 8px;
+	background-color: #FFFFE0;
+	border: 1px solid #E6DB55;
+	display:none;
+	font-size: 14px;
+	line-height: 140%;
+	max-width: 450px;
+}
+.settings_indent {
+	clear: both;
+	padding: 5px 0 0 15px;
 }

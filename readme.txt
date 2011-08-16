@@ -4,8 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 2.9.1
-
+Stable tag: 3.0
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -54,20 +53,27 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Screenshots ==
 
-1. Admin Settings Screen
-2. More Settings
-3. Product List
-4. Product Entry Screen
-5. Product Entry Screen Continued
-6. Set Custom Product Order
-7. Set Custom Category Order
-8. Order Managment
-9. Customer Management
-10. Subscription Management
-11. Product Feed
+1. Admin Settings
+2. Product Listing
+3. Product Management
+4. Custom Product Order
+5. Order Management
+6. Inventory Levels
 
 
 == Changelog ==
+
+= 3.0 =
+* Added option for FoxyShop statistics widget on admin dashboard. Turn on feature in settings if desired.
+* Complete overhaul of the variation system. Code has been optimized and improved. Variation order now draggable in admin.
+* Improved usability of related and bundled products interface. Now a searchable dropdown.
+* Improved permalink parsing. Most permalink structures now supported.
+* Default menu order now set to be post ID instead of 0. Puts new products at end by default instead of "sort of at the front."
+* Corrected bug where spaces in variation field names caused validation errors.
+* Lots of scripting cleanup and optimization throughout the admin.
+* Updated the jQuery UI datepicker script to 1.8.15.
+* Added class names to the breadcrumbs for easier styling.
+* See [Release Notes](http://www.foxy-shop.com/2011/08/version-3-0-a-big-overhaul/) for more details
 
 = 2.9.1 =
 * Fixed activation error.
@@ -144,5 +150,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 2.9 =
-Added full category and product display shortcodes.
+= 3.0 =
+If you have a lot of products, the reactivation process can take a bit. Please be patient. If it times out, please try again. All product variations are being upgraded.

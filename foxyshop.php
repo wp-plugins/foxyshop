@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 2.9.1
+Version: 3.0
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -35,7 +35,7 @@ the most out of FoxyShop.
 **************************************************************************/
 
 //Setup Plugin Variables
-define('FOXYSHOP_VERSION', "2.9.1");
+define('FOXYSHOP_VERSION', "3.0");
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 $foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
@@ -64,8 +64,8 @@ if ($foxyshop_localsettings['int_curr_symbol'] == "") setlocale(LC_MONETARY, 'en
 add_action('init', 'foxyshop_check_rewrite_rules', 99);
 
 //Widgets and Shortcodes support
-include('widgetcode.php');
-include('shortcodesettings.php');
+include_once('widgetcode.php');
+include_once('shortcodesettings.php');
 
 //Put FoxyCart includes and jQuery on public pages
 if (!is_admin()) {
@@ -73,11 +73,13 @@ if (!is_admin()) {
 	if (!defined('FOXYSHOP_SKIP_FOXYCART_INCLUDES')) add_action('wp_head', 'foxyshop_insert_foxycart_files');
 }
 
-//Put FoxyShop Styles on front pages and load in the admin styles as well
+//Load Admin Scripts and Styles
 if (is_admin()) {
-	wp_enqueue_style('foxyshop_admin_css', FOXYSHOP_DIR . '/css/foxyshop-admin.css');
+	add_action('admin_enqueue_scripts', 'foxyshop_load_admin_scripts');
+
+//Load FoxyShop Styles on Public Site
 } else {
-	wp_enqueue_style('foxyshop_css', FOXYSHOP_DIR . '/css/foxyshop.css');
+	add_action('wp_print_styles', 'foxyshop_insert_style');
 	if ($foxyshop_settings['ga']) add_action('wp_footer', 'foxyshop_insert_google_analytics', 100);
 }
 
@@ -127,21 +129,21 @@ if ($foxyshop_settings['enable_sso']) {
 add_filter('plugin_action_links', 'foxyshop_plugin_action_links', 10, 2);
 
 //Admin Functions
-include('adminfunctions.php');
-include('adminajax.php');
+include_once('adminfunctions.php');
+include_once('adminajax.php');
 
 //Frontend Helper Functions
-include('helperfunctions.php');
+include_once('helperfunctions.php');
 
 //Template Redirect (files are in /themefiles/)
-include('templateredirect.php');
+include_once('templateredirect.php');
 
 
 //PLUGIN EXTENSION
 //Put your extended functionality in wp-content/foxyshop-custom-functions.php
 //and it will be executed here on plugin load and protected from upgrade overwriting.
 //NOTE, this is not currently supported for security reasons. Input on this potential
-//feature would be great.
+//feature would be appreciated.
 //if (file_exists(WP_CONTENT_DIR.'/foxyshop-custom-functions.php')) include(WP_CONTENT_DIR.'/foxyshop-custom-functions.php');
 
 //Plugin Activation Functions

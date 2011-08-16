@@ -313,4 +313,96 @@ class FoxyShop_Category_List extends WP_Widget {
 	}
 }
 
+
+
+//Dashboard Stats
+if ($foxyshop_settings['enable_dashboard_stats']) {
+	add_action('wp_dashboard_setup', 'add_foxyshop_dashboard_stats' );
+	add_action('wp_ajax_foxyshop_order_history_dashboard_action', 'foxyshop_order_history_dashboard_ajax');
+}
+
+function add_foxyshop_dashboard_stats() {
+	wp_add_dashboard_widget('foxyshop_dashboard_widget', 'FoxyShop Statistics', 'foxyshop_dashboard_stats');	
+	
+	//Move Widget to Right Column
+	global $wp_meta_boxes;
+	$my_widget = $wp_meta_boxes['dashboard']['normal']['core']['foxyshop_dashboard_widget'];
+	unset($wp_meta_boxes['dashboard']['normal']['core']['foxyshop_dashboard_widget']);
+	$wp_meta_boxes['dashboard']['side']['core']['foxyshop_dashboard_widget'] = $my_widget;
+} 
+
+function foxyshop_dashboard_stats() {
+	echo '<div id="foxyshop_statsright">'."\n";
+	echo '<img src="' . FOXYSHOP_DIR . '/images/logo.png" alt="FoxyShop" />'."\n";
+	echo '</div>';
+	
+	echo '<div id="foxyshop_statsleft">'."\n";
+
+	echo '<h4>' . __('Order History') . '</h4>'."\n";
+	echo '<ul id="foxyshop_dashboard_order_history">'."\n";
+	echo '<li>Loading...</li>';
+	echo '</ul>'."\n";
+
+	$count_posts = wp_count_posts('foxyshop_product');
+	$tax = get_terms('foxyshop_categories', array("hide_empty" => 0));
+
+	echo '<h4 style="margin-top: 24px;">' . FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Summary') . '</h4>';
+	echo '<ul>';
+	echo '<li><a href="edit.php?post_type=foxyshop_product">' . $count_posts->publish . ' ' . ($count_posts->publish == 1 ? FOXYSHOP_PRODUCT_NAME_SINGULAR : FOXYSHOP_PRODUCT_NAME_PLURAL) . '</a></li>';
+	echo '<li><a href="edit-tags.php?taxonomy=foxyshop_categories&post_type=foxyshop_product">' . count($tax) . ' ' . FOXYSHOP_PRODUCT_NAME_SINGULAR . ' Categor' . (count($tax) == 1 ? 'y' : 'ies') . '</a></li>';
+	echo '</ul>';
+	
+	echo '</div>'."\n";	
+	?>
+
+	<script type="text/javascript">
+	jQuery(document).ready(function($){
+		$.post(ajaxurl, { action: 'foxyshop_order_history_dashboard_action', security: '<?php echo wp_create_nonce("foxyshop-order-info-dashboard"); ?>' }, function(response) {
+			$("#foxyshop_dashboard_order_history").html(response)
+		});
+	});
+	</script>
+	<?php
+	echo '<div style="clear: both;"></div>'."\n";
+}
+
+//AJAX Order History - this is in an AJAX call to avoid a delay in rendering the dashboard
+function foxyshop_order_history_dashboard_ajax() {
+	check_ajax_referer('foxyshop-order-info-dashboard', 'security');
+
+	//Get Order Info
+	$foxy_data = array(
+		"api_action" => "transaction_list",
+		"transaction_date_filter_begin" => date("Y-m-d", strtotime("-30 days")),
+		"transaction_date_filter_end" => date("Y-m-d"),
+		"is_test_filter" => "",
+		"hide_transaction_filter" => ""
+	);
+	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
+	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
+	$orderstats = array(1 => array(0, 0), 7 => array(0, 0), 30 => array(0, 0));
+	if ($xml->result != "ERROR") {
+		foreach($xml->transactions->transaction as $transaction) {
+			$transaction_date = (string)$transaction->transaction_date;
+			$transaction_total = (double)$transaction->order_total;
+		
+			if (strtotime($transaction_date) >= strtotime("-24 hours")) {
+				$orderstats[1][0]++;
+				$orderstats[1][1] += $transaction_total;
+			}
+
+			if (strtotime($transaction_date) >= strtotime("-7 days")) {
+				$orderstats[7][0]++;
+				$orderstats[7][1] += $transaction_total;
+			}
+
+			$orderstats[30][0]++;
+			$orderstats[30][1] += $transaction_total;
+		}
+	}
+	echo '<li>One Day: <a href="edit.php?foxyshop_search=1&amp;is_test_filter=&amp;post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;transaction_date_filter_begin=' . date("Y-m-d", strtotime("-1 day")) . '&amp;transaction_date_filter_end='.date("Y-m-d") . '">' . $orderstats[1][0] . ' order' . ($orderstats[1][0] != 1 ? 's' : '') . ', ' . foxyshop_currency($orderstats[1][1]) . '</a></li>'."\n";
+	echo '<li>Seven Days: <a href="edit.php?foxyshop_search=1&amp;is_test_filter=&amp;post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;transaction_date_filter_begin=' . date("Y-m-d", strtotime("-7 days")) . '&amp;transaction_date_filter_end='.date("Y-m-d") . '">' . $orderstats[7][0] . ' order' . ($orderstats[7][0] != 1 ? 's' : '') . ', ' . foxyshop_currency($orderstats[7][1]) . '</a></li>'."\n";
+	echo '<li>30 Days: <a href="edit.php?foxyshop_search=1&amp;is_test_filter=&amp;post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;transaction_date_filter_begin=' . date("Y-m-d", strtotime("-30 days")) . '&amp;transaction_date_filter_end='.date("Y-m-d") . '">' . $orderstats[30][0] . ' order' . ($orderstats[30][0] != 1 ? 's' : '') . ', ' . foxyshop_currency($orderstats[30][1]) . '</a></li>'."\n";
+	die;
+}
 ?>
