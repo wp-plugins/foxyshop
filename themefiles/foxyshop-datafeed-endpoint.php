@@ -201,6 +201,11 @@ if (isset($_POST["FoxyData"])) {
 				));
 				add_user_meta($new_user_id, 'foxycart_customer_id', $customer_id, true);
 				$wpdb->query("UPDATE $wpdb->users SET user_pass = '$customer_password' WHERE ID = $new_user_id");
+			
+			//Update Password and Add FoxyCart ID # if it wasn't there before
+			} else {
+				add_user_meta($current_user->ID, 'foxycart_customer_id', $customer_id, true);
+				$wpdb->query("UPDATE $wpdb->users SET user_pass = '$customer_password' WHERE ID = $current_user->ID");
 			}
 		}
 		

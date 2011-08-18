@@ -561,7 +561,7 @@ table.widefat tr:last-child td {
 	float: left;
 	margin: 1px 5px 0 0;
 }
-.help {
+.foxyshophelp {
 	width: 24px;
 	height: 24px;
 	float: left;
@@ -572,7 +572,7 @@ table.widefat tr:last-child td {
 	filter: alpha(opacity=50);
 	overflow: hidden;
 }
-.help:hover {
+.foxyshophelp:hover {
 	opacity:1;
 	filter:alpha(opacity=100)
 }

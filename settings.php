@@ -58,11 +58,13 @@ function set_foxyshop_settings() {
 
 		update_option("foxyshop_settings", serialize($new_settings));
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_options&saved=1');
+		die;
 	} elseif ($foxyshop_api_reset_key == "foxyshop_api_key_reset" && check_admin_referer('reset-foxyshop-api-key')) {
 		global $foxyshop_settings;
 		$foxyshop_settings['api_key'] = "sp92fx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time());
 		update_option("foxyshop_settings", serialize($foxyshop_settings));
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_options&key=1');
+		die;
 	}
 }
 
@@ -155,32 +157,32 @@ function foxyshop_options() {
 				<td style="border-bottom: 0 none;">
 					<label for="foxyshop_key"><?php _e('API Key'); ?>:</label>
 					<input type="text" id="foxyshop_key" name="key" value="<?php echo $foxyshop_settings['api_key']; ?>" readonly="readonly" onclick="this.select();" />
-					<a href="#" class="help">The API key is saved here and stored on your FoxyCart account so that your cart information can be encrypted to avoid link tampering. The API key is also used to communicate with FoxyCart and retrieve your order inforamtion.<br /><br />This API key is generated automatically and cannot be edited. Scroll to the bottom of the page if you need to reset the key.</a>
+					<a href="#" class="foxyshophelp">The API key is saved here and stored on your FoxyCart account so that your cart information can be encrypted to avoid link tampering. The API key is also used to communicate with FoxyCart and retrieve your order inforamtion.<br /><br />This API key is generated automatically and cannot be edited. Scroll to the bottom of the page if you need to reset the key.</a>
 					<div style="clear: both; padding: 5px 0; font-style: italic;"><strong style="color: #BB1E1E;">Required Setup:</strong> Enter this API key on the advanced menu of your <a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&url=http://admin.foxycart.com/" target="_blank">FoxyCart admin</a> and check the box to enable cart validation.</div>
 					
 					<div style="clear: both;"></div>
 
 					<label for="foxyshop_datafeed_url"><?php _e('Datafeed URL'); ?>:</label>
 					<input type="text" id="foxyshop_datafeed_url" name="foxyshop_datafeed_url" value="<?php echo get_bloginfo('url') . '/foxycart-datafeed-' . $foxyshop_settings['datafeed_url_key']; ?>/" readonly="readonly" onclick="this.select();" />
-					<a href="#" class="help">FoxyCart can be configured to send order information to a url on your website. If you want to use FoxyShop's datafeed and take advantage of inventory, user management and more, copy this url and enable the datafeed in your FoxyCart admin panel.</a>
+					<a href="#" class="foxyshophelp">FoxyCart can be configured to send order information to a url on your website. If you want to use FoxyShop's datafeed and take advantage of inventory, user management and more, copy this url and enable the datafeed in your FoxyCart admin panel.</a>
 					
 					<div style="clear: both;margin-bottom: 5px;"></div>
 
 					<label for="foxyshop_sso_url"><?php _e('SSO Endpoint'); ?>:</label>
 					<input type="text" id="foxyshop_sso_url" name="foxyshop_sso_url" value="<?php echo get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key']; ?>/" readonly="readonly" onclick="this.select();" />
-					<a href="#" class="help">FoxyShop can automatically sync your WordPress and FoxyCart users. If you want to take advantage of this feature, copy this url and enable the Single Sign On feature in the FoxyCart admin panel. Also, be sure to set the customer password hash to phpass.</a>
+					<a href="#" class="foxyshophelp">FoxyShop can automatically sync your WordPress and FoxyCart users. If you want to take advantage of this feature, copy this url and enable the Single Sign On feature in the FoxyCart admin panel. Also, be sure to set the customer password hash to phpass.</a>
 					
 					<div style="clear: both;margin-bottom: 5px;"></div>
 
 					<label for="foxyshop_theme_dir"><?php _e('Template Path'); ?>:</label>
 					<input type="text" id="foxyshop_theme_dir" name="foxyshop_theme_dir" value="<?php echo STYLESHEETPATH; ?>/" readonly="readonly" />
-					<a href="#" class="help">FoxyShop will look in this folder for customized theme files.</a>
+					<a href="#" class="foxyshophelp">FoxyShop will look in this folder for customized theme files.</a>
 
 					<?php if ($foxyshop_settings['generate_product_sitemap']) { ?>
 						<div style="clear: both;margin-bottom: 5px;"></div>
 						<label for="foxyshop_sitemap"><?php _e('Sitemap'); ?>:</label>
 						<input type="text" id="foxyshop_sitemap" name="foxyshop_sitemap" value="http://<?php echo $_SERVER['SERVER_NAME'] . '/sitemap-products.xml'; ?>" readonly="readonly" onclick="this.select();" />
-						<a href="#" class="help">This is the url where you can find your sitemap for submitting to search engines.</a>
+						<a href="#" class="foxyshophelp">This is the url where you can find your sitemap for submitting to search engines.</a>
 					<?php } ?>
 
 				</td>
@@ -203,7 +205,7 @@ function foxyshop_options() {
 			<tr>
 				<td>
 					<label for="foxyshop_domain"><?php _e('Your FoxyCart Domain'); ?>:</label> <input type="text" name="foxyshop_domain" value="<?php echo $foxyshop_settings['domain']; ?>" size="50" />
-					<a href="#" class="help">Example: yourname.foxycart.com<br /><br />If you have your own custom domain, you may enter that as well (cart.yourdomain.com). Do not include the "http://". The FoxyCart include files will be inserted automatically so you won't need to add anything to the header of your site.</a>
+					<a href="#" class="foxyshophelp">Example: yourname.foxycart.com<br /><br />If you have your own custom domain, you may enter that as well (cart.yourdomain.com). Do not include the "http://". The FoxyCart include files will be inserted automatically so you won't need to add anything to the header of your site.</a>
 				</td>
 			</tr>
 			<tr>
@@ -223,7 +225,7 @@ function foxyshop_options() {
 				<td>
 					<input type="checkbox" id="foxyshop_use_jquery" name="foxyshop_use_jquery"<?php checked($foxyshop_settings['use_jquery'], "on"); ?> />
 					<label for="foxyshop_use_jquery"><?php echo __('Automatically Insert jQuery ') . FOXYSHOP_JQUERY_VERSION . __(' from Google CDN'); ?></label>
-					<a href="#" class="help">If you are already manually inserting jQuery you should uncheck this option.</a>
+					<a href="#" class="foxyshophelp">If you are already manually inserting jQuery you should uncheck this option.</a>
 				</td>
 			</tr>
 		</tbody>
@@ -256,13 +258,13 @@ function foxyshop_options() {
 				<td>
 					<label for="foxyshop_products_per_page"><?php echo FOXYSHOP_PRODUCT_NAME_PLURAL . ' ' . __('Per Page'); ?>:</label> <input type="text" id="foxyshop_products_per_page" name="foxyshop_products_per_page" value="<?php echo ($foxyshop_settings['products_per_page'] < 0 ? 0 : $foxyshop_settings['products_per_page']); ?>" style="width: 50px;" />
 					<small>Enter 0 to show all products (no paging)</small>
-					<a href="#" class="help">Note that paging does not apply to the "All <?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?>" page.</a>
+					<a href="#" class="foxyshophelp">Note that paging does not apply to the "All <?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?>" page.</a>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<label for="foxyshop_default_image"><?php _e('Default Image'); ?>:</label> <input type="text" id="foxyshop_default_image" name="foxyshop_default_image" value="<?php echo $foxyshop_settings['default_image']; ?>" style="width:544px;" /><small><a href="#" id="resetimage">Reset To Default</a></small>
-					<a href="#" class="help">Enter the URL for the image that will be shown if no image is loaded. Or leave the default, it's up to you. (If you change the website URL, though, you'll have to come back and change it here.</a>
+					<a href="#" class="foxyshophelp">Enter the URL for the image that will be shown if no image is loaded. Or leave the default, it's up to you. (If you change the website URL, though, you'll have to come back and change it here.</a>
 				</td>
 			</tr>
 
@@ -312,28 +314,28 @@ function foxyshop_options() {
 				<td>
 					<label for="foxyshop_ship_categories" style="vertical-align: top;"><?php _e('Your Shipping Categories'); ?>:</label>
 					<textarea id="name="foxyshop_ship_categories" name="foxyshop_ship_categories" wrap="auto" style="float: left; width:500px;height: 80px;"><?php echo $foxyshop_settings['ship_categories']; ?></textarea>
-					<a href="#" class="help">These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?> setup page. Separate each category with a line break. If you only use one category this is not required. If you would like to also display a nice name in the dropdown menu, use a pipe sign "|" like this: free_shipping|Free Shipping.</a>
+					<a href="#" class="foxyshophelp">These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?> setup page. Separate each category with a line break. If you only use one category this is not required. If you would like to also display a nice name in the dropdown menu, use a pipe sign "|" like this: free_shipping|Free Shipping.</a>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_shipto" name="foxyshop_enable_ship_to"<?php checked($foxyshop_settings['enable_ship_to'], "on"); ?> />
 					<label for="foxyshop_shipto"><?php _e('Enable Multi-Ship'); ?></label>
-					<a href="#" class="help">Remember that FoxyCart charges an extra fee for this service. You must enable it on your FoxyCart account or it will not work.</a>
+					<a href="#" class="foxyshophelp">Remember that FoxyCart charges an extra fee for this service. You must enable it on your FoxyCart account or it will not work.</a>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_enable_bundled_products" name="foxyshop_enable_bundled_products"<?php checked($foxyshop_settings['enable_bundled_products'], "on"); ?> />
 					<label for="foxyshop_enable_bundled_products"><?php echo __('Enable Bundled').' '.FOXYSHOP_PRODUCT_NAME_PLURAL; ?></label>
-					<a href="#" class="help">Allow multiple items to be added to the cart at once (extra items will be added with a price of $0.00, though this can be configured.)</a>
+					<a href="#" class="foxyshophelp">Allow multiple items to be added to the cart at once (extra items will be added with a price of $0.00, though this can be configured.)</a>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_enable_subscriptions" name="foxyshop_enable_subscriptions"<?php checked($foxyshop_settings['enable_subscriptions'], "on"); ?> />
 					<label for="foxyshop_enable_subscriptions"><?php _e('Enable Subscriptions'); ?></label>
-					<a href="#" class="help">Show fields to allow the creation of subscription <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL); ?>.</a>
+					<a href="#" class="foxyshophelp">Show fields to allow the creation of subscription <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL); ?>.</a>
 				</td>
 			</tr>
 
@@ -341,7 +343,7 @@ function foxyshop_options() {
 				<td>
 					<input type="checkbox" id="foxyshop_enable_sso" name="foxyshop_enable_sso"<?php checked($foxyshop_settings['enable_sso'], "on"); ?> />
 					<label for="foxyshop_enable_sso"><?php _e('Enable WordPress Single-Sign-On'); ?></label>
-					<a href="#" class="help">If enabled, your WordPress users will not have to login again to complete a FoxyCart checkout. WordPress accounts and FoxyCart accounts are kept in sync. You must be using FoxyCart 0.7.1 or above and in the FoxyCart admin you must set the "customer password hash type" to "phpass, portable mode" and the hash config to 8. Check the "enable single sign on" option and put the SSO Endpoint url in the appropriate box.</a>
+					<a href="#" class="foxyshophelp">If enabled, your WordPress users will not have to login again to complete a FoxyCart checkout. WordPress accounts and FoxyCart accounts are kept in sync. You must be using FoxyCart 0.7.1 or above and in the FoxyCart admin you must set the "customer password hash type" to "phpass, portable mode" and the hash config to 8. Check the "enable single sign on" option and put the SSO Endpoint url in the appropriate box.</a>
 					<div class="settings_indent">
 
 						<label for="foxyshop_sso_account_required"><?php _e('SSO Type'); ?>:</label> 
@@ -355,7 +357,7 @@ function foxyshop_options() {
 						<div style="clear: both;"></div>
 						<input type="checkbox" id="foxyshop_checkout_customer_create" name="foxyshop_checkout_customer_create"<?php checked($foxyshop_settings['checkout_customer_create'], "on"); ?> />
 						<label for="foxyshop_checkout_customer_create"><?php _e('Create/Update WordPress User After Checkout'); ?></label>
-						<a href="#" class="help"><?php _e('The datafeed must be enabled at FoxyCart for this feature to work properly.'); ?></a>
+						<a href="#" class="foxyshophelp"><?php _e('The datafeed must be enabled at FoxyCart for this feature to work properly.'); ?></a>
 					</div>
 				</td>
 			</tr>
@@ -365,7 +367,7 @@ function foxyshop_options() {
 				<td>
 					<input type="checkbox" id="foxyshop_manage_inventory_levels" name="foxyshop_manage_inventory_levels"<?php checked($foxyshop_settings['manage_inventory_levels'], "on"); ?> />
 					<label for="foxyshop_manage_inventory_levels"><?php _e('Manage Inventory Levels'); ?></label>
-					<a href="#" class="help">If enabled, you will be able to set inventory levels per <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL); ?> code. In the FoxyCart admin, you need to check the box to enable your datafeed and enter the datafeed url from the top of this page in the "datafeed url" box.</a>
+					<a href="#" class="foxyshophelp">If enabled, you will be able to set inventory levels per <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL); ?> code. In the FoxyCart admin, you need to check the box to enable your datafeed and enter the datafeed url from the top of this page in the "datafeed url" box.</a>
 					<div class="settings_indent">
 						<label for="foxyshop_inventory_alert_level"><?php _e('Default Inventory Alert Level'); ?>:</label> <input type="text" id="foxyshop_inventory_alert_level" name="foxyshop_inventory_alert_level" value="<?php echo $foxyshop_settings['inventory_alert_level']; ?>" style="width: 50px;" />
 						<input type="checkbox" id="foxyshop_inventory_alert_email" name="foxyshop_inventory_alert_email"<?php checked($foxyshop_settings['inventory_alert_email'], "on"); ?> style="clear: left;" /><label for="foxyshop_inventory_alert_email"><?php _e('Send Email to Admin When Alert Level Reached'); ?></label>
@@ -397,7 +399,7 @@ function foxyshop_options() {
 			<tr>
 				<td>
 					<label for="foxyshop_locale_code"><?php _e('Currency Locale Code'); ?>:</label> <input type="text" id="foxyshop_locale_code" name="foxyshop_locale_code" value="<?php echo $foxyshop_settings['locale_code']; ?>" style="width: 150px;" />
-					<a href="#" class="help"><?php _e('If you would like to use something other than $ for your currency, enter your locale code here. For the British Pound, enter "en_GB".'); ?></a>
+					<a href="#" class="foxyshophelp"><?php _e('If you would like to use something other than $ for your currency, enter your locale code here. For the British Pound, enter "en_GB".'); ?></a>
 					<small><a href="http://www.roseindia.net/tutorials/I18N/locales-list.shtml" target="_blank">full list of locale codes</a></small>
 					<?php if (!function_exists('money_format')) echo '<div>' . __('Attention, you are using Windows which does not support internationalization. You will be limited to $ or £.') . '</div>'; ?>
 				</td>
@@ -406,17 +408,17 @@ function foxyshop_options() {
 				<td>
 					<input type="checkbox" id="foxyshop_hide_subcat_children" name="foxyshop_hide_subcat_children"<?php checked($foxyshop_settings['hide_subcat_children'], "on"); ?> />
 					<label for="foxyshop_hide_subcat_children"><?php echo sprintf(__('Hide Child %s From Parent Categories (recommended)'), FOXYSHOP_PRODUCT_NAME_PLURAL); ?></label>
-					<a href="#" class="help"><?php echo sprintf(__('By default, WordPress treats children a little differently than you would expect in that products in child categories also show up in parent categories. FoxyShop removes these products, but if you would like to have all %s from sub-categories show up in parent categories, uncheck this box.'), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></a>
+					<a href="#" class="foxyshophelp"><?php echo sprintf(__('By default, WordPress treats children a little differently than you would expect in that products in child categories also show up in parent categories. FoxyShop removes these products, but if you would like to have all %s from sub-categories show up in parent categories, uncheck this box.'), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></a>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<label for="foxyshop_ga"><?php _e('Google Analytics Code'); ?>:</label> <input type="text" id="foxyshop_ga" name="foxyshop_ga" value="<?php echo $foxyshop_settings['ga']; ?>" size="20" /> <small>(UA-XXXXXXXX-X)</small>
-					<a href="#" class="help"><?php _e('Enter your UA code here and Google Analytics tracking will be installed in the footer. Tracking will only be initiated if the visitor is not a logged-in WordPress user so that admin usage won\'t be tracked.'); ?></a>
+					<a href="#" class="foxyshophelp"><?php _e('Enter your UA code here and Google Analytics tracking will be installed in the footer. Tracking will only be initiated if the visitor is not a logged-in WordPress user so that admin usage won\'t be tracked.'); ?></a>
 					<div class="settings_indent">
 						<input type="checkbox" id="foxyshop_ga_advanced" name="foxyshop_ga_advanced"<?php checked($foxyshop_settings['ga_advanced'], "on"); ?> />
 						<label for="foxyshop_ga_advanced"><?php _e('Advanced Google Analytics Code'); ?></label>
-						<a href="#" class="help"><?php _e('Check this box if you are using the amazing FoxyCart Google Analytics Sync. We will put the appropriate code in your footer (but you\'ll still have to setup Google Analytics and your template).'); ?></a>
+						<a href="#" class="foxyshophelp"><?php _e('Check this box if you are using the amazing FoxyCart Google Analytics Sync. We will put the appropriate code in your footer (but you\'ll still have to setup Google Analytics and your template).'); ?></a>
 						<small><a href="http://wiki.foxycart.com/integration/googleanalytics_async" target="_blank">instructions here</a></small>
 					</div>
 				</td>
@@ -431,14 +433,14 @@ function foxyshop_options() {
 				<td>
 					<input type="checkbox" id="foxyshop_generate_feed" name="foxyshop_generate_feed"<?php checked($foxyshop_settings['generate_feed'], "on"); ?> />
 					<label for="foxyshop_generate_feed"><?php echo sprintf(__('Generate %s Feed'), FOXYSHOP_PRODUCT_NAME_SINGULAR); ?></label>
-					<a href="#" class="help"><?php echo __('Selecting this option will turn on an option which will allow you to export a file suitable for uploading to Google\'s Product Search system.'); ?></a>
+					<a href="#" class="foxyshophelp"><?php echo __('Selecting this option will turn on an option which will allow you to export a file suitable for uploading to Google\'s Product Search system.'); ?></a>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_generate_product_sitemap" name="foxyshop_generate_product_sitemap"<?php checked($foxyshop_settings['generate_product_sitemap'], "on"); ?> />
 					<label for="foxyshop_generate_product_sitemap"><?php echo sprintf(__('Generate %s Sitemap'), FOXYSHOP_PRODUCT_NAME_SINGULAR); ?></label>
-					<a href="#" class="help"><?php echo sprintf(__('If checked, a sitemap file with all of your %s will be created in your root folder.'), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></a>
+					<a href="#" class="foxyshophelp"><?php echo sprintf(__('If checked, a sitemap file with all of your %s will be created in your root folder.'), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></a>
 				</td>
 			</tr>
 		</tbody>

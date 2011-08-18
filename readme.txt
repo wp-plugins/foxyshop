@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 3.0
+Stable tag: 3.0.1
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -62,6 +62,11 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 3.0.1 =
+* Fixes problem on category paging caused by new permalink parsing
+* Fixes admin CSS conflict with other help text
+* Updated datafeed "new user" option to update password and customer ID when saving a FoxyCart account to a WordPress account
 
 = 3.0 =
 * Added option for FoxyShop statistics widget on admin dashboard. Turn on feature in settings if desired.

@@ -3,7 +3,7 @@
 add_action("template_redirect", 'foxyshop_theme_redirect', 1);
 
 function foxyshop_theme_redirect() {
-	global $wp, $wpquery, $foxyshop_settings;
+	global $wp, $wp_query, $foxyshop_settings;
 
 	$currentName = (isset($wp->query_vars["name"]) ? $wp->query_vars["name"] : "");
 	$currentPageName = (isset($wp->query_vars["pagename"]) ? $wp->query_vars["pagename"] : "");
@@ -32,7 +32,15 @@ function foxyshop_theme_redirect() {
 			query_posts("post_type=foxyshop_product&foxyshop_product=".$currentProduct);
 		} elseif (in_array(FOXYSHOP_PRODUCT_CATEGORY_SLUG, $request_arr) && $request_end != FOXYSHOP_PRODUCT_CATEGORY_SLUG) {
 			$currentCategory = $request_end;
-			query_posts("post_type=foxyshop_product&foxyshop_categories=".$currentCategory);
+			$paged = 1;
+			
+			//Check For Paging
+			if (is_numeric($request_end) && $request_arr[count($request_arr) - 2] == "page") {
+				$currentCategory = $request_arr[count($request_arr) - 3];
+				$paged = $request_end;
+			}
+			
+			query_posts("post_type=foxyshop_product&foxyshop_categories=".$currentCategory."&paged=" . $paged);
 		} elseif ($request_start == "product-search") {
 			$currentPageName = 'product-search';
 		} elseif ($request_start == 'foxycart-datafeed-'.$foxyshop_settings['datafeed_url_key']) {
@@ -43,7 +51,6 @@ function foxyshop_theme_redirect() {
 			$currentPageName = 'upload-'.$foxyshop_settings['datafeed_url_key'];
 		}
 	}
-	
 
 	//Single Product Page
 	if ($currentPostType == "foxyshop_product" && $currentProduct != "" && $currentProduct != 'page') {
