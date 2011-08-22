@@ -487,7 +487,7 @@ jQuery(document).ready(function($){
 	//Tooltip
 	xOffset = -10;
 	yOffset = 10;		
-	$("a.help").hover(function(e) {											  
+	$("a.foxyshophelp").hover(function(e) {											  
 		var tooltip_text = $(this).html();
 		$("body").append("<p id='tooltip'>"+ tooltip_text +"</p>");
 		$("#tooltip")
