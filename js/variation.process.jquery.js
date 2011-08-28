@@ -2,12 +2,16 @@ jQuery(document).ready(function($){
 	$("form.foxyshop_product select, form.foxyshop_product input:checkbox, form.foxyshop_product input:radio").change(function(){
 		updateVariations($(this));
 	});
-	updateVariations($("form.foxyshop_product select, form.foxyshop_product input:checkbox, form.foxyshop_product input:radio"));
+	$("form.foxyshop_product").each(function() {
+		updateVariations($(this).find("input"));
+	});
+	
 
 	function updateVariations(elSelect) {
+		var current_product_id = elSelect.parents("form").attr("rel");
 		displayKey = new Array();
-		var new_price = $("#price").val();
-		var new_price_original = $("#originalprice").val();
+		var new_price = $("#fs_price_" + current_product_id).val();
+		var new_price_original = $("#originalprice_" + current_product_id).val();
 		new_price = parseFloat(new_price.replace(",","")) * 100;
 		new_price_original = parseFloat(new_price_original.replace(",","")) * 100;
 
@@ -17,7 +21,7 @@ jQuery(document).ready(function($){
 		var new_inventory = '';
 
 		//For Each Element
-		elSelect.parents("form").find(".foxyshop_variations select option:selected, .foxyshop_variations input:checkbox:checked, .foxyshop_variations input:radio:checked").each(function(){
+		$("#foxyshop_product_form_" + current_product_id).find(".foxyshop_variations select option:selected, .foxyshop_variations input:checkbox:checked, .foxyshop_variations input:radio:checked").each(function(){
 			var thisEl = $(this);
 			
 			//Get New Image Key
@@ -59,11 +63,11 @@ jQuery(document).ready(function($){
 		});
 
 		
-		$(".dkey").hide();
+		$("#foxyshop_product_form_" + current_product_id + " .dkey").hide();
 		for (i=0;i<displayKey.length;i++) {
-			$('.dkey[dkey="' + displayKey[i] + '"]').show();
+			$('#foxyshop_product_form_' + current_product_id + ' .dkey[dkey="' + displayKey[i] + '"]').show();
 		}
-		$(".dkey:hidden").each(function() {
+		$("#foxyshop_product_form_" + current_product_id + " .dkey:hidden").each(function() {
 			var thisEl = $(this);
 			if (thisEl.is('input') || $(this).is('textarea')) {
 				thisEl.val("");
@@ -73,64 +77,63 @@ jQuery(document).ready(function($){
 
 		});
 		
-		if (!new_code) new_code = $("#fs_code").val();
-		setModifiers(new_code, new_codeadd, new_price, new_price_original, new_ikey);
+		if (!new_code) new_code = $("#fs_code_" + current_product_id).val();
+		setModifiers(new_code, new_codeadd, new_price, new_price_original, new_ikey, current_product_id);
 
 		
 	
 
 	}
 	
-	function setModifiers(new_code, new_codeadd, new_price, new_price_original, new_ikey) {
-
-		
+	function setModifiers(new_code, new_codeadd, new_price, new_price_original, new_ikey, current_product_id) {
+	
 		//Change Image
 		if (new_ikey != '') {
-			$("#foxyshop_main_product_image").attr("src",ikey[new_ikey][2]).attr("alt",ikey[new_ikey][4]).parent().attr("href",ikey[new_ikey][3]);
-			$("#foxyshop_cart_product_image").attr("name",'image'+ikey[new_ikey][5]).val(ikey[new_ikey][1]);
+			$("#foxyshop_main_product_image_" + current_product_id).attr("src",ikey[new_ikey][2]).attr("alt",ikey[new_ikey][4]).parent().attr("href",ikey[new_ikey][3]);
+			$("#foxyshop_cart_product_image_" + current_product_id).attr("name",'image'+ikey[new_ikey][5]).val(ikey[new_ikey][1]);
 		}
 		//Check Inventory
+		if (typeof arr_foxyshop_inventory == "undefined") arr_foxyshop_inventory = [];
 		inventory_code = new_code;
 		inventory_match_count = -1;
-		if (new_codeadd) inventory_code = $("#fs_code").val() + new_codeadd; 
-		if (inventory_code != "" && typeof arr_foxyshop_inventory != 'undefined') {
-			for (i=0; i<arr_foxyshop_inventory.length; i++) {
-				if (arr_foxyshop_inventory[i][0] == inventory_code) inventory_match_count = i;
+		if (new_codeadd) inventory_code = $("#fs_code_" + current_product_id).val() + new_codeadd; 
+		if (inventory_code != "" && typeof arr_foxyshop_inventory[current_product_id] != 'undefined') {
+			for (i=0; i<arr_foxyshop_inventory[current_product_id].length; i++) {
+				if (arr_foxyshop_inventory[current_product_id][i][0] == inventory_code) inventory_match_count = i;
 			}
 		}
 
 		if (inventory_match_count >= 0) {
-			newcount = parseInt(arr_foxyshop_inventory[inventory_match_count][1]);
-			newalert = parseInt(arr_foxyshop_inventory[inventory_match_count][2]);
-			newhash = arr_foxyshop_inventory[inventory_match_count][3];
-			if (!foxyshop_allow_backorder) $("#fs_quantity_max").attr("name","quantity_max"+newhash).val(newcount);
+			newcount = parseInt(arr_foxyshop_inventory[current_product_id][inventory_match_count][1]);
+			newalert = parseInt(arr_foxyshop_inventory[current_product_id][inventory_match_count][2]);
+			newhash = arr_foxyshop_inventory[current_product_id][inventory_match_count][3];
+			if (!foxyshop_allow_backorder) $("#fs_quantity_max_" + current_product_id).attr("name","quantity_max" + newhash).val(newcount);
 			if (newcount > 0 && newcount <= newalert) {
-				$(".foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").text(update_inventory_alert_language(foxyshop_inventory_stock_alert,newcount)).show();
-				$("#productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
+				$("#foxyshop_product_form_" + current_product_id + " .foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").text(update_inventory_alert_language(foxyshop_inventory_stock_alert,newcount)).show();
+				$("#foxyshop_product_form_" + current_product_id + " #productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
 			} else if (newcount <= 0) {
-				$(".foxyshop_stock_alert").addClass("foxyshop_out_of_stock").text(update_inventory_alert_language(foxyshop_inventory_stock_none,inventory_match_count)).show();
-				if (!foxyshop_allow_backorder) $("#productsubmit").attr("disabled","disabled").addClass("foxyshop_disabled");
+				$("#foxyshop_product_form_" + current_product_id + " .foxyshop_stock_alert").addClass("foxyshop_out_of_stock").text(update_inventory_alert_language(foxyshop_inventory_stock_none,inventory_match_count)).show();
+				if (!foxyshop_allow_backorder) $("#foxyshop_product_form_" + current_product_id + " #productsubmit").attr("disabled","disabled").addClass("foxyshop_disabled");
 			} else {
-				$("#productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
-				$(".foxyshop_stock_alert").hide();
+				$("#foxyshop_product_form_" + current_product_id + " #productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
+				$("#foxyshop_product_form_" + current_product_id + " .foxyshop_stock_alert").hide();
 			}
-		} else if (typeof arr_foxyshop_inventory != 'undefined') {
-			if (!foxyshop_allow_backorder) $("#fs_quantity_max").attr("name","quantity_max"+$("#original_quantity_max").attr("rel")).val($("#original_quantity_max").val());
-			$("#productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
-			$(".foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").hide();
+		} else if (typeof arr_foxyshop_inventory[current_product_id] != 'undefined') {
+			if (!foxyshop_allow_backorder) $("#fs_quantity_max_" + current_product_id).attr("name","quantity_max"+$("#original_quantity_max_" + current_product_id).attr("rel")).val($("#original_quantity_max_" + current_product_id).val());
+			$("#foxyshop_product_form_" + current_product_id + " #productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
+			$("#foxyshop_product_form_" + current_product_id + " .foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").hide();
 		}
 
-
 		//Change Price
-		l18n_settings = $("#foxyshop_l18n").val();
+		l18n_settings = $("#foxyshop_l18n_" + current_product_id).val();
 		arrl18n_settings = l18n_settings.split("|");
 		currencySymbol = arrl18n_settings[0];
 		decimalSeparator = arrl18n_settings[1];
 		thousandsSeparator = arrl18n_settings[2];
 		p_precedes = arrl18n_settings[3];
 		n_sep_by_space = arrl18n_settings[4];
-		$("#foxyshop_main_price .foxyshop_currentprice").text(toCurrency(new_price, currencySymbol, thousandsSeparator, decimalSeparator, p_precedes, n_sep_by_space));
-		$("#foxyshop_main_price .foxyshop_oldprice").text(toCurrency(new_price_original, currencySymbol, thousandsSeparator, decimalSeparator, p_precedes, n_sep_by_space));
+		$("#foxyshop_product_form_" + current_product_id + " #foxyshop_main_price .foxyshop_currentprice").text(toCurrency(new_price, currencySymbol, thousandsSeparator, decimalSeparator, p_precedes, n_sep_by_space));
+		$("#foxyshop_product_form_" + current_product_id + " #foxyshop_main_price .foxyshop_oldprice").text(toCurrency(new_price_original, currencySymbol, thousandsSeparator, decimalSeparator, p_precedes, n_sep_by_space));
 
 	}
 
@@ -168,19 +171,22 @@ jQuery(document).ready(function($){
 
 //Code to Check For Required Fields Before Adding to Cart
 foxycart_required_fields_check = function(e, arr) {
+	var current_product_id = $(e).attr("rel");
 	var strFailed = false;
-	jQuery("form.foxyshop_product input.foxyshop_required, form.foxyshop_product textarea.foxyshop_required").each(function() {
-		if (!jQuery(this).val()) {
-			if (jQuery(this).hasClass('hiddenimageholder') && jQuery(this).parents('.foxyshop_custom_upload_container').is(':visible')) {
-				strFailed = true;
-				alert('Error: You must upload a file before adding to cart.');
-			} else if (jQuery(this).is(':visible')) {
-				strFailed = true;
-				alert("Error: You have not completed a required field.");
-				jQuery(this).focus();
+	if (current_product_id) {
+		jQuery("form#foxyshop_product_form_" + current_product_id + " input.foxyshop_required, form#foxyshop_product_form_" + current_product_id + " textarea.foxyshop_required").each(function() {
+			if (!jQuery(this).val()) {
+				if (jQuery(this).hasClass('hiddenimageholder') && jQuery(this).parents('.foxyshop_custom_upload_container').is(':visible')) {
+					strFailed = true;
+					alert('Error: You must upload a file before adding to cart.');
+				} else if (jQuery(this).is(':visible')) {
+					strFailed = true;
+					alert("Error: You have not completed a required field.");
+					jQuery(this).focus();
+				}
 			}
-		}
-	});
+		});
+	}
 	if (strFailed) {
 		return false;
 	} else {

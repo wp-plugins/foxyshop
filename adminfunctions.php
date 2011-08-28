@@ -23,7 +23,7 @@ function foxyshop_load_admin_scripts($hook) {
 	}
 
 	//Product
-	if($hook != 'post.php' && $hook != 'post-new.php') return;
+	if($hook != 'post.php' && $hook != 'post-new.php' && $page != 'cfbe_editor-foxyshop_product') return;
 	wp_enqueue_script('swfobject');
 	wp_enqueue_script('chosenScript', FOXYSHOP_DIR . '/js/chosen.jquery.min.js', array('jquery'));
 	wp_enqueue_style('chosenStyle', FOXYSHOP_DIR . '/css/chosen.css');
@@ -199,7 +199,7 @@ function foxyshop_activation() {
 		"checkout_customer_create" => "",
 		"datafeed_url_key" => substr(MD5(rand(1000, 99999)."{urlkey}" . date("H:i:s")),1,12),
 		"generate_feed" => "",
-		"default_image" => WP_PLUGIN_URL."/foxyshop/images/no-photo.png",
+		"default_image" => "",
 		"products_per_page" => -1,
 		"api_key" => "sp92fx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time())
 	);
@@ -223,6 +223,7 @@ function foxyshop_activation() {
 		if ($foxyshop_settings['sso_account_required'] == "on") $foxyshop_settings['sso_account_required'] = 1;
 		if (!array_key_exists('enable_dashboard_stats',$foxyshop_settings)) $foxyshop_settings['enable_dashboard_stats'] = "";
 		if (!array_key_exists('checkout_customer_create',$foxyshop_settings)) $foxyshop_settings['checkout_customer_create'] = "";
+		if ($foxyshop_settings['default_image'] == WP_PLUGIN_URL."/foxyshop/images/no-photo.png") $foxyshop_settings['default_image'] = "";
 
 		//Upgrade Variations in 3.0
 		if (version_compare($foxyshop_settings['version'], '3.0', "<")) {

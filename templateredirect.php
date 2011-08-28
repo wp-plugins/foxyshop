@@ -3,7 +3,7 @@
 add_action("template_redirect", 'foxyshop_theme_redirect', 1);
 
 function foxyshop_theme_redirect() {
-	global $wp, $wp_query, $foxyshop_settings;
+	global $wp, $wp_query, $foxyshop_settings, $foxyshop_body_class_name;
 
 	$currentName = (isset($wp->query_vars["name"]) ? $wp->query_vars["name"] : "");
 	$currentPageName = (isset($wp->query_vars["pagename"]) ? $wp->query_vars["pagename"] : "");
@@ -30,6 +30,7 @@ function foxyshop_theme_redirect() {
 			$currentProduct = $request_end;
 			$currentPostType = "foxyshop_product";
 			query_posts("post_type=foxyshop_product&foxyshop_product=".$currentProduct);
+		
 		} elseif (in_array(FOXYSHOP_PRODUCT_CATEGORY_SLUG, $request_arr) && $request_end != FOXYSHOP_PRODUCT_CATEGORY_SLUG) {
 			$currentCategory = $request_end;
 			$paged = 1;
@@ -39,8 +40,8 @@ function foxyshop_theme_redirect() {
 				$currentCategory = $request_arr[count($request_arr) - 3];
 				$paged = $request_end;
 			}
-			
 			query_posts("post_type=foxyshop_product&foxyshop_categories=".$currentCategory."&paged=" . $paged);
+			
 		} elseif ($request_start == "product-search") {
 			$currentPageName = 'product-search';
 		} elseif ($request_start == 'foxycart-datafeed-'.$foxyshop_settings['datafeed_url_key']) {
@@ -57,6 +58,7 @@ function foxyshop_theme_redirect() {
 		global $post;
 		if (have_posts()) {
 			while (have_posts()) the_post();
+			$foxyshop_body_class_name = "foxyshop-single-product";
 			$return_template = foxyshop_get_template_file('foxyshop-single-product.php');
 			add_filter('wp_title', 'title_filter_single_product', 9, 3);
 			add_filter('body_class', 'foxyshop_body_class', 10, 2 );
@@ -68,9 +70,10 @@ function foxyshop_theme_redirect() {
 
 	//All Categories Page
 	} elseif ($currentPageName == FOXYSHOP_PRODUCT_CATEGORY_SLUG || $currentName == FOXYSHOP_PRODUCT_CATEGORY_SLUG) {
+		$foxyshop_body_class_name = "foxyshop-all-categories";
 		$return_template = foxyshop_get_template_file('foxyshop-all-categories.php');
 		add_filter('wp_title', 'title_filter_all_categories', 9, 3);
-		add_filter('body_class', 'foxyshop_body_class', 10, 2 );
+		add_filter('body_class', 'foxyshop_body_class', 10, 2);
 		status_header(200);
 		include($return_template);
 		die;
@@ -79,6 +82,7 @@ function foxyshop_theme_redirect() {
 	} elseif ($currentCategory != '') {
 		$return_template = foxyshop_get_template_file('foxyshop-single-category.php');
 		global $foxyshop_single_category_name;
+		$foxyshop_body_class_name = "foxyshop-single-category";
 		$foxyshop_single_category_name = $currentCategory;
 		add_filter('wp_title', 'title_filter_single_categories', 9, 3);
 		add_filter('body_class', 'foxyshop_body_class', 10, 2 );
@@ -88,6 +92,7 @@ function foxyshop_theme_redirect() {
 
 	//All Products Page
 	} elseif ($currentPageName == FOXYSHOP_PRODUCTS_SLUG || $currentName == FOXYSHOP_PRODUCTS_SLUG || $currentPostType == 'foxyshop_product') {
+		$foxyshop_body_class_name = "foxyshop-all-products";
 		$return_template = foxyshop_get_template_file('foxyshop-all-products.php');
 		add_filter('wp_title', 'title_filter_all_products', 9, 3);
 		add_filter('body_class', 'foxyshop_body_class', 10, 2 );
@@ -97,6 +102,7 @@ function foxyshop_theme_redirect() {
 	
 	//Search Product Page
 	} elseif ($currentPageName == 'product-search') {
+		$foxyshop_body_class_name = "foxyshop-search";
 		$return_template = foxyshop_get_template_file('foxyshop-search.php');
 		add_filter('wp_title', 'title_filter_product_search', 9, 3);
 		add_filter('body_class', 'foxyshop_body_class', 10, 2 );
@@ -121,7 +127,6 @@ function foxyshop_theme_redirect() {
 
 	//File Upload
 	} elseif ($currentPageName == 'upload-'.$foxyshop_settings['datafeed_url_key']) {
-		add_filter('body_class', 'foxyshop_body_class', 10, 2 );
 		status_header(200);
 		include(FOXYSHOP_PATH . '/uploadprocessor.php');
 		die;
@@ -160,8 +165,10 @@ function do_theme_redirect($url) {
 	die;
 }
 function foxyshop_body_class($wp_classes, $extra_classes) {
+	global $foxyshop_body_class_name;
 	$blacklist = array('error404');
 	$wp_classes[] = "foxyshop";
+	if ($foxyshop_body_class_name) $wp_classes[] = $foxyshop_body_class_name;
 	$wp_classes = array_diff($wp_classes, $blacklist);
 	return array_merge($wp_classes, (array)$extra_classes);
 }

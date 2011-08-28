@@ -97,7 +97,7 @@ if (isset($_POST["FoxyData"])) {
 	//For Each Transaction
 	foreach($xml->transactions->transaction as $transaction) {
 
-		//Get FoxyCart Customer ID
+		//Get FoxyCart Customer Information
 		$customer_id = (string)$transaction->customer_id;
 		$customer_first_name = (string)$transaction->customer_first_name;
 		$customer_last_name = (string)$transaction->customer_last_name;

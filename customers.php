@@ -30,7 +30,7 @@ function foxyshop_customer_management() {
 			}
 		}
 		$foxy_data['pagination_start'] = (isset($_GET['pagination_start']) ? $_GET['pagination_start'] : 0);
-		if ($foxyshop_settings['version'] != "0.7.0") $foxy_data['entries_per_page'] = 50;
+		if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) $foxy_data['entries_per_page'] = 50;
 	}	
 
 
@@ -117,7 +117,7 @@ function foxyshop_customer_management() {
 	echo '</tbody></table>';
 	
 	//Pagination
-	$p = (int)($foxyshop_settings['version'] == "0.7.0" ? 50 : 50);
+	$p = (int)(version_compare($foxyshop_settings['version'], '0.7.0', "==") ? 50 : 50);
 	$total_records = (int)$xml->statistics->total_customers;
 	$filtered_total = (int)$xml->statistics->filtered_total;
 	$pagination_start = (int)$xml->statistics->pagination_start;

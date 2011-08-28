@@ -48,8 +48,8 @@ function foxyshop_display_ajax() {
 		echo '<ul>';
 		if ((string)$customer->customer_phone != "") echo '<li>' . $customer->customer_phone . '</li>';
 		echo '<li><a href="mailto:' . $customer->customer_email . '">' . $customer->customer_email . '</a></li>';
-		if ((string)$customer->cc_number != "") echo '<li>' . $customer->cc_number . '</li>';
-		if ((string)$customer->cc_exp_month != "") echo '<li>Exp: ' . $customer->cc_exp_month . '-' . $customer->cc_exp_year . '</li>';
+		if ((string)$customer->cc_number != "") echo '<li>' . __('Card') . ': ' . $customer->cc_number . '</li>';
+		if ((string)$customer->cc_exp_month != "") echo '<li>' . __('Exp') . ': ' . $customer->cc_exp_month . '-' . $customer->cc_exp_year . '</li>';
 		echo '<li>&nbsp;</li>';
 
 		echo '</ul>';
@@ -119,8 +119,8 @@ function foxyshop_display_ajax() {
 			echo '<li>Order ID: ' . $transaction->id . '</li>';
 			echo '<li>Date: ' . $transaction->transaction_date. '</li>';
 			echo '<li>' . $transaction->processor_response. '</li>';
-			if ((string)$transaction->cc_number != "") echo '<li>' . $transaction->cc_number_masked. ' (' . $transaction->cc_type . ')</li>';
-			if ((string)$transaction->cc_exp_month != "") echo '<li>Exp: ' . $transaction->cc_exp_month . '-' . $transaction->cc_exp_year . '</li>';
+			if ((string)$transaction->cc_number_masked != "") echo '<li>' . __('Card') . ': ' . $transaction->cc_number_masked. ' (' . $transaction->cc_type . ')</li>';
+			if ((string)$transaction->cc_exp_month != "") echo '<li>' . __('Exp') . ': ' . $transaction->cc_exp_month . '-' . $transaction->cc_exp_year . '</li>';
 			if ((string)$transaction->shipto_shipping_service_description != "") echo '<li>Shipping Type: ' . $transaction->shipto_shipping_service_description . '</li>';
 			echo '</ul>';
 			echo '</div>';

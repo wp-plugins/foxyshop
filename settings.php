@@ -25,7 +25,7 @@ function set_foxyshop_settings() {
 			"enable_dashboard_stats",
 			"enable_subscriptions",
 			"enable_bundled_products",
-			"sort_key", "default_image",
+			"sort_key",
 			"use_jquery",
 			"ga",
 			"ga_advanced",
@@ -46,10 +46,17 @@ function set_foxyshop_settings() {
 			"locale_code"
 		);
 		foreach ($fields as $field1) {
-			$val = (isset($_POST['foxyshop_'.$field1]) ? stripslashes($_POST['foxyshop_'.$field1]) : '');
+			$val = (isset($_POST['foxyshop_'.$field1]) ? trim(stripslashes($_POST['foxyshop_'.$field1])) : '');
 			$new_settings[$field1] = $val;
 		}
-		$new_settings["domain"] = str_replace("http://","",$_POST['foxyshop_domain']);
+
+		if ($_POST['foxyshop_default_image'] == 1 && $_POST['foxyshop_default_image_custom'] != "") {
+			$new_settings["default_image"] = trim(stripslashes($_POST['foxyshop_default_image_custom']));
+		} else {
+			$new_settings["default_image"] = "";
+		}
+		
+		$new_settings["domain"] = trim(stripslashes(str_replace("http://","",$_POST['foxyshop_domain'])));
 		$new_settings["api_key"] = $foxyshop_settings['api_key'];
 		$new_settings["foxyshop_version"] = $foxyshop_settings['foxyshop_version'];
 		$new_settings["datafeed_url_key"] = $foxyshop_settings['datafeed_url_key'];
@@ -218,7 +225,7 @@ function foxyshop_options() {
 						echo '<option value="' . $version1 . '"' . ($foxyshop_settings['version'] == $version1 ? ' selected="selected"' : '') . '>' . $version1 . '  </option>'."\n";
 					} ?>
 					</select>
-					<div class="small">Version 0.7.1 is recommended.</div>
+					<small>Version 0.7.1 is recommended.</small>
 				</td>
 			</tr>
 			<tr>
@@ -263,8 +270,12 @@ function foxyshop_options() {
 			</tr>
 			<tr>
 				<td>
-					<label for="foxyshop_default_image"><?php _e('Default Image'); ?>:</label> <input type="text" id="foxyshop_default_image" name="foxyshop_default_image" value="<?php echo $foxyshop_settings['default_image']; ?>" style="width:544px;" /><small><a href="#" id="resetimage">Reset To Default</a></small>
-					<a href="#" class="foxyshophelp">Enter the URL for the image that will be shown if no image is loaded. Or leave the default, it's up to you. (If you change the website URL, though, you'll have to come back and change it here.</a>
+					<strong><?php _e("What To Show if No Image Is Loaded"); ?>:</strong>
+					<div style="clear: both;"></div>
+					<input type="radio" name="foxyshop_default_image" id="foxyshop_default_image_0" value="0"<?php if (!$foxyshop_settings['default_image']) echo ' checked="checked"'; ?> /><label for="foxyshop_default_image_0" style="width: 85px;"><?php _e('Default Image'); ?></label> <input type="text" id="foxyshop_default_image_custom" name="foxyshop_default_image_standard" value="<?php echo WP_PLUGIN_URL."/foxyshop/images/no-photo.png";?>" readonly="readonly" style="width:544px;" onclick="jQuery('#foxyshop_default_image_0').prop('checked', true);" />
+					<div style="clear: both;"></div>
+					<input type="radio" name="foxyshop_default_image" id="foxyshop_default_image_1" value="1"<?php if ($foxyshop_settings['default_image']) echo ' checked="checked"'; ?> /><label for="foxyshop_default_image_1" style="width: 85px;"><?php _e('Custom Image'); ?></label> <input type="text" id="foxyshop_default_image_custom" name="foxyshop_default_image_custom" value="<?php echo $foxyshop_settings['default_image']; ?>" style="width:544px;" onclick="jQuery('#foxyshop_default_image_1').prop('checked', true);" />
+					<div class="small">Note: If you are loading a custom image, it is not recommended to load a full url in your dev environment. Changing the url later via a mass mysql update can invalidate your settings and erase them. Use a relative path starting with /wp-content/</div>
 				</td>
 			</tr>
 

@@ -592,3 +592,18 @@ table.widefat tr:last-child td {
 	clear: both;
 	padding: 5px 0 0 15px;
 }
+
+
+/* CFBE */
+table.cfbe_table.cfbe_foxyshop_table .cfbe_field_name {
+	margin-right: 0;
+}
+table.cfbe_table.cfbe_foxyshop_table .cfbe_field_name {
+	width: 90px;
+}
+table.cfbe_foxyshop_table.widefat td {
+    overflow: visible;
+}
+table.cfbe_foxyshop_table .chzn-container {
+    margin: 5px 0;
+}

@@ -322,6 +322,7 @@ if ($foxyshop_settings['enable_dashboard_stats']) {
 }
 
 function add_foxyshop_dashboard_stats() {
+	if (!current_user_can('manage_options')) return;
 	wp_add_dashboard_widget('foxyshop_dashboard_widget', 'FoxyShop Statistics', 'foxyshop_dashboard_stats');	
 	
 	//Move Widget to Right Column
@@ -375,7 +376,7 @@ function foxyshop_order_history_dashboard_ajax() {
 		"api_action" => "transaction_list",
 		"transaction_date_filter_begin" => date("Y-m-d", strtotime("-30 days")),
 		"transaction_date_filter_end" => date("Y-m-d"),
-		"is_test_filter" => "",
+		"is_test_filter" => "0",
 		"hide_transaction_filter" => ""
 	);
 	$foxy_response = foxyshop_get_foxycart_data($foxy_data);

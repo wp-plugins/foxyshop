@@ -44,7 +44,7 @@ function foxyshop_subscription_management() {
 			}
 		}
 		$foxy_data['pagination_start'] = (isset($_GET['pagination_start']) ? $_GET['pagination_start'] : 0);
-		if ($foxyshop_settings['version'] != "0.7.0") $foxy_data['entries_per_page'] = 50;
+		if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) $foxy_data['entries_per_page'] = 50;
 	}	
 
 	?>	
@@ -188,14 +188,14 @@ function foxyshop_subscription_management() {
 		$frequency = $subscription->frequency;
 		$past_due_amount = $subscription->past_due_amount;
 		$is_active = $subscription->is_active;
-		if ($foxyshop_settings['version'] == "0.7.0") {
-			foreach($subscription->transaction_template->transaction_template->transaction_details->transaction_detail as $transaction_detail) {
+		if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) {
+			foreach($subscription->transaction_template->transaction_details->transaction_detail as $transaction_detail) {
 				$product_code = $transaction_detail->product_code;
 				$product_name = $transaction_detail->product_name;
 				$product_price = (double)$transaction_detail->product_price;
 			}
 		} else {
-			foreach($subscription->transaction_template->transaction_details->transaction_detail as $transaction_detail) {
+			foreach($subscription->transaction_template->transaction_template->transaction_details->transaction_detail as $transaction_detail) {
 				$product_code = $transaction_detail->product_code;
 				$product_name = $transaction_detail->product_name;
 				$product_price = (double)$transaction_detail->product_price;
@@ -226,7 +226,7 @@ function foxyshop_subscription_management() {
 	echo '</tbody></table>';
 	
 	//Pagination
-	$p = (int)($foxyshop_settings['version'] == "0.7.0" ? 50 : 50);
+	$p = (int)(version_compare($foxyshop_settings['version'], '0.7.0', "==") ? 50 : 50);
 	$total_records = (int)$xml->statistics->total_subscriptions;
 	$filtered_total = (int)$xml->statistics->filtered_total;
 	$pagination_start = (int)$xml->statistics->pagination_start;
