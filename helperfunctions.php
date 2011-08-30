@@ -14,10 +14,6 @@ function foxyshop_insert_foxycart_files() {
 		echo '<!-- END FOXYCART FILES -->'."\n";
 	}
 }
-function foxyshop_insert_style() {
-	wp_enqueue_style('foxyshop_css', FOXYSHOP_DIR . '/css/foxyshop.css');
-}
-
 
 
 //Sets up the $product array
@@ -63,6 +59,7 @@ function foxyshop_setup_product($thepost = false) {
 
 	//Convert Weight
 	$weight = explode(" ", get_post_meta($thepost->ID,'_weight',TRUE));
+	if (count($weight) == 1) $weight = explode(" ", $foxyshop_settings['default_weight']);
 	$weight1 = (int)$weight[0];
 	$weight2 = (double)$weight[1];
 	if ($weight1 == 0 && $weight2 == 0) {
@@ -612,28 +609,38 @@ function foxyshop_category_children($categoryID = 0, $showCount = false, $showDe
 
 
 //Writes a Simple List of Children Categories of a Category (if available)
-function foxyshop_simple_category_children($categoryID = 0) {
-	$write = "";
-	if ($categoryID == 0) {
-		$termchildren = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&parent=0&orderby=name&order=ASC');
-	} else {
-		$termchildren = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&parent='.$categoryID.'&orderby=name&order=ASC');
-	}
+function foxyshop_simple_category_children($category_id = 0, $depth = 1) {
+	global $foxyshop_category_write;
+	global $foxyshop_category_depth;
+	if ($depth <= 0) $depth = 100;
+	$foxyshop_category_depth = $depth;
+	$foxyshop_category_write = "";
+	foxyshop_category_writer($category_id, 1);
+	if ($foxyshop_category_write) echo $foxyshop_category_write;
+}
 
+function foxyshop_category_writer($category_id, $depth) {
+	global $foxyshop_category_write;
+	global $foxyshop_category_depth;
+	$termchildren = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&parent='.$category_id.'&orderby=name&order=ASC');
 	if ($termchildren) {
-		//Sort Categories
-		$termchildren = foxyshop_sort_categories($termchildren, $categoryID);
-
+		$termchildren = foxyshop_sort_categories($termchildren, $category_id);
+		if ($depth > 1) $foxyshop_category_write .= '<ul class="children">';
 		foreach ($termchildren as $child) {
 			$term = get_term_by('id', $child->term_id, "foxyshop_categories");
-			if (substr($term->name,0,1) != "_") {
-				$url = get_term_link($term, "foxyshop_categories");
-				$write .= '<li id="foxyshop_category_' . $term->term_id . '">';
-				$write .= '<a href="' . $url . '">' . $term->name . '</a>';
-				$write .= "</li>\n";
+			if (substr($term->name,0,1) == "_") continue;
+			$url = get_term_link($term, "foxyshop_categories");
+			$foxyshop_category_write .= '<li class="cat-item cat-item-' . $term->term_id . '">';
+			$foxyshop_category_write .= '<a href="' . $url . '">' . $term->name . '</a>';
+
+			if ($depth < $foxyshop_category_depth) {
+				$new_depth = $depth + 1;
+				foxyshop_category_writer($child->term_id, $new_depth);
 			}
+
+			$foxyshop_category_write .= "</li>\n";
 		}
-		if ($write) echo $write;
+		if ($depth > 1) $foxyshop_category_write .= '</ul>';
 	}
 }
 

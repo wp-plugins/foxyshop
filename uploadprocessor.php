@@ -23,9 +23,9 @@ if (defined('FOXYSHOP_ALLOWED_EXTENSIONS')) $allowed_extensions = array_merge($a
 //Admin Upload
 if (isset($_POST['foxyshop_image_uploader'])) {
 	
-	$productID = (isset($_POST['foxyshop_product_id']) ? $_POST['foxyshop_product_id'] : 0);
+	$product_id = (isset($_POST['foxyshop_product_id']) ? $_POST['foxyshop_product_id'] : 0);
 
-	$images = get_children(array('post_parent' => $productID, 'post_type' => 'attachment', "post_mime_type" => "image"));
+	$images = get_children(array('post_parent' => $product_id, 'post_type' => 'attachment', "post_mime_type" => "image"));
 	if (empty($images)) {
 		$product_count = 0;
 	} else {
@@ -65,19 +65,19 @@ if (isset($_POST['foxyshop_image_uploader'])) {
 	$wp_filetype = wp_check_filetype(basename($targetFile), null);
 	$attachment = array(
 		'post_mime_type' => $wp_filetype['type'],
-		'post_title' => $_POST['foxyshop_product_title'],
+		'post_title' => get_the_title($product_id),
 		'guid' => $upload_dir['url'] . "/" . basename($targetFile),
 		'menu_order' => $product_count + 1,
 		'post_content' => '',
 		'post_status' => 'inherit'
 	);
 	require_once(ABSPATH . "wp-admin" . '/includes/image.php');
-	$attach_id = wp_insert_attachment($attachment, $targetFile, $productID);
+	$attach_id = wp_insert_attachment($attachment, $targetFile, $product_id);
 	$attach_data = wp_generate_attachment_metadata($attach_id, $targetFile);
 	wp_update_attachment_metadata($attach_id, $attach_data);
 
 	if ($product_count == 0) {
-		update_post_meta($productID,"_thumbnail_id",$attach_id);
+		update_post_meta($product_id,"_thumbnail_id",$attach_id);
 	}
 
 	echo 'success';

@@ -5,6 +5,11 @@
 if (function_exists('foxyshop_insert_foxycart_files')) {
 global $product;
 
+echo '<ul class="menu FoxyShop_Show_Categories_widget">';
+echo wp_list_categories("taxonomy=foxyshop_categories&title_li=&depth=2");
+echo '</ul>';
+
+foxyshop_simple_category_children(0, -1);
 ?>
 <div id="foxyshop_container">
 	<?php

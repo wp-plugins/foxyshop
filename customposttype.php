@@ -652,8 +652,7 @@ function foxyshop_product_images_setup() {
 				height    : '23',
 				scriptData: {
 					'foxyshop_image_uploader':'1',
-					'foxyshop_product_id':'<?php echo $post->ID; ?>',
-					'foxyshop_product_title': $("#title").val()
+					'foxyshop_product_id':'<?php echo $post->ID; ?>'
 				},
 				sizeLimit : '<?php echo $foxyshop_max_upload; ?>',
 				onComplete: function(event,queueID,fileObj,response,data) {

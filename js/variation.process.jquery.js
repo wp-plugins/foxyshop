@@ -171,7 +171,7 @@ jQuery(document).ready(function($){
 
 //Code to Check For Required Fields Before Adding to Cart
 foxycart_required_fields_check = function(e, arr) {
-	var current_product_id = $(e).attr("rel");
+	var current_product_id = jQuery(e).attr("rel");
 	var strFailed = false;
 	if (current_product_id) {
 		jQuery("form#foxyshop_product_form_" + current_product_id + " input.foxyshop_required, form#foxyshop_product_form_" + current_product_id + " textarea.foxyshop_required").each(function() {
