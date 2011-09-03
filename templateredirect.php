@@ -20,36 +20,39 @@ function foxyshop_theme_redirect() {
 	//}
 	
 	
-	//Backup Parsing
-	$request_arr = explode("/",$wp->request);
-	$request_start = $request_arr[0];
-	$request_end = end($request_arr);
-	$foxyshop_indicators = array(FOXYSHOP_PRODUCTS_SLUG, FOXYSHOP_PRODUCT_CATEGORY_SLUG, 'product-search', 'foxycart-datafeed-'.$foxyshop_settings['datafeed_url_key'], 'foxycart-sso-'.$foxyshop_settings['datafeed_url_key'], 'upload-'.$foxyshop_settings['datafeed_url_key']);
-	if (array_intersect($request_arr, $foxyshop_indicators)) {
-		if (in_array(FOXYSHOP_PRODUCTS_SLUG, $request_arr) && $request_end != FOXYSHOP_PRODUCTS_SLUG) {
-			$currentProduct = $request_end;
-			$currentPostType = "foxyshop_product";
-			query_posts("post_type=foxyshop_product&foxyshop_product=".$currentProduct);
-		
-		} elseif (in_array(FOXYSHOP_PRODUCT_CATEGORY_SLUG, $request_arr) && $request_end != FOXYSHOP_PRODUCT_CATEGORY_SLUG) {
-			$currentCategory = $request_end;
-			$paged = 1;
-			
-			//Check For Paging
-			if (is_numeric($request_end) && $request_arr[count($request_arr) - 2] == "page") {
-				$currentCategory = $request_arr[count($request_arr) - 3];
-				$paged = $request_end;
+	//Backup Parsing If Not Month/Day or Month/Name
+	$permalink_structure = get_option('permalink_structure');
+	if ($permalink_structure != "/%year%/%monthnum%/%postname%/" && $permalink_structure != "/%year%/%monthnum%/%day%/%postname%/") {
+		$request_arr = explode("/",$wp->request);
+		$request_start = $request_arr[0];
+		$request_end = end($request_arr);
+		$foxyshop_indicators = array(FOXYSHOP_PRODUCTS_SLUG, FOXYSHOP_PRODUCT_CATEGORY_SLUG, 'product-search', 'foxycart-datafeed-'.$foxyshop_settings['datafeed_url_key'], 'foxycart-sso-'.$foxyshop_settings['datafeed_url_key'], 'upload-'.$foxyshop_settings['datafeed_url_key']);
+		if (array_intersect($request_arr, $foxyshop_indicators)) {
+			if (in_array(FOXYSHOP_PRODUCTS_SLUG, $request_arr) && $request_end != FOXYSHOP_PRODUCTS_SLUG) {
+				$currentProduct = $request_end;
+				$currentPostType = "foxyshop_product";
+				query_posts("post_type=foxyshop_product&foxyshop_product=".$currentProduct);
+
+			} elseif (in_array(FOXYSHOP_PRODUCT_CATEGORY_SLUG, $request_arr) && $request_end != FOXYSHOP_PRODUCT_CATEGORY_SLUG) {
+				$currentCategory = $request_end;
+				$paged = 1;
+
+				//Check For Paging
+				if (is_numeric($request_end) && $request_arr[count($request_arr) - 2] == "page") {
+					$currentCategory = $request_arr[count($request_arr) - 3];
+					$paged = $request_end;
+				}
+				query_posts("post_type=foxyshop_product&foxyshop_categories=".$currentCategory."&paged=" . $paged);
+
+			} elseif ($request_start == "product-search") {
+				$currentPageName = 'product-search';
+			} elseif ($request_start == 'foxycart-datafeed-'.$foxyshop_settings['datafeed_url_key']) {
+				$currentPageName = 'foxycart-datafeed-'.$foxyshop_settings['datafeed_url_key'];
+			} elseif ($request_start == 'foxycart-sso-'.$foxyshop_settings['datafeed_url_key']) {
+				$currentPageName = 'foxycart-sso-'.$foxyshop_settings['datafeed_url_key'];
+			} elseif ($request_start == 'upload-'.$foxyshop_settings['datafeed_url_key']) {
+				$currentPageName = 'upload-'.$foxyshop_settings['datafeed_url_key'];
 			}
-			query_posts("post_type=foxyshop_product&foxyshop_categories=".$currentCategory."&paged=" . $paged);
-			
-		} elseif ($request_start == "product-search") {
-			$currentPageName = 'product-search';
-		} elseif ($request_start == 'foxycart-datafeed-'.$foxyshop_settings['datafeed_url_key']) {
-			$currentPageName = 'foxycart-datafeed-'.$foxyshop_settings['datafeed_url_key'];
-		} elseif ($request_start == 'foxycart-sso-'.$foxyshop_settings['datafeed_url_key']) {
-			$currentPageName = 'foxycart-sso-'.$foxyshop_settings['datafeed_url_key'];
-		} elseif ($request_start == 'upload-'.$foxyshop_settings['datafeed_url_key']) {
-			$currentPageName = 'upload-'.$foxyshop_settings['datafeed_url_key'];
 		}
 	}
 

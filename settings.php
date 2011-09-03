@@ -220,9 +220,9 @@ function foxyshop_options() {
 					<label for="foxyshop_version"><?php _e('FoxyCart Version'); ?>:</label> 
 					<select name="foxyshop_version" id="foxyshop_version">
 					<?php
-					$versionArray = array('0.7.0', '0.7.1');
-					foreach ($versionArray as $version1) {
-						echo '<option value="' . $version1 . '"' . ($foxyshop_settings['version'] == $version1 ? ' selected="selected"' : '') . '>' . $version1 . '  </option>'."\n";
+					$versionArray = array('0.7.0' => '0.7.0', '0.7.1' => '0.7.1');
+					foreach ($versionArray as $key => $val) {
+						echo '<option value="' . $key . '"' . ($foxyshop_settings['version'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
 					} ?>
 					</select>
 					<small>Version 0.7.1 is recommended.</small>

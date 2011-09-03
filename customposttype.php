@@ -102,6 +102,7 @@ function manage_custom_columns($column_name, $id) {
 			$imageNumber++;
 		}
 		if (!$src) $src = $foxyshop_settings['default_image'];
+		if (!$src) $src = WP_PLUGIN_URL."/foxyshop/images/no-photo.png";
 		echo '<a href="post.php?post=' . $id . '&amp;action=edit"><img src="' . $src . '" alt="" /></a>';
 		break;
 	case 'productcode':
@@ -1264,6 +1265,10 @@ function foxyshop_product_meta_save($post_id) {
 	} else {
 		foxyshop_save_meta_data('_variations', "");
 	}
+	
+	//Save Action (For Other Integrations)
+	do_action("foxyshop_save_product", $post_id);
+	
 	
 	//Rewrite Product Sitemap
 	if ($foxyshop_settings['generate_product_sitemap']) {

@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 3.1.1
+Version: 3.2
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -35,7 +35,7 @@ the most out of FoxyShop.
 **************************************************************************/
 
 //Setup Plugin Variables
-define('FOXYSHOP_VERSION', "3.1.1");
+define('FOXYSHOP_VERSION', "3.2");
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 $foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
@@ -67,19 +67,15 @@ add_action('init', 'foxyshop_check_rewrite_rules', 99);
 include_once('widgetcode.php');
 include_once('shortcodesettings.php');
 
-//Put FoxyCart includes and jQuery on public pages
-if (!is_admin()) {
-	if ($foxyshop_settings['use_jquery']) add_action('init', 'foxyshop_insert_jquery');
-	if (!defined('FOXYSHOP_SKIP_FOXYCART_INCLUDES')) add_action('wp_head', 'foxyshop_insert_foxycart_files');
-}
-
 //Load Admin Scripts and Styles
 if (is_admin()) {
 	add_action('admin_enqueue_scripts', 'foxyshop_load_admin_scripts');
 
-//Load FoxyShop Styles on Public Site
+//Load FoxyShop Scripts and Styles on Public Site
 } else {
-	wp_enqueue_style('foxyshop_css', FOXYSHOP_DIR . '/css/foxyshop.css');
+	if ($foxyshop_settings['use_jquery']) add_action('init', 'foxyshop_insert_jquery');
+	if (!defined('FOXYSHOP_SKIP_FOXYCART_INCLUDES')) add_action('wp_head', 'foxyshop_insert_foxycart_files');
+	wp_enqueue_style('foxyshop_css', FOXYSHOP_DIR . '/css/foxyshop.css', array(), FOXYSHOP_VERSION);
 	if ($foxyshop_settings['ga']) add_action('wp_footer', 'foxyshop_insert_google_analytics', 100);
 }
 
@@ -137,14 +133,6 @@ include_once('helperfunctions.php');
 
 //Template Redirect (files are in /themefiles/)
 include_once('templateredirect.php');
-
-
-//PLUGIN EXTENSION
-//Put your extended functionality in wp-content/foxyshop-custom-functions.php
-//and it will be executed here on plugin load and protected from upgrade overwriting.
-//NOTE, this is not currently supported for security reasons. Input on this potential
-//feature would be appreciated.
-//if (file_exists(WP_CONTENT_DIR.'/foxyshop-custom-functions.php')) include(WP_CONTENT_DIR.'/foxyshop-custom-functions.php');
 
 //Plugin Activation Functions
 register_activation_hook(__FILE__, 'foxyshop_activation');

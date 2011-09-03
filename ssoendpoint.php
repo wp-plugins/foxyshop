@@ -13,7 +13,8 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 		
 		//Force a Straight Redirect
 		if ($foxyshop_settings['sso_account_required'] == 1) {
-			header('Location: ' . $login_url . '?redirect_to=' . urlencode(get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key'] . '/?timestamp=' . $_GET['timestamp'] . '&fcsid=' . $_GET['fcsid']) . '&foxycart_checkout=1&reauth=1');
+			$redirect_to = get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key'] . '/?timestamp=' . $_GET['timestamp'] . '&fcsid=' . $_GET['fcsid'];
+			header('Location: ' . $login_url . '?redirect_to=' . urlencode($redirect_to) . '&foxycart_checkout=1&reauth=1');
 			die;
 
 		//Check Cart Contents to Decide on Redirect
@@ -60,7 +61,8 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 
 			//Do the Signup Redirect
 			if ($sso_required) {
-				header('Location: ' . $login_url . '?redirect_to=' . urlencode(get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key'] . '/?timestamp=' . $_GET['timestamp'] . '&fcsid=' . $_GET['fcsid']) . '&foxycart_checkout=1&reauth=1');
+				$redirect_to = get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key'] . '/?timestamp=' . $_GET['timestamp'] . '&fcsid=' . $_GET['fcsid'];
+				header('Location: ' . $login_url . '?redirect_to=' . urlencode($redirect_to) . '&foxycart_checkout=1&reauth=1');
 				die;
 			
 			//No Redirect Required
@@ -78,7 +80,11 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 		get_currentuserinfo();
 		$customer_id = get_user_meta($current_user->ID, "foxycart_customer_id", TRUE);
 		$customer_email = $current_user->user_email;
+		
+		//Get FoxyCart Customer ID
 		if (!$customer_id) $customer_id = foxyshop_check_for_customer_id($customer_email);
+		
+		//Customer ID Doesn't Exist, Create New FoxyCart Customer
 		if (!$customer_id) $customer_id = foxyshop_add_new_customer_id($customer_email, $current_user->user_pass, $current_user->user_firstname, $current_user->user_lastname);
 	}
 	

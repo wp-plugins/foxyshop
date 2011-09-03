@@ -43,7 +43,7 @@ function foxyshop_print_invoice() {
 
 	if ($xml->result == "ERROR") {
 		echo '<h3>' . $xml->messages->message . '</h3>';
-		return;
+		die;
 	}
 
 	include(foxyshop_get_template_file('/foxyshop-receipt.php'));
@@ -210,6 +210,7 @@ function foxyshop_order_management() {
 			<button type="submit" id="foxyshop_search_submit" name="foxyshop_search_submit" class="button-primary" style="clear: left; margin-top: 10px;">Search Records Now</button>
 			<button type="button" class="button submitcancel" style="margin-left: 15px;" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_order_management';">Reset Form</button>
 			<button type="submit" class="button" style="margin-left: 15px;" name="foxyshop_print_invoice" id="foxyshop_print_invoice">Print Invoices</button>
+			<?php do_action("foxyshop_order_search_buttons", $foxy_data); ?>
 			
 		</td></tr></tbody></table>
 			
@@ -275,12 +276,15 @@ function foxyshop_order_management() {
 			$product_name = $transaction_detail->product_name;
 			$product_price = $transaction_detail->product_price;
 		}
+		
+		$print_receipt_link = "edit.php?foxyshop_search=1&post_type=foxyshop_product&page=foxyshop_order_management&id_filter=" . $transaction_id . "&foxyshop_print_invoice=1&is_test_filter=&skip_print=1";
+		
 		echo '<tr rel="' . $transaction_id . '" class="gradeC">';
-		echo '<td><a href="' . $transaction->receipt_url . '" target="_blank">' . $transaction_id . '</a></td>';
+		echo '<td><a href="' . $transaction->receipt_url . '" title="' . __('FoxyCart Receipt') . '" target="_blank"><img src="' . FOXYSHOP_DIR . '/images/foxycart-icon.png" alt="" align="top" /></a> <a href="' . $print_receipt_link . '" title="' . __('Printable Receipt') . '" target="_blank">' . $transaction_id . '</a></td>';
 		echo '<td>' . $transaction_date . '</td>';
 		echo '<td>' . $customer_name . '</td>';
 		echo '<td>' . foxyshop_currency((double)$transaction->order_total) . '</td>';
-		echo '<td><a href="#" rel="' . $transaction_id . '" class="archive_order">Archive</a></td>';
+		echo '<td><a href="#" rel="' . $transaction_id . '" class="archive_order">Archive</a>' . do_action("foxyshop_order_line_item", $transaction) . '</td>';
 		echo '</tr>'."\n";
 	}
 	

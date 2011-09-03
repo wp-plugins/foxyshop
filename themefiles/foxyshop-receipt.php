@@ -7,8 +7,8 @@ $show_phone = true;
 $show_country = true;
 $show_custom_fields = true;
 $receipt_title = get_bloginfo("name");
-//$receipt_title = '<img src="your_logo_url" alt="' . get_bloginfo("name") . '" />';
-$date_style = "n/j/Y"; // Default Style 6/20/2011
+//$receipt_title = '<img src="' . get_bloginfo("stylesheet_directory") . '/images/your_logo.png" alt="' . esc_attr(get_bloginfo("name")) . '" />';
+$date_style = "n/j/Y"; // Default Style 6/20/2012
 
 //----------------------------------------------
 
@@ -283,7 +283,9 @@ foreach($xml->transactions->transaction as $transaction) {
 //End Loop
 ?>
 
+<?php if (!isset($_GET['skip_print'])) : ?>
 <script type="text/javascript">
 //Comment Next Line If You Don't Want The Auto-Print Pop-Up
 window.print();
 </script>
+<?php endif; ?>

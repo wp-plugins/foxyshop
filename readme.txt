@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 3.1.1
+Stable tag: 3.2
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -62,6 +62,16 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 3.2 =
+* SSO support has been reworked to be more flexible. There's now a filter called foxyshop_save_sso_to_foxycart which lets you hook your own function in to easily save more metadata.
+* Cart session fields like cart, coupon, etc should not have verification attached. This has been removed.
+* Fixed broken "no image" images in admin view
+* Added action hook "foxyshop_save_product" for other integrations to hook into product saving process
+* On the order management screen you can now access the FoxyCart receipt and the printable receipt on an order-by-order basis. Just click the FoxyCart icon for FoxyCart receipt and the Order number for the printable receipt.
+* Added two new hookable actions to the order management window: foxyshop_order_search_buttons and foxyshop_order_line_item.
+* Backed off the aggressive backup parsing for installs that are using "Month and Name" or "Month and Day" for their permalink structure.
+* See [Release Notes](http://www.foxy-shop.com/2011/09/version-3-2-youll-be-hooked/ ) for more details
 
 = 3.1.1 =
 * Fixed javascript error when jQuery acting in noConflict mode

@@ -179,7 +179,7 @@ if (isset($_POST["FoxyData"])) {
 
 		}
 		
-		//Add WordPress User
+		//Add or Update WordPress User
 		if ($foxyshop_settings['checkout_customer_create'] && $customer_id != '') {
 			
 			//Check To See if WordPress User Already Exists
@@ -195,21 +195,32 @@ if (isset($_POST["FoxyData"])) {
 					'user_email' => $customer_email,
 					'user_pass' => wp_generate_password(),
 					'user_nicename' => $customer_first_name . ' ' . $customer_last_name,
-					'dispaly_name' => $customer_first_name . ' ' . $customer_last_name,
+					'display_name' => $customer_first_name . ' ' . $customer_last_name,
 					'nickname' => $customer_first_name . ' ' . $customer_last_name,
 					'role' => 'subscriber'
 				));
 				add_user_meta($new_user_id, 'foxycart_customer_id', $customer_id, true);
 				$wpdb->query("UPDATE $wpdb->users SET user_pass = '$customer_password' WHERE ID = $new_user_id");
 			
-			//Update Password and Add FoxyCart ID # if it wasn't there before
+			//Update User
 			} else {
+
+				//Update First Name and Last Name
+				$updated_user_id = wp_update_user(array(
+					'ID' => $current_user->ID,
+					'first_name' => $customer_first_name,
+					'last_name' => $customer_last_name
+				));
+
+				//Add FoxyCart User ID - if not added before
 				add_user_meta($current_user->ID, 'foxycart_customer_id', $customer_id, true);
-				$wpdb->query("UPDATE $wpdb->users SET user_pass = '$customer_password' WHERE ID = $current_user->ID");
+				
+				//Update Password - you may or may not want to do this, trned off by default
+				//$wpdb->query("UPDATE $wpdb->users SET user_pass = '$customer_password' WHERE ID = $current_user->ID");
 			}
 		}
-		
-		
+
+
 
 		//If you have custom code to run for each order, put it here:
 

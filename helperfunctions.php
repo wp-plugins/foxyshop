@@ -4,7 +4,9 @@ function foxyshop_insert_foxycart_files() {
 	global $foxyshop_settings;
 	if ($foxyshop_settings['domain']) {
 		echo '<!-- BEGIN FOXYCART FILES -->'."\n";
-		if ($foxyshop_settings['version'] == "0.7.1") {
+		if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) {
+			echo 'placeholder for 0.7.2 include script'."\n";
+		} elseif (version_compare($foxyshop_settings['version'], '0.7.1', "=")) {
 			echo '<link rel="stylesheet" href="http://static.foxycart.com/scripts/colorbox/1.3.16/style1_fc/colorbox.css" type="text/css" media="screen" charset="utf-8" />'."\n";
 			echo '<script src="http://cdn.foxycart.com/' . str_replace('.foxycart.com','',$foxyshop_settings['domain']) . '/foxycart.complete.3.js" type="text/javascript" charset="utf-8"></script>'."\n";
 		} else {
@@ -152,12 +154,19 @@ function foxyshop_start_form() {
 	echo '<input type="hidden" name="quantity_max' . foxyshop_get_verification('quantity_max') . '" value="' . $product['quantity_max'] . '" id="fs_quantity_max_' . $product['id'] . '" />'."\n";
 	echo '<input type="hidden" name="x:quantity_max" value="' . $product['quantity_max_original'] . '" rel="' . foxyshop_get_verification('quantity_max') . '" id="original_quantity_max_' . $product['id'] . '" />'."\n";
 
-	$fields = array('name','code','category','weight','discount_quantity_amount','discount_quantity_percentage','discount_price_amount','discount_price_percentage','sub_frequency','sub_startdate','sub_enddate','cart','empty','coupon','redirect','output');
+	$fields = array('name','code','category','weight','discount_quantity_amount','discount_quantity_percentage','discount_price_amount','discount_price_percentage','sub_frequency','sub_startdate','sub_enddate');
+	$non_verification_fields = array('cart','empty','coupon','redirect','output');
 	foreach ($fields as $fieldname) {
 		if (array_key_exists($fieldname, $product)) {
 			if ($product[$fieldname]) echo '<input type="hidden" name="' . $fieldname . foxyshop_get_verification($fieldname) . '" id="fs_' . esc_attr($fieldname) . '_' . $product['id'] . '" value="' . esc_attr($product[$fieldname]) . '" />'."\n";
 		}
 	}
+	foreach ($non_verification_fields as $fieldname) {
+		if (array_key_exists($fieldname, $product)) {
+			if ($product[$fieldname]) echo '<input type="hidden" name="' . $fieldname . '" id="fs_' . esc_attr($fieldname) . '_' . $product['id'] . '" value="' . esc_attr($product[$fieldname]) . '" />'."\n";
+		}
+	}
+
 	
 	//Bundled Products
 	if ($product['bundled_products']) {
@@ -441,12 +450,19 @@ function foxyshop_product_link($AddText = "Add To Cart", $linkOnly = false) {
 	$url = 'price' . foxyshop_get_verification('price') . '=' . urlencode($product['price']);
 	if (foxyshop_get_main_image() && version_compare($foxyshop_settings['version'], '0.7.0', ">")) $url .= '&amp;image' . foxyshop_get_verification('image',foxyshop_get_main_image()) . '=' . urlencode(foxyshop_get_main_image());
 	if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) $url .= '&amp;url' . foxyshop_get_verification('url') . '=' . urlencode($product['url']);
-	$fields = array('name','code','category','weight','discount_quantity_amount','discount_quantity_percentage','discount_price_amount','discount_price_percentage','sub_frequency','sub_startdate','sub_enddate','cart','empty','coupon','redirect','output');
+	$fields = array('name','code','category','weight','discount_quantity_amount','discount_quantity_percentage','discount_price_amount','discount_price_percentage','sub_frequency','sub_startdate','sub_enddate');
+	$non_verification_fields = array('cart','empty','coupon','redirect','output');
 	foreach ($fields as $fieldname) {
 		if (array_key_exists($fieldname, $product)) {
 			if ($product[$fieldname]) $url .= '&amp;' . urlencode(esc_attr($fieldname)) . foxyshop_get_verification($fieldname) . '=' . urlencode($product[$fieldname]);
 		}
 	}
+	foreach ($non_verification_fields as $fieldname) {
+		if (array_key_exists($fieldname, $product)) {
+			if ($product[$fieldname]) $url .= '&amp;' . urlencode(esc_attr($fieldname)) . '=' . urlencode($product[$fieldname]);
+		}
+	}
+
 
 	//Bundled Products
 	if ($product['bundled_products']) {
