@@ -86,10 +86,10 @@ jQuery(document).ready(function($){
 	}
 	
 	function setModifiers(new_code, new_codeadd, new_price, new_price_original, new_ikey, current_product_id) {
-	
+
 		//Change Image
 		if (new_ikey != '') {
-			$("#foxyshop_main_product_image_" + current_product_id).attr("src",ikey[new_ikey][2]).attr("alt",ikey[new_ikey][4]).parent().attr("href",ikey[new_ikey][3]);
+			$("#foxyshop_product_form_" + current_product_id + " #foxyshop_main_product_image").attr("src",ikey[new_ikey][2]).attr("alt",ikey[new_ikey][4]).parent().attr("href",ikey[new_ikey][3]);
 			$("#foxyshop_cart_product_image_" + current_product_id).attr("name",'image'+ikey[new_ikey][5]).val(ikey[new_ikey][1]);
 		}
 		//Check Inventory
