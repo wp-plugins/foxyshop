@@ -13,7 +13,7 @@ FoxyShop is a complete shopping cart solution for WordPress. This plugin connect
 
 Visit [foxy-shop.com](http://www.foxy-shop.com/) for full documentation and instructions.
 
-[youtube http://www.youtube.com/watch?v=roYF1CFAyUA]
+[youtube http://www.youtube.com/watch?v=HkS-J3XTGIk]
 
 = Just a Few of the Many FoxyShop Features: =
 
@@ -71,6 +71,7 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 * On the order management screen you can now access the FoxyCart receipt and the printable receipt on an order-by-order basis. Just click the FoxyCart icon for FoxyCart receipt and the Order number for the printable receipt.
 * Added two new hookable actions to the order management window: foxyshop_order_search_buttons and foxyshop_order_line_item.
 * Backed off the aggressive backup parsing for installs that are using "Month and Name" or "Month and Day" for their permalink structure.
+* Fixed ikey targeting which had stopped working after 3.1 variation updates
 * See [Release Notes](http://www.foxy-shop.com/2011/09/version-3-2-youll-be-hooked/ ) for more details
 
 = 3.1.1 =
