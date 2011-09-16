@@ -289,3 +289,6 @@ foreach($xml->transactions->transaction as $transaction) {
 window.print();
 </script>
 <?php endif; ?>
+
+</body>
+</html>

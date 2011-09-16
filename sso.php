@@ -59,6 +59,11 @@ function foxyshop_profile_add($user_id) {
 	if ($foxycart_customer_id) {
 		add_user_meta($user_id, 'foxycart_customer_id', $foxycart_customer_id, true);
 	}
+	
+	//Auto-login if user wasn't logged in before
+	//Note that if you don't have the querystring "redirect_to" set on the registration page the page will not redirect anywhere and won't appear logged in at first
+	if (!is_user_logged_in()) wp_set_auth_cookie($user_id, false, is_ssl());
+	
 }
 
 
@@ -118,7 +123,7 @@ function action_show_user_profile($user) {
 	
 	<?php	
 	//Get User's Subscription Array
-	$foxyshop_subscription = unserialize(get_user_meta($user->ID, 'foxyshop_subscription', true));
+	$foxyshop_subscription = maybe_unserialize(get_user_meta($user->ID, 'foxyshop_subscription', true));
 	if (!is_array($foxyshop_subscription)) $foxyshop_subscription = array();
 	
 	if (count($foxyshop_subscription) > 0) {

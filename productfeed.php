@@ -3,8 +3,7 @@
 This file is setup to provide you with the ability to create a product feed that can be sent out to various aggregators. This is designed specifically for Google.
 */
 
-//Only run this if generate feed option is turned on
-if ($foxyshop_settings['generate_feed']) add_action('admin_menu', 'foxyshop_product_feed_menu');
+add_action('admin_menu', 'foxyshop_product_feed_menu');
 
 if (isset($_GET['create_google_product_feed'])) {
 	add_action('admin_init', 'foxyshop_save_feed_file');

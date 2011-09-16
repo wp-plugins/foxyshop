@@ -97,19 +97,37 @@ if (isset($_POST["FoxyData"])) {
 	//For Each Transaction
 	foreach($xml->transactions->transaction as $transaction) {
 
-		//Get FoxyCart Customer Information
+		//Get FoxyCart Transaction Information
+		$transaction_id = (string)$transaction->id;
+		$transaction_date = (string)$transaction->transaction_date;
 		$customer_id = (string)$transaction->customer_id;
 		$customer_first_name = (string)$transaction->customer_first_name;
 		$customer_last_name = (string)$transaction->customer_last_name;
 		$customer_email = (string)$transaction->customer_email;
 		$customer_password = (string)$transaction->customer_password;
+		$customer_address1 = (string)$transaction->customer_address1;
+		$customer_address2 = (string)$transaction->customer_address2;
+		$customer_city = (string)$transaction->customer_city;
+		$customer_state = (string)$transaction->customer_state;
+		$customer_postal_code = (string)$transaction->customer_postal_code;
+		$customer_country = (string)$transaction->customer_country;
+		$customer_phone = (string)$transaction->customer_phone;
+		$shipping_first_name = ((string)$transaction->shipping_first_name ? (string)$transaction->shipping_first_name : $customer_first_name);
+		$shipping_last_name = ((string)$transaction->shipping_last_name ? (string)$transaction->shipping_last_name : $customer_last_name);
+		$shipping_address1 = ((string)$transaction->shipping_address1 ? (string)$transaction->shipping_address1 : $customer_address1);
+		$shipping_address2 = ((string)$transaction->shipping_address2 ? (string)$transaction->shipping_address2 : $customer_address2);
+		$shipping_city = ((string)$transaction->shipping_city ? (string)$transaction->shipping_city : $customer_city);
+		$shipping_state = ((string)$transaction->shipping_state ? (string)$transaction->shipping_state : $customer_state);
+		$shipping_postal_code = ((string)$transaction->shipping_postal_code ? (string)$transaction->shipping_postal_code : $customer_postal_code);
+		$shipping_country = ((string)$transaction->shipping_country ? (string)$transaction->shipping_country : $customer_country);
+		$shipping_phone = ((string)$transaction->shipping_phone ? (string)$transaction->shipping_phone : $customer_phone);
 
 		//For Each Transaction Detail
 		foreach($transaction->transaction_details->transaction_detail as $transactiondetails) {
 			$product_name = (string)$transactiondetails->product_name;
 			$product_code = (string)$transactiondetails->product_code;
 			$product_quantity = (int)$transactiondetails->product_quantity;
-			$product_quantity = (int)$transactiondetails->product_quantity;
+			$product_price = (double)$transactiondetails->product_price;
 			$sub_token_url = (string)$transactiondetails->sub_token_url;
 
 			//Get List of Target ID's for Inventory Update
@@ -135,7 +153,7 @@ if (isset($_POST["FoxyData"])) {
 							$message .= "Product Code: $product_code\n";
 							$message .= "Current Inventory Level: $new_count\n";
 							$message .= "Inventory Alert Level: $alert_level\n";
-							$message .= "\n". get_bloginfo('url') . "/wp-admin/edit.php?post_type=foxyshop_product\n";
+							$message .= "\n". get_bloginfo('wpurl') . "/wp-admin/edit.php?post_type=foxyshop_product\n";
 							$headers = 'From: ' . get_bloginfo('name') . ' <' . $to_email . '>' . "\r\n";
 							wp_mail($to_email, $subject_line, $message, $headers);
 						}
@@ -166,7 +184,7 @@ if (isset($_POST["FoxyData"])) {
 					);
 
 					//Write Serialized Array Back to DB
-					echo update_user_meta($user_id, 'foxyshop_subscription', serialize($foxyshop_subscription));
+					update_user_meta($user_id, 'foxyshop_subscription', serialize($foxyshop_subscription));
 				}		
 
 

@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 3.2
+Stable tag: 3.3
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -63,6 +63,31 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Changelog ==
 
+= 3.3 =
+* Added functionality for automated relevant products by "product tag"
+* Added setup wizard to help new users sync with their FoxyCart accounts
+* Added FoxyCart 0.7.2 support
+* Added "Quantity Hide" feature. If selected for a product, it will hide the quantity box on the product page.
+* Added new hook: foxyshop_setup_product_info (add your own values to $product)
+* Added new hook: foxyshop_admin_product_details (add your own options to the product details metabox in the admin)
+* Added new config values to set cURL timeout lengths
+* Added ability to custom order the related products
+* Added ability to pass in variations to the shortcode and the `foxyshop_product_link()` function
+* Added `$beforeVariation` and `$afterVariation` arguments to the `foxyshop_product_variations()` function to allow more customization for theme developers
+* Added setup option for "no missing image" - use this if you don't want to show images for some or all products
+* Added a few JavaScript hooks to the ikey process in case you need to do things before or after the image is changed
+* If your variation name is a price and is the same as the adjusted price, the price in () not be shown
+* WordPress registrations are now automatically logged in after signup
+* Changed unserialize to maybe_unserialize to prevent any caching conflicts during upgrade
+* Cleaned up a PHP notice on first activation and streamlined the automated upgrade activation process
+* More optimizations and standardizations to the template redirection function
+* Bugfix: Removed a bit of testing code from the datafeed endpoint that was showing up where it shouldn't have been
+* Added files for jqZoom to make custom integration easier
+* Upgraded to jQuery 1.6.4
+* Upgraded to jQueryUI Datepicker 1.8.16
+* Upgraded to prettyPhoto 3.1.3
+* See [Release Notes](http://www.foxy-shop.com/2011/09/version-3-3-tags-quantity-and-increased-flexibility/) for more details
+
 = 3.2 =
 * SSO support has been reworked to be more flexible. There's now a filter called foxyshop_save_sso_to_foxycart which lets you hook your own function in to easily save more metadata.
 * Cart session fields like cart, coupon, etc should not have verification attached. This has been removed.
@@ -72,7 +97,7 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 * Added two new hookable actions to the order management window: foxyshop_order_search_buttons and foxyshop_order_line_item.
 * Backed off the aggressive backup parsing for installs that are using "Month and Name" or "Month and Day" for their permalink structure.
 * Fixed ikey targeting which had stopped working after 3.1 variation updates
-* See [Release Notes](http://www.foxy-shop.com/2011/09/version-3-2-youll-be-hooked/ ) for more details
+* See [Release Notes](http://www.foxy-shop.com/2011/09/version-3-2-youll-be-hooked/) for more details
 
 = 3.1.1 =
 * Fixed javascript error when jQuery acting in noConflict mode
@@ -140,7 +165,7 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 = 2.8 =
 * Added printable invoices to order page. Template is foxyshop-receipt.php.
-* editors can now see the Category and Product sorting screens.
+* Editors can now see the Category and Product sorting screens.
 * Completely rebuilt upload functions for further security upgrades. Those using custom user uploads will need to read the release notes for upgrade instructions.
 * See [Release Notes](http://www.foxy-shop.com/2011/07/version-2-8-printable-invoices-and-security-updates/) for more details
 

@@ -1,12 +1,12 @@
 <?php
 add_action('admin_menu', 'foxyshop_settings_menu');
-add_action('admin_init', 'set_foxyshop_settings');
+add_action('admin_init', 'foxyshop_save_settings');
 
 function foxyshop_settings_menu() {
 	add_submenu_page('edit.php?post_type=foxyshop_product', __('Settings'), __('Manage Settings'), 'manage_options', 'foxyshop_options', 'foxyshop_options');
 }
 
-function set_foxyshop_settings() {
+function foxyshop_save_settings() {
 	$foxyshop_settings_update_key = (isset($_POST['action']) ? $_POST['action'] : "");
 	$foxyshop_api_reset_key = (isset($_GET['action']) ? $_GET['action'] : "");
 	if ($foxyshop_settings_update_key == "" && $foxyshop_api_reset_key == "") return;
@@ -16,7 +16,7 @@ function set_foxyshop_settings() {
 		//Do initial product sitemap creation
 		if ($_POST['foxyshop_generate_product_sitemap'] == "on") foxyshop_create_product_sitemap();
 		
-		$new_settings = array();
+		//Loop Through Most Fields
 		$fields = array(
 			"version",
 			"ship_categories",
@@ -25,6 +25,8 @@ function set_foxyshop_settings() {
 			"enable_dashboard_stats",
 			"enable_subscriptions",
 			"enable_bundled_products",
+			"related_products_custom",
+			"related_products_tags",
 			"sort_key",
 			"use_jquery",
 			"ga",
@@ -47,25 +49,43 @@ function set_foxyshop_settings() {
 		);
 		foreach ($fields as $field1) {
 			$val = (isset($_POST['foxyshop_'.$field1]) ? trim(stripslashes($_POST['foxyshop_'.$field1])) : '');
-			$new_settings[$field1] = $val;
+			$foxyshop_settings[$field1] = $val;
 		}
 
-		if ($_POST['foxyshop_default_image'] == 1 && $_POST['foxyshop_default_image_custom'] != "") {
-			$new_settings["default_image"] = trim(stripslashes($_POST['foxyshop_default_image_custom']));
+		//Default Image
+		if ($_POST['foxyshop_default_image'] == 2) {
+			$foxyshop_settings["default_image"] = "none";
+		} elseif ($_POST['foxyshop_default_image'] == 1 && $_POST['foxyshop_default_image_custom'] != "") {
+			$foxyshop_settings["default_image"] = trim(stripslashes($_POST['foxyshop_default_image_custom']));
 		} else {
-			$new_settings["default_image"] = "";
+			$foxyshop_settings["default_image"] = "";
 		}
 		
-		$new_settings["domain"] = trim(stripslashes(str_replace("http://","",$_POST['foxyshop_domain'])));
-		$new_settings["api_key"] = $foxyshop_settings['api_key'];
-		$new_settings["foxyshop_version"] = $foxyshop_settings['foxyshop_version'];
-		$new_settings["datafeed_url_key"] = $foxyshop_settings['datafeed_url_key'];
-		$new_settings["default_weight"] = (int)$_POST['foxyshop_default_weight1'] . ' ' . (double)$_POST['foxyshop_default_weight2'];
-		$new_settings["products_per_page"] = ((int)$_POST['foxyshop_products_per_page'] == 0 ? -1 : (int)$_POST['foxyshop_products_per_page']);
+		//Delete the setup prompt if domain entered
+		if ($_POST['foxyshop_domain'] != '') delete_option("foxyshop_setup_required");
 
-		update_option("foxyshop_settings", serialize($new_settings));
+		$foxyshop_settings["domain"] = trim(stripslashes(str_replace("http://","",$_POST['foxyshop_domain'])));
+		$foxyshop_settings["default_weight"] = (int)$_POST['foxyshop_default_weight1'] . ' ' . (double)$_POST['foxyshop_default_weight2'];
+		$foxyshop_settings["products_per_page"] = ((int)$_POST['foxyshop_products_per_page'] == 0 ? -1 : (int)$_POST['foxyshop_products_per_page']);
+
+		//Cache the FoxyCart Includes
+		if (version_compare($foxyshop_settings['version'], '0.7.2', ">=") && $foxyshop_settings['domain']) {
+			$foxy_data = array("api_action" => "store_includes_get", "javascript_library" => "none", "cart_type" => "colorbox");
+			$foxy_response = foxyshop_get_foxycart_data($foxy_data);
+			$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
+			if ($xml->result != "ERROR") {
+				if ($xml->code_block) $foxyshop_settings['foxycart_include_cache'] = (string)$xml->code_block;
+			}
+		} else {
+			$foxyshop_settings['foxycart_include_cache'] = "";
+		}
+
+		//Save
+		update_option("foxyshop_settings", serialize($foxyshop_settings));
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_options&saved=1');
 		die;
+	
+	//Reset API Key
 	} elseif ($foxyshop_api_reset_key == "foxyshop_api_key_reset" && check_admin_referer('reset-foxyshop-api-key')) {
 		global $foxyshop_settings;
 		$foxyshop_settings['api_key'] = "sp92fx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time());
@@ -80,10 +100,23 @@ function foxyshop_options() {
 ?>
 <div id="foxyshop_settings_wrap" class="wrap">
 	
+	
+	<div class="icon32" id="icon-options-general"><br></div>
+	<h2>FoxyShop Settings <a class="<?php if (version_compare(get_bloginfo('version'), '3.1', "<=")) echo "button "; ?>add-new-h2" href="admin.php?page=foxyshop_setup">Setup Wizard</a></h2>
+	
 
 	<?php
 	//Confirmation Saved
 	if (isset($_GET['saved'])) echo '<div class="updated"><p>' . __('Your Settings Have Been Saved.') . '</p></div>';
+
+	//Setup Prompt Hidden
+	if (isset($_GET['hide_setup_prompt'])) {
+		delete_option("foxyshop_setup_required");
+		echo '<div class="updated"><p>' . __('The setup prompt has been hidden. You can always use the setup wizard by clicking the link above or just configure the settings on this page.') . '</p></div>';
+	}
+	
+	//Inital Setup
+	if (isset($_GET['setup'])) echo '<div class="updated"><p>' . __('<strong>Congratulations!</strong> You are all set up and ready to go. You may now review all the settings on this page and start entering products.') . '</p></div>';
 	
 	//Confirmation Key Reset
 	if (isset($_GET['key'])) echo '<div class="updated"><p>' . __('Your API Key Has Been Reset. Please Update FoxyCart With Your New Key.') . '</p></div>';
@@ -120,7 +153,7 @@ function foxyshop_options() {
 	$advanced_icon = "data:image/png;base64,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";
 	?>
 
-	<table class="widefat infoonly" id="foxyshop_settings_header">
+	<table class="widefat infoonly" id="foxyshop_settings_header" style="margin-top: 14px;">
 		<thead>
 			<tr>
 				<th>
@@ -164,7 +197,7 @@ function foxyshop_options() {
 				<td style="border-bottom: 0 none;">
 					<label for="foxyshop_key"><?php _e('API Key'); ?>:</label>
 					<input type="text" id="foxyshop_key" name="key" value="<?php echo $foxyshop_settings['api_key']; ?>" readonly="readonly" onclick="this.select();" />
-					<a href="#" class="foxyshophelp">The API key is saved here and stored on your FoxyCart account so that your cart information can be encrypted to avoid link tampering. The API key is also used to communicate with FoxyCart and retrieve your order inforamtion.<br /><br />This API key is generated automatically and cannot be edited. Scroll to the bottom of the page if you need to reset the key.</a>
+					<a href="#" class="foxyshophelp">The API key is saved here and stored on your FoxyCart account so that your cart information can be encrypted to avoid link tampering. The API key is also used to communicate with FoxyCart and retrieve your order information.<br /><br />This API key is generated automatically and cannot be edited. Scroll to the bottom of the page if you need to reset the key.</a>
 					<div style="clear: both; padding: 5px 0; font-style: italic;"><strong style="color: #BB1E1E;">Required Setup:</strong> Enter this API key on the advanced menu of your <a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&url=http://admin.foxycart.com/" target="_blank">FoxyCart admin</a> and check the box to enable cart validation.</div>
 					
 					<div style="clear: both;"></div>
@@ -211,7 +244,7 @@ function foxyshop_options() {
 		<tbody>
 			<tr>
 				<td>
-					<label for="foxyshop_domain"><?php _e('Your FoxyCart Domain'); ?>:</label> <input type="text" name="foxyshop_domain" value="<?php echo $foxyshop_settings['domain']; ?>" size="50" />
+					<label for="foxyshop_domain"><?php _e('Your FoxyCart Domain'); ?>:</label> <input type="text" name="foxyshop_domain" id="foxyshop_domain" value="<?php echo $foxyshop_settings['domain']; ?>" size="50" />
 					<a href="#" class="foxyshophelp">Example: yourname.foxycart.com<br /><br />If you have your own custom domain, you may enter that as well (cart.yourdomain.com). Do not include the "http://". The FoxyCart include files will be inserted automatically so you won't need to add anything to the header of your site.</a>
 				</td>
 			</tr>
@@ -220,7 +253,7 @@ function foxyshop_options() {
 					<label for="foxyshop_version"><?php _e('FoxyCart Version'); ?>:</label> 
 					<select name="foxyshop_version" id="foxyshop_version">
 					<?php
-					$versionArray = array('0.7.0' => '0.7.0', '0.7.1' => '0.7.1');
+					$versionArray = array('0.7.0' => '0.7.0', '0.7.1' => '0.7.1', '0.7.2' => '0.7.2');
 					foreach ($versionArray as $key => $val) {
 						echo '<option value="' . $key . '"' . ($foxyshop_settings['version'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
 					} ?>
@@ -272,9 +305,11 @@ function foxyshop_options() {
 				<td>
 					<strong><?php _e("What To Show if No Image Is Loaded"); ?>:</strong>
 					<div style="clear: both;"></div>
-					<input type="radio" name="foxyshop_default_image" id="foxyshop_default_image_0" value="0"<?php if (!$foxyshop_settings['default_image']) echo ' checked="checked"'; ?> /><label for="foxyshop_default_image_0" style="width: 85px;"><?php _e('Default Image'); ?></label> <input type="text" id="foxyshop_default_image_custom" name="foxyshop_default_image_standard" value="<?php echo WP_PLUGIN_URL."/foxyshop/images/no-photo.png";?>" readonly="readonly" style="width:544px;" onclick="jQuery('#foxyshop_default_image_0').prop('checked', true);" />
+					<input type="radio" name="foxyshop_default_image" id="foxyshop_default_image_0" value="0"<?php if ($foxyshop_settings['default_image'] == "") echo ' checked="checked"'; ?> /><label for="foxyshop_default_image_0" style="width: 92px;"><?php _e('Default Image'); ?></label> <input type="text" id="foxyshop_default_image_custom" name="foxyshop_default_image_standard" value="<?php echo WP_PLUGIN_URL."/foxyshop/images/no-photo.png";?>" readonly="readonly" style="width:544px;" onclick="jQuery('#foxyshop_default_image_0').prop('checked', true);" />
 					<div style="clear: both;"></div>
-					<input type="radio" name="foxyshop_default_image" id="foxyshop_default_image_1" value="1"<?php if ($foxyshop_settings['default_image']) echo ' checked="checked"'; ?> /><label for="foxyshop_default_image_1" style="width: 85px;"><?php _e('Custom Image'); ?></label> <input type="text" id="foxyshop_default_image_custom" name="foxyshop_default_image_custom" value="<?php echo $foxyshop_settings['default_image']; ?>" style="width:544px;" onclick="jQuery('#foxyshop_default_image_1').prop('checked', true);" />
+					<input type="radio" name="foxyshop_default_image" id="foxyshop_default_image_1" value="1"<?php if ($foxyshop_settings['default_image'] && $foxyshop_settings['default_image'] != "") echo ' checked="checked"'; ?> /><label for="foxyshop_default_image_1" style="width: 92px;"><?php _e('Custom Image'); ?></label> <input type="text" id="foxyshop_default_image_custom" name="foxyshop_default_image_custom" value="<?php if ($foxyshop_settings['default_image'] != "none") echo $foxyshop_settings['default_image']; ?>" style="width:544px;" onclick="jQuery('#foxyshop_default_image_1').prop('checked', true);" />
+					<div style="clear: both;"></div>
+					<input type="radio" name="foxyshop_default_image" id="foxyshop_default_image_2" value="2"<?php if ($foxyshop_settings['default_image'] == "none") echo ' checked="checked"'; ?> /><label for="foxyshop_default_image_2"><?php _e("Don't Show a Default Image"); ?></label>
 					<div class="small">Note: If you are loading a custom image, it is not recommended to load a full url in your dev environment. Changing the url later via a mass mysql update can invalidate your settings and erase them. Use a relative path starting with /wp-content/</div>
 				</td>
 			</tr>
@@ -333,6 +368,19 @@ function foxyshop_options() {
 					<input type="checkbox" id="foxyshop_shipto" name="foxyshop_enable_ship_to"<?php checked($foxyshop_settings['enable_ship_to'], "on"); ?> />
 					<label for="foxyshop_shipto"><?php _e('Enable Multi-Ship'); ?></label>
 					<a href="#" class="foxyshophelp">Remember that FoxyCart charges an extra fee for this service. You must enable it on your FoxyCart account or it will not work.</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="checkbox" id="foxyshop_related_products_custom" name="foxyshop_related_products_custom"<?php checked($foxyshop_settings['related_products_custom'], "on"); ?> />
+					<label for="foxyshop_related_products_custom"><?php echo sprintf(__('Enable Related %s (Custom)'),FOXYSHOP_PRODUCT_NAME_PLURAL); ?></label>
+					<a href="#" class="foxyshophelp">Allow multiple, specific items to be shown with each product.</a>
+					<?php if (version_compare(get_bloginfo("version"), "3.1", ">=")) : ?>
+					<div style="clear: both;"></div>
+					<input type="checkbox" id="foxyshop_related_products_tags" name="foxyshop_related_products_tags"<?php checked($foxyshop_settings['related_products_tags'], "on"); ?> />
+					<label for="foxyshop_related_products_tags"><?php echo sprintf(__('Enable Related %s (Tags)'),FOXYSHOP_PRODUCT_NAME_PLURAL); ?></label>
+					<a href="#" class="foxyshophelp">Set tags on your products and related products will be automatically determined based on those tags.</a>
+					<?php endif; ?>
 				</td>
 			</tr>
 			<tr>

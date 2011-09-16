@@ -61,7 +61,6 @@ $write .= '<input type="file" class="foxyshop_file_upload" rel="' . $i . '" id="
 if ($variationValue) $write .= '<p>' . $variationValue . '</p>'."\n";
 $write .= '<div id="uploadedFile_' . $i . '" class="foxyshop_uploaded_file" style="display: none;"></div>'."\n";
 $write .= '<input type="hidden" name="' . esc_attr(foxyshop_add_spaces($variationName)) . foxyshop_get_verification(foxyshop_add_spaces($variationName),'--OPEN--') . '" id="FileNameHolder_' . $i . '" value="" class="hiddenimageholder ' . $uploadRequiredClassName . $dkeyclass . '"'. $dkey . ' />'."\n";
-$write .= '<div class="clr"></div>';
 $write .= '</div>';
 
 ?>

@@ -63,14 +63,16 @@ function foxyshop_product_shortcode($atts, $content = null) {
 	global $product;
 	$original_product = $product;
 	extract(shortcode_atts(array(
-		"name" => ''
+		"name" => '',
+		"variations" => ''
 	), $atts));
 
 
 	$prod = foxyshop_get_product_by_name($name);
-	if (!$prod || !$name) return "";
+	if (!$prod || !$name) return;
+	if ($content == "") $content = "Add To Cart";
 	$product = foxyshop_setup_product($prod);
-	$write = '<a href="' . foxyshop_product_link("", true) . '" class="foxyshop_sc_product_link">' . $content . '</a>';
+	$write = '<a href="' . foxyshop_product_link("", true, $variations) . '" class="foxyshop_sc_product_link">' . $content . '</a>';
 	$product = $original_product;
 	return $write;
 }
@@ -82,13 +84,14 @@ function foxyshop_productlink_shortcode($atts, $content = null) {
 	global $product;
 	$original_product = $product;
 	extract(shortcode_atts(array(
-		"name" => ''
+		"name" => '',
+		"variations" => ''
 	), $atts));
 	
 	$prod = foxyshop_get_product_by_name($name);
 	if (!$prod || !$name) return "";
 	$product = foxyshop_setup_product($prod);
-	$write = foxyshop_product_link("", true);
+	$write = foxyshop_product_link("", true, $variations);
 	$product = $original_product;
 	return $write;
 }

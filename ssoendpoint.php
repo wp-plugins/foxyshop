@@ -20,10 +20,12 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 		//Check Cart Contents to Decide on Redirect
 		} elseif ($foxyshop_settings['sso_account_required'] == 2) {
 			$ch = curl_init();
+			if (!defined('FOXYSHOP_CURL_CONNECTTIMEOUT')) define('FOXYSHOP_CURL_CONNECTTIMEOUT', 10);
+			if (!defined('FOXYSHOP_CURL_TIMEOUT')) define('FOXYSHOP_CURL_TIMEOUT', 15);
 			curl_setopt($ch, CURLOPT_URL, "https://" . esc_attr($foxyshop_settings['domain']) . "/cart?fcsid=" . $_GET['fcsid'] . "&output=json");
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-			curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, FOXYSHOP_CURL_CONNECTTIMEOUT);
+			curl_setopt($ch, CURLOPT_TIMEOUT, FOXYSHOP_CURL_TIMEOUT);
 			if (defined('FOXYSHOP_CURL_SSL_VERIFYPEER')) curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FOXYSHOP_CURL_SSL_VERIFYPEER);
 			$curlout = trim(curl_exec($ch));
 			$sso_required = 0;

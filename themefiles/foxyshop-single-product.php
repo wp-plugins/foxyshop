@@ -14,10 +14,11 @@ while (have_posts()) : the_post();
 	echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/prettyphoto/prettyPhoto.css" type="text/css" media="screen" />'."\n";
 	?><script type="text/javascript">jQuery(document).ready(function($){$("a[rel^='foxyshop_gallery']").prettyPhoto({theme: 'light_square', overlay_gallery: false, social_tools: ''});});</script><?php
 
+
 	//Initialize Product
 	global $product;
 	$product = foxyshop_setup_product();
-	
+
 	//This is for testing to see what is included in the $product array
 	//print_r($product);
 	
@@ -28,16 +29,18 @@ while (have_posts()) : the_post();
 	foxyshop_breadcrumbs(" &raquo; ", "&laquo; Back to Products");
 	
 
-	//Show the Main Image and Slideshow if Available
+	//Show the Main Image and Slideshow if Image Available
 	$mediumSRC = foxyshop_get_main_image("medium");
-	$mediumSRCtitle = foxyshop_get_main_image("title");
-	$largeSRC = foxyshop_get_main_image("large");
-	$imagecount = count($product['images']);
 	if ($mediumSRC) {
-		echo '<div class="foxyshop_product_image">';
+		$mediumSRCtitle = foxyshop_get_main_image("title");
+		$largeSRC = foxyshop_get_main_image("large");
+		$imagecount = count($product['images']);
+		echo '<div class="foxyshop_product_image">'."\n";
+		echo '<div class="foxyshop_product_image_holder">'."\n";
 		if ($mediumSRC != $largeSRC || $imagecount > 1) echo '<a href="' . $largeSRC . '" rel="foxyshop_gallery' . ($imagecount > 1 ? '[fs_gall]' : '') . '"  title="">';
 		echo '<img src="' . $mediumSRC . '" id="foxyshop_main_product_image" alt="' . htmlspecialchars($mediumSRCtitle) . '" title="" />';
-		if ($mediumSRC != $largeSRC || $imagecount > 1) echo '</a>';
+		if ($mediumSRC != $largeSRC || $imagecount > 1) echo "</a>\n";
+		echo "</div>\n";
 		foxyshop_image_slideshow("thumbnail", false, "Click Below For More Images:");
 		echo "</div>\n";
 	}
@@ -49,22 +52,23 @@ while (have_posts()) : the_post();
 	echo '<h2>' . apply_filters('the_title', $product['name']) . '</h2>';
 	
 	//Show a sale tag if the product is on sale
-	//if (foxyshop_is_on_sale()) echo '<p>SALE!</p>';
+	//if (foxyshop_is_on_sale()) echo '<p class="sale-product">SALE!</p>';
 
 	//Product Is New Tag (number of days since added)
-	//if (foxyshop_is_product_new(14)) echo '<p>NEW!</p>';
+	//if (foxyshop_is_product_new(14)) echo '<p class="new-product">NEW!</p>';
 	
 	//Main Product Description
 	echo $product['description'];
 
 
 	//Show Variations (showQuantity: 0 = Do Not Show Qty, 1 = Show Before Variations, 2 = Show Below Variations)
+	//If Qty is turned off on product, Qty box will not be shown at all
 	foxyshop_product_variations(2);
 	
 	//(style) clear floats before the submit button
 	echo '<div class="clr"></div>';
 
-	//Check Inventory Levels and Display Status (last variable allows ordering of out of stock items)
+	//Check Inventory Levels and Display Status (last variable allows backordering of out of stock items)
 	foxyshop_inventory_management("There are only %c item%s left in stock.", "Item is not in stock.", false);
 	
 	//Add To Cart Button
@@ -82,6 +86,8 @@ while (have_posts()) : the_post();
 	//Custom Code Can Go Here
 	
 	
+	
+	
 	//Ends the form
 	echo '</div>';
 	echo '</form>';
@@ -89,8 +95,6 @@ while (have_posts()) : the_post();
 
 endwhile;
 ?>
-
-
 
 	<div class="clr"></div>
 	<?php foxyshop_include('footer'); ?>

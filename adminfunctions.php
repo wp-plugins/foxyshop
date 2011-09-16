@@ -8,6 +8,8 @@ function foxyshop_insert_jquery() {
 
 //Loading in Admin Scripts
 function foxyshop_load_admin_scripts($hook) {
+	global $foxyshop_settings;
+	
 	$page = (isset($_REQUEST['page']) ? $_REQUEST['page'] : '');
 	
 	//Style - Always Do This
@@ -25,8 +27,10 @@ function foxyshop_load_admin_scripts($hook) {
 	//Product
 	if($hook != 'post.php' && $hook != 'post-new.php' && $page != 'cfbe_editor-foxyshop_product') return;
 	wp_enqueue_script('swfobject');
-	wp_enqueue_script('chosenScript', FOXYSHOP_DIR . '/js/chosen.jquery.min.js', array('jquery'));
-	wp_enqueue_style('chosenStyle', FOXYSHOP_DIR . '/css/chosen.css');
+	if ($foxyshop_settings['related_products_custom'] || $foxyshop_settings['related_products_tags']) {
+		wp_enqueue_script('chosenScript', FOXYSHOP_DIR . '/js/chosen.jquery.min.js', array('jquery'));
+		wp_enqueue_style('chosenStyle', FOXYSHOP_DIR . '/css/chosen.css');
+	}
 	foxyshop_date_picker();
 }
 
@@ -159,7 +163,7 @@ function foxyshop_plugin_action_links($links, $file) {
 
 //Plugin Activation Function
 function foxyshop_activation() {
-
+	
 	//Initialize Category Sort Holder If Not Set
 	add_option('foxyshop_category_sort',serialize(array()));
 	
@@ -177,6 +181,8 @@ function foxyshop_activation() {
 		"enable_subscriptions" => "",
 		"enable_bundled_products" => "",
 		"enable_dashboard_stats" => "",
+		"related_products_custom" => "on",
+		"related_products_tags" => "",
 		"browser_title_1" => FOXYSHOP_PRODUCT_NAME_SINGULAR . " | " . get_bloginfo("name"),
 		"browser_title_2" => FOXYSHOP_PRODUCT_NAME_SINGULAR . " Categories | " . get_bloginfo("name"),
 		"browser_title_3" => "%c | " . get_bloginfo("name"),
@@ -195,11 +201,12 @@ function foxyshop_activation() {
 		"locale_code" => $current_locale,
 		"manage_inventory_levels" => "",
 		"inventory_alert_level" => 3,
-		"inventory_alert_email" => "on",
+		"inventory_alert_email" => "",
 		"checkout_customer_create" => "",
 		"datafeed_url_key" => substr(MD5(rand(1000, 99999)."{urlkey}" . date("H:i:s")),1,12),
 		"generate_feed" => "",
 		"default_image" => "",
+		"foxycart_include_cache" => "",
 		"products_per_page" => -1,
 		"api_key" => "sp92fx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time())
 	);
@@ -207,11 +214,13 @@ function foxyshop_activation() {
 	//Set For the First Time
 	if (!get_option("foxyshop_settings")) {
 		update_option("foxyshop_settings", serialize($default_foxyshop_settings));
+		add_option("foxyshop_setup_required", 1);
+		return $default_foxyshop_settings;
 	
 	//Upgrade Tasks
 	} else {
 		
-		$foxyshop_settings = unserialize(get_option("foxyshop_settings"));
+		$foxyshop_settings = maybe_unserialize(get_option("foxyshop_settings"));
 		
 		//Run Some Upgrades
 		if (!array_key_exists('version',$foxyshop_settings)) $foxyshop_settings['version'] = "0";
@@ -221,9 +230,13 @@ function foxyshop_activation() {
 		if (array_key_exists('inventory_url_key',$foxyshop_settings)) { $foxyshop_settings['datafeed_url_key'] = $foxyshop_settings['inventory_url_key']; unset($foxyshop_settings['inventory_url_key']); }
 		if ($foxyshop_settings['sso_account_required'] == "") $foxyshop_settings['sso_account_required'] = 0;
 		if ($foxyshop_settings['sso_account_required'] == "on") $foxyshop_settings['sso_account_required'] = 1;
-		if (!array_key_exists('enable_dashboard_stats',$foxyshop_settings)) $foxyshop_settings['enable_dashboard_stats'] = "";
-		if (!array_key_exists('checkout_customer_create',$foxyshop_settings)) $foxyshop_settings['checkout_customer_create'] = "";
-		if ($foxyshop_settings['default_image'] == WP_PLUGIN_URL."/foxyshop/images/no-photo.png") $foxyshop_settings['default_image'] = "";
+		if (!array_key_exists('enable_dashboard_stats',$foxyshop_settings)) $foxyshop_settings['enable_dashboard_stats'] = ""; //3.0
+		if (!array_key_exists('checkout_customer_create',$foxyshop_settings)) $foxyshop_settings['checkout_customer_create'] = ""; //3.2?
+		if ($foxyshop_settings['default_image'] == WP_PLUGIN_URL."/foxyshop/images/no-photo.png") $foxyshop_settings['default_image'] = ""; //3.3
+		if (!$foxyshop_settings['domain'] && version_compare($foxyshop_settings['version'], '3.3', "<")) add_option("foxyshop_setup_required", 1); //3.3
+		if (!array_key_exists('foxycart_include_cache',$foxyshop_settings)) $foxyshop_settings['foxycart_include_cache'] = ""; //3.3
+		if (!array_key_exists('related_products_custom',$foxyshop_settings)) $foxyshop_settings['related_products_custom'] = "on"; //3.3
+		if (!array_key_exists('related_products_tags',$foxyshop_settings)) $foxyshop_settings['related_products_tags'] = ""; //3.3
 
 		//Upgrade Variations in 3.0
 		if (version_compare($foxyshop_settings['version'], '3.0', "<")) {
@@ -259,7 +272,7 @@ function foxyshop_activation() {
 					}
 				}
 			}
-			unset($foxyshop_settings['max_variations']);
+			if (array_key_exists('max_variations', $foxyshop_settings)) unset($foxyshop_settings['max_variations']);
 		}
 
 		//Load in New Defaults and Save New Version
@@ -269,6 +282,7 @@ function foxyshop_activation() {
 
 		//Save Settings
 		update_option("foxyshop_settings", serialize($foxyshop_settings));
+		return $foxyshop_settings;
 	}
 }
 
@@ -338,13 +352,16 @@ function foxyshop_check_rewrite_rules() {
 //Access the FoxyCart API
 function foxyshop_get_foxycart_data($foxyData) {
 	global $foxyshop_settings;
+	if (!defined('FOXYSHOP_CURL_CONNECTTIMEOUT')) define('FOXYSHOP_CURL_CONNECTTIMEOUT', 10);
+	if (!defined('FOXYSHOP_CURL_TIMEOUT')) define('FOXYSHOP_CURL_TIMEOUT', 15);
+
 	$foxyData = array_merge(array("api_token" => $foxyshop_settings['api_key']), $foxyData);
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, "https://" . $foxyshop_settings['domain'] . "/api");
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $foxyData);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, FOXYSHOP_CURL_CONNECTTIMEOUT);
+	curl_setopt($ch, CURLOPT_TIMEOUT, FOXYSHOP_CURL_TIMEOUT);
 	if (defined('FOXYSHOP_CURL_SSL_VERIFYPEER')) curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FOXYSHOP_CURL_SSL_VERIFYPEER);
 	$response = trim(curl_exec($ch));
 	if ($response == false) die("cURL Error: \n" . curl_error($ch));

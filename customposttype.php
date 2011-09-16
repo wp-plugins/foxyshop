@@ -1,9 +1,55 @@
 <?php
 //-------------------------------------------
-//Post Type
+//Custom Post Type Initialization
 //-------------------------------------------
 add_action('init', 'foxyshop_create_post_type', 1);
 function foxyshop_create_post_type() {
+	global $foxyshop_settings;
+	
+	//Custom Taxonomy: Product Categories
+	$labels = array(
+		'name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Categories'),
+		'singular_name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category'),
+		'parent_item' => __('Parent Category'),
+		'all_items' => __('All').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Categories'),
+		'edit_item' => __('Edit').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category'),
+		'update_item' => __('Update').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category'),
+		'add_new_item' => __('Add New').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category'),
+		'new_item_name' => __('New').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category Name'),
+		'menu_name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Categories')
+	);
+	register_taxonomy('foxyshop_categories', 'foxyshop_product', array(
+		'hierarchical' => true,
+		'labels' => $labels,
+		'show_ui' => true,
+		'query_var' => true,
+		'rewrite' => array('slug' => FOXYSHOP_PRODUCT_CATEGORY_SLUG, 'hierarchical' => true)
+	));
+
+
+	//Custom Taxonomy: Product Tags
+	if ($foxyshop_settings['related_products_tags']) {
+		$labels = array(
+			'name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Tags'),
+			'singular_name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Tag'),
+			'parent_item' => __('Parent Category'),
+			'all_items' => __('All').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Tags'),
+			'edit_item' => __('Edit').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Tag'),
+			'update_item' => __('Update').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Tag'),
+			'add_new_item' => __('Add New').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Tag'),
+			'new_item_name' => __('New').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Tag Name'),
+			'menu_name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Tags')
+		);
+		register_taxonomy('foxyshop_tags', 'foxyshop_product', array(
+			'hierarchical' => false,
+			'labels' => $labels,
+			'show_ui' => true,
+			'query_var' => true,
+			'rewrite' => array('slug' => FOXYSHOP_PRODUCTS_SLUG."-tag")
+		));
+	}
+	
+	//FoxyShop Product
 	$labels = array(
 		'name' => FOXYSHOP_PRODUCT_NAME_PLURAL,
 		'singular_name' => FOXYSHOP_PRODUCT_NAME_SINGULAR,
@@ -21,6 +67,9 @@ function foxyshop_create_post_type() {
 	);
 	$post_type_support = array('title','editor','thumbnail', 'custom-fields', 'excerpt');
 	if (defined('FOXYSHOP_PRODUCT_COMMENTS')) array_push($post_type_support, "comments");
+	if (defined('FOXYSHOP_PRODUCT_TAGS')) array_push($post_type_support, "post_tag");
+	$post_type_taxonomies = array('foxyshop_categories');
+	if ($foxyshop_settings['related_products_tags']) $post_type_taxonomies[] = 'foxyshop_tags';
 	register_post_type('foxyshop_product', array(
 		'labels' => $labels,
 		'description' => "FoxyShop ".FOXYSHOP_PRODUCT_NAME_PLURAL,
@@ -31,7 +80,7 @@ function foxyshop_create_post_type() {
 		'supports' => $post_type_support,
 		'menu_icon' => FOXYSHOP_DIR . '/images/icon.png',
 		'rewrite' => array("slug" => FOXYSHOP_PRODUCTS_SLUG),
-		'taxonomies' => (defined('FOXYSHOP_PRODUCT_TAGS') ? array("post_tag") : array())
+		'taxonomies' => $post_type_taxonomies
 	));
 }
 
@@ -40,7 +89,7 @@ function foxyshop_create_post_type() {
 //-------------------------------------------
 //Setup Thumbnail Support
 //-------------------------------------------
-add_action('after_setup_theme','foxyshop_setup_post_thumbnails', 9999);
+add_action('after_setup_theme','foxyshop_setup_post_thumbnails', 999);
 function foxyshop_setup_post_thumbnails(){
 	add_theme_support('post-thumbnails');
 }
@@ -198,36 +247,6 @@ function foxyshop_updated_messages($messages) {
 
 
 //-------------------------------------------
-//Custom Taxonomy: Product Categories
-//-------------------------------------------
-add_action('init', 'foxyshop_product_category_init', 1);
-function foxyshop_product_category_init() {
-	$labels = array(
-		'name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Categories'),
-		'singular_name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category'),
-		'parent_item' => __('Parent Category'),
-		'all_items' => __('All').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Categories'),
-		'edit_item' => __('Edit').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category'),
-		'update_item' => __('Update').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category'),
-		'add_new_item' => __('Add New').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category'),
-		'new_item_name' => __('New').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category Name'),
-		'menu_name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Categories')
-	);
-	register_taxonomy('foxyshop_categories', 'foxyshop_product', array(
-		'hierarchical' => true,
-		'labels' => $labels,
-		'show_ui' => true,
-		'query_var' => true,
-		'rewrite' => array('slug' => FOXYSHOP_PRODUCT_CATEGORY_SLUG, 'hierarchical' => true)
-	));
-}
-
-
-
-
-
-
-//-------------------------------------------
 //Meta Box for Product Info
 //-------------------------------------------
 add_action('admin_init','foxyshop_product_meta_init');
@@ -237,7 +256,7 @@ function foxyshop_product_meta_init() {
 	add_meta_box('product_pricing_meta', 'Pricing Details', 'foxyshop_product_pricing_setup', 'foxyshop_product', 'side', 'low');
 	add_meta_box('product_images_meta', FOXYSHOP_PRODUCT_NAME_SINGULAR.' Images', 'foxyshop_product_images_setup', 'foxyshop_product', 'normal', 'high');
 	add_meta_box('product_variations_meta', FOXYSHOP_PRODUCT_NAME_SINGULAR.' Variations', 'foxyshop_product_variations_setup', 'foxyshop_product', 'normal', 'high');
-	add_meta_box('product_related_meta', 'Related '.FOXYSHOP_PRODUCT_NAME_PLURAL, 'foxyshop_related_products_setup', 'foxyshop_product', 'normal', 'low');
+	if ($foxyshop_settings['related_products_custom']) add_meta_box('product_related_meta', 'Related '.FOXYSHOP_PRODUCT_NAME_PLURAL, 'foxyshop_related_products_setup', 'foxyshop_product', 'normal', 'low');
 	if ($foxyshop_settings['enable_bundled_products']) add_meta_box('product_bundled_meta', 'Bundled '.FOXYSHOP_PRODUCT_NAME_PLURAL, 'foxyshop_bundled_products_setup', 'foxyshop_product', 'normal', 'low');
 	add_action('save_post','foxyshop_product_meta_save');
 }
@@ -255,6 +274,7 @@ function foxyshop_product_details_setup() {
 	$_category = get_post_meta($post->ID,'_category',TRUE);
 	$_quantity_min = get_post_meta($post->ID,'_quantity_min',TRUE);
 	$_quantity_max = get_post_meta($post->ID,'_quantity_max',TRUE);
+	$_quantity_hide = get_post_meta($post->ID,'_quantity_hide',TRUE);
 
 	$defaultweight = explode(" ",$foxyshop_settings['default_weight']);
 	$defaultweight1 = (int)$defaultweight[0];
@@ -286,14 +306,16 @@ function foxyshop_product_details_setup() {
 	</div>
 	<div class="foxyshop_field_control">
 		<label for="_quantity_min"><?php _e('Qty Settings'); ?></label>
-		<input type="text" name="_quantity_min" id="_quantity_min" value="<?php echo $_quantity_min; ?>" style="width: 46px; float: left;" onblur="foxyshop_check_number_single(this);" />
-		<span style="float: left; margin: 9px 0 0 5px; width: 34px;"><?php _e('min'); ?></span>
-		<input type="text" name="_quantity_max" id="_quantity_max" value="<?php echo $_quantity_max; ?>" style="width: 46px; float: left;" onblur="foxyshop_check_number_single(this);" />
-		<span style="float: left; margin: 9px 0 0 5px;"><?php _e('max'); ?></span>
+		<input type="text" name="_quantity_min" id="_quantity_min" value="<?php echo $_quantity_min; ?>" title="<?php _e('Minimum Quantity'); ?>" style="width: 30px; float: left;" onblur="foxyshop_check_number_single(this);" />
+		<span id="quantity_min_label" style="float: left; margin: 6px 0 0 1px; width: 26px;" class="iconsprite <?php echo $_quantity_min ? "down_color" : "down_gray"; ?>"></span>
+		<input type="text" name="_quantity_max" id="_quantity_max" value="<?php echo $_quantity_max; ?>" title="<?php _e('Maximum Quantity'); ?>" style="width: 30px; float: left;" onblur="foxyshop_check_number_single(this);" />
+		<span id="quantity_max_label" style="float: left; margin: 6px 0 0 1px; width: 26px;" class="iconsprite <?php echo $_quantity_max ? "up_color" : "up_gray"; ?>"></span>
+		<input type="checkbox" name="_quantity_hide" id="_quantity_hide" title="<?php _e('Hide Quantity Box'); ?>" style="float: left; margin-top: 7px;"<?php echo checked($_quantity_hide,"on"); ?> />
+		<label id="quantity_hide_label" for="_quantity_hide" style="float: left; margin: 6px 0 0 2px; width: 16px;" title="<?php _e('Hide Quantity Box'); ?>" class="iconsprite <?php echo $_quantity_hide ? "hide_color" : "hide_gray"; ?>"></label>
 	</div>
 	<?php if ($foxyshop_settings['ship_categories']) { ?>
 	<div class="foxyshop_field_control">
-		<label for="_category"><?php _e('Shipping Cat.'); ?></label>
+		<label for="_category"><?php _e('Shipping Cat'); ?></label>
 		<select name="_category" id="_category">
 			<option value=""><?php _e('Default'); ?></option>
 			<?php
@@ -328,6 +350,11 @@ function foxyshop_product_details_setup() {
 	</div>
 	<div style="clear:both"></div>
 	<?php
+
+	//Add Action For Product Details (For Other Integrations)
+	do_action("foxyshop_admin_product_details", $post->ID);
+
+	//Setup Hidden Admin Fields
 	echo '<input type="hidden" name="products_meta_noncename" value="' . wp_create_nonce(__FILE__) . '" />';
 	echo '<input type="hidden" name="menu_order" value="' . ($post->menu_order == 0 && $post->post_status == "auto-draft" ? $post->ID : $post->menu_order) . '" />';
 }
@@ -409,7 +436,7 @@ function foxyshop_product_pricing_setup() {
 	<div style="float: left; width: 50px; margin-bottom: 5px; font-size: 11px;" title="<?php echo sprintf(__('If not set, default value will be used (%s)'), $foxyshop_settings['inventory_alert_level']); ?>">Alert Lvl</div>
 	<ul id="inventory_levels">
 		<?php
-		$inventory_levels = unserialize(get_post_meta($post->ID,'_inventory_levels',TRUE));
+		$inventory_levels = maybe_unserialize(get_post_meta($post->ID,'_inventory_levels',TRUE));
 		if (!is_array($inventory_levels)) $inventory_levels = array();
 		$i = 1;
 		foreach ($inventory_levels as $ivcode => $iv) {
@@ -494,13 +521,17 @@ function foxyshop_related_products_setup() {
 	$args = array('post_type' => 'foxyshop_product', "post__not_in" => array($post->ID), 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC');
 	$all_products = get_posts($args);
 	foreach ($all_products as $product) {
-		$relatedList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_related_products) ? ' selected="selected"' : '') . '>' . $product->post_title . '</option>'."\n";
+		$relatedList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_related_products) ? ' selected="selected"' : '') . '>' . $product->post_title . ' (' . $product->ID . ')' . '</option>'."\n";
 		if ($foxyshop_settings['enable_bundled_products']) $bundledList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_bundled_products) ? ' selected="selected"' : '') . '>' . $product->post_title . '</option>'."\n";
 	} ?>
 	<select name="_related_products_list[]" id="_related_products_list" data-placeholder="Search for <?php echo FOXYSHOP_PRODUCT_NAME_PLURAL; ?>" style="width: 100%;" class="chzn-select" multiple="multiple">
 		<?php echo $relatedList; ?>
 	</select>
-	<p><?php echo sprintf(__("Click the box above for a drop-down menu showing all %s. Type to search and click or press enter to select."), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></p>
+	<p style="color: #999999; margin-bottom: 2px;"><?php echo sprintf(__("Click the box above for a drop-down menu showing all %s. Type to search and click or press enter to select."), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></p>
+	<div class="foxyshop_field_control">
+		<label for="_related_order" style="width: 220px; margin-left: 0;">Set Custom Order For Related Products</label> <input type="text" style="width: 220px; float: left;" name="_related_order" id="_related_order" value="<?php echo get_post_meta($post->ID, "_related_order", 1) ?>" /> <span>ID's separated by comma</span>
+	</div>
+	<div style="clear: both;"></div>
 
 	<?php
 }
@@ -512,11 +543,20 @@ function foxyshop_related_products_setup() {
 //Bundled Products Setup
 //-------------------------------------------
 function foxyshop_bundled_products_setup() {
-	global $post, $foxyshop_settings, $bundledList; ?>
+	global $post, $foxyshop_settings, $bundledList;
+	if (!isset($bundledList)) {
+		$arr_bundled_products = explode(",",get_post_meta($post->ID,'_bundled_products',TRUE));
+		$args = array('post_type' => 'foxyshop_product', "post__not_in" => array($post->ID), 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC');
+		$all_products = get_posts($args);
+		foreach ($all_products as $product) {
+			$bundledList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_bundled_products) ? ' selected="selected"' : '') . '>' . $product->post_title . '</option>'."\n";
+		}
+	}
+	?>
 	<select name="_bundled_products_list[]" id="_bundled_products_list" data-placeholder="Search for <?php echo FOXYSHOP_PRODUCT_NAME_PLURAL; ?>" style="width: 100%;" class="chzn-select" multiple="multiple">
 		<?php echo $bundledList; ?>
 	</select>
-	<p><?php echo sprintf(__("Click the box above for a drop-down menu showing all %s. Type to search and click or press enter to select."), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></p>
+	<p style="color: #999999;"><?php echo sprintf(__("Click the box above for a drop-down menu showing all %s. Type to search and click or press enter to select."), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></p>
 	<?php
 }
 
@@ -714,7 +754,7 @@ function foxyshop_product_variations_setup() {
 	$variation_key = __('Name{p+1.50|w-1|c:product_code|y:shipping_category|dkey:display_key|ikey:image_id}');
 	
 	//Setup Variations
-	$variations = unserialize(get_post_meta($post->ID, '_variations', 1));
+	$variations = maybe_unserialize(get_post_meta($post->ID, '_variations', 1));
 	if (!is_array($variations)) $variations = array();
 	
 	echo '<input type="hidden" id="variation_order_value" name="variation_order_value" />'."\n";
@@ -1103,8 +1143,30 @@ jQuery(document).ready(function($){
 		}
 		
 	});
+	$("#_quantity_min").bind("blur keyup", function() {
+		if ($(this).val()) {
+			$("#quantity_min_label").addClass("down_color").removeClass("down_gray");
+		} else {
+			$("#quantity_min_label").removeClass("down_color").addClass("down_gray");
+		}
+	});
+	$("#_quantity_max").bind("blur keyup", function() {
+		if ($(this).val()) {
+			$("#quantity_max_label").addClass("up_color").removeClass("up_gray");
+		} else {
+			$("#quantity_max_label").removeClass("up_color").addClass("up_gray");
+		}
+	});
 
-	$(".chzn-select").chosen();
+	$("#_quantity_hide").change(function() {
+		if ($(this).is(":checked")) {
+			$("#quantity_hide_label").addClass("hide_color").removeClass("hide_gray");
+		} else {
+			$("#quantity_hide_label").removeClass("hide_color").addClass("hide_gray");
+		}
+	});
+
+	<?php if ($foxyshop_settings['related_products_custom'] || $foxyshop_settings['related_products_tags']) echo '$(".chzn-select").chosen();'; ?>
 });
 function foxyshop_format_number_single(num) { num = num.toString().replace(/\$|\,/g,''); if(isNaN(num)) num = "0"; sign = (num == (num = Math.abs(num))); num = Math.floor(num*100+0.50000000001); cents = num%100; num = Math.floor(num/100).toString(); if(cents<10) cents = "0" + cents; for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++) num = num.substring(0,num.length-(4*i+3))+','+ num.substring(num.length-(4*i+3)); return (((sign)?'':'-') + num); }
 function foxyshop_format_number(num) { num = num.toString().replace(/\$|\,/g,''); if(isNaN(num)) num = "0"; sign = (num == (num = Math.abs(num))); num = Math.floor(num*100+0.50000000001); cents = num%100; num = Math.floor(num/100).toString(); if(cents<10) cents = "0" + cents; for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++) num = num.substring(0,num.length-(4*i+3))+','+ num.substring(num.length-(4*i+3)); return (((sign)?'':'-') + num + '.' + cents); }
@@ -1132,28 +1194,27 @@ function foxyshop_product_meta_save($post_id) {
 	
 	$_weight = (int)$_POST['_weight1'] . ' ' . (double)$_POST['_weight2'];
 	if ($_weight == ' ') $_weight = $foxyshop_settings['default_weight']; //Set Default Weight
-
-	$_quantity_min = (int)$_POST['_quantity_min'];
-	$_quantity_max = (int)$_POST['_quantity_max'];
-	if ($_quantity_min > $_quantity_max) $_quantity_min = "";
-	if ($_quantity_min == 0) $_quantity_min = "";
-	if ($_quantity_max == 0) $_quantity_max = "";
-
+	
 	//Save Product Detail Data
 	foxyshop_save_meta_data('_weight',$_weight);
 	foxyshop_save_meta_data('_price',number_format((double)str_replace(",","",$_POST['_price']),2,".",""));
 	foxyshop_save_meta_data('_code',trim($_POST['_code']));
 	if (isset($_POST['_category'])) foxyshop_save_meta_data('_category',$_POST['_category']);
+	foxyshop_save_meta_data('_hide_product',(isset($_POST['_hide_product']) ? $_POST['_hide_product'] : ""));
+
+	//Quantity Settings
+	$_quantity_min = (int)$_POST['_quantity_min'];
+	$_quantity_max = (int)$_POST['_quantity_max'];
+	if ($_quantity_min > $_quantity_max) $_quantity_min = "";
+	if ($_quantity_min <= 0) $_quantity_min = "";
+	if ($_quantity_max <= 0) $_quantity_max = "";
 	foxyshop_save_meta_data('_quantity_min',$_quantity_min);
 	foxyshop_save_meta_data('_quantity_max',$_quantity_max);
-	
-	$hide_product = "";
-	if (isset($_POST['_hide_product'])) $hide_product = $_POST['_hide_product'];
-	foxyshop_save_meta_data('_hide_product',$hide_product);
+	foxyshop_save_meta_data('_quantity_hide',(isset($_POST['_quantity_hide']) ? $_POST['_quantity_hide'] : ""));
 
 	//Require SSO
 	if ($foxyshop_settings['enable_sso'] && $foxyshop_settings['sso_account_required'] == 2) {
-		foxyshop_save_meta_data('_require_sso',$_POST['_require_sso']);
+		foxyshop_save_meta_data('_require_sso',(isset($_POST['_require_sso']) ? $_POST['_require_sso'] : ""));
 	}
 
 	//Save Sale Pricing Data
@@ -1188,6 +1249,7 @@ function foxyshop_product_meta_save($post_id) {
 	} else {
 		foxyshop_save_meta_data('_related_products',"");
 	}
+	if (isset($_POST['_related_order'])) foxyshop_save_meta_data('_related_order',$_POST['_related_order']);
 
 	//Save Bundled Product Data
 	if (isset($_POST['_bundled_products_list'])) {
@@ -1278,374 +1340,6 @@ function foxyshop_product_meta_save($post_id) {
 	return $post_id;
 }
 
-
-
-
-//-------------------------------------------
-//Custom Field Bulk Editor Actions
-//-------------------------------------------
-function foxyshop_cfbe_metabox($post_type) {
-	if ($post_type != 'foxyshop_product') return;
-	global $foxyshop_settings;
-	global $wp_version;
-	?>
-	<table class="widefat cfbe_table cfbe_foxyshop_table">
-		<thead>
-			<tr>
-				<th><img src="<?php echo FOXYSHOP_DIR . '/images/icon.png'; ?>" alt="" /><?php echo sprintf(__('Set Values For Checked FoxyShop %s'), FOXYSHOP_PRODUCT_NAME_PLURAL); ?></th>
-			</tr>
-		</thead>
-		<tbody>
-			<?php if ($foxyshop_settings['ship_categories']) : ?>
-			<tr>
-				<td>
-					<label for="_category" class="cfbe_special_label"><?php _e('Shipping Category'); ?></label>
-					<input type="radio" name="_category_status" id="_category_status0" value="0" checked="checked" />
-					<label for="_category_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_category_status" id="_category_status1" value="1" />
-					<label for="_category_status1"><?php _e("Change To"); ?>:</label>
-
-					<select name="_category" id="_category" onfocus="jQuery('#_category_status1').prop('checked', true);">
-						<option value=""><?php _e('Default'); ?></option>
-						<?php
-						$arrShipCategories = preg_split("/(\r\n|\n)/", $foxyshop_settings['ship_categories']);
-						for ($i = 0; $i < count($arrShipCategories); $i++) {
-							$shipping_category = explode("|", $arrShipCategories[$i]);
-							if (count($shipping_category) > 1) {
-								$shipping_category_code = trim($shipping_category[0]);
-								$shipping_category_name = trim($shipping_category[1]);
-							} else {
-								$shipping_category_code = trim($shipping_category[0]);
-								$shipping_category_name = trim($shipping_category[0]);
-							}
-							echo '<option value="' . esc_attr($shipping_category_code) . '"';
-							if (esc_attr($shipping_category_code == $_category)) echo ' selected="selected"';
-							echo '>' . esc_attr($shipping_category_name) . '</option>';
-							echo "\n";
-						}
-						?>
-					</select>
-
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<?php else : ?>
-				<input type="hidden" name="_category_status" value="0" />
-			<?php endif; ?>
-			<tr>
-				<td>
-					<label for="_saleprice" class="cfbe_special_label"><?php _e('Sale Price'); ?></label>
-					<input type="radio" name="_saleprice_status" id="_saleprice_status0" value="0" checked="checked" />
-					<label for="_saleprice_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_saleprice_status" id="_saleprice_status1" value="1" />
-					<label for="_saleprice_status1"><?php _e("Change To"); ?>:</label>
-					<input type="text" name="_saleprice" id="_saleprice" value="" class="cfbe_field_name" onfocus="jQuery('#_saleprice_status1').prop('checked', true);" />
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="_salestartdate" class="cfbe_special_label"><?php _e('Sale Start Date'); ?></label>
-					<input type="radio" name="_salestartdate_status" id="_salestartdate_status0" value="0" checked="checked" />
-					<label for="_salestartdate_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_salestartdate_status" id="_salestartdate_status1" value="1" />
-					<label for="_salestartdate_status1"><?php _e("Change To"); ?>:</label>
-					<input type="text" name="_salestartdate" id="_salestartdate" value="" class="cfbe_field_name" onfocus="jQuery('#_salestartdate_status1').prop('checked', true);" />
-					<small>mm/dd/yy</small>
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="_saleenddate" class="cfbe_special_label"><?php _e('Sale End Date'); ?></label>
-					<input type="radio" name="_saleenddate_status" id="_saleenddate_status0" value="0" checked="checked" />
-					<label for="_saleenddate_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_saleenddate_status" id="_saleenddate_status1" value="1" />
-					<label for="_saleenddate_status1"><?php _e("Change To"); ?>:</label>
-					<input type="text" name="_saleenddate" id="_saleenddate" value="" class="cfbe_field_name" onfocus="jQuery('#_saleenddate_status1').prop('checked', true);" />
-					<small>mm/dd/yy</small>
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="_price" class="cfbe_special_label"><?php _e('Base Price'); ?></label>
-					<input type="radio" name="_price_status" id="_price_status0" value="0" checked="checked" />
-					<label for="_price_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_price_status" id="_price_status1" value="1" />
-					<label for="_price_status1"><?php _e("Change To"); ?>:</label>
-					<input type="text" name="_price" id="_price" value="" class="cfbe_field_name" onfocus="jQuery('#_price_status1').prop('checked', true);" />
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="_weight" class="cfbe_special_label"><?php _e('Weight'); ?></label>
-					<input type="radio" name="_weight_status" id="_weight_status0" value="0" checked="checked" />
-					<label for="_weight_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_weight_status" id="_weight_status1" value="1" />
-					<label for="_weight_status1"><?php _e("Change To"); ?>:</label>
-					<input type="text" name="_weight" id="_weight" value="" class="cfbe_field_name" onfocus="jQuery('#_weight_status1').prop('checked', true);" />
-					<small>enter 5 lbs, 2 oz as "5 2"</small>
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			
-			
-			<tr>
-				<td>
-					<label for="_quantity_min" class="cfbe_special_label"><?php _e('Minimum Qty'); ?></label>
-					<input type="radio" name="_quantity_min_status" id="_quantity_min_status0" value="0" checked="checked" />
-					<label for="_quantity_min_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_quantity_min_status" id="_quantity_min_status1" value="1" />
-					<label for="_quantity_min_status1"><?php _e("Change To"); ?>:</label>
-					<input type="text" name="_quantity_min" id="_quantity_min" value="" class="cfbe_field_name" onfocus="jQuery('#_quantity_min_status1').prop('checked', true);" style="width: 46px;" />
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="_quantity_max" class="cfbe_special_label"><?php _e('Maximum Qty'); ?></label>
-					<input type="radio" name="_quantity_max_status" id="_quantity_max_status0" value="0" checked="checked" />
-					<label for="_quantity_max_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_quantity_max_status" id="_quantity_max_status1" value="1" />
-					<label for="_quantity_max_status1"><?php _e("Change To"); ?>:</label>
-					<input type="text" name="_quantity_max" id="_quantity_max" value="" class="cfbe_field_name" onfocus="jQuery('#_quantity_max_status1').prop('checked', true);" style="width: 46px;" />
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="_hide_product" class="cfbe_special_label"><?php _e('Hide From List View'); ?></label>
-					<input type="radio" name="_hide_product_status" id="_hide_product_status0" value="0" checked="checked" />
-					<label for="_hide_product_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_hide_product_status" id="_hide_product_status1" value="1" />
-					<label for="_hide_product_status1" class="cfbe_leave_unchanged"><?php _e("Hide"); echo " ".FOXYSHOP_PRODUCT_NAME_SINGULAR; ?>:</label>
-					<input type="radio" name="_hide_product_status" id="_hide_product_status2" value="2" style="margin-bottom: 11px;" />
-					<label for="_hide_product_status2"><?php _e("Show"); echo " ".FOXYSHOP_PRODUCT_NAME_SINGULAR; ?>:</label>
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="_discount_quantity_amount" class="cfbe_special_label"><?php _e('Discount Qty $'); ?></label>
-					<input type="radio" name="_discount_quantity_amount_status" id="_discount_quantity_amount_status0" value="0" checked="checked" />
-					<label for="_discount_quantity_amount_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_discount_quantity_amount_status" id="_discount_quantity_amount_status1" value="1" />
-					<label for="_discount_quantity_amount_status1"><?php _e("Change To"); ?>:</label>
-					<input type="text" name="_discount_quantity_amount" id="_discount_quantity_amount" value="" class="cfbe_field_name" onfocus="jQuery('#_discount_quantity_amount_status1').prop('checked', true);" style="width: 300px;" />
-					<small>(<a href="http://wiki.foxycart.com/v/0.7.1/coupons_and_discounts" target="_blank"><?php _e('Reference'); ?></a>)</small>
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="_discount_quantity_percentage" class="cfbe_special_label"><?php _e('Discount Qty %'); ?></label>
-					<input type="radio" name="_discount_quantity_percentage_status" id="_discount_quantity_percentage_status0" value="0" checked="checked" />
-					<label for="_discount_quantity_percentage_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_discount_quantity_percentage_status" id="_discount_quantity_percentage_status1" value="1" />
-					<label for="_discount_quantity_percentage_status1"><?php _e("Change To"); ?>:</label>
-					<input type="text" name="_discount_quantity_percentage" id="_discount_quantity_percentage" value="" class="cfbe_field_name" onfocus="jQuery('#_discount_quantity_percentage_status1').prop('checked', true);" style="width: 300px;" />
-					<small>(<a href="http://wiki.foxycart.com/v/0.7.1/coupons_and_discounts" target="_blank"><?php _e('Reference'); ?></a>)</small>
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="_discount_price_amount" class="cfbe_special_label"><?php _e('Discount Price $'); ?></label>
-					<input type="radio" name="_discount_price_amount_status" id="_discount_price_amount_status0" value="0" checked="checked" />
-					<label for="_discount_price_amount_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_discount_price_amount_status" id="_discount_price_amount_status1" value="1" />
-					<label for="_discount_price_amount_status1"><?php _e("Change To"); ?>:</label>
-					<input type="text" name="_discount_price_amount" id="_discount_price_amount" value="" class="cfbe_field_name" onfocus="jQuery('#_discount_price_amount_status1').prop('checked', true);" style="width: 300px;" />
-					<small>(<a href="http://wiki.foxycart.com/v/0.7.1/coupons_and_discounts" target="_blank"><?php _e('Reference'); ?></a>)</small>
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="_discount_price_percentage" class="cfbe_special_label"><?php _e('Discount Price %'); ?></label>
-					<input type="radio" name="_discount_price_percentage_status" id="_discount_price_percentage_status0" value="0" checked="checked" />
-					<label for="_discount_price_percentage_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_discount_price_percentage_status" id="_discount_price_percentage_status1" value="1" />
-					<label for="_discount_price_percentage_status1"><?php _e("Change To"); ?>:</label>
-					<input type="text" name="_discount_price_percentage" id="_discount_price_percentage" value="" class="cfbe_field_name" onfocus="jQuery('#_discount_price_percentage_status1').prop('checked', true);" style="width: 300px;" />
-					<small>(<a href="http://wiki.foxycart.com/v/0.7.1/coupons_and_discounts" target="_blank"><?php _e('Reference'); ?></a>)</small>
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<?php if ($foxyshop_settings['enable_subscriptions']) : ?>
-			<tr>
-				<td>
-					<label for="_sub_frequency" class="cfbe_special_label"><?php _e('Sub. Frequency'); ?></label>
-					<input type="radio" name="_sub_frequency_status" id="_sub_frequency_status0" value="0" checked="checked" />
-					<label for="_sub_frequency_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_sub_frequency_status" id="_sub_frequency_status1" value="1" />
-					<label for="_sub_frequency_status1"><?php _e("Change To"); ?>:</label>
-					<input type="text" name="_sub_frequency" id="_sub_frequency" value="" class="cfbe_field_name" onfocus="jQuery('#_sub_frequency_status1').prop('checked', true);" style="width: 46px;" />
-					<small>(<a href="http://wiki.foxycart.com/v/0.7.1/cheat_sheet#subscription_product_options" target="_blank"><?php _e('Reference'); ?></a>)</small>
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="_sub_startdate" class="cfbe_special_label"><?php _e('Sub. Start Date'); ?></label>
-					<input type="radio" name="_sub_startdate_status" id="_sub_startdate_status0" value="0" checked="checked" />
-					<label for="_sub_startdate_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_sub_startdate_status" id="_sub_startdate_status1" value="1" />
-					<label for="_sub_startdate_status1"><?php _e("Change To"); ?>:</label>
-					<input type="text" name="_sub_startdate" id="_sub_startdate" value="" class="cfbe_field_name" onfocus="jQuery('#_sub_startdate_status1').prop('checked', true);" />
-					<small>(<a href="http://wiki.foxycart.com/v/0.7.1/cheat_sheet#subscription_product_options" target="_blank"><?php _e('Reference'); ?></a>)</small>
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="_sub_enddate" class="cfbe_special_label"><?php _e('Sub. End Date'); ?></label>
-					<input type="radio" name="_sub_enddate_status" id="_sub_enddate_status0" value="0" checked="checked" />
-					<label for="_sub_enddate_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_sub_enddate_status" id="_sub_enddate_status1" value="1" />
-					<label for="_sub_enddate_status1"><?php _e("Change To"); ?>:</label>
-					<input type="text" name="_sub_enddate" id="_sub_enddate" value="" class="cfbe_field_name" onfocus="jQuery('#_sub_enddate_status1').prop('checked', true);" />
-					<small>(<a href="http://wiki.foxycart.com/v/0.7.1/cheat_sheet#subscription_product_options" target="_blank"><?php _e('Reference'); ?></a>)</small>
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<?php else : ?>
-				<input type="hidden" name="_sub_frequency_status" value="0" />
-				<input type="hidden" name="_sub_startdate_status" value="0" />
-				<input type="hidden" name="_sub_enddate_status" value="0" />
-			<?php endif; ?>
-			<tr>
-				<td>
-					<?php
-					$all_product_list = "";
-					$args = array('post_type' => 'foxyshop_product', 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC');
-					$all_products = get_posts($args);
-					foreach ($all_products as $product) {
-						$all_product_list .= '<option value="' . $product->ID . '">' . $product->post_title . '</option>'."\n";
-					}?>
-
-					<label for="_related_products_list" class="cfbe_special_label"><?php _e('Related Products'); ?></label>
-					<input type="radio" name="_related_products_status" id="_related_products_status0" value="0" checked="checked" />
-					<label for="_related_products_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_related_products_status" id="_related_products_status1" value="1" />
-					<label for="_related_products_status1"><?php _e("Change To"); ?>:</label>
-					<select name="_related_products_list[]" id="_related_products_list" data-placeholder="Search for <?php echo FOXYSHOP_PRODUCT_NAME_PLURAL; ?>" style="width: 100%;" class="chzn-select" multiple="multiple">
-						<?php echo $all_product_list; ?>
-					</select>
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<?php if ($foxyshop_settings['enable_bundled_products']) : ?>
-			<tr>
-				<td>
-					<label for="_bundled_products_list" class="cfbe_special_label"><?php _e('Bundled Products'); ?></label>
-					<input type="radio" name="_bundled_products_status" id="_bundled_products_status0" value="0" checked="checked" />
-					<label for="_bundled_products_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
-					<input type="radio" name="_bundled_products_status" id="_bundled_products_status1" value="1" />
-					<label for="_bundled_products_status1"><?php _e("Change To"); ?>:</label>
-					<select name="_bundled_products_list[]" id="_bundled_products_list" data-placeholder="Search for <?php echo FOXYSHOP_PRODUCT_NAME_PLURAL; ?>" style="width: 100%;" class="chzn-select" multiple="multiple">
-						<?php echo $all_product_list; ?>
-					</select>
-					<div style="clear: both;"></div>
-				</td>
-			</tr>
-			<?php else : ?>
-				<input type="hidden" name="_bundled_products_status" value="0" />
-			<?php endif; ?>
-		</tbody>
-	</table>
-
-
-
-<script type="text/javascript">
-jQuery(document).ready(function($){
-
-	<?php if (version_compare($wp_version, '3.1', '>=')) { ?>
-	$("#_salestartdate, #_saleenddate").datepicker({ dateFormat: 'm/d/yy' });
-	<?php } ?>
-	$(".chzn-select").chosen();
-	$(".chzn-container").css("width", "400px");
-	$(".chzn-drop").css("width", "399px");
-});
-</script>
-
-<?php
-}
-add_action('cfbe_before_metabox', 'foxyshop_cfbe_metabox');
-
-function foxyshop_cfbe_save($post_type, $post_id) {
-	if ($post_type != "foxyshop_product") return;
-	
-	if ($_POST['_category_status'] == 1) {
-		cfbe_save_meta_data('_category', $_POST['_category']);
-	}
-	if ($_POST['_quantity_min_status'] == 1) {
-		cfbe_save_meta_data('_quantity_min', (int)$_POST['_quantity_min']);
-	}
-	if ($_POST['_quantity_max_status'] == 1) {
-		cfbe_save_meta_data('_quantity_max', (int)$_POST['_quantity_max']);
-	}
-	if ($_POST['_price_status'] == 1) {
-		$new_price = number_format((double)str_replace("$","",str_replace(",","",$_POST['_price'])),2,".","");
-		cfbe_save_meta_data('_price', $new_price);
-	}
-	if ($_POST['_weight_status'] == 1) {
-		cfbe_save_meta_data('_weight', $_POST['_weight']);
-	}
-	if ($_POST['_saleprice_status'] == 1) {
-		$new_price = number_format((double)str_replace("$","",str_replace(",","",$_POST['_saleprice'])),2,".","");
-		cfbe_save_meta_data('_saleprice', $new_price);
-	}
-	if ($_POST['_discount_quantity_amount_status'] == 1) {
-		cfbe_save_meta_data('_discount_quantity_amount', $_POST['_discount_quantity_amount']);
-	}
-	if ($_POST['_discount_quantity_percentage_status'] == 1) {
-		cfbe_save_meta_data('_discount_quantity_percentage', $_POST['_discount_quantity_percentage']);
-	}
-	if ($_POST['_discount_price_amount_status'] == 1) {
-		cfbe_save_meta_data('_discount_price_amount', $_POST['_discount_price_amount']);
-	}
-	if ($_POST['_discount_price_percentage_status'] == 1) {
-		cfbe_save_meta_data('_discount_price_percentage', $_POST['_discount_price_percentage']);
-	}
-	if ($_POST['_sub_frequency_status'] == 1) {
-		cfbe_save_meta_data('_sub_frequency', $_POST['_sub_frequency']);
-	}
-	if ($_POST['_sub_startdate_status'] == 1) {
-		cfbe_save_meta_data('_sub_startdate', $_POST['_sub_startdate']);
-	}
-	if ($_POST['_sub_enddate_status'] == 1) {
-		cfbe_save_meta_data('_sub_enddate', $_POST['_sub_enddate']);
-	}
-	if ($_POST['_salestartdate_status'] == 1) {
-		if (($_salestartdate = strtotime($_POST['_salestartdate'])) === false) cfbe_save_meta_data('_salestartdate',"999999999999999999");
-		else cfbe_save_meta_data('_salestartdate', $_salestartdate);
-	}
-	if ($_POST['_saleenddate_status'] == 1) {
-		if (($_saleenddate = strtotime($_POST['_saleenddate'])) === false) cfbe_save_meta_data('_saleenddate',"999999999999999999");
-		else cfbe_save_meta_data('_saleenddate', $_saleenddate);
-	}
-	if ($_POST['_hide_product_status'] != 0) {
-		cfbe_save_meta_data('_hide_product', $_POST['_hide_product_status'] == 1 ? "on" : "");
-	}
-	if ($_POST['_related_products_status'] == 1) {
-		if (isset($_POST['_related_products_list'])) {
-			cfbe_save_meta_data('_related_products',implode(",",$_POST['_related_products_list']));
-		} else {
-			cfbe_save_meta_data('_related_products',"");
-		}
-	}
-	if ($_POST['_bundled_products_status'] == 1) {
-		if (isset($_POST['_bundled_products_list'])) {
-			cfbe_save_meta_data('_bundled_products',implode(",",$_POST['_bundled_products_list']));
-		} else {
-			cfbe_save_meta_data('_bundled_products',"");
-		}
-	}
-}
-add_action('cfbe_save_fields', 'foxyshop_cfbe_save', 10, 2);
 
 
 

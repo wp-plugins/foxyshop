@@ -316,9 +316,11 @@ class FoxyShop_Category_List extends WP_Widget {
 
 
 //Dashboard Stats
-if ($foxyshop_settings['enable_dashboard_stats']) {
-	add_action('wp_dashboard_setup', 'add_foxyshop_dashboard_stats' );
-	add_action('wp_ajax_foxyshop_order_history_dashboard_action', 'foxyshop_order_history_dashboard_ajax');
+if (is_array($foxyshop_settings)) {
+	if ($foxyshop_settings['enable_dashboard_stats']) {
+		add_action('wp_dashboard_setup', 'add_foxyshop_dashboard_stats' );
+		add_action('wp_ajax_foxyshop_order_history_dashboard_action', 'foxyshop_order_history_dashboard_ajax');
+	}
 }
 
 function add_foxyshop_dashboard_stats() {

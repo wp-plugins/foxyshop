@@ -42,7 +42,7 @@ function foxyshop_inventory_management_page() {
 			$product_list = get_posts($args);
 			foreach ($product_list as $single_product) {
 				$product = foxyshop_setup_product($single_product);
-				$inventory_levels = unserialize(get_post_meta($single_product->ID,'_inventory_levels',TRUE));
+				$inventory_levels = maybe_unserialize(get_post_meta($single_product->ID,'_inventory_levels',TRUE));
 				if (!is_array($inventory_levels)) $inventory_levels = array();
 				foreach ($inventory_levels as $ivcode => $iv) {
 					
