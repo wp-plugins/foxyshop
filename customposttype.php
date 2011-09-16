@@ -921,7 +921,7 @@ jQuery(document).ready(function($){
 	//Check For Illegal Titles
 	$("input.variation_name").live("blur", function() {
 		var thisval = $(this).val().toLowerCase();
-		if (thisval == "code" || thisval == "codes" || thisval == "price" || thisval == "name" || thisval == "quantity" || thisval == "category" || thisval == "weight" || thisval == "shipto") {
+		if (thisval == "code" || thisval == "codes" || thisval == "price" || thisval == "name" || thisval == "category" || thisval == "weight" || thisval == "shipto") {
 			alert("Sorry! The title '" + thisval + "' cannot be used as a variation name.");
 			return false;
 		}
