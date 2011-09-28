@@ -10,27 +10,18 @@ function foxyshop_load_widgets() {
 
 class FoxyShop_Category extends WP_Widget {
 
-	/**
-	 * Widget setup.
-	 */
+	//Widget Setup
 	function FoxyShop_Category() {
-		/* Widget settings. */
 		$widget_ops = array( 'classname' => 'foxyshop_category', 'description' => __('Show the contents of a FoxyShop ') . strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR) . __(' category.') );
-
-		/* Widget control settings. */
 		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'foxyshop-category-widget' );
-
-		/* Create the widget. */
 		$this->WP_Widget( 'foxyshop-category-widget', __('FoxyShop Category'), $widget_ops, $control_ops );
 	}
 
-	/**
-	 * How to display the widget on the screen.
-	 */
+	//Widget Display
 	function widget( $args, $instance ) {
 		extract( $args );
 
-		/* Our variables from the widget settings. */
+		//Our variables from the widget settings
 		$title = apply_filters('widget_title', $instance['title'] );
 		$categoryName = $instance['categoryName'];
 		$showMoreDetails = isset( $instance['showMoreDetails'] ) ? $instance['showMoreDetails'] : false;
@@ -52,9 +43,7 @@ class FoxyShop_Category extends WP_Widget {
 		echo $after_widget;
 	}
 
-	/**
-	 * Update the widget settings.
-	 */
+	//Update Widget Settings
 	function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
 
@@ -71,14 +60,10 @@ class FoxyShop_Category extends WP_Widget {
 		return $instance;
 	}
 
-	/**
-	 * Displays the widget settings controls on the widget panel.
-	 * Make use of the get_field_id() and get_field_name() function
-	 * when creating your form elements. This handles the confusing stuff.
-	 */
+	//Widget Control Panel
 	function form( $instance ) {
 
-		/* Set up some default widget settings. */
+		//Defaults
 		$defaults = array(
 			'title' => "",
 			'categoryName' => "",
@@ -144,12 +129,14 @@ class FoxyShop_Category extends WP_Widget {
 
 class FoxyShop_Cart_Link extends WP_Widget {
 
+	//Widget Setup
 	function FoxyShop_Cart_Link() {
 		$widget_ops = array( 'classname' => 'foxyshop_cart_link', 'description' => __('Show a link to view shopping cart.') );
 		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'foxyshop-cart-link-widget' );
 		$this->WP_Widget( 'foxyshop-cart-link-widget', __('FoxyShop Cart Link'), $widget_ops, $control_ops );
 	}
 
+	//Widget Display
 	function widget( $args, $instance ) {
 		extract( $args );
 
@@ -167,9 +154,7 @@ class FoxyShop_Cart_Link extends WP_Widget {
 		echo $after_widget;
 	}
 
-	/**
-	 * Update the widget settings.
-	 */
+	//Update Widget Settings
 	function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
 
@@ -183,17 +168,13 @@ class FoxyShop_Cart_Link extends WP_Widget {
 		return $instance;
 	}
 
-	/**
-	 * Displays the widget settings controls on the widget panel.
-	 * Make use of the get_field_id() and get_field_name() function
-	 * when creating your form elements. This handles the confusing stuff.
-	 */
+	//Widget Control Panel
 	function form( $instance ) {
 
-		/* Set up some default widget settings. */
+		//Defaults
 		$defaults = array(
-			'title' => "",
-			'linkText' => "",
+			'title' => "Your Shopping Cart",
+			'linkText' => "View Cart",
 			'hideEmpty' => ""
 		);
 		$instance = wp_parse_args((array)$instance, $defaults); ?>
@@ -225,64 +206,51 @@ class FoxyShop_Cart_Link extends WP_Widget {
 
 class FoxyShop_Category_List extends WP_Widget {
 
-	/**
-	 * Widget setup.
-	 */
+	//Widget setup.
 	function FoxyShop_Category_List() {
-		/* Widget settings. */
 		$widget_ops = array( 'classname' => 'foxyshop_category_list', 'description' => __('Show the FoxyShop category list.') );
-
-		/* Widget control settings. */
 		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'foxyshop-category-list-widget' );
-
-		/* Create the widget. */
 		$this->WP_Widget( 'foxyshop-category-list-widget', __('FoxyShop Category List'), $widget_ops, $control_ops );
 	}
 
-	/**
-	 * How to display the widget on the screen.
-	 */
+	//Widget Display
 	function widget( $args, $instance ) {
 		extract( $args );
-
-		/* Our variables from the widget settings. */
 		$title = apply_filters('widget_title', $instance['title'] );
 		$categoryID = $instance['categoryID'];
+		$depth = $instance['depth'];
+		if ($depth == "") $depth = 1;
 
 		echo $before_widget;
 		if ($title) echo $before_title . $title . $after_title;
 
 		echo '<ul>';
-		foxyshop_simple_category_children($categoryID);
+		foxyshop_simple_category_children($categoryID, $depth);
 		echo '</ul>';
 
 		echo $after_widget;
 	}
 
-	/**
-	 * Update the widget settings.
-	 */
+	//Update Widget Settings
 	function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
 
-		/* Strip tags for title and name to remove HTML (important for text inputs). */
+		// Strip tags for title and name to remove HTML (important for text inputs)
 		$instance['title'] = strip_tags($new_instance['title']);
 		$instance['categoryID'] = (int)strip_tags( $new_instance['categoryID']);
+		$instance['depth'] = strip_tags( $new_instance['depth'] );
 
 		return $instance;
 	}
 
-	/**
-	 * Displays the widget settings controls on the widget panel.
-	 * Make use of the get_field_id() and get_field_name() function
-	 * when creating your form elements. This handles the confusing stuff.
-	 */
+	//Widget Control Panel
 	function form( $instance ) {
 
-		/* Set up some default widget settings. */
+		//Defaults
 		$defaults = array(
 			'title' => "",
-			'categoryID' => 0
+			'categoryID' => 0,
+			'depth' => 1
 		);
 		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
 
@@ -294,19 +262,25 @@ class FoxyShop_Category_List extends WP_Widget {
 
 		<!-- Select Category -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'categoryID' ); ?>"><?php _e('Parent Category:'); ?></label> 
-			<select id="<?php echo $this->get_field_id( 'categoryID' ); ?>" name="<?php echo $this->get_field_name( 'categoryID' ); ?>" class="widefat" style="width:100%;">
+			<label for="<?php echo $this->get_field_id('categoryID'); ?>"><?php _e('Parent Category:'); ?></label> 
+			<select id="<?php echo $this->get_field_id('categoryID'); ?>" name="<?php echo $this->get_field_name('categoryID'); ?>" class="widefat" style="width:100%;">
 				<option value="0">Top Level Categories</option>
 				<?php
 				$toplevelterms = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0');
 				$arrCategory = array();
 				foreach ($toplevelterms as $toplevelterm) {
-					echo '<option value="' . $toplevelterm->slug .'"';
-					if ($instance['categoryName'] == $toplevelterm->term_id) echo ' selected="selected"';
+					echo '<option value="' . $toplevelterm->term_id .'"';
+					if ($instance['categoryID'] == $toplevelterm->term_id) echo ' selected="selected"';
 					echo '>' . str_replace("_","",$toplevelterm->name) . '</option>';
 				}
 				?>
 			</select>
+		</p>
+		
+		<!-- Depth -->
+		<p>
+			<label for="<?php echo $this->get_field_id( 'depth' ); ?>"><?php _e('Depth:'); ?></label>
+			<input id="<?php echo $this->get_field_id( 'depth' ); ?>" name="<?php echo $this->get_field_name( 'depth' ); ?>" value="<?php echo $instance['depth']; ?>" style="width:50px;" /> <span class="small">(default: 1)</span>
 		</p>
 
 	<?php
@@ -336,7 +310,7 @@ function add_foxyshop_dashboard_stats() {
 
 function foxyshop_dashboard_stats() {
 	echo '<div id="foxyshop_statsright">'."\n";
-	echo '<img src="' . FOXYSHOP_DIR . '/images/logo.png" alt="FoxyShop" />'."\n";
+	echo '<img src="' . FOXYSHOP_DIR . '/images/logo.png" alt="FoxyShop" style="width: 100%; max-width: 230px; float: right;" />'."\n";
 	echo '</div>';
 	
 	echo '<div id="foxyshop_statsleft">'."\n";

@@ -98,14 +98,13 @@ function foxyshop_category_sort() {
 		
 		$counter = 1;
 		foreach($product_categories as $cat) {
-			if (substr($cat->name,0,1) != "_") {
-				echo '<li id="' . $cat->term_id . '" class="lineitem">';
-				echo '<h4>' . $cat->name . '</h4>'."\n";
-				echo '<div class="counter">' . $counter . '</div>';
-				echo '<div style="clear: both; height: 1px;"></div>'."\n";
-				echo '</li>'."\n";
-				$counter++;
-			}
+			if (substr($cat->name,0,1) == "_") continue;
+			echo '<li id="' . $cat->term_id . '" class="lineitem">';
+			echo '<h4>' . $cat->name . '</h4>'."\n";
+			echo '<div class="counter">' . $counter . '</div>';
+			echo '<div style="clear: both; height: 1px;"></div>'."\n";
+			echo '</li>'."\n";
+			$counter++;
 		}
 		echo '</ul>'."\n";
 

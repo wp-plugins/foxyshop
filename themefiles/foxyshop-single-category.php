@@ -49,7 +49,7 @@ global $product;
 	
 	//Pagination
 	foxyshop_get_pagination();
-	
+
 	//Product Page Footer
 	foxyshop_include('footer');
 	?>

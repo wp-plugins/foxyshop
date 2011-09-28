@@ -8,8 +8,6 @@ function foxyshop_subscription_management_menu() {
 function foxyshop_subscription_management() {
 	global $foxyshop_settings, $wp_version;
 	
-	foxyshop_list_table_setup('subscriptions');
-
 	//Setup Fields and Defaults
 	$foxy_data_defaults = array(
 		"is_active_filter" => "",
@@ -35,7 +33,7 @@ function foxyshop_subscription_management() {
 	$foxy_data = wp_parse_args(array("api_action" => "subscription_list"), $foxy_data_defaults);
 	$querystring = "?post_type=foxyshop_product&amp;page=foxyshop_subscription_management&amp;foxyshop_search=1";
 	
-	if (isset($_GET['foxyshop_search'])) {
+	if (isset($_GET['foxyshop_search']) || !defined('FOXYSHOP_AUTO_API_DISABLED')) {
 		$fields = array("is_active_filter", "frequency_filter", "past_due_amount_filter","start_date_filter_begin", "start_date_filter_end", "next_transaction_date_filter_begin", "next_transaction_date_filter_end", "end_date_filter_begin", "end_date_filter_end", "third_party_id_filter", "last_transaction_id_filter", "customer_id_filter", "customer_email_filter", "customer_first_name_filter", "customer_last_name_filter", "product_code_filter", "product_name_filter", "product_option_name_filter", "product_option_value_filter");
 		foreach ($fields as $field) {
 			if (isset($_GET[$field])) {
@@ -50,16 +48,16 @@ function foxyshop_subscription_management() {
 	?>	
 	
 	<div class="wrap">
+		<div class="icon32 icon32-posts-page" id="icon-edit-pages"><br></div>
 		<h2>Manage Subscriptions</h2>
 
-
-		<form action="edit.php" method="get" id="foxyshop_searchform" name="foxyshop_searchform" style="display: block; margin-bottom: 20px;">
+		<form action="edit.php" method="get" id="foxyshop_searchform" name="foxyshop_searchform" style="display: block; margin: 14px 0 20px 0;">
 		<input type="hidden" name="foxyshop_search" value="1" />
 		<input type="hidden" name="post_type" value="foxyshop_product" />
 		<input type="hidden" name="page" value="foxyshop_subscription_management" />
 
 		<table class="widefat">
-		<thead><tr><th colspan="2"><?php _e('Search Options'); ?></th></tr></thead>
+		<thead><tr><th colspan="2"><img src="<?php echo FOXYSHOP_DIR; ?>/images/search-icon.png" alt="" /><?php _e('Search Options'); ?></th></tr></thead>
 		<tbody><tr><td>
 			<div class="foxyshop_field_control">
 				<label for="is_active_filter">Subscription Type</label>
@@ -108,18 +106,24 @@ function foxyshop_subscription_management() {
 		</td><td>
 
 			<div class="foxyshop_field_control">
-				<label for="start_date_filter_begin">Start Date</label><input type="text" name="start_date_filter_begin" id="start_date_filter_begin" value="<?php echo $foxy_data['start_date_filter_begin']; ?>" />
-				<span>to</span><input type="text" name="start_date_filter_end" id="start_date_filter_end" value="<?php echo $foxy_data['start_date_filter_end']; ?>" />
+				<label for="start_date_filter_begin">Start Date</label>
+				<input type="text" name="start_date_filter_begin" id="start_date_filter_begin" value="<?php echo $foxy_data['start_date_filter_begin']; ?>" class="foxyshop_date_field" />
+				<span>to</span>
+				<input type="text" name="start_date_filter_end" id="start_date_filter_end" value="<?php echo $foxy_data['start_date_filter_end']; ?>" class="foxyshop_date_field" />
 				<span>YYYY-MM-DD</span>
 			</div>
 			<div class="foxyshop_field_control">
-				<label for="next_transaction_date_filter_begin">Next Transaction Date</label><input type="text" name="next_transaction_date_filter_begin" id="next_transaction_date_filter_begin" value="<?php echo $foxy_data['next_transaction_date_filter_begin']; ?>" />
-				<span>to</span><input type="text" name="next_transaction_date_filter_end" id="next_transaction_date_filter_end" value="<?php echo $foxy_data['next_transaction_date_filter_end']; ?>" />
+				<label for="next_transaction_date_filter_begin">Next Transaction Date</label>
+				<input type="text" name="next_transaction_date_filter_begin" id="next_transaction_date_filter_begin" value="<?php echo $foxy_data['next_transaction_date_filter_begin']; ?>" class="foxyshop_date_field" />
+				<span>to</span>
+				<input type="text" name="next_transaction_date_filter_end" id="next_transaction_date_filter_end" value="<?php echo $foxy_data['next_transaction_date_filter_end']; ?>" class="foxyshop_date_field" />
 				<span>YYYY-MM-DD</span>
 			</div>
 			<div class="foxyshop_field_control">
-				<label for="end_date_filter_begin">End Date</label><input type="text" name="end_date_filter_begin" id="end_date_filter_begin" value="<?php echo $foxy_data['end_date_filter_begin']; ?>" />
-				<span>to</span><input type="text" name="end_date_filter_end" id="end_date_filter_end" value="<?php echo $foxy_data['end_date_filter_end']; ?>" />
+				<label for="end_date_filter_begin">End Date</label>
+				<input type="text" name="end_date_filter_begin" id="end_date_filter_begin" value="<?php echo $foxy_data['end_date_filter_begin']; ?>" class="foxyshop_date_field" />
+				<span>to</span>
+				<input type="text" name="end_date_filter_end" id="end_date_filter_end" value="<?php echo $foxy_data['end_date_filter_end']; ?>" class="foxyshop_date_field" />
 				<span>YYYY-MM-DD</span>
 			</div>
 		
@@ -147,57 +151,70 @@ function foxyshop_subscription_management() {
 		<?php if (version_compare($wp_version, '3.1', '>=')) { ?>
 		<script type="text/javascript" charset="utf-8">
 		jQuery(document).ready(function($) {
-			$("#start_date_filter_begin, #start_date_filter_end, #next_transaction_date_filter_begin, #next_transaction_date_filter_end, #end_date_filter_begin, #end_date_filter_end").datepicker({ dateFormat: 'yy-mm-dd' });
+			$(".foxyshop_date_field").datepicker({ dateFormat: 'yy-mm-dd' });
 		});
 		</script>
 		<?php } ?>
 
 	<?php
-	if (!isset($_GET['foxyshop_search'])) return;
+	if (!isset($_GET['foxyshop_search']) && defined('FOXYSHOP_AUTO_API_DISABLED')) return;
 
 	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
 	
-	if ($xml->result == "ERROR") {
-		echo '<h3>' . $xml->messages->message . '</h3>';
+	if ((string)$xml->result == "ERROR") {
+		echo '<h3>' . (string)$xml->messages->message . '</h3>';
 		return;
 	}
 	?>
-	<table cellpadding="0" cellspacing="0" border="0" class="display foxyshop_table_list" id="subscriptions">
+	<table cellpadding="0" cellspacing="0" border="0" class="wp-list-table widefat foxyshop-list-table" id="subscription_table" style="margin-top: 14px;">
 		<thead>
 			<tr>
-				<th>Customer</th>
-				<th>Start Date</th>
-				<th>Next Date</th>
-				<th>End Date</th>
-				<th>Past Due</th>
-				<th>Details</th>
-				<th>Freq.</th>
+				<th><span><?php _e('Customer'); ?></span><span class="sorting-indicator"></span></th>
+				<th><span><?php _e('Start Date'); ?></span><span class="sorting-indicator"></span></th>
+				<th><span><?php _e('Next Date'); ?></span><span class="sorting-indicator"></span></th>
+				<th><span><?php _e('End Date'); ?></span><span class="sorting-indicator"></span></th>
+				<th><span><?php _e('Past Due'); ?></span><span class="sorting-indicator"></span></th>
+				<th><span><?php _e('Details'); ?></span><span class="sorting-indicator"></span></th>
+				<th><span><?php _e('Frequency'); ?></span><span class="sorting-indicator"></span></th>
 			</tr>
 		</thead>
+		<tfoot>
+			<tr>
+				<th><?php _e('Customer'); ?></th>
+				<th><?php _e('Start Date'); ?></th>
+				<th><?php _e('Next Date'); ?></th>
+				<th><?php _e('End Date'); ?></th>
+				<th><?php _e('Past Due'); ?></th>
+				<th><?php _e('Details'); ?></th>
+				<th><?php _e('Frequency'); ?></th>
+			</tr>
+		</tfoot>
 		<tbody>
+		
 	<?php
+	$holder = "";
 	foreach($xml->subscriptions->subscription as $subscription) {
-		$sub_token = $subscription->sub_token;
+		$sub_token = (string)$subscription->sub_token;
 		$customer_id = (string)$subscription->customer_id;
-		$customer_first_name = $subscription->customer_first_name;
-		$customer_last_name = $subscription->customer_last_name;
-		$start_date = $subscription->start_date;
-		$next_transaction_date = $subscription->next_transaction_date;
-		$end_date = $subscription->end_date;
-		$frequency = $subscription->frequency;
-		$past_due_amount = $subscription->past_due_amount;
-		$is_active = $subscription->is_active;
+		$customer_first_name = (string)$subscription->customer_first_name;
+		$customer_last_name = (string)$subscription->customer_last_name;
+		$start_date = (string)$subscription->start_date;
+		$next_transaction_date = (string)$subscription->next_transaction_date;
+		$end_date = (string)$subscription->end_date;
+		$frequency = (string)$subscription->frequency;
+		$past_due_amount = (string)$subscription->past_due_amount;
+		$is_active = (string)$subscription->is_active;
 		if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) {
 			foreach($subscription->transaction_template->transaction_details->transaction_detail as $transaction_detail) {
-				$product_code = $transaction_detail->product_code;
-				$product_name = $transaction_detail->product_name;
+				$product_code = (string)$transaction_detail->product_code;
+				$product_name = (string)$transaction_detail->product_name;
 				$product_price = (double)$transaction_detail->product_price;
 			}
-		} else {
+		} else { // The 0.7.0 code had an extra node, removed in subsequent versions
 			foreach($subscription->transaction_template->transaction_template->transaction_details->transaction_detail as $transaction_detail) {
-				$product_code = $transaction_detail->product_code;
-				$product_name = $transaction_detail->product_name;
+				$product_code = (string)$transaction_detail->product_code;
+				$product_name = (string)$transaction_detail->product_name;
 				$product_price = (double)$transaction_detail->product_price;
 			}
 		}
@@ -208,22 +225,126 @@ function foxyshop_subscription_management() {
 			$customer_name = $customer_id;
 		}
 		
-		$grade = "A";
-		if ($is_active == 0) $grade = "U";
-		if ($past_due_amount != 0) $grade = "X";
-		
-		echo '<tr rel="' . $sub_token . '" class="grade' . $grade . '">';
-		echo '<td><a href="edit.php?post_type=foxyshop_product&page=foxyshop_customer_management&customer_id_filter=' . $customer_id . '&foxyshop_search=1">' . $customer_name . '</a></td>';
+		echo '<tr rel="' . $sub_token . '">';
+		echo '<td>';
+		echo '<strong' . ($is_active == "0" ? ' class="strikethrough"' : '') . '><a href="#" class="view_detail">' . $customer_name . '</a></strong>';
+		echo '<div class="row-actions">';
+			echo '<span class="edit"><a title="' . __('Edit') . '" href="#" class="view_detail">' . __('Edit') . '</a> | </span>';
+			echo '<span class="view_customer"><a href="edit.php?post_type=foxyshop_product&page=foxyshop_customer_management&customer_id_filter=' . $customer_id . '&foxyshop_search=1" title="' . __('Customer') . '">' . __('Customer') . '</a></span>';
+			do_action('foxyshop_subscription_action_line', $subscription);
+		echo '</div>';
+		echo '</td>';
 		echo '<td>' . $start_date . '</td>';
 		echo '<td>' . $next_transaction_date . '</td>';
 		echo '<td>' . $end_date . '</td>';
 		echo '<td>' . $past_due_amount . '</td>';
 		echo '<td>' . $product_name . ': ' . foxyshop_currency($product_price) . '</td>';
 		echo '<td>' . $frequency . '</td>';
-		echo '</tr>'."\n";
-	}
+		echo "</tr>\n";
+
+		$holder .= '<div class="detail_holder" id="holder_' . $sub_token. '">'."\n";
+		$holder .= '<form class="subscription_update_form" name="subscription_update_form_' . $sub_token. '" id="subscription_update_form_' . $sub_token. '" onsubmit="return false;">'."\n";
+		$holder .= '<div class="foxyshop_field_control">'."\n";
+		$holder .= '<label>Subscription Status</label>'."\n";
+		$holder .= '<input type="radio" name="is_active" id="is_active_1_' . $sub_token. '" value="1"' . ($is_active == "1" ? ' checked="checked"' : '') . ' style="float: left; margin-top: 7px;" />'."\n";
+		$holder .= '<label for="is_active_1_' . $sub_token. '" style="width: 55px;">Active</label>'."\n";
+		$holder .= '<input type="radio" name="is_active" id="is_active_0_' . $sub_token. '" value="0"' . ($is_active == "0" ? ' checked="checked"' : '') . ' style="float: left; margin-top: 7px;" />'."\n";
+		$holder .= '<label for="is_active_0_' . $sub_token. '">In-active</label>'."\n";
+		$holder .= '</div>'."\n";
+		$holder .= '<div class="foxyshop_field_control">'."\n";
+		$holder .= '<label for="start_date_' . $sub_token. '">Start Date</label>'."\n";
+		$holder .= '<input type="text" name="start_date" id="start_date_' . $sub_token. '" class="foxyshop_date_field" value="' . (string)$subscription->start_date. '" /><span>(YYYY-MM-DD)</span>'."\n";
+		$holder .= '</div>'."\n";
+		$holder .= '<div class="foxyshop_field_control">'."\n";
+		$holder .= '<label for="next_transaction_date_' . $sub_token. '">Next Transaction Date</label>'."\n";
+		$holder .= '<input type="text" name="next_transaction_date" id="next_transaction_date_' . $sub_token. '" value="' . (string)$subscription->next_transaction_date. '" class="foxyshop_date_field" /><span>(YYYY-MM-DD)</span>'."\n";
+		$holder .= '</div>'."\n";
+		$holder .= '<div class="foxyshop_field_control">'."\n";
+		$holder .= '<label for="end_date__' . $sub_token. '">End Date</label>'."\n";
+		$holder .= '<input type="text" name="end_date" id="end_date_' . $sub_token. '" value="' . $end_date. '" class="foxyshop_date_field" /><span>(YYYY-MM-DD) <a href="#" onclick="jQuery(\'#end_date_' . $sub_token. '\').val(\'0000-00-00\'); return false;">Never?</a></span>'."\n";
+		$holder .= '</div>'."\n";
+		$holder .= '<div class="foxyshop_field_control">'."\n";
+		$holder .= '<label for="frequency__' . $sub_token. '">Frequency</label>'."\n";
+		$holder .= '<input type="text" name="frequency" id="frequency' . $sub_token. '" value="' . $frequency. '" /><span>(60d, 2w, 1m, 1y, .5m)</span>'."\n";
+		$holder .= '</div>'."\n";
+		$holder .= '<div class="foxyshop_field_control">'."\n";
+		$holder .= '<label for="past_due_amount__' . $sub_token. '">Past Due Amount</label>'."\n";
+		$holder .= '<input type="text" name="past_due_amount" id="past_due_amount' . $sub_token. '" value="' . $past_due_amount. '" /><span>(0.00)</span>'."\n";
+		$holder .= '</div>'."\n";
+		$holder .= '<div class="foxyshop_field_control">'."\n";
+		$holder .= '<label for="update_url__' . $sub_token. '">Update URL</label>'."\n";
+		$holder .= '<input type="text" name="update_url" id="update_url' . $sub_token. '" value="https://' . $foxyshop_settings['domain']. '/cart?sub_token=' . $sub_token . '&amp;cart=checkout" style="width: 390px;" onclick="this.select();" />'."\n";
+		$holder .= '</div>'."\n";
+		$holder .= '<div class="foxyshop_field_control">'."\n";
+		$holder .= '<label for="cancel_url__' . $sub_token. '">Cancellation URL</label>'."\n";
+		$holder .= '<input type="text" name="cancel_url" id="cancel_url_' . $sub_token. '" value="https://' . $foxyshop_settings['domain']. '/cart?sub_token=' . $sub_token . '&amp;cart=checkout&amp;sub_cancel=true" style="width: 390px;" onclick="this.select();" />'."\n";
+		$holder .= '</div>'."\n";
+		$holder .= '<p style="padding-top: 5px; clear: both"><a href="#" class="subscription_save button-primary">Save Changes</a> <a href="#" class="detail_close button">Cancel</a></p>'."\n";
+		$holder .= '<input type="hidden" name="sub_token" value="' . $sub_token. '" />'."\n";
+		$holder .= '<input type="hidden" name="action" value="foxyshop_display_list_ajax_action" />'."\n";
+		$holder .= '<input type="hidden" name="foxyshop_action" value="subscription_modify" />'."\n";
+		$holder .= '<input type="hidden" name="security" value="' . wp_create_nonce("foxyshop-display-list-function") . '" />'."\n";
+		$holder .= '</form>'."\n";
+		$holder .= '</div>'."\n";
+		
+		
+	} ?>
+	</tbody>
+	</table>
 	
-	echo '</tbody></table>';
+	<div id="details_holder"><?php echo $holder; ?></div>
+	
+	<script type="text/javascript" src="<?php echo FOXYSHOP_DIR; ?>/js/jquery.tablesorter.js"></script>
+	<script type="text/javascript">
+	jQuery(document).ready(function($){
+		$(".foxyshop-list-table thead th").click(function() {
+			$("#foxyshop-list-inline .detail_holder").appendTo("#details_holder");
+			$("#foxyshop-list-inline").remove();
+		});
+		$(".foxyshop-list-table").tablesorter({
+			'cssDesc': 'asc sorted',
+			'cssAsc': 'desc sorted'
+		});
+		$(".view_detail").click(function() {
+			var id = $(this).parents("tr").attr("rel");
+
+			if ($("#foxyshop-list-inline #holder_" + id).length > 0) {
+				$("#foxyshop-list-inline .detail_holder").appendTo("#details_holder");
+				$("#foxyshop-list-inline").remove();
+			} else {
+				$("#foxyshop-list-inline .detail_holder").appendTo("#details_holder");
+				$("#foxyshop-list-inline").remove();
+
+				$(this).parents("tr").after('<tr id="foxyshop-list-inline"><td colspan="7"></td></tr>');
+				$("#holder_"+id).appendTo("#foxyshop-list-inline td");
+			}
+
+			return false;
+		});
+		$(".detail_close").click(function() {
+			$("#foxyshop-list-inline .detail_holder").appendTo("#details_holder");
+			$("#foxyshop-list-inline").remove();
+			return false;
+		});
+		$(".subscription_save").click(function() {
+			var id = $(this).parents("form").children("input[name='sub_token']").val();
+			$.post(ajaxurl, $(this).parents("form").serialize(), function(response) {
+
+				$("#foxyshop-list-inline .detail_holder").appendTo("#details_holder");
+				$("#foxyshop-list-inline").remove();
+
+				if (response.indexOf("ERROR") < 0) {
+					$("tr[rel='" + id + "']").css("background-color", "#FFFFE0").delay(500).animate({ backgroundColor: 'transparent' }, 500);
+				} else {
+					alert(response);
+				}
+			});
+			return false;
+		});
+	});
+	</script>
+	<?php
+	
 	
 	//Pagination
 	$p = (int)(version_compare($foxyshop_settings['version'], '0.7.0', "==") ? 50 : 50);

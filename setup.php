@@ -61,7 +61,7 @@ function foxyshop_setup() {
 </table>
 
 
-<form method="post" name="foxycart_settings_form" action="admin.php">
+<form method="post" name="foxycart_settings_form" action="admin.php" onsubmit="return foxyshop_check_settings_form();">
 <input type="hidden" name="action" value="foxyshop_setup_save" />
 
 <table class="widefat foxyshopsetup">
@@ -136,13 +136,17 @@ function foxyshop_setup() {
 <?php wp_nonce_field('save-foxyshop-setup'); ?>
 </form>
 
-
-
-
-
-
-
-
+<script type="text/javascript">
+function foxyshop_check_settings_form() {
+	var domain_name = jQuery("#foxyshop_domain").val();
+	if (domain_name && domain_name.indexOf('.') <= 0) {
+		alert('Uh oh! It looks like your domain name might not be entered correctly.\nIt should be your full foxycart domain like this: "yourname.foxycart.com".\nPlease try again or remove your entry for now.');
+		jQuery("#foxyshop_domain").focus();
+		return false;
+	}
+	return true;
+}
+</script>
 
 </div>
 <?php }

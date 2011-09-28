@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 3.3
+Stable tag: 3.4
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -62,6 +62,26 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 3.4 =
+* Added selectable product add-on feature
+* Added tools page to the admin
+* Added plugin recommendations to tools page
+* Added tool to import/export FoxyShop settings
+* Added uninstall instructions
+* Added built-in meta fields in site header for social media sharing
+* Added soft fail if error on API call
+* Inventory section re-skinned and now easier to use. Levels can be edited directly from the inventory management page.
+* Updated inventory values can be imported from a spreadsheet
+* The views for Orders/Subscriptions/Customers have been reskinned for a more consistent user interface and are much faster now
+* Product weight can now be disabled on a per-product basis if you don't want to pass weight to the cart
+* SSO: Redirection URL now persistent throughout login/redirect process
+* Browser title filter will be skipped if a title isn't set
+* Orders and subscriptions will display results immediately without having to make an initial search
+* Added depth option to category list widget
+* Bugfix: category list widget wasn't saving top-level term
+* Added lots of new filter hooks
+* See [Release Notes](http://www.foxy-shop.com/2011/09/version-3-4-add-on-products/) for more details
 
 = 3.3 =
 * Added functionality for automated relevant products by "product tag"

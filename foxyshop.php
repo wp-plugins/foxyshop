@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 3.3
+Version: 3.4
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -35,7 +35,7 @@ the most out of FoxyShop.
 **************************************************************************/
 
 //Setup Plugin Variables
-define('FOXYSHOP_VERSION', "3.3");
+define('FOXYSHOP_VERSION', "3.4");
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 $foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
@@ -59,7 +59,7 @@ elseif ($foxyshop_settings['foxyshop_version'] != FOXYSHOP_VERSION) $foxyshop_se
 $foxyshop_category_sort = maybe_unserialize(get_option('foxyshop_category_sort'));
 
 //Sets the Locale for Currency Internationalization
-setlocale(LC_MONETARY, (array_key_exists('locale_code',$foxyshop_settings) ? $foxyshop_settings['locale_code'] : get_locale()));
+setlocale(LC_MONETARY, $foxyshop_settings['locale_code']);
 $foxyshop_localsettings = localeconv();
 if ($foxyshop_localsettings['int_curr_symbol'] == "") setlocale(LC_MONETARY, 'en_US');
 
@@ -118,9 +118,10 @@ if ($foxyshop_settings['manage_inventory_levels']) {
 }
 
 //Generate Product Feed
-if ($foxyshop_settings['generate_feed']) {
-	include_once('productfeed.php');
-}
+include_once('productfeed.php');
+
+//Tools Page
+include_once('foxyshoptools.php');
 
 //Settings Page
 include_once('settings.php');

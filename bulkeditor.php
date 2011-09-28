@@ -284,6 +284,24 @@ function foxyshop_cfbe_metabox($post_type) {
 			<?php else : ?>
 				<input type="hidden" name="_bundled_products_status" value="0" />
 			<?php endif; ?>
+
+			<?php if ($foxyshop_settings['enable_addon_products']) : ?>
+			<tr>
+				<td>
+					<label for="_addon_products_list" class="cfbe_special_label"><?php _e('Add-on Products'); ?></label>
+					<input type="radio" name="_addon_products_status" id="_addon_products_status0" value="0" checked="checked" />
+					<label for="_addon_products_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
+					<input type="radio" name="_addon_products_status" id="_addon_products_status1" value="1" />
+					<label for="_addon_products_status1"><?php _e("Change To"); ?>:</label>
+					<select name="_addon_products_list[]" id="_addon_products_list" data-placeholder="Search for <?php echo FOXYSHOP_PRODUCT_NAME_PLURAL; ?>" style="width: 100%;" class="chzn-select" multiple="multiple">
+						<?php echo $all_product_list; ?>
+					</select>
+					<div style="clear: both;"></div>
+				</td>
+			</tr>
+			<?php else : ?>
+				<input type="hidden" name="_addon_products_status" value="0" />
+			<?php endif; ?>
 		</tbody>
 	</table>
 
@@ -355,6 +373,13 @@ function foxyshop_cfbe_save($post_type, $post_id) {
 			cfbe_save_meta_data('_bundled_products',implode(",",$_POST['_bundled_products_list']));
 		} else {
 			cfbe_save_meta_data('_bundled_products',"");
+		}
+	}
+	if ($_POST['_addon_products_status'] == 1) {
+		if (isset($_POST['_addon_products_list'])) {
+			cfbe_save_meta_data('_addon_products',implode(",",$_POST['_addon_products_list']));
+		} else {
+			cfbe_save_meta_data('_addon_products',"");
 		}
 	}
 }

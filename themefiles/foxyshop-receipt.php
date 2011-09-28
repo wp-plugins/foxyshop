@@ -76,11 +76,12 @@ th {
 }
 
 @media all {
-  .page-break  { display:none; }
+	.page-break  { display:none; }
 }
 
 @media print {
-  .page-break  { display:block; page-break-before:always; }
+	.page-break  { display:block; page-break-before:always; }
+	.noprint { display: none; }
 }
 </style>
 

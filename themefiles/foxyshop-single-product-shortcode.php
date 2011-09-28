@@ -69,6 +69,9 @@ foxyshop_include('header');
 
 	//Check Inventory Levels and Display Status (last variable allows ordering of out of stock items)
 	foxyshop_inventory_management("There are only %c item%s left in stock.", "Item is not in stock.", false);
+
+	//Add On Products ($qty, $before_entry, $after_entry)
+	foxyshop_addon_products(true);
 	
 	//Add To Cart Button
 	echo '<button type="submit" name="x:productsubmit" id="productsubmit" class="foxyshop_button">Add To Cart</button>';

@@ -29,38 +29,39 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 			if (defined('FOXYSHOP_CURL_SSL_VERIFYPEER')) curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FOXYSHOP_CURL_SSL_VERIFYPEER);
 			$curlout = trim(curl_exec($ch));
 			$sso_required = 0;
-		
-			$response = json_decode($curlout, true);
-			foreach($response['products'] as $product){
-				$code = $product['code'];
-				$product_name = $product['name'];
-				$product_id = 0;
-				
-				//Skip This if Login Already True
-				if (!$sso_required) {
-					//Lookup Product Code
-					$product_check = get_posts('post_type=foxyshop_product&meta_key=_code&meta_value=' . $code);
-					if ($product_check) {
-						foreach($product_check as $check1) {
-							$product_id = $check1->ID;
-						}
-					//If Not Found, Lookup ID
-					} else {
-						$product_check = get_posts('post_type=foxyshop_product&page_id=' . (int)$code);
+			if ($curlout) {
+				$response = json_decode($curlout, true);
+				foreach($response['products'] as $product){
+					$code = $product['code'];
+					$product_name = $product['name'];
+					$product_id = 0;
+
+					//Skip This if Login Already True
+					if (!$sso_required) {
+						//Lookup Product Code
+						$product_check = get_posts('post_type=foxyshop_product&meta_key=_code&meta_value=' . $code);
 						if ($product_check) {
 							foreach($product_check as $check1) {
-								if ($check1->ID == (int)$code) $product_id = $check1->ID;
+								$product_id = $check1->ID;
+							}
+						//If Not Found, Lookup ID
+						} else {
+							$product_check = get_posts('post_type=foxyshop_product&page_id=' . (int)$code);
+							if ($product_check) {
+								foreach($product_check as $check1) {
+									if ($check1->ID == (int)$code) $product_id = $check1->ID;
+								}
 							}
 						}
-					}
 
-					if ($product_id > 0) {
-						echo get_post_meta($product_id,'_require_sso', true);
-						if (get_post_meta($product_id,'_require_sso', true) == "on") $sso_required = 1;
+						if ($product_id > 0) {
+							echo get_post_meta($product_id,'_require_sso', true);
+							if (get_post_meta($product_id,'_require_sso', true) == "on") $sso_required = 1;
+						}
 					}
 				}
 			}
-
+			
 			//Do the Signup Redirect
 			if ($sso_required) {
 				$redirect_to = get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key'] . '/?timestamp=' . $_GET['timestamp'] . '&fcsid=' . $_GET['fcsid'];

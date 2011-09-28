@@ -72,7 +72,7 @@ function foxyshop_create_post_type() {
 	if ($foxyshop_settings['related_products_tags']) $post_type_taxonomies[] = 'foxyshop_tags';
 	register_post_type('foxyshop_product', array(
 		'labels' => $labels,
-		'description' => "FoxyShop ".FOXYSHOP_PRODUCT_NAME_PLURAL,
+		'description' => "FoxyShop " . FOXYSHOP_PRODUCT_NAME_PLURAL,
 		'public' => true,
 		'show_ui' => true,
 		'capability_type' => 'page',
@@ -112,8 +112,6 @@ function add_new_foxyshop_product_columns($cols) {
 	$new_columns['productcategory'] = FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category');
 	return $new_columns;
 }
-
-
 
 
 
@@ -256,8 +254,9 @@ function foxyshop_product_meta_init() {
 	add_meta_box('product_pricing_meta', 'Pricing Details', 'foxyshop_product_pricing_setup', 'foxyshop_product', 'side', 'low');
 	add_meta_box('product_images_meta', FOXYSHOP_PRODUCT_NAME_SINGULAR.' Images', 'foxyshop_product_images_setup', 'foxyshop_product', 'normal', 'high');
 	add_meta_box('product_variations_meta', FOXYSHOP_PRODUCT_NAME_SINGULAR.' Variations', 'foxyshop_product_variations_setup', 'foxyshop_product', 'normal', 'high');
-	if ($foxyshop_settings['related_products_custom']) add_meta_box('product_related_meta', 'Related '.FOXYSHOP_PRODUCT_NAME_PLURAL, 'foxyshop_related_products_setup', 'foxyshop_product', 'normal', 'low');
-	if ($foxyshop_settings['enable_bundled_products']) add_meta_box('product_bundled_meta', 'Bundled '.FOXYSHOP_PRODUCT_NAME_PLURAL, 'foxyshop_bundled_products_setup', 'foxyshop_product', 'normal', 'low');
+	if ($foxyshop_settings['related_products_custom']) add_meta_box('product_related_meta', __('Related').' '.FOXYSHOP_PRODUCT_NAME_PLURAL, 'foxyshop_related_products_setup', 'foxyshop_product', 'normal', 'low');
+	if ($foxyshop_settings['enable_bundled_products']) add_meta_box('product_bundled_meta', __('Bundled').' '.FOXYSHOP_PRODUCT_NAME_PLURAL, 'foxyshop_bundled_products_setup', 'foxyshop_product', 'normal', 'low');
+	if ($foxyshop_settings['enable_addon_products']) add_meta_box('product_addon_meta', __('Add-On').' '.FOXYSHOP_PRODUCT_NAME_PLURAL, 'foxyshop_addon_products_setup', 'foxyshop_product', 'normal', 'low');
 	add_action('save_post','foxyshop_product_meta_save');
 }
 
@@ -279,11 +278,21 @@ function foxyshop_product_details_setup() {
 	$defaultweight = explode(" ",$foxyshop_settings['default_weight']);
 	$defaultweight1 = (int)$defaultweight[0];
 	$defaultweight2 = (count($defaultweight) > 1 ? number_format($defaultweight[1],1) : "0.0");
-	$_weight = (get_post_meta($post->ID,'_weight',TRUE) ? explode(" ", get_post_meta($post->ID,'_weight',TRUE)) : array("0","0.0"));
-	
-	if ((int)$_weight[0] == 0 && (double)$_weight[1] == 0) {
-		$_weight[0] = $defaultweight1;
-		$_weight[1] = $defaultweight2;
+	$original_weight = get_post_meta($post->ID,'_weight',1);
+	if (!$original_weight && strpos($_SERVER['SCRIPT_FILENAME'], "post-new.php") === false) {
+		$disable_weight_checked = ' checked="checked"';
+		$_weight = array("", "");
+	} else {
+		$_weight = explode(" ", $original_weight);
+		if (!$original_weight) $_weight = array($defaultweight1, $defaultweight2);
+		$disable_weight_checked = "";
+		if ((int)$_weight[0] == 0 && (double)$_weight[1] == 0) {
+			$_weight[0] = $defaultweight1;
+			$_weight[1] = $defaultweight2;
+		} else {
+			$_weight[0] = (int)$_weight[0];
+			$_weight[1] = number_format($_weight[1],1);
+		}
 	}
 	
 	$_hide_product = get_post_meta($post->ID,'_hide_product',TRUE);
@@ -299,16 +308,18 @@ function foxyshop_product_details_setup() {
 	</div>
 	<div class="foxyshop_field_control">
 		<label for="_weight1"><?php _e('Weight'); ?></label>
-		<input type="text" name="_weight1" id="_weight1" value="<?php echo (int)$_weight[0]; ?>" />
-		<span style="float: left; margin: 9px 0 0 5px; width: 34px;"><?php echo ($foxyshop_settings['weight_type'] == "metric" ? 'kg' : 'lbs'); ?></span>
-		<input type="text" name="_weight2" id="_weight2" value="<?php echo number_format($_weight[1],1); ?>" />
-		<span style="float: left; margin: 9px 0 0 5px;"><?php echo ($foxyshop_settings['weight_type'] == "metric" ? 'gm' : 'oz'); ?></span>
+		<input type="text" name="_weight1" id="_weight1" value="<?php echo $_weight[0]; ?>"<?php if ($disable_weight_checked) echo ' disabled="disabled"'; ?> />
+		<span style="float: left; margin: 9px 0 0 5px; width: 21px;"><?php echo ($foxyshop_settings['weight_type'] == "metric" ? 'kg' : 'lbs'); ?></span>
+		<input type="text" name="_weight2" id="_weight2" value="<?php echo $_weight[1]; ?>"<?php if ($disable_weight_checked) echo ' disabled="disabled"'; ?> />
+		<span style="float: left; margin: 9px 0 0 5px; width: 23px;"><?php echo ($foxyshop_settings['weight_type'] == "metric" ? 'gm' : 'oz'); ?></span>
+		<input type="checkbox" name="weight_disable" id="weight_disable" title="<?php _e('Disable Weight'); ?>" style="float: left; margin-top: 7px;"<?php echo $disable_weight_checked; ?> />
+		<label id="weight_disable_label" for="weight_disable" style="float: left; margin: 6px 0 0 2px; width: 16px;" title="<?php _e('Disable Weight'); ?>" class="iconsprite <?php echo $disable_weight_checked ? "hide_color" : "hide_gray"; ?>"></label>
 	</div>
 	<div class="foxyshop_field_control">
 		<label for="_quantity_min"><?php _e('Qty Settings'); ?></label>
-		<input type="text" name="_quantity_min" id="_quantity_min" value="<?php echo $_quantity_min; ?>" title="<?php _e('Minimum Quantity'); ?>" style="width: 30px; float: left;" onblur="foxyshop_check_number_single(this);" />
+		<input type="text" name="_quantity_min" id="_quantity_min" value="<?php echo $_quantity_min; ?>" title="<?php _e('Minimum Quantity'); ?>" style="width: 33px; float: left;" onblur="foxyshop_check_number_single(this);"<?php if ($_quantity_hide) echo ' disabled="disabled"'; ?> />
 		<span id="quantity_min_label" style="float: left; margin: 6px 0 0 1px; width: 26px;" class="iconsprite <?php echo $_quantity_min ? "down_color" : "down_gray"; ?>"></span>
-		<input type="text" name="_quantity_max" id="_quantity_max" value="<?php echo $_quantity_max; ?>" title="<?php _e('Maximum Quantity'); ?>" style="width: 30px; float: left;" onblur="foxyshop_check_number_single(this);" />
+		<input type="text" name="_quantity_max" id="_quantity_max" value="<?php echo $_quantity_max; ?>" title="<?php _e('Maximum Quantity'); ?>" style="width: 33px; float: left;" onblur="foxyshop_check_number_single(this);"<?php if ($_quantity_hide) echo ' disabled="disabled"'; ?> />
 		<span id="quantity_max_label" style="float: left; margin: 6px 0 0 1px; width: 26px;" class="iconsprite <?php echo $_quantity_max ? "up_color" : "up_gray"; ?>"></span>
 		<input type="checkbox" name="_quantity_hide" id="_quantity_hide" title="<?php _e('Hide Quantity Box'); ?>" style="float: left; margin-top: 7px;"<?php echo checked($_quantity_hide,"on"); ?> />
 		<label id="quantity_hide_label" for="_quantity_hide" style="float: left; margin: 6px 0 0 2px; width: 16px;" title="<?php _e('Hide Quantity Box'); ?>" class="iconsprite <?php echo $_quantity_hide ? "hide_color" : "hide_gray"; ?>"></label>
@@ -349,6 +360,85 @@ function foxyshop_product_details_setup() {
 		<label style="width: 210px;" for="_hide_product"><?php echo sprintf(__('Hide This %s From List View'), FOXYSHOP_PRODUCT_NAME_SINGULAR); ?></label>
 	</div>
 	<div style="clear:both"></div>
+
+	<!-- JavaScript -->
+	<script type="text/javascript">
+	jQuery(document).ready(function($){
+		$("#weight_disable").click(function() {
+			if ($(this).is(":checked")) {
+				$("#weight_disable_label").addClass("hide_color").removeClass("hide_gray");
+				$("#_weight1").prop("disabled", true).val("");
+				$("#_weight2").prop("disabled", true).val("");
+			} else {
+				$("#weight_disable_label").removeClass("hide_color").addClass("hide_gray");
+				$("#_weight1").prop("disabled", false).val("<?php echo $defaultweight1; ?>");
+				$("#_weight2").prop("disabled", false).val("<?php echo $defaultweight2; ?>");
+			}
+		});
+		$("#_weight1").blur(function() {
+			var weight = $(this).val();
+			if (weight.indexOf(".") >= 0) {
+				secondstring = parseFloat(weight.substr(weight.indexOf("."))) * 100;
+				result = secondstring * <?php echo ($foxyshop_settings['weight_type'] == 'metric' ? 1000 : 16); ?>/100;
+				result = result.toFixed(1)
+				$("#_weight2").val(result);
+				foxyshop_check_number_single(this);
+			}
+			foxyshop_check_number_single(this);
+		});
+		$("#_weight2").blur(function() {
+			var weight = parseFloat($(this).val()).toFixed(1);
+			if (weight == 'NaN') weight = "0.0";
+			if (weight >= <?php echo ($foxyshop_settings['weight_type'] == 'metric' ? 1000 : 16); ?>) {
+				$("#_weight1").val(parseFloat(jQuery("#_weight1").val())+1);
+				$("#_weight2").val("0.0");
+			} else {
+				$(this).val(weight);
+			}
+		});
+
+		$("#_quantity_min, #_quantity_max").blur(function() {
+			tempval = foxyshop_format_number_single($(this).val());
+			if (tempval == "0") {
+				$(this).val("");
+			} else {
+				$(this).val(tempval);
+			}
+
+		});
+		$("#_quantity_min").bind("blur keyup", function() {
+			if ($(this).val()) {
+				$("#quantity_min_label").addClass("down_color").removeClass("down_gray");
+			} else {
+				$("#quantity_min_label").removeClass("down_color").addClass("down_gray");
+			}
+		});
+		$("#_quantity_max").bind("blur keyup", function() {
+			if ($(this).val()) {
+				$("#quantity_max_label").addClass("up_color").removeClass("up_gray");
+			} else {
+				$("#quantity_max_label").removeClass("up_color").addClass("up_gray");
+			}
+		});
+
+		$("#_quantity_hide").change(function() {
+			if ($(this).is(":checked")) {
+				$("#quantity_hide_label").addClass("hide_color").removeClass("hide_gray");
+				$("#_quantity_min, #_quantity_max").prop("disabled", true);
+			} else {
+				$("#quantity_hide_label").removeClass("hide_color").addClass("hide_gray");
+				$("#_quantity_min, #_quantity_max").prop("disabled", false);
+			}
+		});
+
+	});
+	function foxyshop_format_number_single(num) { num = num.toString().replace(/\$|\,/g,''); if(isNaN(num)) num = "0"; sign = (num == (num = Math.abs(num))); num = Math.floor(num*100+0.50000000001); cents = num%100; num = Math.floor(num/100).toString(); if(cents<10) cents = "0" + cents; for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++) num = num.substring(0,num.length-(4*i+3))+','+ num.substring(num.length-(4*i+3)); return (((sign)?'':'-') + num); }
+	function foxyshop_format_number(num) { num = num.toString().replace(/\$|\,/g,''); if(isNaN(num)) num = "0"; sign = (num == (num = Math.abs(num))); num = Math.floor(num*100+0.50000000001); cents = num%100; num = Math.floor(num/100).toString(); if(cents<10) cents = "0" + cents; for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++) num = num.substring(0,num.length-(4*i+3))+','+ num.substring(num.length-(4*i+3)); return (((sign)?'':'-') + num + '.' + cents); }
+	function foxyshop_check_number_single(el) { el.value = foxyshop_format_number_single(el.value); }
+	function foxyshop_check_number(el) { el.value = foxyshop_format_number(el.value); }
+	</script>
+	<!-- End JavaScript -->
+
 	<?php
 
 	//Add Action For Product Details (For Other Integrations)
@@ -512,17 +602,20 @@ function foxyshop_product_pricing_setup() {
 //Related Products Setup
 //-------------------------------------------
 function foxyshop_related_products_setup() {
-	global $post, $foxyshop_settings, $bundledList;
+	global $post, $foxyshop_settings, $bundledList, $addonList;
 	$arr_related_products = explode(",",get_post_meta($post->ID,'_related_products',TRUE));
 	if ($foxyshop_settings['enable_bundled_products']) $arr_bundled_products = explode(",",get_post_meta($post->ID,'_bundled_products',TRUE));
+	if ($foxyshop_settings['enable_addon_products']) $arr_addon_products = explode(",",get_post_meta($post->ID,'_addon_products',TRUE));
 
 	$relatedList = "";
 	$bundledList = "";
+	$addonList = "";
 	$args = array('post_type' => 'foxyshop_product', "post__not_in" => array($post->ID), 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC');
 	$all_products = get_posts($args);
 	foreach ($all_products as $product) {
 		$relatedList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_related_products) ? ' selected="selected"' : '') . '>' . $product->post_title . ' (' . $product->ID . ')' . '</option>'."\n";
 		if ($foxyshop_settings['enable_bundled_products']) $bundledList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_bundled_products) ? ' selected="selected"' : '') . '>' . $product->post_title . '</option>'."\n";
+		if ($foxyshop_settings['enable_addon_products']) $addonList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_addon_products) ? ' selected="selected"' : '') . '>' . $product->post_title . '</option>'."\n";
 	} ?>
 	<select name="_related_products_list[]" id="_related_products_list" data-placeholder="Search for <?php echo FOXYSHOP_PRODUCT_NAME_PLURAL; ?>" style="width: 100%;" class="chzn-select" multiple="multiple">
 		<?php echo $relatedList; ?>
@@ -555,6 +648,28 @@ function foxyshop_bundled_products_setup() {
 	?>
 	<select name="_bundled_products_list[]" id="_bundled_products_list" data-placeholder="Search for <?php echo FOXYSHOP_PRODUCT_NAME_PLURAL; ?>" style="width: 100%;" class="chzn-select" multiple="multiple">
 		<?php echo $bundledList; ?>
+	</select>
+	<p style="color: #999999;"><?php echo sprintf(__("Click the box above for a drop-down menu showing all %s. Type to search and click or press enter to select."), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></p>
+	<?php
+}
+
+
+//-------------------------------------------
+//Add-on Products Setup
+//-------------------------------------------
+function foxyshop_addon_products_setup() {
+	global $post, $foxyshop_settings, $addonList;
+	if (!isset($addonList)) {
+		$arr_addon_products = explode(",",get_post_meta($post->ID,'_addon_products',TRUE));
+		$args = array('post_type' => 'foxyshop_product', "post__not_in" => array($post->ID), 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC');
+		$all_products = get_posts($args);
+		foreach ($all_products as $product) {
+			$addonList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_addon_products) ? ' selected="selected"' : '') . '>' . $product->post_title . '</option>'."\n";
+		}
+	}
+	?>
+	<select name="_addon_products_list[]" id="_addon_products_list" data-placeholder="Search for <?php echo FOXYSHOP_PRODUCT_NAME_PLURAL; ?>" style="width: 100%;" class="chzn-select" multiple="multiple">
+		<?php echo $addonList; ?>
 	</select>
 	<p style="color: #999999;"><?php echo sprintf(__("Click the box above for a drop-down menu showing all %s. Type to search and click or press enter to select."), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></p>
 	<?php
@@ -1101,29 +1216,6 @@ jQuery(document).ready(function($){
 	$("#_salestartdate, #_saleenddate").datepicker({ dateFormat: 'm/d/yy' });
 	<?php } ?>
 
-
-	
-	$("#_weight1").blur(function() {
-		var weight = $(this).val();
-		if (weight.indexOf(".") >= 0) {
-			secondstring = parseFloat(weight.substr(weight.indexOf("."))) * 100;
-			result = secondstring * <?php echo ($foxyshop_settings['weight_type'] == 'metric' ? 1000 : 16); ?>/100;
-			result = result.toFixed(1)
-			$("#_weight2").val(result);
-			foxyshop_check_number_single(this);
-		}
-		foxyshop_check_number_single(this);
-	});
-	$("#_weight2").blur(function() {
-		var weight = parseFloat($(this).val()).toFixed(1);
-		if (weight == 'NaN') weight = "0.0";
-		if (weight >= <?php echo ($foxyshop_settings['weight_type'] == 'metric' ? 1000 : 16); ?>) {
-			$("#_weight1").val(parseFloat(jQuery("#_weight1").val())+1);
-			$("#_weight2").val("0.0");
-		} else {
-			$(this).val(weight);
-		}
-	});
 	
 	$("#_saleprice").blur(function() {
 		saleprice = foxyshop_format_number($(this).val());
@@ -1133,45 +1225,9 @@ jQuery(document).ready(function($){
 			$(this).val(saleprice);
 		}
 	});
-	
-	$("#_quantity_min, #_quantity_max").blur(function() {
-		tempval = foxyshop_format_number_single($(this).val());
-		if (tempval == "0") {
-			$(this).val("");
-		} else {
-			$(this).val(tempval);
-		}
-		
-	});
-	$("#_quantity_min").bind("blur keyup", function() {
-		if ($(this).val()) {
-			$("#quantity_min_label").addClass("down_color").removeClass("down_gray");
-		} else {
-			$("#quantity_min_label").removeClass("down_color").addClass("down_gray");
-		}
-	});
-	$("#_quantity_max").bind("blur keyup", function() {
-		if ($(this).val()) {
-			$("#quantity_max_label").addClass("up_color").removeClass("up_gray");
-		} else {
-			$("#quantity_max_label").removeClass("up_color").addClass("up_gray");
-		}
-	});
-
-	$("#_quantity_hide").change(function() {
-		if ($(this).is(":checked")) {
-			$("#quantity_hide_label").addClass("hide_color").removeClass("hide_gray");
-		} else {
-			$("#quantity_hide_label").removeClass("hide_color").addClass("hide_gray");
-		}
-	});
 
 	<?php if ($foxyshop_settings['related_products_custom'] || $foxyshop_settings['related_products_tags']) echo '$(".chzn-select").chosen();'; ?>
 });
-function foxyshop_format_number_single(num) { num = num.toString().replace(/\$|\,/g,''); if(isNaN(num)) num = "0"; sign = (num == (num = Math.abs(num))); num = Math.floor(num*100+0.50000000001); cents = num%100; num = Math.floor(num/100).toString(); if(cents<10) cents = "0" + cents; for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++) num = num.substring(0,num.length-(4*i+3))+','+ num.substring(num.length-(4*i+3)); return (((sign)?'':'-') + num); }
-function foxyshop_format_number(num) { num = num.toString().replace(/\$|\,/g,''); if(isNaN(num)) num = "0"; sign = (num == (num = Math.abs(num))); num = Math.floor(num*100+0.50000000001); cents = num%100; num = Math.floor(num/100).toString(); if(cents<10) cents = "0" + cents; for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++) num = num.substring(0,num.length-(4*i+3))+','+ num.substring(num.length-(4*i+3)); return (((sign)?'':'-') + num + '.' + cents); }
-function foxyshop_check_number_single(el) { el.value = foxyshop_format_number_single(el.value); }
-function foxyshop_check_number(el) { el.value = foxyshop_format_number(el.value); }
 
 </script>
 
@@ -1192,9 +1248,12 @@ function foxyshop_product_meta_save($post_id) {
 	if (!wp_verify_nonce((isset($_POST['products_meta_noncename']) ? $_POST['products_meta_noncename'] : ""),__FILE__)) return $post_id;
 	if (!current_user_can('edit_'.($_POST['post_type'] == 'page' ? 'page' : 'post'), $post_id)) return $post_id;
 	
-	$_weight = (int)$_POST['_weight1'] . ' ' . (double)$_POST['_weight2'];
-	if ($_weight == ' ') $_weight = $foxyshop_settings['default_weight']; //Set Default Weight
-	
+	if (!isset($_POST['_weight1']) && !isset($_POST['_weight2'])) {
+		$_weight = "";
+	} else {
+		$_weight = (int)$_POST['_weight1'] . ' ' . (double)$_POST['_weight2'];
+	}
+
 	//Save Product Detail Data
 	foxyshop_save_meta_data('_weight',$_weight);
 	foxyshop_save_meta_data('_price',number_format((double)str_replace(",","",$_POST['_price']),2,".",""));
@@ -1256,6 +1315,13 @@ function foxyshop_product_meta_save($post_id) {
 		foxyshop_save_meta_data('_bundled_products',implode(",",$_POST['_bundled_products_list']));
 	} else {
 		foxyshop_save_meta_data('_bundled_products',"");
+	}
+
+	//Save Add-On Product Data
+	if (isset($_POST['_addon_products_list'])) {
+		foxyshop_save_meta_data('_addon_products',implode(",",$_POST['_addon_products_list']));
+	} else {
+		foxyshop_save_meta_data('_addon_products',"");
 	}
 	
 	//Inventory Levels

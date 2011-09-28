@@ -3,32 +3,7 @@
 This file is setup to provide you with the ability to create a product feed that can be sent out to various aggregators. This is designed specifically for Google.
 */
 
-add_action('admin_menu', 'foxyshop_product_feed_menu');
-
-if (isset($_GET['create_google_product_feed'])) {
-	add_action('admin_init', 'foxyshop_save_feed_file');
-}
-
-//Put in Sidebar
-function foxyshop_product_feed_menu() {    
-	add_submenu_page('edit.php?post_type=foxyshop_product', FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Feed'), FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Feed'), 'manage_options', 'foxyshop_product_feed', 'foxyshop_product_feed');
-}
-
-function foxyshop_dblquotes($str) {
-	return str_replace('"','""',$str);
-}
-
-
-//The Main Function
-function foxyshop_product_feed() {
-		echo '<div class="wrap">';
-		echo '<h2>' . FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Feed') . '</h2>'."\n";
-		echo "<p>" . __('If you would like to <a href="http://www.google.com/merchants" target="_blank">submit your products to Google</a>, you may do so by creating a product feed on this page. Make sure that you check the option that <a href="http://www.google.com/support/merchants/bin/answer.py?answer=160037" target="_blank">enables double quotes</a>.') . "</p>";
-		echo '<p><a href="edit.php?post_type=foxyshop_product&amp;page=foxyshop_product_feed&amp;create_google_product_feed=1" class="button">Create Google Product Feed</a></p>';
-}
-
-
-
+if (isset($_GET['create_google_product_feed'])) add_action('admin_init', 'foxyshop_save_feed_file');
 function foxyshop_save_feed_file() {
 	// Define the path to file
 	$filename = 'Google-Product-Feed.txt';

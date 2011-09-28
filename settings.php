@@ -1,100 +1,94 @@
 <?php
-add_action('admin_menu', 'foxyshop_settings_menu');
 add_action('admin_init', 'foxyshop_save_settings');
-
-function foxyshop_settings_menu() {
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Settings'), __('Manage Settings'), 'manage_options', 'foxyshop_options', 'foxyshop_options');
-}
-
 function foxyshop_save_settings() {
-	$foxyshop_settings_update_key = (isset($_POST['action']) ? $_POST['action'] : "");
-	$foxyshop_api_reset_key = (isset($_GET['action']) ? $_GET['action'] : "");
-	if ($foxyshop_settings_update_key == "" && $foxyshop_api_reset_key == "") return;
-	if ($foxyshop_settings_update_key == "foxyshop_settings_update" && check_admin_referer('update-foxyshop-options')) {
-		global $foxyshop_settings;
-		
-		//Do initial product sitemap creation
-		if ($_POST['foxyshop_generate_product_sitemap'] == "on") foxyshop_create_product_sitemap();
-		
-		//Loop Through Most Fields
-		$fields = array(
-			"version",
-			"ship_categories",
-			"weight_type",
-			"enable_ship_to",
-			"enable_dashboard_stats",
-			"enable_subscriptions",
-			"enable_bundled_products",
-			"related_products_custom",
-			"related_products_tags",
-			"sort_key",
-			"use_jquery",
-			"ga",
-			"ga_advanced",
-			"generate_feed",
-			"hide_subcat_children",
-			"generate_product_sitemap",
-			"manage_inventory_levels",
-			"inventory_alert_level",
-			"inventory_alert_email",
-			"enable_sso",
-			"sso_account_required",
-			"checkout_customer_create",
-			"browser_title_1",
-			"browser_title_2",
-			"browser_title_3",
-			"browser_title_4",
-			"browser_title_5",
-			"locale_code"
-		);
-		foreach ($fields as $field1) {
-			$val = (isset($_POST['foxyshop_'.$field1]) ? trim(stripslashes($_POST['foxyshop_'.$field1])) : '');
-			$foxyshop_settings[$field1] = $val;
-		}
+	if (!isset($_POST['foxyshop_settings_update'])) return;
+	if (!check_admin_referer('update-foxyshop-options')) return;
+	global $foxyshop_settings;
 
-		//Default Image
-		if ($_POST['foxyshop_default_image'] == 2) {
-			$foxyshop_settings["default_image"] = "none";
-		} elseif ($_POST['foxyshop_default_image'] == 1 && $_POST['foxyshop_default_image_custom'] != "") {
-			$foxyshop_settings["default_image"] = trim(stripslashes($_POST['foxyshop_default_image_custom']));
-		} else {
-			$foxyshop_settings["default_image"] = "";
-		}
-		
-		//Delete the setup prompt if domain entered
-		if ($_POST['foxyshop_domain'] != '') delete_option("foxyshop_setup_required");
+	//Do initial product sitemap creation
+	if ($_POST['foxyshop_generate_product_sitemap'] == "on") foxyshop_create_product_sitemap();
 
-		$foxyshop_settings["domain"] = trim(stripslashes(str_replace("http://","",$_POST['foxyshop_domain'])));
-		$foxyshop_settings["default_weight"] = (int)$_POST['foxyshop_default_weight1'] . ' ' . (double)$_POST['foxyshop_default_weight2'];
-		$foxyshop_settings["products_per_page"] = ((int)$_POST['foxyshop_products_per_page'] == 0 ? -1 : (int)$_POST['foxyshop_products_per_page']);
-
-		//Cache the FoxyCart Includes
-		if (version_compare($foxyshop_settings['version'], '0.7.2', ">=") && $foxyshop_settings['domain']) {
-			$foxy_data = array("api_action" => "store_includes_get", "javascript_library" => "none", "cart_type" => "colorbox");
-			$foxy_response = foxyshop_get_foxycart_data($foxy_data);
-			$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
-			if ($xml->result != "ERROR") {
-				if ($xml->code_block) $foxyshop_settings['foxycart_include_cache'] = (string)$xml->code_block;
-			}
-		} else {
-			$foxyshop_settings['foxycart_include_cache'] = "";
-		}
-
-		//Save
-		update_option("foxyshop_settings", serialize($foxyshop_settings));
-		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_options&saved=1');
-		die;
-	
-	//Reset API Key
-	} elseif ($foxyshop_api_reset_key == "foxyshop_api_key_reset" && check_admin_referer('reset-foxyshop-api-key')) {
-		global $foxyshop_settings;
-		$foxyshop_settings['api_key'] = "sp92fx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time());
-		update_option("foxyshop_settings", serialize($foxyshop_settings));
-		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_options&key=1');
-		die;
+	//Loop Through Most Fields
+	$fields = array(
+		"version",
+		"ship_categories",
+		"weight_type",
+		"enable_ship_to",
+		"enable_dashboard_stats",
+		"enable_subscriptions",
+		"enable_bundled_products",
+		"enable_addon_products",
+		"related_products_custom",
+		"related_products_tags",
+		"sort_key",
+		"use_jquery",
+		"ga",
+		"ga_advanced",
+		"hide_subcat_children",
+		"generate_product_sitemap",
+		"manage_inventory_levels",
+		"inventory_alert_level",
+		"inventory_alert_email",
+		"enable_sso",
+		"sso_account_required",
+		"checkout_customer_create",
+		"locale_code"
+	);
+	foreach ($fields as $field1) {
+		$val = (isset($_POST['foxyshop_'.$field1]) ? trim(stripslashes($_POST['foxyshop_'.$field1])) : '');
+		$foxyshop_settings[$field1] = $val;
 	}
+	//Loop Through No Trim Fields
+	$fields = array(
+		"browser_title_1",
+		"browser_title_2",
+		"browser_title_3",
+		"browser_title_4",
+		"browser_title_5"
+	);
+	foreach ($fields as $field1) {
+		$val = (isset($_POST['foxyshop_'.$field1]) ? stripslashes($_POST['foxyshop_'.$field1]) : '');
+		$foxyshop_settings[$field1] = $val;
+	}
+
+	//Default Image
+	if ($_POST['foxyshop_default_image'] == 2) {
+		$foxyshop_settings["default_image"] = "none";
+	} elseif ($_POST['foxyshop_default_image'] == 1 && $_POST['foxyshop_default_image_custom'] != "") {
+		$foxyshop_settings["default_image"] = trim(stripslashes($_POST['foxyshop_default_image_custom']));
+	} else {
+		$foxyshop_settings["default_image"] = "";
+	}
+
+	//Delete the setup prompt if domain entered
+	if ($_POST['foxyshop_domain'] != '') delete_option("foxyshop_setup_required");
+
+	$foxyshop_settings["domain"] = trim(stripslashes(str_replace("http://","",$_POST['foxyshop_domain'])));
+	$foxyshop_settings["default_weight"] = (int)$_POST['foxyshop_default_weight1'] . ' ' . (double)$_POST['foxyshop_default_weight2'];
+	$foxyshop_settings["products_per_page"] = ((int)$_POST['foxyshop_products_per_page'] == 0 ? -1 : (int)$_POST['foxyshop_products_per_page']);
+
+	//Cache the FoxyCart Includes
+	if (version_compare($foxyshop_settings['version'], '0.7.2', ">=") && $foxyshop_settings['domain']) {
+		$foxy_data = array("api_action" => "store_includes_get", "javascript_library" => "none", "cart_type" => "colorbox");
+		$foxy_response = foxyshop_get_foxycart_data($foxy_data);
+		$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
+		if ($xml->result != "ERROR") {
+			if ($xml->code_block) $foxyshop_settings['foxycart_include_cache'] = (string)$xml->code_block;
+		}
+	} else {
+		$foxyshop_settings['foxycart_include_cache'] = "";
+	}
+
+	//Save
+	update_option("foxyshop_settings", serialize($foxyshop_settings));
+	header('location: edit.php?post_type=foxyshop_product&page=foxyshop_options&saved=1');
+	die;
 }
 
+add_action('admin_menu', 'foxyshop_settings_menu');
+function foxyshop_settings_menu() {
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Settings'), __('Settings'), 'manage_options', 'foxyshop_options', 'foxyshop_options');
+}
 function foxyshop_options() {
 	global $foxyshop_settings;
 ?>
@@ -117,9 +111,6 @@ function foxyshop_options() {
 	
 	//Inital Setup
 	if (isset($_GET['setup'])) echo '<div class="updated"><p>' . __('<strong>Congratulations!</strong> You are all set up and ready to go. You may now review all the settings on this page and start entering products.') . '</p></div>';
-	
-	//Confirmation Key Reset
-	if (isset($_GET['key'])) echo '<div class="updated"><p>' . __('Your API Key Has Been Reset. Please Update FoxyCart With Your New Key.') . '</p></div>';
 	
 	//Warning PHP Version
 	if (version_compare(PHP_VERSION, '5.1.2', "<")) echo '<div class="error"><p>' . sprintf(__('<strong>Warning:</strong> You are using PHP version %s FoxyShop requires PHP version 5.1.2 or higher to utilize the required hmac_has() functions. Without upgrading you will experience problems adding items to the cart and completing other tasks. After upgrading, make sure that you reset your API key (scroll to the bottom of the page) to ensure that you have a fully secure key.'), PHP_VERSION) . '</p></div>';
@@ -197,7 +188,7 @@ function foxyshop_options() {
 				<td style="border-bottom: 0 none;">
 					<label for="foxyshop_key"><?php _e('API Key'); ?>:</label>
 					<input type="text" id="foxyshop_key" name="key" value="<?php echo $foxyshop_settings['api_key']; ?>" readonly="readonly" onclick="this.select();" />
-					<a href="#" class="foxyshophelp">The API key is saved here and stored on your FoxyCart account so that your cart information can be encrypted to avoid link tampering. The API key is also used to communicate with FoxyCart and retrieve your order information.<br /><br />This API key is generated automatically and cannot be edited. Scroll to the bottom of the page if you need to reset the key.</a>
+					<a href="#" class="foxyshophelp">The API key is saved here and stored on your FoxyCart account so that your cart information can be encrypted to avoid link tampering. The API key is also used to communicate with FoxyCart and retrieve your order information.<br /><br />This API key is generated automatically and cannot be edited. Go to the tools page if you need to reset this key.</a>
 					<div style="clear: both; padding: 5px 0; font-style: italic;"><strong style="color: #BB1E1E;">Required Setup:</strong> Enter this API key on the advanced menu of your <a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&url=http://admin.foxycart.com/" target="_blank">FoxyCart admin</a> and check the box to enable cart validation.</div>
 					
 					<div style="clear: both;"></div>
@@ -233,7 +224,7 @@ function foxyshop_options() {
 
 	<br /><br />
 
-	<form method="post" name="foxycart_settings_form" action="options.php">
+	<form method="post" name="foxycart_settings_form" action="options.php" onsubmit="return foxyshop_check_settings_form();">
 
 	<table class="widefat">
 		<thead>
@@ -270,7 +261,7 @@ function foxyshop_options() {
 			</tr>
 		</tbody>
 	</table>
-	<p><input type="submit" class="button-primary" value="<?php _e('Save Settings'); ?>" /></p>
+	<p><input type="submit" class="button-primary" value="<?php _e('Save All Settings'); ?>" /></p>
 	
 	<br /><br />
 
@@ -318,7 +309,7 @@ function foxyshop_options() {
 
 		</tbody>
 	</table>
-	<p><input type="submit" class="button-primary" value="<?php _e('Save Settings'); ?>" /></p>
+	<p><input type="submit" class="button-primary" value="<?php _e('Save All Settings'); ?>" /></p>
 	<br /><br />
 
 
@@ -345,7 +336,7 @@ function foxyshop_options() {
 			</tr>
 		</tbody>
 	</table>
-	<p><input type="submit" class="button-primary" value="<?php _e('Save Settings'); ?>" /></p>
+	<p><input type="submit" class="button-primary" value="<?php _e('Save All Settings'); ?>" /></p>
 	
 	<br /><br />
 
@@ -372,6 +363,7 @@ function foxyshop_options() {
 			</tr>
 			<tr>
 				<td>
+					<h3 style="margin: 0;"><?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Relation'); ?></h3>
 					<input type="checkbox" id="foxyshop_related_products_custom" name="foxyshop_related_products_custom"<?php checked($foxyshop_settings['related_products_custom'], "on"); ?> />
 					<label for="foxyshop_related_products_custom"><?php echo sprintf(__('Enable Related %s (Custom)'),FOXYSHOP_PRODUCT_NAME_PLURAL); ?></label>
 					<a href="#" class="foxyshophelp">Allow multiple, specific items to be shown with each product.</a>
@@ -381,13 +373,17 @@ function foxyshop_options() {
 					<label for="foxyshop_related_products_tags"><?php echo sprintf(__('Enable Related %s (Tags)'),FOXYSHOP_PRODUCT_NAME_PLURAL); ?></label>
 					<a href="#" class="foxyshophelp">Set tags on your products and related products will be automatically determined based on those tags.</a>
 					<?php endif; ?>
-				</td>
-			</tr>
-			<tr>
-				<td>
+
+					<div style="clear: both;"></div>
 					<input type="checkbox" id="foxyshop_enable_bundled_products" name="foxyshop_enable_bundled_products"<?php checked($foxyshop_settings['enable_bundled_products'], "on"); ?> />
 					<label for="foxyshop_enable_bundled_products"><?php echo __('Enable Bundled').' '.FOXYSHOP_PRODUCT_NAME_PLURAL; ?></label>
 					<a href="#" class="foxyshophelp">Allow multiple items to be added to the cart at once (extra items will be added with a price of $0.00, though this can be configured.)</a>
+
+					<div style="clear: both;"></div>
+					<input type="checkbox" id="foxyshop_enable_addon_products" name="foxyshop_enable_addon_products"<?php checked($foxyshop_settings['enable_addon_products'], "on"); ?> />
+					<label for="foxyshop_enable_addon_products"><?php echo __('Enable Add-On').' '.FOXYSHOP_PRODUCT_NAME_PLURAL; ?></label>
+					<a href="#" class="foxyshophelp">Allow other products to appear on a product page with checkbox options.</a>
+
 				</td>
 			</tr>
 			<tr>
@@ -397,7 +393,6 @@ function foxyshop_options() {
 					<a href="#" class="foxyshophelp">Show fields to allow the creation of subscription <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL); ?>.</a>
 				</td>
 			</tr>
-
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_enable_sso" name="foxyshop_enable_sso"<?php checked($foxyshop_settings['enable_sso'], "on"); ?> />
@@ -478,7 +473,7 @@ function foxyshop_options() {
 						<input type="checkbox" id="foxyshop_ga_advanced" name="foxyshop_ga_advanced"<?php checked($foxyshop_settings['ga_advanced'], "on"); ?> />
 						<label for="foxyshop_ga_advanced"><?php _e('Advanced Google Analytics Code'); ?></label>
 						<a href="#" class="foxyshophelp"><?php _e('Check this box if you are using the amazing FoxyCart Google Analytics Sync. We will put the appropriate code in your footer (but you\'ll still have to setup Google Analytics and your template).'); ?></a>
-						<small><a href="http://wiki.foxycart.com/integration/googleanalytics_async" target="_blank">instructions here</a></small>
+						<small><a href="http://wiki.foxycart.com/integration/googleanalytics_async" target="_blank">advanced instructions here</a></small>
 					</div>
 				</td>
 			</tr>
@@ -486,13 +481,6 @@ function foxyshop_options() {
 				<td>
 					<input type="checkbox" id="foxyshop_enable_dashboard_stats" name="foxyshop_enable_dashboard_stats"<?php checked($foxyshop_settings['enable_dashboard_stats'], "on"); ?> />
 					<label for="foxyshop_enable_dashboard_stats"><?php echo __('Show FoxyShop Stats on Dashboard'); ?></label>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<input type="checkbox" id="foxyshop_generate_feed" name="foxyshop_generate_feed"<?php checked($foxyshop_settings['generate_feed'], "on"); ?> />
-					<label for="foxyshop_generate_feed"><?php echo sprintf(__('Generate %s Feed'), FOXYSHOP_PRODUCT_NAME_SINGULAR); ?></label>
-					<a href="#" class="foxyshophelp"><?php echo __('Selecting this option will turn on an option which will allow you to export a file suitable for uploading to Google\'s Product Search system.'); ?></a>
 				</td>
 			</tr>
 			<tr>
@@ -505,16 +493,9 @@ function foxyshop_options() {
 		</tbody>
 	</table>
 	
-	<p><input type="submit" class="button-primary" value="<?php _e('Save Settings'); ?>" /></p>
-	
-	<p>
-		<strong>Reset API Key</strong><br />
-		If you believe that your API key has been compromised or would like to reset it with a fresh one, please click this link below and a new one will be created for you: <a href="options.php?action=foxyshop_api_key_reset&_wpnonce=<?php echo wp_create_nonce('reset-foxyshop-api-key'); ?>" onclick="return apiresetcheck();">Reset API Key</a>
-	</p>
-	
-	<p>&nbsp;</p>
+	<p><input type="submit" class="button-primary" value="<?php _e('Save All Settings'); ?>" /></p>
 
-	<input type="hidden" name="action" value="foxyshop_settings_update" />
+	<input type="hidden" name="foxyshop_settings_update" value="1" />
 	<?php wp_nonce_field('update-foxyshop-options'); ?>
 	</form>
 
@@ -566,12 +547,14 @@ jQuery(document).ready(function($){
 
 
 });
-function apiresetcheck() {
-	if (confirm ("Are you sure you want to reset your API Key?\nYou will not be able to recover your old key.")) {
-		return true;
-	} else {
+function foxyshop_check_settings_form() {
+	var domain_name = jQuery("#foxyshop_domain").val();
+	if (domain_name && domain_name.indexOf('.') <= 0) {
+		alert('Uh oh! It looks like your domain name might not be entered correctly.\nIt should be your full foxycart domain like this: "yourname.foxycart.com".\nPlease try again or remove your entry for now.');
+		jQuery("#foxyshop_domain").focus();
 		return false;
 	}
+	return true;
 }
 </script>
 <?php }

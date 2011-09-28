@@ -142,7 +142,7 @@
 	list-style: none;
 	padding: 5px;
 	margin: 0 0 15px 0;
-	overflowL: auto;
+	overflow: auto;
 }
 #foxyshop_breadcrumbs li {
 	float: left;
@@ -234,6 +234,12 @@ input.foxyshop_quantity {
 }
 .dkey {
 	display: none;
+}
+.foxyshop_social_media_buttons {
+	margin-top: 15px;
+}
+.foxyshop_social_media_buttons iframe {
+	float: left;
 }
 
 
@@ -387,7 +393,7 @@ label.foxyshop_no_width {
 }
 
 
-/* ---------- Pagination ------------ */
+/* ---------- Category Widget ------------ */
 .foxyshop_category_widget li {
 	width: auto;
 }
@@ -407,4 +413,28 @@ label.foxyshop_no_width {
 	margin-right: 4px;
 	padding: 3px 5px;
 	text-decoration: none;
+}
+
+/* ---------- Addon Products ------------ */
+.foxyshop_addon_container {
+	clear: both;
+	overflow: auto;
+}
+.foxyshop_addon_checkbox {
+	float: left;
+	margin-bottom: 10px;
+}
+.foxyshop_addon_container label.addon_main_label {
+	float: left;
+	width: 250px;
+}
+.foxyshop_addon_container .foxyshop_price {
+	float: left;
+	width: 130px;
+	font-weight: normal;
+	margin: auto;
+	font-size: inherit;
+}
+.foxyshop_addon_container .foxyshop_price {
+
 }

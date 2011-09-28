@@ -25,7 +25,7 @@ function foxyshop_profile_update($user_id) {
 	
 	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
-	$foxycart_customer_id = (string)$xml->customer_id;
+	$foxycart_customer_id = (string)$xml->result != "ERROR" ? (string)$xml->customer_id : "";
 	
 	//If FoxyCart Customer ID Returned, Add FoxyCart Customer ID To User Meta
 	if ($foxycart_customer_id) {
@@ -53,7 +53,7 @@ function foxyshop_profile_add($user_id) {
 	//Send To FoxyCart
 	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
-	$foxycart_customer_id = (string)$xml->customer_id;
+	$foxycart_customer_id = (string)$xml->result != "ERROR" ? (string)$xml->customer_id : "";
 
 	//If FoxyCart Customer ID Returned, Add FoxyCart Customer ID To User Meta
 	if ($foxycart_customer_id) {
@@ -162,4 +162,14 @@ function action_process_option_update($user_id) {
 	if (!current_user_can('administrator')) return;
 	if (isset($_POST['foxycart_customer_id'])) update_user_meta($user_id, 'foxycart_customer_id', $_POST['foxycart_customer_id']);
 }
+
+//Keep redirect_to in URL
+add_filter('site_url', 'foxyshop_add_registration_redirect', 5);
+function foxyshop_add_registration_redirect($path) {
+	if ((strpos($path, "action=register") !== false || strpos($path, "action=lostpassword") !== false) && isset($_REQUEST['redirect_to'])) return $path . '&amp;redirect_to='.urlencode($_REQUEST['redirect_to']);
+	if (substr($path, strlen($path)-12) == "wp-login.php" && isset($_REQUEST['redirect_to'])) return $path . '?redirect_to='.urlencode($_REQUEST['redirect_to']);
+	return $path;
+}
+
+
 ?>

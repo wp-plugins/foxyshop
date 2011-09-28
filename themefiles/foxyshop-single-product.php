@@ -14,10 +14,10 @@ while (have_posts()) : the_post();
 	echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/prettyphoto/prettyPhoto.css" type="text/css" media="screen" />'."\n";
 	?><script type="text/javascript">jQuery(document).ready(function($){$("a[rel^='foxyshop_gallery']").prettyPhoto({theme: 'light_square', overlay_gallery: false, social_tools: ''});});</script><?php
 
-
 	//Initialize Product
 	global $product;
 	$product = foxyshop_setup_product();
+
 
 	//This is for testing to see what is included in the $product array
 	//print_r($product);
@@ -45,7 +45,6 @@ while (have_posts()) : the_post();
 		echo "</div>\n";
 	}
 				
-	
 	//Main Product Information Area
 	echo '<div class="foxyshop_product_info">';
 	//edit_post_link('<img src="' . FOXYSHOP_DIR . '/images/editicon.png" alt="Edit Product" width="16" height="16" />','<span class="foxyshop_edit_product">','</span>');
@@ -70,10 +69,13 @@ while (have_posts()) : the_post();
 
 	//Check Inventory Levels and Display Status (last variable allows backordering of out of stock items)
 	foxyshop_inventory_management("There are only %c item%s left in stock.", "Item is not in stock.", false);
+
+	//Add On Products ($qty [1 or 0], $before_entry, $after_entry)
+	foxyshop_addon_products();
 	
 	//Add To Cart Button
 	echo '<button type="submit" name="x:productsubmit" id="productsubmit" class="foxyshop_button">Add To Cart</button>';
-	
+
 	//Shows the Price (includes sale price if applicable)
 	echo '<div id="foxyshop_main_price">';
 	foxyshop_price();
