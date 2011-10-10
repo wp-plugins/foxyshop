@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 3.4
+Stable tag: 3.5
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -44,7 +44,7 @@ Copy the folder to your WordPress
 1. Go to '*Products / Manage Settings*' in your WordPress admin.
 1. Enter your FoxyCart domain.
 1. Copy and paste the supplied API key into your FoxyCart admin area (Advanced) and check the "enable verification" checkbox.
-1. All other settings are optional. See [Docs](http://www.foxy-shop.com/documentation/installation-instructions/) for more details.
+1. All other settings are optional. See [Docs](http://www.foxy-shop.com/documentation/installation-instructions/) for more details and a setup video.
 
 == Frequently Asked Questions ==
 
@@ -62,6 +62,14 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 3.5 =
+* New Feature: Saved variations allow you to setup a variation once and reuse it on multiple products 
+* Product paging on the All Products page now works properly. Update your theme file if it has been customized.
+* Rolled back filter that was removing spaces from variation modifiers. Caused inventory bug with codes that had spaces in them.
+* Added uninstall.php to properly clean up after plugin files are deleted
+* Recommended plugins tool improved
+* Added more filters
 
 = 3.4 =
 * Added selectable product add-on feature

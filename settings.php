@@ -6,7 +6,7 @@ function foxyshop_save_settings() {
 	global $foxyshop_settings;
 
 	//Do initial product sitemap creation
-	if ($_POST['foxyshop_generate_product_sitemap'] == "on") foxyshop_create_product_sitemap();
+	if (isset($_POST['foxyshop_generate_product_sitemap'])) foxyshop_create_product_sitemap();
 
 	//Loop Through Most Fields
 	$fields = array(
@@ -70,6 +70,7 @@ function foxyshop_save_settings() {
 	//Cache the FoxyCart Includes
 	if (version_compare($foxyshop_settings['version'], '0.7.2', ">=") && $foxyshop_settings['domain']) {
 		$foxy_data = array("api_action" => "store_includes_get", "javascript_library" => "none", "cart_type" => "colorbox");
+		$foxy_data = apply_filters('foxyshop_store_includes_get', $foxy_data);
 		$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 		$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
 		if ($xml->result != "ERROR") {
@@ -289,7 +290,6 @@ function foxyshop_options() {
 				<td>
 					<label for="foxyshop_products_per_page"><?php echo FOXYSHOP_PRODUCT_NAME_PLURAL . ' ' . __('Per Page'); ?>:</label> <input type="text" id="foxyshop_products_per_page" name="foxyshop_products_per_page" value="<?php echo ($foxyshop_settings['products_per_page'] < 0 ? 0 : $foxyshop_settings['products_per_page']); ?>" style="width: 50px;" />
 					<small>Enter 0 to show all products (no paging)</small>
-					<a href="#" class="foxyshophelp">Note that paging does not apply to the "All <?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?>" page.</a>
 				</td>
 			</tr>
 			<tr>

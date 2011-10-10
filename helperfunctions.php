@@ -226,6 +226,7 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 	global $post, $product, $foxyshop_settings, $foxyshop_write_variation_include;
 	$writeUploadInclude = 0;
 	$write = "";
+	$var_type_array = array('dropdown' => __("Dropdown List"), 'radio' => __("Radio Buttons"), 'checkbox' => __("Checkbox"), 'text' => __("Single Line of Text"), 'textarea' => __("Multiple Lines of Text"), 'upload' => __("Custom File Upload"), 'descriptionfield' => __("Description Field"));
 	
 	//Show Quantity Before Variations
 	if ($product['quantity_hide']) $showQuantity = 0;
@@ -242,6 +243,23 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 		$variationValue = $product_variation['value'];
 		$variationDisplayKey = $product_variation['displayKey'];
 		$variationRequired = $product_variation['required'];
+		
+		//This is a Saved Variation, Get the Data
+		if (!array_key_exists($variationType, $var_type_array)) {
+			$saved_variations = maybe_unserialize(get_option('foxyshop_saved_variations'));
+			$saved_var_found = 0;
+			foreach($saved_variations as $saved_var) {
+				if (sanitize_title($saved_var['refname']) == $variationType) {
+					$saved_var_found = 1;
+					$variationName = $saved_var['name'];
+					$variationType = $saved_var['type'];
+					$variationValue = $saved_var['value'];
+					$variationDisplayKey = $saved_var['displayKey'];
+					$variationRequired = $saved_var['required'];
+				}
+			}
+			if (!$saved_var_found) continue;
+		}
 
 		$variationTextSize = "";
 		if (!$variationName) break;
@@ -345,7 +363,7 @@ function foxyshop_run_variations($variationValue, $variationName, $showPriceVari
 	global $product, $foxyshop_settings;
 
 	$write1 = "";
-	$variations = preg_split("/(\r\n|\n)/", $variationValue);
+	$variations = preg_split("/(\R)/", $variationValue);
 	$k = 0;
 	foreach($variations as $val) {
 		if ($val == '') continue;
@@ -370,7 +388,7 @@ function foxyshop_run_variations($variationValue, $variationName, $showPriceVari
 		$variation_display_name = $val;
 		if (strpos($val,"{") !== false) {
 			$variation_display_name = substr($variation_display_name,0,strpos($variation_display_name,"{"));
-			$variation_modifiers = str_replace(" ", "", substr($val, strpos($val,"{")+1, strpos($val,"}") - (strpos($val,"{")+1)));
+			$variation_modifiers = substr($val, strpos($val,"{")+1, strpos($val,"}") - (strpos($val,"{")+1));
 			
 			$arr_variation_modifiers = explode("|",$variation_modifiers);
 			foreach ($arr_variation_modifiers as $individual_modifier) {
@@ -678,33 +696,30 @@ function foxyshop_image_slideshow($size = "thumbnail", $includeFeatured = true, 
 function foxyshop_category_children($categoryID = 0, $showCount = false, $showDescription = true, $categoryImageSize = "thumbnail") {
 	global $taxonomy_images_plugin;
 	$write = "";
-	if ($categoryID == 0) {
-		$termchildren = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&parent=0&orderby=name&order=ASC');
-	} else {
-		$termchildren = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&parent='.$categoryID.'&orderby=name&order=ASC');
-	}
-
+	
+	$args = array('hide_empty' => 0, 'hierarchical' => 0, 'parent' => $categoryID, 'orderby' => 'name', 'order' => 'ASC');
+	$termchildren = get_terms('foxyshop_categories', apply_filters('foxyshop_category_children_query',$args));
+	
 	if ($termchildren) {
 		//Sort Categories
 		$termchildren = foxyshop_sort_categories($termchildren, $categoryID);
 
 		foreach ($termchildren as $child) {
 			$term = get_term_by('id', $child->term_id, "foxyshop_categories");
-			if (substr($term->name,0,1) != "_") {
-				$productCount = ($showCount ? " (" . $term->count . ")" : "");
-				$url = get_term_link($term, "foxyshop_categories");
-				$write .= '<li id="foxyshop_category_' . $term->term_id . '">';
-				$write .= '<h2><a href="' . $url . '">' . $term->name . '</a>' . $productCount . '</h2>';
-				if ($showDescription && $term->description) $write .= apply_filters('the_content', $term->description);
+			if (substr($term->name,0,1) == "_") continue;
 
-				if (isset($taxonomy_images_plugin)) {
-					$img = $taxonomy_images_plugin->get_image_html($categoryImageSize, $term->term_taxonomy_id);
-					if(!empty($img)) $write .= '<a href="' . $url . '" class="foxyshop_category_image">' . $img . '</a>';
-				}
-
-
-				$write .= '</li>'."\n";
+			$productCount = ($showCount ? " (" . $term->count . ")" : "");
+			$url = get_term_link($term, "foxyshop_categories");
+			$liwrite = "";
+			$liwrite .= '<li id="foxyshop_category_' . $term->term_id . '">';
+			$liwrite .= '<h2><a href="' . $url . '">' . $term->name . '</a>' . $productCount . '</h2>';
+			if ($showDescription && $term->description) $liwrite .= apply_filters('the_content', $term->description);
+			if (isset($taxonomy_images_plugin)) {
+				$img = $taxonomy_images_plugin->get_image_html($categoryImageSize, $term->term_taxonomy_id);
+				if(!empty($img)) $liwrite .= '<a href="' . $url . '" class="foxyshop_category_image">' . $img . '</a>';
 			}
+			$liwrite .= '</li>'."\n";
+			$write .= apply_filters('foxyshop_category_children_write', $liwrite, $term);
 		}
 		if ($write) echo '<ul class="foxyshop_categories">' . $write . '</ul>' . apply_filters('foxyshop_after_category_display', '<div class="clr"></div>');
 	}
@@ -983,13 +998,14 @@ function foxyshop_related_products($sectiontitle = "Related Products", $maxprodu
 		if (count($tags) > 0) {
 			$args['tax_query'] = array(array('taxonomy' => 'foxyshop_tags', 'field' => 'id', 'terms' => $tags));
 			$args['posts_per_page'] = $maxproducts;
+			$args['orderby'] = "rand";
 		} else {
 			$args['post__in'] = array("-1");
 		}
 	} else {
 		return;
 	}
-	$args = array_merge($args,foxyshop_sort_order_array());
+	if (!array_key_exists('orderby', $args)) $args = array_merge($args,foxyshop_sort_order_array());
 	$relatedlist = new WP_Query($args);
 	
 	if (count($relatedlist->posts) > 0) {
@@ -999,7 +1015,7 @@ function foxyshop_related_products($sectiontitle = "Related Products", $maxprodu
 		while ($relatedlist->have_posts() ) :
 			$relatedlist->the_post();
 			$product = foxyshop_setup_product();
-			$thumbnailSRC = foxyshop_get_main_image("thumbnail");
+			$thumbnailSRC = foxyshop_get_main_image(apply_filters('foxyshop_related_products_thumbnail_size',"thumbnail"));
 			echo '<li class="foxyshop_product_box">'."\n";
 			echo '<div class="foxyshop_product_image">';
 			echo '<a href="' . $product['url'] . '"><img src="' . $thumbnailSRC . '" alt="' . esc_attr($product['name']) . '" class="foxyshop_main_image" /></a>';

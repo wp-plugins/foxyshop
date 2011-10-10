@@ -124,8 +124,17 @@ body .foxyshop-list-table tbody tr.foxyshop-row-updated {
 	bottom: 5px;
 	cursor: move;
 }
+.product_variation {
+	line-height: auto;
+}
+#foxyshop_settings_wrap .product_variation span {
+	margin: 7px 0 0 5px;
+}
+#foxyshop_settings_wrap .product_variation label,
 .product_variation label {
 	 width: 100px;
+	 font-weight: normal;
+	 margin: 7px 6px 0 6px;
 }
 .variationkey {
 	margin: 2px 0 15px 114px;
@@ -136,6 +145,7 @@ body .foxyshop-list-table tbody tr.foxyshop-row-updated {
 	float: left;
 	width: 100px !important;
 }
+body #foxyshop_settings_wrap label.dkeylabel,
 body label.dkeylabel {
 	width: auto;
 	margin-right: 42px;
@@ -167,19 +177,19 @@ body input.variation_name {
 	width: 500px !important;
 }
 body label.variationtypelabel {
-	margin-left: 40px;
-	width: auto;
+	margin-left: 40px!important;
+	width: auto!important;
 }
 .variation_required_container {
-	float: left;
-	padding: 5px 0 0 46px;
+	float: left!important;
+	padding: 5px 0 0 46px!important;
 }
 .variation_required_container label {
-	width: auto;
-	margin: 2px 0 0 6px;
+	width: auto!important;
+	margin: 2px 0 0 6px!important;
 }
 .variation_required_container input {
-	float: left;
+	float: left!important;
 }
 .foxyshop_field_control .chzn-choices span {
 	float: none;
@@ -395,7 +405,9 @@ body label.variationtypelabel {
 .foxyshop_image_holder {
 	height: 106px;
 }
-
+#product_images_meta .inside {
+	min-height: 46px;
+}
 #foxyshop_new_product_image {
 	display: none;
 }

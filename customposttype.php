@@ -865,12 +865,16 @@ function foxyshop_product_images_setup() {
 function foxyshop_product_variations_setup() {
 	global $post, $foxyshop_settings, $wp_version;
 	
+	//-------------------------------------------------------------------------------------------
+	//Note: if making any changes, mirror these changes in foxyshoptools.php for saved variations
+	//-------------------------------------------------------------------------------------------
 	$var_type_array = array('dropdown' => __("Dropdown List"), 'radio' => __("Radio Buttons"), 'checkbox' => __("Checkbox"), 'text' => __("Single Line of Text"), 'textarea' => __("Multiple Lines of Text"), 'upload' => __("Custom File Upload"), 'descriptionfield' => __("Description Field"));
 	$variation_key = __('Name{p+1.50|w-1|c:product_code|y:shipping_category|dkey:display_key|ikey:image_id}');
 	
 	//Setup Variations
 	$variations = maybe_unserialize(get_post_meta($post->ID, '_variations', 1));
 	if (!is_array($variations)) $variations = array();
+	$saved_variations = maybe_unserialize(get_option('foxyshop_saved_variations'));
 	
 	echo '<input type="hidden" id="variation_order_value" name="variation_order_value" />'."\n";
 	
@@ -878,11 +882,21 @@ function foxyshop_product_variations_setup() {
 	$max_variations = count($variations);
 	if ($max_variations == 0) $max_variations = 1;
 	for ($i=1;$i<=$max_variations;$i++) {
+		$dkeyhide = '';
 		$_variationName = (array_key_exists($i, $variations) ? $variations[$i]['name'] : '');
 		$_variation_type = (array_key_exists($i, $variations) ? $variations[$i]['type'] : 'dropdown');
 		$_variationValue = (array_key_exists($i, $variations) ? $variations[$i]['value'] : '');
 		$_variationDisplayKey = (array_key_exists($i, $variations) ? $variations[$i]['displayKey'] : '');
 		$_variationRequired = (array_key_exists($i, $variations) ? $variations[$i]['required'] : '');
+		if (!array_key_exists($_variation_type, $var_type_array)) {
+			foreach($saved_variations as $saved_var) {
+				if (sanitize_title($saved_var['refname']) == $_variation_type) {
+					$_variationName = $saved_var['name'];
+					$dkeyhide = ' style="display:none;"';
+				}
+			}
+			if (!$dkeyhide) continue;
+		}
 		?>
 		<div class="product_variation" rel="<?php echo $i; ?>" id="variation<?php echo $i; ?>">
 			<input type="hidden" name="sort<?php echo $i; ?>" id="sort<?php echo $i; ?>" class="variationsort" value="<?php echo $i; ?>" />
@@ -896,7 +910,7 @@ function foxyshop_product_variations_setup() {
 			
 			<!-- //// VARIATION HEADER //// -->
 			<div class="foxyshop_field_control">
-				<label><?php _e('Variation Name'); ?></label>
+				<label for="_variation_name_<?php echo $i; ?>"><?php _e('Variation Name'); ?></label>
 				<input type="text" name="_variation_name_<?php echo $i; ?>" class="variation_name" id="_variation_name_<?php echo $i; ?>" value="<?php echo esc_attr($_variationName); ?>" />
 
 				<label for="_variation_type_<?php echo $i; ?>" class="variationtypelabel"><?php _e('Variation Type'); ?>:</label> 
@@ -904,7 +918,16 @@ function foxyshop_product_variations_setup() {
 				<?php
 				foreach ($var_type_array as $var_name => $var_val) {
 					echo '<option value="' . $var_name . '"' . ($_variation_type == $var_name ? ' selected="selected"' : '') . '>' . $var_val . '  </option>'."\n";
-				} ?>
+				}
+				if (is_array($saved_variations)) {
+					echo '<optgroup label="' . __('Saved Variations') . '">'."\n";
+					foreach($saved_variations as $saved_var) {
+						$saved_ref = $saved_var['refname'];
+						echo '<option value="' . sanitize_title($saved_ref) . '" rel="' . esc_attr($saved_var['name']) . '"' . (sanitize_title($saved_ref) == $_variation_type ? ' selected="selected"' : '') . '>' . $saved_ref . '  </option>'."\n";
+					}
+					echo '</optgroup>'."\n";
+				}
+				?>
 				</select>
 				<a href="#" class="button deleteVariation" rel="<?php echo $i; ?>">Delete</a>
 			</div>
@@ -971,12 +994,15 @@ function foxyshop_product_variations_setup() {
 						<label for="_variation_uploadinstructions_<?php echo $i; ?>"><?php _e('Instructions'); ?></label>
 						<textarea name="_variation_uploadinstructions_<?php echo $i; ?>" id="_variation_uploadinstructions_<?php echo $i; ?>"><?php echo $_variationValue; ?></textarea>
 					</div>
-				
+
+				<?php else : ?>
+					<!-- Saved Variation -->
+					<p><em><?php _e('This varation will use saved settings.'); ?></em></p>
 				<?php endif; ?>
 			</div>
 
 			<!-- //// DISPLAY KEY //// -->
-			<div class="foxyshop_field_control">
+			<div class="foxyshop_field_control dkeycontainer"<?php echo $dkeyhide; ?>>
 				<label class="dkeylabel" title="Enter a value here if you want your variation to be invisible until called by another variation.">Display Key</label>
 				<input type="text" name="_variation_dkey_<?php echo $i; ?>" id="_variation_dkey_<?php echo $i; ?>" value="<?php echo esc_attr($_variationDisplayKey); ?>" class="dkeynamefield" />
 
@@ -1104,20 +1130,30 @@ jQuery(document).ready(function($){
 		new_content += '<input type="hidden" name="upload_value_' + this_id + '" id="upload_value_' + this_id + '" value="" />';
 		new_content += '<!-- //// VARIATION HEADER //// -->';
 		new_content += '<div class="foxyshop_field_control">';
-		new_content += '<label><?php _e('Variation Name'); ?></label>';
+		new_content += '<label for="_variation_name_' + this_id + '"><?php _e('Variation Name'); ?></label>';
 		new_content += '<input type="text" name="_variation_name_' + this_id + '" class="variation_name" id="_variation_name_' + this_id + '" value="" />';
 		new_content += '<label for="_variation_type_' + this_id + '" class="variationtypelabel"><?php _e('Variation Type'); ?>:</label> ';
 		new_content += '<select name="_variation_type_' + this_id + '" id="_variation_type_' + this_id + '" class="variationtype">';
 		<?php
 		foreach ($var_type_array as $var_name => $var_val) {
 			echo "\t\tnew_content += '<option value=\"" . $var_name . '">' . $var_val . "  </option>';\n";
-		} ?>
+		}
+		if (is_array($saved_variations)) {
+			echo "\t\tnew_content += '<optgroup label=\"" . __('Saved Variations') . "\">';\n";
+			foreach($saved_variations as $saved_var) {
+				$saved_ref = $saved_var['refname'];
+				echo "\t\tnew_content += '<option value=\"" . sanitize_title($saved_ref) . "\" rel=\"" . esc_attr($saved_var['name']) . "\">" . $saved_ref . "  </option>';\n";
+			}
+			echo "\t\tnew_content += '</optgroup>';\n";
+		}
+
+		?>
 		new_content += '</select>';
 		new_content += '<a href="#" class="button deleteVariation" rel="' + this_id + '">Delete</a>';
 		new_content += '</div>';
 		new_content += '<div id="variation_holder_' + this_id + '"></div>';
 		new_content += '<!-- //// DISPLAY KEY //// -->';
-		new_content += '<div class="foxyshop_field_control">';
+		new_content += '<div class="foxyshop_field_control dkeycontainer">';
 		new_content += '<label class="dkeylabel" title="Enter a value here if you want your variation to be invisible until called by another variation.">Display Key</label>';
 		new_content += '<input type="text" name="_variation_dkey_' + this_id + '" id="_variation_dkey_' + this_id + '" value="" class="dkeynamefield" />';
 		new_content += '<!-- Required -->';
@@ -1145,6 +1181,7 @@ jQuery(document).ready(function($){
 	function getVariationContents(new_type, this_id) {
 		new_contents = "";
 		variationkeyhtml = '<div class="variationkey"><?php echo $variation_key; ?></div>';
+		$(".product_variation[rel='" + this_id + "'] .dkeycontainer").show();
 		
 		//Dropdown
 		if (new_type == "dropdown") {
@@ -1205,7 +1242,14 @@ jQuery(document).ready(function($){
 			new_contents += '<label for="_variation_uploadinstructions_' + this_id + '"><?php _e('Instructions'); ?></label>';
 			new_contents += '<textarea name="_variation_uploadinstructions_' + this_id + '" id="_variation_uploadinstructions_' + this_id + '">' + $("#upload_value_"+this_id).val() + '</textarea>';
 			new_contents += '</div>';
+
+		//Saved Variation
+		} else {
+			new_contents = '<p><em><?php _e('This varation will use saved settings.'); ?></em></p>';
+			$("#_variation_name_" + this_id).val($('#_variation_type_' + this_id + ' option:selected').attr("rel"));
+			$(".product_variation[rel='" + this_id + "'] .dkeycontainer").hide();
 		}
+		
 		
 		return new_contents;
 	}
@@ -1359,6 +1403,7 @@ function foxyshop_product_meta_save($post_id) {
 		$_variationType = $_POST['_variation_type_'.$target_id];
 		$_variationDisplayKey = $_POST['_variation_dkey_'.$target_id];
 		$_variationRequired = (isset($_POST['_variation_required_'.$target_id]) ? $_POST['_variation_required_'.$target_id] : '');
+		$_variationValue = "";
 		if ($_POST['_variation_name_'.$target_id] == "") continue;
 
 		//Get Values

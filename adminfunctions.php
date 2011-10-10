@@ -19,7 +19,7 @@ function foxyshop_load_admin_scripts($hook) {
 	if ($page == "foxyshop_order_management" || $page == "foxyshop_subscription_management") foxyshop_date_picker();
 	
 	//Custom Sorter
-	if ($page == "foxyshop_custom_sort" || $page == "foxyshop_category_sort") {
+	if ($page == "foxyshop_custom_sort" || $page == "foxyshop_category_sort" ||  $page == "foxyshop_tools") {
 		wp_enqueue_script('jquery-ui-core');
 		wp_enqueue_script('jquery-ui-sortable');
 	}
