@@ -3,7 +3,7 @@ Contributors: sparkweb
 Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
-Tested up to: 3.3
+Tested up to: 3.2.1
 Stable tag: 3.5.1
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
@@ -69,7 +69,7 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 * Changed variation newline splitting method for broader support
 * Added pricing adjustments to product price in receipt template
 * Added FoxyCart template update feature for 0.7.2
-* Added customer, transaction, and subscription attribute support for 0.7.2 
+* Added customer, transaction, and subscription attribute support for 0.7.2
 
 = 3.5 =
 * New Feature: Saved variations allow you to setup a variation once and reuse it on multiple products 
