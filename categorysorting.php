@@ -52,6 +52,7 @@ function foxyshop_category_sort() {
 	
 	echo '<div class="wrap">';
 	
+	echo '<div class="icon32" id="icon-tools"><br></div>';
 	echo '<h2>' . __('Set ') . FOXYSHOP_PRODUCT_NAME_SINGULAR . __(' Category Order') . '</h2>';
 	if ($success) echo $success;
 

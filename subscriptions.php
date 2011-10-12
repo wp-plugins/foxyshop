@@ -279,6 +279,14 @@ function foxyshop_subscription_management() {
 		$holder .= '<label for="cancel_url__' . $sub_token. '">Cancellation URL</label>'."\n";
 		$holder .= '<input type="text" name="cancel_url" id="cancel_url_' . $sub_token. '" value="https://' . $foxyshop_settings['domain']. '/cart?sub_token=' . $sub_token . '&amp;cart=checkout&amp;sub_cancel=true" style="width: 390px;" onclick="this.select();" />'."\n";
 		$holder .= '</div>'."\n";
+
+		//Attributes
+		if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) {
+			foreach($subscription->attributes->attribute as $attribute) {
+				$holder .= '<strong>' . str_replace("_"," ",$attribute->attribute_name) . ':</strong> ' . $attribute->attribute_value . '<br />';
+			}
+		}
+
 		$holder .= '<p style="padding-top: 5px; clear: both"><a href="#" class="subscription_save button-primary">Save Changes</a> <a href="#" class="detail_close button">Cancel</a></p>'."\n";
 		$holder .= '<input type="hidden" name="sub_token" value="' . $sub_token. '" />'."\n";
 		$holder .= '<input type="hidden" name="action" value="foxyshop_display_list_ajax_action" />'."\n";

@@ -53,6 +53,7 @@ function foxyshop_custom_sort() {
 	?>
 
 	<div class="wrap">
+	<div class="icon32" id="icon-tools"><br></div>
 	<h2><?php echo sprintf(__('Custom %s Order'), FOXYSHOP_PRODUCT_NAME_SINGULAR); ?></h2>
 	<?php if ($success) echo $success; ?>
 	

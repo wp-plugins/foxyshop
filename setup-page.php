@@ -85,7 +85,7 @@ function foxyshop_setup() {
 				<label for="foxyshop_version">What FoxyCart version are you using?</label> 
 				<select name="foxyshop_version" id="foxyshop_version" style="min-width: 100px;">
 				<?php
-				$versionArray = array('0.7.0' => '0.7.0', '0.7.1' => '0.7.1', '0.7.2' => '0.7.2');
+				$versionArray = array('0.7.2' => '0.7.2', '0.7.1' => '0.7.1', '0.7.0' => '0.7.0');
 				foreach ($versionArray as $key => $val) {
 					echo '<option value="' . $key . '"' . ($foxyshop_settings['version'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
 				} ?>

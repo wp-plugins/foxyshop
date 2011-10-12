@@ -271,7 +271,7 @@ function foxyshop_order_management() {
 
 	<?php
 	$holder = "";
-	$hide_transaction_filter = (isset($_REQUEST['hide_transaction_filter']) ? $_REQUEST['hide_transaction_filter'] : 0);
+	$hide_transaction_filter = isset($_REQUEST['hide_transaction_filter']) ? $_REQUEST['hide_transaction_filter'] : 0;
 	foreach($xml->transactions->transaction as $transaction) {
 		$transaction_id = (string)$transaction->id;
 		$transaction_date = (string)$transaction->transaction_date;
@@ -292,7 +292,14 @@ function foxyshop_order_management() {
 		echo '<div class="row-actions">';
 			echo '<span><a href="#" class="view_detail">View Order</a> | </span>';
 			echo '<span><a href="' . $print_receipt_link . '" title="' . __('Printable Receipt') . '" target="_blank">Receipt</a></span>';
-			if ($hide_transaction_filter == 1) {
+			
+			if (!isset($transaction->is_hidden)) {
+				echo 'NOT FOUND';
+				$is_hidden = $hide_transaction_filter;
+			} else {
+				$is_hidden = (string)$transaction->is_hidden;
+			}
+			if ($is_hidden == 1) {
 				echo '<span> | <a href="#" class="set_order_hidden_status" rel="0">Un-Archive</a></span>';
 			} else {
 				echo '<span> | <a href="#" class="set_order_hidden_status" rel="1">Archive</a></span>';
@@ -399,6 +406,13 @@ function foxyshop_order_management() {
 				$holder .= '<li><strong>' . str_replace("_"," ",$custom_field->custom_field_name) . ':</strong> ' . $custom_field->custom_field_value . '</li>';
 			}
 		}
+		
+		//Attributes
+		if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) {
+			foreach($transaction->attributes->attribute as $attribute) {
+				$holder .= '<li><strong>' . str_replace("_"," ",$attribute->attribute_name) . ':</strong> ' . $attribute->attribute_value . '</li>';
+			}
+		}
 
 		$holder .= '</ul>';
 		$holder .= '</div>';
@@ -502,7 +516,7 @@ function foxyshop_order_management() {
 				id: transaction_id
 			};
 			$.post(ajaxurl, data, function(response) {
-			<?php if ($hide_transaction_filter == 0) { ?>
+			<?php if ($hide_transaction_filter == "0") { ?>
 				$("tr[rel="+transaction_id+"]").remove();
 				$("#foxyshop-list-inline #holder_" + transaction_id).remove();
 			<?php } else { ?>

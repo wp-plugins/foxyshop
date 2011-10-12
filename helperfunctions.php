@@ -363,7 +363,7 @@ function foxyshop_run_variations($variationValue, $variationName, $showPriceVari
 	global $product, $foxyshop_settings;
 
 	$write1 = "";
-	$variations = preg_split("/(\R)/", $variationValue);
+	$variations = preg_split("[\r\n|\r|\n]", $variationValue);
 	$k = 0;
 	foreach($variations as $val) {
 		if ($val == '') continue;

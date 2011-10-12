@@ -28,6 +28,46 @@ function foxyshop_save_tools() {
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&oldvars=1');
 		die;
 
+	//Update FoxyCart Template
+	} elseif (isset($_POST['foxycart_cart_update_save']) || isset($_POST['foxycart_checkout_update_save'])) {
+		if (!check_admin_referer('update-foxycart-template')) return;
+		$foxyshop_settings['template_url_cart'] = $_POST['foxycart_cart_update'];
+		$foxyshop_settings['template_url_checkout'] = $_POST['foxycart_checkout_update'];
+		update_option("foxyshop_settings", serialize($foxyshop_settings));
+		
+		//If just clearing the urls, return now
+		if (empty($_POST['foxycart_cart_update']) && empty($_POST['foxycart_checkout_update'])) {
+			header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&updatetemplate=clear');
+			die;
+		}
+		
+		//Cart
+		if (isset($_POST['foxycart_cart_update_save'])) {
+			
+			$foxy_data = array("api_action" => "store_template_cache", "template_type" => "cart", "template_url" => $_POST['foxycart_cart_update']);
+			$foxy_response = foxyshop_get_foxycart_data($foxy_data);
+			$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
+			if ($xml->result != "ERROR") {
+				header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&updatetemplate=cart');
+			} else {
+				header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&updatetemplate=error&error='.urlencode((string)$xml->messages->message));
+			}
+			die;
+
+		
+		//Checkout
+		} else {
+			$foxy_data = array("api_action" => "store_template_cache", "template_type" => "checkout", "template_url" => $_POST['foxycart_checkout_update']);
+			$foxy_response = foxyshop_get_foxycart_data($foxy_data);
+			$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
+			if ($xml->result != "ERROR") {
+				header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&updatetemplate=checkout');
+			} else {
+				header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&updatetemplate=error&error='.urlencode((string)$xml->messages->message));
+			}
+			die;
+		}
+
 	//Process Saved Variations
 	} elseif (isset($_POST['foxyshop_process_saved_variations'])) {
 		if (!check_admin_referer('wp-foxyshop-process-saved-variations')) return;
@@ -149,6 +189,17 @@ function foxyshop_tools() {
 	//Process Saved Variations
 	if (isset($_GET['processedvars'])) echo '<div class="updated"><p>' . __('Saved variations have been successfully saved.') . '</p></div>';
 
+	//Update Template
+	if (isset($_GET['updatetemplate'])) {
+		if ($_GET['updatetemplate'] == "error") {
+			echo '<div class="updated"><p>' .  $_GET['error'] . '</p></div>';
+		} elseif ($_GET['updatetemplate'] == "clear") {
+			echo '<div class="updated"><p>Your saved URLs have been cleared.</p></div>';
+		} else {
+			echo '<div class="updated"><p>' . sprintf(__('The %s template has been successfully updated.'), esc_attr($_GET['updatetemplate'])) . '</p></div>';
+		}
+	}
+
 
 	//Get Export Settings
 	$encrypt_key = "foxyshop_encryption_key_16";
@@ -260,14 +311,14 @@ function foxyshop_tools() {
 				<td>
 					<label for="foxyshop_export_settings"><?php echo __('Copy String To Your Clipboard to Export FoxyShop Settings'); ?>:</label> 
 					<div style="clear: both;"></div>
-					<textarea id="foxyshop_export_settings" name="foxyshop_export_settings" wrap="auto" readonly="readonly" onclick="this.select();" style="float: left; width:500px; line-height: 110%; resize: none; height: 80px; font-family: courier;"><?php echo $foxyshop_export_settings; ?></textarea>
+					<textarea id="foxyshop_export_settings" name="foxyshop_export_settings" wrap="auto" readonly="readonly" onclick="this.select();" style="font-size: 13px; float: left; width:500px; line-height: 110%; resize: none; height: 80px; font-family: courier;"><?php echo $foxyshop_export_settings; ?></textarea>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<label for="foxyshop_import_settings"><?php echo __('Paste Settings String to Import'); ?>:</label> 
 					<div style="clear: both;"></div>
-					<textarea id="name="foxyshop_import_settings" name="foxyshop_import_settings" wrap="auto" style="float: left; width:500px;height: 80px; font-family: courier; line-height: 110%; resize: none;"></textarea>
+					<textarea id="name="foxyshop_import_settings" name="foxyshop_import_settings" wrap="auto" style="float: left; width:500px;height: 80px; font-size: 13px; font-family: courier; line-height: 110%; resize: none;"></textarea>
 					<div style="clear: both;"></div>
 					<p><input type="submit" class="button-primary" value="<?php _e('Import Settings'); ?>" /></p>
 				</td>
@@ -287,6 +338,33 @@ function foxyshop_tools() {
 			</tr>
 		</thead>
 		<tbody>
+			<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) : ?>
+			
+			<tr>
+				<td>
+					<form method="post" name="foxyshop_cache_form_1" action="">
+					<h3 style="margin-top: 0;">Update FoxyCart Template <span> <a href="http://wiki.foxycart.com/v/0.7.1/templates" target="_blank">Instructions</a></span></h3>
+					
+					<label for="foxycart_cart_update" style="width: 150px;">Cart Template URL</label>
+					<input type="text" name="foxycart_cart_update" id="foxycart_cart_update" style="width: 450px;" value="<?php echo htmlspecialchars($foxyshop_settings['template_url_cart']); ?>" />
+					<input type="submit" name="foxycart_cart_update_save" value="Update Cart Cache" class="button" />
+
+					<div style="clear: both;"></div>
+					
+					<label for="foxycart_cart_update" style="width: 150px;">Checkout Template URL</label>
+					<input type="text" name="foxycart_checkout_update" id="foxycart_checkout_update" style="width: 450px;" value="<?php echo htmlspecialchars($foxyshop_settings['template_url_checkout']); ?>" />
+					<input type="submit" name="foxycart_checkout_update_save" value="Update Checkout Cache" class="button" />
+					
+					<?php wp_nonce_field('update-foxycart-template'); ?>
+					<input type="hidden" name="foxyshop_save_tools" value="1" />
+					</form>
+				</td>
+			</tr>
+			
+			
+			
+			<?php endif; ?>
+
 			<tr>
 				<td>
 					<span>Product pages not showing up?</span> <a href="edit.php?post_type=foxyshop_product&amp;page=foxyshop_tools&amp;foxyshop_flush_rewrite_rules=1" class="button">Flush Rewrite Rules</a>

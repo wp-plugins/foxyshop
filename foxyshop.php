@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 3.5
+Version: 3.5.1
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -35,7 +35,7 @@ the most out of FoxyShop.
 **************************************************************************/
 
 //Setup Plugin Variables
-define('FOXYSHOP_VERSION', "3.5");
+define('FOXYSHOP_VERSION', "3.5.1");
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 $foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
@@ -78,12 +78,12 @@ if (is_admin()) {
 } else {
 	if ($foxyshop_settings['use_jquery']) add_action('init', 'foxyshop_insert_jquery');
 	if (!defined('FOXYSHOP_SKIP_FOXYCART_INCLUDES')) add_action('wp_head', 'foxyshop_insert_foxycart_files');
-	wp_enqueue_style('foxyshop_css', FOXYSHOP_DIR . '/css/foxyshop.css', array(), FOXYSHOP_VERSION);
+	add_action('init', 'foxyshop_load_site_scripts', 1);
 	if ($foxyshop_settings['ga']) add_action('wp_footer', 'foxyshop_insert_google_analytics', 100);
 }
 
 //Setup Wizard
-include_once('setup.php');
+include_once('setup-page.php');
 
 //Custom Post Type and Taxonomy
 include_once('customposttype.php');
@@ -121,10 +121,10 @@ if ($foxyshop_settings['manage_inventory_levels']) {
 include_once('productfeed.php');
 
 //Tools Page
-include_once('foxyshoptools.php');
+include_once('tools-page.php');
 
 //Settings Page
-include_once('settings.php');
+include_once('settings-page.php');
 
 //Single Sign On
 if ($foxyshop_settings['enable_sso']) {

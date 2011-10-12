@@ -75,6 +75,8 @@ function foxyshop_save_settings() {
 		$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
 		if ($xml->result != "ERROR") {
 			if ($xml->code_block) $foxyshop_settings['foxycart_include_cache'] = (string)$xml->code_block;
+		} else {
+			$foxyshop_settings['foxycart_include_cache'] = "";
 		}
 	} else {
 		$foxyshop_settings['foxycart_include_cache'] = "";
@@ -92,6 +94,7 @@ function foxyshop_settings_menu() {
 }
 function foxyshop_options() {
 	global $foxyshop_settings;
+	if (!defined('FOXYSHOP_TEMPLATE_PATH')) define('FOXYSHOP_TEMPLATE_PATH',STYLESHEETPATH);
 ?>
 <div id="foxyshop_settings_wrap" class="wrap">
 	
@@ -207,7 +210,7 @@ function foxyshop_options() {
 					<div style="clear: both;margin-bottom: 5px;"></div>
 
 					<label for="foxyshop_theme_dir"><?php _e('Template Path'); ?>:</label>
-					<input type="text" id="foxyshop_theme_dir" name="foxyshop_theme_dir" value="<?php echo STYLESHEETPATH; ?>/" readonly="readonly" />
+					<input type="text" id="foxyshop_theme_dir" name="foxyshop_theme_dir" value="<?php echo FOXYSHOP_TEMPLATE_PATH; ?>/" readonly="readonly" />
 					<a href="#" class="foxyshophelp">FoxyShop will look in this folder for customized theme files.</a>
 
 					<?php if ($foxyshop_settings['generate_product_sitemap']) { ?>
@@ -245,7 +248,7 @@ function foxyshop_options() {
 					<label for="foxyshop_version"><?php _e('FoxyCart Version'); ?>:</label> 
 					<select name="foxyshop_version" id="foxyshop_version">
 					<?php
-					$versionArray = array('0.7.0' => '0.7.0', '0.7.1' => '0.7.1', '0.7.2' => '0.7.2');
+					$versionArray = array('0.7.2' => '0.7.2', '0.7.1' => '0.7.1', '0.7.0' => '0.7.0');
 					foreach ($versionArray as $key => $val) {
 						echo '<option value="' . $key . '"' . ($foxyshop_settings['version'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
 					} ?>

@@ -137,6 +137,14 @@ function foxyshop_customer_management() {
 		if ((string)$customer->cc_exp_month != "") $holder .= '<li>' . __('Exp') . ': ' . (string)$customer->cc_exp_month . '-' . (string)$customer->cc_exp_year . '</li>';
 		$holder .= '<li>' . __('Last Modified') . ': ' . (string)$customer->last_modified_date . '</li>';
 		$holder .= '<li>&nbsp;</li>';
+
+		//Attributes
+		if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) {
+			foreach($customer->attributes->attribute as $attribute) {
+				$holder .= '<li><strong>' . str_replace("_"," ",$attribute->attribute_name) . ':</strong> ' . $attribute->attribute_value . '</li>';
+			}
+		}
+
 		$holder .= '</ul>';
 		$holder .= '</div>';
 

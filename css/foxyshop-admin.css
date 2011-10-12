@@ -1,3 +1,6 @@
+h4 {
+	margin-bottom: .5em;
+}
 .foxyshop_field_control {
 	clear: both;
 }
@@ -57,6 +60,9 @@
 }
 #customer_table td {
 	line-height: 25px;
+}
+#customer_table #foxyshop-list-inline td {
+	line-height: 17px;
 }
 #foxyshop-list-inline {
 	padding: 4px 7px 2px;

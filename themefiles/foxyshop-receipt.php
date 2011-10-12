@@ -208,6 +208,13 @@ foreach($xml->transactions->transaction as $transaction) {
 			$product_price = (double)$transaction_detail->product_price;
 			$product_quantity = (int)$transaction_detail->product_quantity;
 
+			$product_discount = 0;
+			foreach($transaction_detail->transaction_detail_options->transaction_detail_option as $transaction_detail_option) {
+				$product_discount += (double)$transaction_detail_option->price_mod;
+			}
+			
+			$product_price += $product_discount;
+
 			?>
 			<tr>
 				<td><?php

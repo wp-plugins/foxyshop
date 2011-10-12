@@ -3,8 +3,8 @@ Contributors: sparkweb
 Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
-Tested up to: 3.2.1
-Stable tag: 3.5
+Tested up to: 3.3
+Stable tag: 3.5.1
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -62,6 +62,14 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 3.5.1 =
+* Some plugin filenames renamed for WordPress Multisite support
+* Update to get rid of WP notice in 3.3
+* Changed variation newline splitting method for broader support
+* Added pricing adjustments to product price in receipt template
+* Added FoxyCart template update feature for 0.7.2
+* Added customer, transaction, and subscription attribute support for 0.7.2
 
 = 3.5 =
 * New Feature: Saved variations allow you to setup a variation once and reuse it on multiple products 
@@ -164,80 +172,10 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 * Added class names to the breadcrumbs for easier styling.
 * See [Release Notes](http://www.foxy-shop.com/2011/08/version-3-0-a-big-overhaul/) for more details
 
-= 2.9.1 =
-* Fixed activation error.
-
-= 2.9 =
-* Added full category and product display shortcodes that can be placed on any page or post
-* Added a widget to display category lists in the sidebar
-* Fixed image upload problems where WordPress was not installed in the root
-* Visual updates to the settings page
-* Changed Admin menu icon to FoxyShop "F"
-* Looks for FOXYSHOP_SKIP_FOXYCART_INCLUDES before loading the includes automatically. Set constant in wp-config.php.
-* Added FOXYSHOP_PRODUCT_NAME_SINGULAR and FOXYSHOP_PRODUCT_NAME_PLURAL constant options to personalize your install with other names for "product"
-* Added FOXYSHOP_URL_BASE constant for fixing IIS permalink troubles
-* Added FOXYSHOP_CURL_SSL_VERIFYPEER constant to set to false if you have trouble accessing the FoxyShop API
-* Admin update: wording on save/update message to indicate products
-* Product attachments now filtered to ensure only images are returned
-* On product page, checking to make sure that fcc object is initialized to avoid JavaScript errors
-* Fixed "Undefined" prop error when adding related or bundled products
-* See [Release Notes](http://www.foxy-shop.com/2011/08/version-2-9-product-shortcodes/) for more details
-
-= 2.8.2 =
-* Gorgeous new FoxyShop logo on settings page
-* New option available in datafeed endpoint to add WordPress accounts after checkout
-* Bugfix: SSO redirects were failing after login.
-
-= 2.8.1 =
-* Fixed bug where product and category sorting was only showing up for editors. Now available for editors and above.
-
-= 2.8 =
-* Added printable invoices to order page. Template is foxyshop-receipt.php.
-* Editors can now see the Category and Product sorting screens.
-* Completely rebuilt upload functions for further security upgrades. Those using custom user uploads will need to read the release notes for upgrade instructions.
-* See [Release Notes](http://www.foxy-shop.com/2011/07/version-2-8-printable-invoices-and-security-updates/) for more details
-
-= 2.7.1 =
-* Removed 404 headers that WordPress was generating on some FoxyShop store pages.
-* Added "foxyshop" class to the WordPress body_class() function for some styling assistance.
-* Bugfix: Products without variations or product code changes weren't getting inventory updates. Fixed!
-* Upgraded to jQuery 1.6.2
-* Removed pluggable.php early include and subscription array setup on every page load. Only loaded when necessary.
-* You can now set constant FOXYSHOP_PRODUCT_TAGS in wp-config to allow tags on products.
-* Added security feature to harden custom variation uploads.
-
-= 2.7 =
-* Added a variation field called Descriptive Text to allow text-only areas in the variation groups -- describe your variations or give instructions.
-* Added new function foxyshop_simple_category_children() for simple category listing.
-* Updated multiship.jquery.js to version 2.2 for better compatibility with hmac verification
-* Small CSS change for more consistent non-bullets in breadcrumbs
-* Removing sale price no longer causes PHP number_format error
-* Fixed FOXYSHOP_SKIP_VERIFICATION feature
-* See [Release Notes](http://www.foxy-shop.com/2011/06/version-2-7-variation-upgrades-and-other-tweaks/) for more details
-
-= 2.6.1 =
-* Corrected .prop() issue which was causing the admin product tool not to load completely in Internet Explorer.
-* Small JavaScript fix: activating Buy Now button when when switching from out of stock to fully stocked product.
-
-= 2.6 =
-* Subscription data is now stored in the WordPress user record when you are using SSO. Admins can see current subscriptions in the User Profile.
-* Updated subscription start and end date fields to accept natural language strtotime() arguments.
-* Now passing quantity_max and quantity_min to the cart
-* Added option to send inventory alert emails
-* Updated inventory feature so that quantities can't be added to the cart above what is in stock
-* Added customer order history function for WordPress developers.
-* Fixed some WordPress 3.2 styling and jQuery issues. Now fully compatible.
-* You may set bundled products to use their full value rather than $0 by putting this in your wp-config.php file: define('FOXYSHOP_BUNDLED_PRODUCT_FULL_PRICE', 1);
-* Added warning for PHP users whose version is less than 5.1.2. The HMAC hash will break!
-* If you absolutely need to disable the HMAC verification, you can now set this constant in your wp-config.php file: define('FOXYSHOP_SKIP_VERIFICATION', 1) - but this is NOT recommended!
-* Constant TEMPLATEPATH changed to STYLESHEETPATH - if you are using a child theme the template files can now live in the child theme, though the parent theme will still be checked.
-* Set constant FOXYSHOP_PRODUCT_COMMENTS in wp-config to allow comments on products.
-* See [Release Notes](http://www.foxy-shop.com/2011/06/version-2-6-inventory-and-subscription-upgrades/) for more details
-
 [View Archived Changelog](http://www.foxy-shop.com/changelog-archives/)
 
 
 == Upgrade Notice ==
 
-= 3.0 =
-If you have a lot of products, the reactivation process can take a bit. Please be patient. If it times out, please try again. All product variations are being upgraded.
+= 3.5.1 =
+This patches an issue with mac newlines in the variations as well several other fixes and patches.
