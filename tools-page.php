@@ -202,12 +202,14 @@ function foxyshop_tools() {
 
 
 	//Get Export Settings
-	$encrypt_key = "foxyshop_encryption_key_16";
-	$foxyshop_export_settings = get_option('foxyshop_settings') . "|-|";
-	$foxyshop_export_settings .= get_option('foxyshop_category_sort');
-	$foxyshop_export_settings = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($encrypt_key), $foxyshop_export_settings, MCRYPT_MODE_CBC, md5(md5($encrypt_key))));
-	$foxyshop_export_settings = wordwrap($foxyshop_export_settings, 58, "\n", true);
-
+	if (function_exists('mcrypt_encrypt')) {
+		$encrypt_key = "foxyshop_encryption_key_16";
+		$foxyshop_export_settings = get_option('foxyshop_settings') . "|-|";
+		$foxyshop_export_settings .= get_option('foxyshop_category_sort');
+		$foxyshop_export_settings = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($encrypt_key), $foxyshop_export_settings, MCRYPT_MODE_CBC, md5(md5($encrypt_key))));
+		$foxyshop_export_settings = wordwrap($foxyshop_export_settings, 58, "\n", true);
+	}
+	
 	$recommend_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAApRJREFUeNqEU01IVFEUPu9n3nszvjuvGadGBpswLZIJzR8mslXQIiiICJxKpVwULiKI2oWb0iBo06YgKWih6KJFbUrDwlxYDISRkQtNKcbNkGY6+pr37rud+3xOo/Rz4Hvv3HvP951z7o8Am+z2EQlqokLxVIPDIEUZiNRhA+in1xeO99ogt+0T3QGntNSs+YwVyGF0U4eu3utYys4tjT64rrAiAW5ya63okkX8CAgJYdqF9dbyhsP1jArEH4wItg2S44nr6lqVMvzdLkmanqg4cCzJB9Pp4YmfFMa5QFQXQPWY8r/ITRe6TwsgE9sylyfHhifzlA3uDIsbAv8k0EGCpLK+vfuUICpk8cvEx2d9D6eIkLMMTejE9e9e3AvEULFADHFC1Eh13bmuNsakIKMUSnc3Js7ebEpszvKy64y0LtDIdxpLJtHqZOX25NH91AYCsLaTq4uLUBIKQW5hoUD+MTeVsR2gbgsWZS0NzVea9bKKWN40YSVnAsXtppjdQaiaBhoh7lz/rcuP10XwDJ66AjYFUrI1HsthJtuywMrnN4AYBoRw3q/r0H6j5+TyfHZ5tOfao6U8jLoCeQd8FAMcDsziAjMzx3FvFPf5+uynDwuDfXfTXvZCJSK2oPAAm5ddRGZI5neG+1w8XrUnlLrYeXCbLmT8ivAqoHgXybSAZb9OfwtGYqU2D/ZQqAD/PMHI8yeZ929HMkjrn8GDnME9Pc8FchbrGRy4r5fFd5UbkWhQUQOqviWi+9SAH0TRJ6LxtvbWJUs/j79+d+cNG5r5fSDuM5Bqy6DCUCHhk6BqhwHhqA4hTYawJIKBATJCx3ZWR2ahd2gaxpCTRcxjm9R9Rwg/IoDwwf/NQqzwK4ICzi8BBgBdLjNedsdOVgAAAABJRU5ErkJggg==";
 	$google_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABh0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzT7MfTgAAABZ0RVh0Q3JlYXRpb24gVGltZQAwNy8xNS8xMMjfMS0AAAQRdEVYdFhNTDpjb20uYWRvYmUueG1wADw/eHBhY2tldCBiZWdpbj0iICAgIiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+Cjx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDQuMS1jMDM0IDQ2LjI3Mjk3NiwgU2F0IEphbiAyNyAyMDA3IDIyOjM3OjM3ICAgICAgICAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp4YXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iPgogICAgICAgICA8eGFwOkNyZWF0b3JUb29sPkFkb2JlIEZpcmV3b3JrcyBDUzM8L3hhcDpDcmVhdG9yVG9vbD4KICAgICAgICAgPHhhcDpDcmVhdGVEYXRlPjIwMTAtMDctMTVUMTk6MDU6MDFaPC94YXA6Q3JlYXRlRGF0ZT4KICAgICAgICAgPHhhcDpNb2RpZnlEYXRlPjIwMTAtMDctMTVUMTk6MTg6MDBaPC94YXA6TW9kaWZ5RGF0ZT4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24+CiAgICAgIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICAgICAgICAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyI+CiAgICAgICAgIDxkYzpmb3JtYXQ+aW1hZ2UvcG5nPC9kYzpmb3JtYXQ+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDBS8igAAAJlSURBVDiNfY9PSFRhFMV/33uvcRzfzKijmQr5jyzFciGFldlGiRCCoAIhqFy0CdpE0Sao3Ei1CtdBuAjDhdBSQiw3SaM5IBpkJTlRaprydJznvO+2sNRJ68CBy733nHuuisfjLVNf4k+fReciI1+TWCa0HLA5VhIAwHOcBR48sMyVlSC/IUohhhHLTCTOWfPz80+GZndFuqdCaAxYg/GYoqd2L1UFGQA50tCwRGfnHz3aMHBs+9DP7OxuKxAI7P64Ksx5gqDWNzx49CZJ75Wi9Yv19SF97x5bEwQcB0+pWsu2bUIBF9GarXg37WwKEgm0UmlzXzJJ1vKyYZimSWNFELSXRncttRl5eJj56hKGT1cxfLqKlXAmIoLyPCyA5v1hmitt+t4vbogayrI36ktHRni+bxpPvPXGBQiuMna7z3LNoqard+srcjlTk8v3pSSLiRSNFUEenysn5DfpmuyifeIhIpL2gmuxe7TMX6jybg7KxeOlXD+RT1mub3NBu7S/a6cj1rF5+S9E1iKovBsD8kNnbTT7r1VysiJIa38r3Z+6dxRuGKQiGOgUWzk05eBql5qcGsJWGDT/pSq79VLOHy3nVHUO4UyT4rCPPaH1V+LLcdoG2uib7vtnAhWb/CoHywsBEOcDOB/AXUAVnwXTj6tdml40MfhtcGeDufiE5Cz1IrOv06f+AozqO6isUqKzUQ73HN5u4EUw9HgHMvMKRNKZ+IYeuw+Soi6/DtuyQdhGQ7tLo6Jlu8FvE3E+A+BpL02oRKFEvTWUyOVkyoztaGL4Uf4CojNREmuJNHGGlzHk077WXxkiNLGzmnadAAAAAElFTkSuQmCC";
 	$export_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACH0lEQVR4nKWSTUhUYRSGnzv33snRdEY0M0dJaSDTzRBkiZhZkNCiTZC1CIQQahFEq9q3aBFRqzZFkUQRuayFEKlZhv0ZGsUw6VD4N5rj5KjT3O9+p4VphCVKZ3PO5nl4Obzwn2M0tLSdBE6vk7vedfvETQDjQOs9qT1Suy66t72XEn8y2Hb51KglIiwk59YlEJHl29paMMPEm4/4sn2rQspOkAi2Exg9TGizQ372/ByAVZSX5tihbYTD4X/C8fkxWp80URZSjA1/JnesGiZ2LSZYS+Svs0MEcjZSWDTNpiKDl11vSXmmioHkqoKekQ4exe4ykorxLT1Dmcpg2x727PXR3Rn90PigouSvAldcLjxrITbXjzdvGl+xy3Y/OMrGMAy8tkFDY8Ds6ZqN/iEQEdJqnrOdzUwuRCktzKK8oA7LtDFNzZDqxDAMDMNDqRlGpC/LAtBa47ouIsKtwatMJL+wu6Se0fQkjwfekevNI60WCFULhqEoZAcPu185rnZLPUsCpRRKKSKJQcr9lbye6qcpeJz7+19wo66D6vydJGc8+N0Kevri5KS21Dw9Ohy3AJRSOI6D1hqfmY3X3sD58DVMLLQStHZIOd+pyjrIwKcogalKiuM1w9DNCsG5qkuICNrVKFForRERzoQucid2hXBuPbOJIBmc3z2IRCJkMhlEZBH+BS1Vdmnvoxl+wHMdWX78omA8SWT8/Vo6tWJ+AquVAo19QSjUAAAAAElFTkSuQmCC";
@@ -307,6 +309,7 @@ function foxyshop_tools() {
 			</tr>
 		</thead>
 		<tbody>
+			<?php if (function_exists('mcrypt_encrypt')) : ?>
 			<tr>
 				<td>
 					<label for="foxyshop_export_settings"><?php echo __('Copy String To Your Clipboard to Export FoxyShop Settings'); ?>:</label> 
@@ -323,6 +326,13 @@ function foxyshop_tools() {
 					<p><input type="submit" class="button-primary" value="<?php _e('Import Settings'); ?>" /></p>
 				</td>
 			</tr>
+			<?php else : ?>
+			<tr>
+				<td>
+					<p><em>In order to use this feature you need to enable the mcrypt library in your php.ini. More info <a href="http://stackoverflow.com/questions/2604435/what-causes-this-error-fatal-error-call-to-undefined-function-mcrypt-encrypt" target="_blank">here</a>.</em></p>
+				</td>
+			</tr>
+			<?php endif; ?>
 		</tbody>
 	</table>
 	<input type="hidden" name="foxyshop_save_tools" value="1" />
