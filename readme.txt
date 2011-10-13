@@ -69,7 +69,7 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 * Changed variation newline splitting method for broader support
 * Added pricing adjustments to product price in receipt template
 * Added FoxyCart template update feature for 0.7.2
-* Added customer, transaction, and subscription attribute support for 0.7.2
+* Added customer, transaction, and subscription attribute support for 0.7.2 
 
 = 3.5 =
 * New Feature: Saved variations allow you to setup a variation once and reuse it on multiple products 
