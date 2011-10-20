@@ -294,7 +294,6 @@ function foxyshop_order_management() {
 			echo '<span><a href="' . $print_receipt_link . '" title="' . __('Printable Receipt') . '" target="_blank">Receipt</a></span>';
 			
 			if (!isset($transaction->is_hidden)) {
-				echo 'NOT FOUND';
 				$is_hidden = $hide_transaction_filter;
 			} else {
 				$is_hidden = (string)$transaction->is_hidden;
@@ -397,7 +396,7 @@ function foxyshop_order_management() {
 		$holder .= '<ul>';
 		if ((string)$transaction->customer_phone != "") $holder .= '<li>' . $transaction->customer_phone . '</li>';
 		$holder .= '<li><a href="mailto:' . $transaction->customer_email . '">' . $transaction->customer_email . '</a></li>';
-		$holder .= '<li><a href="http://whatismyipaddress.com/ip/' . $transaction->customer_ip . '" target="_blank">' . $transaction->customer_ip . '</a></li>';
+		$holder .= '<li>' . apply_filters('foxyshop_order_ip', '<a href="http://whatismyipaddress.com/ip/' . $transaction->customer_ip . '" target="_blank">' . $transaction->customer_ip . '</a>', $transaction->customer_ip) . '</li>';
 		$holder .= '<li>&nbsp;</li>';
 
 		//Custom Fields

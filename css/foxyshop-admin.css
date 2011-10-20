@@ -9,7 +9,7 @@ h4 {
 }
 .foxyshop_field_control label {
 	float:left;
-	width: 72px;
+	width: 74px;
 	margin:7px 6px 0 6px;
 }
 .foxyshop_field_control label span {
@@ -166,8 +166,11 @@ body label.dkeylabel {
 	background-color: transparent !important;
 }
 .variationoptions textarea {
-	width: 500px;
+	max-width: 800px;
+	min-width: 500px;
+	width: 80%;
 	height: 130px;
+	resize: vertical;
 }
 .variationoptions.upload textarea {
 	height: 69px;
@@ -204,6 +207,9 @@ body label.variationtypelabel {
 }
 .chzn-container-multi .chzn-choices {
 	min-height: 58px;
+}
+.chzn-container {
+    width: 100% !important;
 }
 
 .small {
@@ -724,4 +730,58 @@ table.cfbe_foxyshop_table.widefat td {
 }
 table.cfbe_foxyshop_table .chzn-container {
     margin: 5px 0;
+}
+
+
+/* Responsive Variations */
+@media all and (max-width: 1150px) {
+	
+	body label.variationtypelabel {
+		clear: left;
+		margin: 7px 6px 0!important;
+		width: 100px !important;
+	}
+	body .foxyshop_field_control select.variationtype {
+		float: left;
+	}
+	.variation_holder textarea {
+		width: 100px;
+	}
+	.variationkey {
+		margin-left: 0;
+		font-family: Arial;
+	}
+	.variation_holder .upload.variationoptions label,
+	.variation_holder .radio.variationoptions label,
+	.variation_holder .dropdown.variationoptions label,
+	.variation_holder .descriptionfield.variationoptions label {
+		width: 380px !important;
+		display: block !important;
+		float: none !important;
+		clear: both !important;
+		padding-top: 5px !important;
+	}
+	.variation_holder textarea {
+		width: 420px;
+		min-width: 420px;
+		max-width: 420px;
+	}
+	.foxyshop_saved_variation {
+		clear: both;
+		padding: 5px;
+	}
+	.foxyshop_field_control input.variation_checkbox_text {
+		width: 300px !important;
+	}
+	
+	
+	/* Some Settings Page Tweaks */
+	#foxycart_cart_update, #foxycart_checkout_update {
+		width: 370px !important;
+	}
+
+	table.infoonly input {
+		width: 540px;
+	}
+
 }

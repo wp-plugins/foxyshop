@@ -447,16 +447,16 @@ for ($i=1;$i<=$max_variations;$i++) {
 
 		<!-- //// VARIATION HEADER //// -->
 		<div class="foxyshop_field_control">
+			<a href="#" class="button deleteVariation" rel="<?php echo $i; ?>">Delete</a>
 			<label for="_variation_ref_name_<?php echo $i; ?>"><?php _e('Reference Name'); ?></label>
 			<input type="text" name="_variation_ref_name_<?php echo $i; ?>" class="variation_ref_name" id="_variation_ref_name_<?php echo $i; ?>" value="<?php echo esc_attr($_variationRefName); ?>" />
-			<span>This name will display in the dropdown menu</span>
-			<a href="#" class="button deleteVariation" rel="<?php echo $i; ?>">Delete</a>
+			<span>Displayed in Dropdown Menu</span>
 		</div>
 		<div class="foxyshop_field_control">
 			<label for="_variation_name_<?php echo $i; ?>"><?php _e('Variation Name'); ?></label>
 			<input type="text" name="_variation_name_<?php echo $i; ?>" class="variation_name" id="_variation_name_<?php echo $i; ?>" value="<?php echo esc_attr($_variationName); ?>" />
 
-			<label for="_variation_type_<?php echo $i; ?>" class="variationtypelabel"><?php _e('Variation Type'); ?>:</label> 
+			<label for="_variation_type_<?php echo $i; ?>" class="variationtypelabel"><?php _e('Variation Type'); ?></label> 
 			<select name="_variation_type_<?php echo $i; ?>" id="_variation_type_<?php echo $i; ?>" class="variationtype">
 			<?php
 			foreach ($var_type_array as $var_name => $var_val) {
@@ -466,7 +466,7 @@ for ($i=1;$i<=$max_variations;$i++) {
 		</div>
 
 
-		<div id="variation_holder_<?php echo $i; ?>">
+		<div class="variation_holder" id="variation_holder_<?php echo $i; ?>">
 
 			<?php if ($_variation_type == "dropdown") : ?>
 				<!-- Dropdown -->
@@ -707,15 +707,15 @@ jQuery(document).ready(function($){
 		new_content += '<input type="hidden" name="upload_value_' + this_id + '" id="upload_value_' + this_id + '" value="" />';
 		new_content += '<!-- //// VARIATION HEADER //// -->';
 		new_content += '<div class="foxyshop_field_control">';
+		new_content += '<a href="#" class="button deleteVariation" rel="' + this_id + '">Delete</a>';
 		new_content += '<label for="_variation_ref_name_' + this_id + '"><?php _e('Reference Name'); ?></label>';
 		new_content += '<input type="text" name="_variation_ref_name_' + this_id + '" class="variation_ref_name" id="_variation_ref_name_' + this_id + '" value="" />';
-		new_content += '<span>This name will display in the dropdown menu</span>';
-		new_content += '<a href="#" class="button deleteVariation" rel="' + this_id + '">Delete</a>';
+		new_content += '<span>Displayed in Dropdown Menu</span>';
 		new_content += '</div>';
 		new_content += '<div class="foxyshop_field_control">';
 		new_content += '<label for="_variation_name_' + this_id + '"><?php _e('Variation Name'); ?></label>';
 		new_content += '<input type="text" name="_variation_name_' + this_id + '" class="variation_name" id="_variation_name_' + this_id + '" value="" />';
-		new_content += '<label for="_variation_type_' + this_id + '" class="variationtypelabel"><?php _e('Variation Type'); ?>:</label> ';
+		new_content += '<label for="_variation_type_' + this_id + '" class="variationtypelabel"><?php _e('Variation Type'); ?></label> ';
 		new_content += '<select name="_variation_type_' + this_id + '" id="_variation_type_' + this_id + '" class="variationtype">';
 		<?php
 		foreach ($var_type_array as $var_name => $var_val) {
@@ -723,7 +723,7 @@ jQuery(document).ready(function($){
 		} ?>
 		new_content += '</select>';
 		new_content += '</div>';
-		new_content += '<div id="variation_holder_' + this_id + '"></div>';
+		new_content += '<div class="variation_holder" id="variation_holder_' + this_id + '"></div>';
 		new_content += '<!-- //// DISPLAY KEY //// -->';
 		new_content += '<div class="foxyshop_field_control dkeycontainer">';
 		new_content += '<label class="dkeylabel" title="Enter a value here if you want your variation to be invisible until called by another variation.">Display Key</label>';

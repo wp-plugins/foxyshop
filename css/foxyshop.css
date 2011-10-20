@@ -214,7 +214,7 @@
 	padding-left: 1px;
 	margin-bottom: 7px;
 }
-input.foxyshop_quantity {
+input[type="text"].foxyshop_quantity {
 	width: 30px;
 }
 .foxyshop_oldprice {

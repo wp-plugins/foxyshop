@@ -3,8 +3,8 @@ Contributors: sparkweb
 Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
-Tested up to: 3.2.1
-Stable tag: 3.5.1
+Tested up to: 3.3
+Stable tag: 3.5.2
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -63,6 +63,10 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Changelog ==
 
+= 3.5.2 =
+* Added some responsive CSS to the admin so that variations will look better on smaller screens
+* Removed erroneous "NOT FOUND" text on order management screen
+
 = 3.5.1 =
 * Some plugin filenames renamed for WordPress Multisite support
 * Update to get rid of WP notice in 3.3
@@ -79,6 +83,7 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 * Added uninstall.php to properly clean up after plugin files are deleted
 * Recommended plugins tool improved
 * Added more filters
+* See [Release Notes](http://www.foxy-shop.com/2011/10/version-3-5-saved-variations/) for more details
 
 = 3.4 =
 * Added selectable product add-on feature
@@ -178,5 +183,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 3.5.1 =
-This patches an issue with mac newlines in the variations as well several other fixes and patches.
+= 3.5.2 =
+CSS update for smaller screens + removes some erroneous testing text
