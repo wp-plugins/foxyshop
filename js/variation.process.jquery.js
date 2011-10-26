@@ -48,10 +48,12 @@ jQuery(document).ready(function($){
 		foxyshop_visible_selector = "";
 		if (typeof foxyshop_skip_hidden_selects == 'undefined') {
 			$("#foxyshop_product_form_" + current_product_id).find(".foxyshop_variations select, .foxyshop_variations input:radio").each(function(){
-				if ($(this).is(":visible")) {
-					foxyshop_set_field_visible($(this));
-				} else {
-					foxyshop_set_field_hidden($(this));
+				if ($(this).attr("name") != "x:shipto_name_select")) {
+					if ($(this).is(":visible")) {
+						foxyshop_set_field_visible($(this));
+					} else {
+						foxyshop_set_field_hidden($(this));
+					}
 				}
 			});
 			foxyshop_visible_selector = ":visible";
