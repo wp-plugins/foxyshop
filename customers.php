@@ -133,7 +133,8 @@ function foxyshop_customer_management() {
 		$holder .= '<ul>';
 		if ((string)$customer->customer_phone != "") $holder .= '<li>' . (string)$customer->customer_phone . '</li>';
 		$holder .= '<li><a href="mailto:' . $customer->customer_email . '">' . (string)$customer->customer_email . '</a></li>';
-		if ((string)$customer->cc_number != "") $holder .= '<li>' . __('Card') . ': ' . (string)$customer->cc_number . '</li>';
+		if ((string)$customer->cc_number != "") $holder .= '<li>' . __('Card') . ': ' . (string)$customer->cc_number . '</li>'; // 0.7.1 and lower
+		if ((string)$customer->cc_number_masked != "") $holder .= '<li>' . __('Card') . ': ' . (string)$customer->cc_number_masked . '</li>'; //0.7.2+
 		if ((string)$customer->cc_exp_month != "") $holder .= '<li>' . __('Exp') . ': ' . (string)$customer->cc_exp_month . '-' . (string)$customer->cc_exp_year . '</li>';
 		$holder .= '<li>' . __('Last Modified') . ': ' . (string)$customer->last_modified_date . '</li>';
 		$holder .= '<li>&nbsp;</li>';

@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
 Tested up to: 3.3
-Stable tag: 3.5.2
+Stable tag: 3.5.3
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -62,6 +62,12 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 3.5.3 =
+* Important: Now trims whitespace around product titles - fix for FoxyCart functionality change
+* New Feature: Set manual order of add-on products
+* Hidden variations won't be sent to cart or be counted for ikey
+* Bugfix: Add-on products box not showing up in admin unless "Related Products" enabled. Fixed!
 
 = 3.5.2 =
 * Added some responsive CSS to the admin so that variations will look better on smaller screens

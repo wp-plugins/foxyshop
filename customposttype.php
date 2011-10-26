@@ -613,9 +613,9 @@ function foxyshop_related_products_setup() {
 	$args = array('post_type' => 'foxyshop_product', "post__not_in" => array($post->ID), 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC');
 	$all_products = get_posts($args);
 	foreach ($all_products as $product) {
-		$relatedList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_related_products) ? ' selected="selected"' : '') . '>' . $product->post_title . ' (' . $product->ID . ')' . '</option>'."\n";
+		$relatedList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_related_products) ? ' selected="selected"' : '') . '>' . $product->post_title . ' (' . $product->ID . ')</option>'."\n";
 		if ($foxyshop_settings['enable_bundled_products']) $bundledList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_bundled_products) ? ' selected="selected"' : '') . '>' . $product->post_title . '</option>'."\n";
-		if ($foxyshop_settings['enable_addon_products']) $addonList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_addon_products) ? ' selected="selected"' : '') . '>' . $product->post_title . '</option>'."\n";
+		if ($foxyshop_settings['enable_addon_products']) $addonList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_addon_products) ? ' selected="selected"' : '') . '>' . $product->post_title . ' (' . $product->ID . ')</option>'."\n";
 	} ?>
 	<select name="_related_products_list[]" id="_related_products_list" data-placeholder="Search for <?php echo FOXYSHOP_PRODUCT_NAME_PLURAL; ?>" style="width: 100%;" class="chzn-select" multiple="multiple">
 		<?php echo $relatedList; ?>
@@ -625,7 +625,6 @@ function foxyshop_related_products_setup() {
 		<label for="_related_order" style="width: 220px; margin-left: 0;">Set Custom Order For Related Products</label> <input type="text" style="width: 220px; float: left;" name="_related_order" id="_related_order" value="<?php echo get_post_meta($post->ID, "_related_order", 1) ?>" /> <span>ID's separated by comma</span>
 	</div>
 	<div style="clear: both;"></div>
-
 	<?php
 }
 
@@ -664,7 +663,7 @@ function foxyshop_addon_products_setup() {
 		$args = array('post_type' => 'foxyshop_product', "post__not_in" => array($post->ID), 'numberposts' => -1, 'orderby' => 'title', 'order' => 'ASC');
 		$all_products = get_posts($args);
 		foreach ($all_products as $product) {
-			$addonList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_addon_products) ? ' selected="selected"' : '') . '>' . $product->post_title . '</option>'."\n";
+			$addonList .= '<option value="' . $product->ID . '"'. (in_array($product->ID, $arr_addon_products) ? ' selected="selected"' : '') . '>' . $product->post_title . ' (' . $product->ID . ')</option>'."\n";
 		}
 	}
 	?>
@@ -672,6 +671,10 @@ function foxyshop_addon_products_setup() {
 		<?php echo $addonList; ?>
 	</select>
 	<p style="color: #999999;"><?php echo sprintf(__("Click the box above for a drop-down menu showing all %s. Type to search and click or press enter to select."), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></p>
+	<div class="foxyshop_field_control">
+		<label for="_addon_order" style="width: 220px; margin-left: 0;">Set Custom Order For Add-on Products</label> <input type="text" style="width: 220px; float: left;" name="_addon_order" id="_addon_order" value="<?php echo get_post_meta($post->ID, "_addon_order", 1) ?>" /> <span>ID's separated by comma</span>
+	</div>
+	<div style="clear: both;"></div>
 	<?php
 }
 
@@ -1270,7 +1273,7 @@ jQuery(document).ready(function($){
 		}
 	});
 
-	<?php if ($foxyshop_settings['related_products_custom'] || $foxyshop_settings['related_products_tags']) echo '$(".chzn-select").chosen();'; ?>
+	<?php if ($foxyshop_settings['related_products_custom'] || $foxyshop_settings['related_products_tags'] || $foxyshop_settings['enable_addon_products']) echo '$(".chzn-select").chosen();'; ?>
 });
 
 </script>
@@ -1353,6 +1356,7 @@ function foxyshop_product_meta_save($post_id) {
 		foxyshop_save_meta_data('_related_products',"");
 	}
 	if (isset($_POST['_related_order'])) foxyshop_save_meta_data('_related_order',$_POST['_related_order']);
+	if (isset($_POST['_addon_order'])) foxyshop_save_meta_data('_addon_order',$_POST['_addon_order']);
 
 	//Save Bundled Product Data
 	if (isset($_POST['_bundled_products_list'])) {

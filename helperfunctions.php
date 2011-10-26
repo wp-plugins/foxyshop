@@ -38,7 +38,7 @@ function foxyshop_setup_product($thepost = false) {
 	}
 	$new_product = array();
 	$new_product['id'] = $thepost->ID;
-	$new_product['name'] = $thepost->post_title;
+	$new_product['name'] = trim($thepost->post_title);
 	$new_product['code'] = (get_post_meta($thepost->ID,'_code', 1) ? get_post_meta($thepost->ID,'_code', 1) : $thepost->ID);
 	$new_product['description'] = apply_filters('the_content', $thepost->post_content);
 	$new_product['short_description'] = $thepost->post_excerpt;
@@ -1045,6 +1045,15 @@ function foxyshop_related_order($orderby) {
 	return "field(ID," . $str . ")";
 }
 
+function foxyshop_addon_order($orderby) {
+	global $post;
+	$delimiter = ",";
+	$str = get_post_meta($post->ID, "_addon_order", 1);
+	if (!$str) return $orderby;
+	$str = preg_replace(array('/[^\d'.$delimiter.']/', '/(?<='.$delimiter.')'.$delimiter.'+/', '/^'.$delimiter.'+/', '/'.$delimiter.'+$/'), '', $str);
+	return "field(ID," . $str . ")";
+}
+
 
 //Add-On Products
 function foxyshop_addon_products($show_qty = false, $before_entry = "", $after_entry = '<div class="clr"></div>') {
@@ -1053,17 +1062,20 @@ function foxyshop_addon_products($show_qty = false, $before_entry = "", $after_e
 	$original_product = $product;
 	echo '<div class="foxyshop_addon_container">'."\n";
 	
-	$addonproducts = get_posts(array('post_type' => 'foxyshop_product', "post__in" => explode(",",$product['addon_products']), 'numberposts' => -1));
+	$args = array('post_type' => 'foxyshop_product', "post__in" => explode(",",$product['addon_products']), 'posts_per_page' => -1);
+	if ($addonorder_order = get_post_meta($original_product['id'], "_addon_order", 1)) add_filter('posts_orderby', 'foxyshop_addon_order');
+	$addonproducts = new WP_Query($args);
 	if (!$product['bundled_products']) {
 		$num = 2;
 	} else {
 		$bundled_products = explode(",",$product['bundled_products']);
 		$num = count($bundled_products) + 2;
 	}
-	foreach($addonproducts as $addonproduct) {
-		
+	while ($addonproducts->have_posts()) :
+		$addonproducts->the_post();
+
 		//Setup
-		$product = foxyshop_setup_product($addonproduct);
+		$product = foxyshop_setup_product();
 		$fields = array('name','price','code','category','weight','discount_quantity_amount','discount_quantity_percentage','discount_price_amount','discount_price_percentage','sub_frequency','sub_startdate','sub_enddate');
 		foreach ($fields as $fieldname) {
 			if ($product[$fieldname]) echo '<input type="hidden" class="foxyshop_addon_fields" rel="' . $num . '" originalname="' . $fieldname . foxyshop_get_verification($fieldname) . '" name="x:' . $fieldname . foxyshop_get_verification($fieldname) . '" id="' . $num . ':' . $fieldname . '_' . $product['id'] . '" value="' . esc_attr($product[$fieldname]) . '" />'."\n";
@@ -1082,7 +1094,7 @@ function foxyshop_addon_products($show_qty = false, $before_entry = "", $after_e
 		
 		
 		$num++;	
-	}
+	endwhile;
 	echo '</div>'."\n";
 	$product = $original_product;
 	?>

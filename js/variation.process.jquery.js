@@ -20,8 +20,45 @@ jQuery(document).ready(function($){
 		var new_ikey = '';
 		var new_inventory = '';
 
-		//For Each Element
+
+		//Parse for DKey's First
 		$("#foxyshop_product_form_" + current_product_id).find(".foxyshop_variations select option:selected, .foxyshop_variations input:checkbox:checked, .foxyshop_variations input:radio:checked").each(function(){
+			var thisEl = $(this);
+
+			thisdisplaykey = thisEl.attr("displaykey");
+			if (thisdisplaykey != "") displayKey[displayKey.length] = thisdisplaykey;
+		});
+		
+		//Show and Hide the Dkey's Based on Values
+		$("#foxyshop_product_form_" + current_product_id + " .dkey").hide();
+		for (i=0;i<displayKey.length;i++) {
+			$('#foxyshop_product_form_' + current_product_id + ' .dkey[dkey="' + displayKey[i] + '"]').show();
+		}
+		$("#foxyshop_product_form_" + current_product_id + " .dkey:hidden").each(function() {
+			var thisEl = $(this);
+			if (thisEl.is('input') || $(this).is('textarea')) {
+				thisEl.val("");
+			} else if ($(this).is('select')) {
+				thisEl.attr('selectedIndex', '-1');
+			}
+
+		});
+
+		//Set x: on hidden select and radio fields
+		foxyshop_visible_selector = "";
+		if (typeof foxyshop_skip_hidden_selects == 'undefined') {
+			$("#foxyshop_product_form_" + current_product_id).find(".foxyshop_variations select, .foxyshop_variations input:radio").each(function(){
+				if ($(this).is(":visible")) {
+					foxyshop_set_field_visible($(this));
+				} else {
+					foxyshop_set_field_hidden($(this));
+				}
+			});
+			foxyshop_visible_selector = ":visible";
+		}
+
+		//For Each Element
+		$("#foxyshop_product_form_" + current_product_id).find(".foxyshop_variations select" + foxyshop_visible_selector + " option:selected, .foxyshop_variations input:checkbox:checked, .foxyshop_variations input:radio:checked" + foxyshop_visible_selector).each(function(){
 			var thisEl = $(this);
 			
 			//Get New Image Key
@@ -39,10 +76,6 @@ jQuery(document).ready(function($){
 			//Check Inventory
 			varcode = thisEl.attr("code");
 			if (varcode != "" && typeof varcode != 'undefined') new_code = varcode;
-
-			//Set Display Key
-			thisdisplaykey = thisEl.attr("displaykey");
-			if (thisdisplaykey != "") displayKey[displayKey.length] = thisdisplaykey;
 
 			//Price Change
 			priceChange = thisEl.attr("pricechange");
@@ -63,26 +96,21 @@ jQuery(document).ready(function($){
 		});
 
 		
-		$("#foxyshop_product_form_" + current_product_id + " .dkey").hide();
-		for (i=0;i<displayKey.length;i++) {
-			$('#foxyshop_product_form_' + current_product_id + ' .dkey[dkey="' + displayKey[i] + '"]').show();
-		}
-		$("#foxyshop_product_form_" + current_product_id + " .dkey:hidden").each(function() {
-			var thisEl = $(this);
-			if (thisEl.is('input') || $(this).is('textarea')) {
-				thisEl.val("");
-			} else if ($(this).is('select')) {
-				thisEl.attr('selectedIndex', '-1');
-			}
-
-		});
-		
 		if (!new_code) new_code = $("#fs_code_" + current_product_id).val();
 		setModifiers(new_code, new_codeadd, new_price, new_price_original, new_ikey, current_product_id);
 
 		
 	
 
+	}
+
+	function foxyshop_set_field_hidden(el) {
+		currentname = el.attr("name");
+		if (currentname.substr(0,2) != "x:") el.attr("name", "x:" + currentname);
+	}
+	function foxyshop_set_field_visible(el) {
+		currentname = el.attr("name");
+		if (currentname.substr(0,2) == "x:") el.attr("name", currentname.substr(2));
 	}
 	
 	function setModifiers(new_code, new_codeadd, new_price, new_price_original, new_ikey, current_product_id) {
