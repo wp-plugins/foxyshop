@@ -68,6 +68,7 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 * New Feature: Set manual order of add-on products
 * Hidden variations won't be sent to cart or be counted for ikey
 * Bugfix: Add-on products box not showing up in admin unless "Related Products" enabled. Fixed!
+* See [Release Notes](http://www.foxy-shop.com/2011/10/version-3-5-3-whitespace-add-on-order/) for more details
 
 = 3.5.2 =
 * Added some responsive CSS to the admin so that variations will look better on smaller screens
