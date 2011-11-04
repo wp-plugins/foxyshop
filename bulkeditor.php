@@ -26,7 +26,7 @@ function foxyshop_cfbe_metabox($post_type) {
 					<select name="_category" id="_category" onfocus="jQuery('#_category_status1').prop('checked', true);">
 						<option value=""><?php _e('Default'); ?></option>
 						<?php
-						$arrShipCategories = preg_split("/(\r\n|\n)/", $foxyshop_settings['ship_categories']);
+						$arrShipCategories = preg_split("/(\r\n|\n|\r)/", $foxyshop_settings['ship_categories']);
 						for ($i = 0; $i < count($arrShipCategories); $i++) {
 							$shipping_category = explode("|", $arrShipCategories[$i]);
 							if (count($shipping_category) > 1) {

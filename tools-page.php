@@ -14,8 +14,8 @@ function foxyshop_save_tools() {
 			header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&importerror=1');
 			die;
 		} else {
-			update_option("foxyshop_settings", $decrypted[0]);
-			update_option("foxyshop_category_sort", $decrypted[1]);
+			update_option("foxyshop_settings", unserialize($decrypted[0]));
+			update_option("foxyshop_category_sort", unserialize($decrypted[1]));
 			header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&import=1');
 			die;
 		}
@@ -24,7 +24,7 @@ function foxyshop_save_tools() {
 	} elseif (isset($_GET['foxyshop_old_variations_scan'])) {
 		if (!check_admin_referer('foxyshop_old_variations_scan')) return;
 		$foxyshop_settings['foxyshop_version'] = "2.9";
-		update_option("foxyshop_settings", serialize($foxyshop_settings));
+		update_option("foxyshop_settings", $foxyshop_settings);
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&oldvars=1');
 		die;
 
@@ -33,7 +33,7 @@ function foxyshop_save_tools() {
 		if (!check_admin_referer('update-foxycart-template')) return;
 		$foxyshop_settings['template_url_cart'] = $_POST['foxycart_cart_update'];
 		$foxyshop_settings['template_url_checkout'] = $_POST['foxycart_checkout_update'];
-		update_option("foxyshop_settings", serialize($foxyshop_settings));
+		update_option("foxyshop_settings", $foxyshop_settings);
 		
 		//If just clearing the urls, return now
 		if (empty($_POST['foxycart_cart_update']) && empty($_POST['foxycart_checkout_update'])) {
@@ -121,15 +121,11 @@ function foxyshop_save_tools() {
 			$currentID++;
 		}
 		if (count($variations) > 0) {
-			update_option('foxyshop_saved_variations', serialize($variations));
+			update_option('foxyshop_saved_variations', $variations);
 		} else {
 			delete_option('foxyshop_saved_variations');
 		}
 
-
-
-		
-		//update_option("foxyshop_settings", serialize($foxyshop_settings));
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&processedvars=1');
 		die;
 	
@@ -137,7 +133,7 @@ function foxyshop_save_tools() {
 	} elseif (isset($_GET['foxyshop_api_key_reset'])) {
 		if (!check_admin_referer('reset-foxyshop-api-key')) return;
 		$foxyshop_settings['api_key'] = "sp92fx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time());
-		update_option("foxyshop_settings", serialize($foxyshop_settings));
+		update_option("foxyshop_settings", $foxyshop_settings);
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&key=1');
 		die;
 	}
@@ -204,8 +200,8 @@ function foxyshop_tools() {
 	//Get Export Settings
 	if (function_exists('mcrypt_encrypt')) {
 		$encrypt_key = "foxyshop_encryption_key_16";
-		$foxyshop_export_settings = get_option('foxyshop_settings') . "|-|";
-		$foxyshop_export_settings .= get_option('foxyshop_category_sort');
+		$foxyshop_export_settings = serialize(get_option('foxyshop_settings')) . "|-|";
+		$foxyshop_export_settings .= serialize(get_option('foxyshop_category_sort'));
 		$foxyshop_export_settings = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($encrypt_key), $foxyshop_export_settings, MCRYPT_MODE_CBC, md5(md5($encrypt_key))));
 		$foxyshop_export_settings = wordwrap($foxyshop_export_settings, 58, "\n", true);
 	}
@@ -419,7 +415,7 @@ $var_type_array = array(
 $variation_key = __('Name{p+1.50|w-1|c:product_code|y:shipping_category|dkey:display_key|ikey:image_id}');
 
 //Setup Variations
-$variations = maybe_unserialize(get_option('foxyshop_saved_variations'));
+$variations = get_option('foxyshop_saved_variations');
 if (!is_array($variations)) $variations = array();
 
 echo '<input type="hidden" id="variation_order_value" name="variation_order_value" />'."\n";
@@ -428,12 +424,18 @@ echo '<div id="variation_sortable">'."\n";
 $max_variations = count($variations);
 if ($max_variations == 0) $max_variations = 1;
 for ($i=1;$i<=$max_variations;$i++) {
-	$_variationRefName = (array_key_exists($i, $variations) ? $variations[$i]['refname'] : '');
-	$_variationName = (array_key_exists($i, $variations) ? $variations[$i]['name'] : '');
-	$_variation_type = (array_key_exists($i, $variations) ? $variations[$i]['type'] : 'dropdown');
-	$_variationValue = (array_key_exists($i, $variations) ? $variations[$i]['value'] : '');
-	$_variationDisplayKey = (array_key_exists($i, $variations) ? $variations[$i]['displayKey'] : '');
-	$_variationRequired = (array_key_exists($i, $variations) ? $variations[$i]['required'] : '');
+	$_variationName = '';
+	$_variation_type = '';
+	$_variationValue = '';
+	$_variationDisplayKey = '';
+	$_variationRequired = '';
+	if (isset($variations[$i])) {
+		$_variationName = isset($variations[$i]['name']) ? $variations[$i]['name'] : '';
+		$_variation_type = isset($variations[$i]['type']) ? $variations[$i]['type'] : 'dropdown';
+		$_variationValue = isset($variations[$i]['value']) ? $variations[$i]['value'] : '';
+		$_variationDisplayKey = isset($variations[$i]['displayKey']) ? $variations[$i]['displayKey'] : '';
+		$_variationRequired = isset($variations[$i]['required']) ? $variations[$i]['required'] : '';
+	}
 	?>
 	<div class="product_variation" rel="<?php echo $i; ?>" id="variation<?php echo $i; ?>">
 		<input type="hidden" name="sort<?php echo $i; ?>" id="sort<?php echo $i; ?>" class="variationsort" value="<?php echo $i; ?>" />

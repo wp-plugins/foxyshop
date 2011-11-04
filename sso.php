@@ -114,16 +114,16 @@ function action_show_user_profile($user) {
 	<td><input type="text" name="foxycart_customer_id" id="foxycart_customer_id" value="<?php echo esc_attr(get_user_meta($user->ID, 'foxycart_customer_id', 1) ); ?>" /> <span class="description">Editing is not recommended</span></td>
 	</tr>
 	<?php
-	//Custom Hook To Allow Customization of the Content that Goes Here (add your own fields). Passes in one argument: the current user ID so you 
-	//Also note that is before the </table>
-	do_action("foxyshop_show_user_profile_data", $user_>ID);
+	//Custom Hook To Allow Customization of the Content that Goes Here (add your own fields). Passes in one argument: the current user ID
+	//Also note that is before the </table> so anything you add should be wrapped in <tr>
+	do_action("foxyshop_show_user_profile_data", $user->ID);
 	?>
 	</table>
 	
 	
 	<?php	
 	//Get User's Subscription Array
-	$foxyshop_subscription = maybe_unserialize(get_user_meta($user->ID, 'foxyshop_subscription', true));
+	$foxyshop_subscription = get_user_meta($user->ID, 'foxyshop_subscription', true);
 	if (!is_array($foxyshop_subscription)) $foxyshop_subscription = array();
 	
 	if (count($foxyshop_subscription) > 0) {

@@ -55,7 +55,6 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 						}
 
 						if ($product_id > 0) {
-							echo get_post_meta($product_id,'_require_sso', true);
 							if (get_post_meta($product_id,'_require_sso', true) == "on") $sso_required = 1;
 						}
 					}

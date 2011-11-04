@@ -83,7 +83,7 @@ function foxyshop_save_settings() {
 	}
 
 	//Save
-	update_option("foxyshop_settings", serialize($foxyshop_settings));
+	update_option("foxyshop_settings", $foxyshop_settings);
 	header('location: edit.php?post_type=foxyshop_product&page=foxyshop_options&saved=1');
 	die;
 }
@@ -353,8 +353,11 @@ function foxyshop_options() {
 			<tr>
 				<td>
 					<label for="foxyshop_ship_categories" style="vertical-align: top;"><?php _e('Your Shipping Categories'); ?>:</label>
-					<textarea id="name="foxyshop_ship_categories" name="foxyshop_ship_categories" wrap="auto" style="float: left; width:500px;height: 80px;"><?php echo $foxyshop_settings['ship_categories']; ?></textarea>
 					<a href="#" class="foxyshophelp">These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?> setup page. Separate each category with a line break. If you only use one category this is not required. If you would like to also display a nice name in the dropdown menu, use a pipe sign "|" like this: free_shipping|Free Shipping.</a>
+					<div style="clear: both;margin-bottom: 1px;"></div>
+					<textarea id="name="foxyshop_ship_categories" name="foxyshop_ship_categories" wrap="auto" style="float: left; width:500px;height: <?php echo strlen($foxyshop_settings['ship_categories']) > 110 ? "160px" : "80px" ?>;"><?php echo $foxyshop_settings['ship_categories']; ?></textarea>
+					<span style="display:block; clear: both; padding-top: 3px;">Example: shipping_category_code|Shipping Category Nice Display Name</span>
+					
 				</td>
 			</tr>
 			<tr>

@@ -1,11 +1,11 @@
 <?php
 //Set Globals and Get Settings
-global $wpdb;
-$foxyshop_settings = unserialize(get_option("foxyshop_settings"));
+global $wpdb, $foxyshop_settings;
+require(FOXYSHOP_PATH.'/datafeedfunctions.php');
 
 
 //Get Transaction Data Post From FoxyCart
-if (isset($_POST["FoxyData"]) OR isset($_POST['FoxySubscriptionData'])) {
+if (isset($_POST["FoxyData"]) or isset($_POST['FoxySubscriptionData'])) {
     	$FoxyData_received = (isset($_POST["FoxyData"])) ? urldecode($_POST["FoxyData"]) : urldecode($_POST["FoxySubscriptionData"]);
     	$FoxyData_encrypted = $FoxyData_received;
 	$FoxyData_decrypted = rc4crypt::decrypt($foxyshop_settings['api_key'],$FoxyData_encrypted);
@@ -15,14 +15,15 @@ if (isset($_POST["FoxyData"]) OR isset($_POST['FoxySubscriptionData'])) {
 	die('No Content Received');
 }
 
-
-
-//For testing, write datafeed to file in foxyshop or theme folder
-//$file = FOXYSHOP_PATH.'/themefiles/datafeed.xml';
+//For testing, write datafeed to file in theme folder
 //$file = STYLESHEETPATH.'/datafeed.xml';
 //$fh = fopen($file, 'a') or die("Couldn't open $file for writing!"); 
 //fwrite($fh, $FoxyData_decrypted);
 //fclose($fh);
+
+//Uncomment These If You Need Help Troubleshooting
+//error_reporting(E_ALL);
+//ini_set('display_errors','On');
 
 
 //TRANSACTION DATAFEED
@@ -50,20 +51,15 @@ if (isset($_POST["FoxyData"])) {
 		''
 	);
 
-	//If this is a subscription feed we don't want to run any third-party feeds
-	if (isset($_POST["FoxySubscriptionData"])) $third_party_feeds = array();
-
 	foreach($third_party_feeds as $feedurl) {
 		if ($feedurl) {
-			//Initialize cURL
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $feedurl);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, array("FoxyData" => urlencode($FoxyData_encrypted)));
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 			curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-			// If you get SSL errors, you can uncomment the following, or ask your host to add the appropriate CA bundle
-			// curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			if (defined('FOXYSHOP_CURL_SSL_VERIFYPEER')) curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FOXYSHOP_CURL_SSL_VERIFYPEER);
 			$response = trim(curl_exec($ch));
 
 			//If Error, Send Email and Kill Process
@@ -76,9 +72,11 @@ if (isset($_POST["FoxyData"])) {
 				$message .= $error_msg;
 				$headers = 'From: ' . get_bloginfo('name') . ' Server Admin <' . $to_email . '>' . "\r\n";
 				wp_mail($to_email, 'Data Feed Error on ' . get_bloginfo('name'), $message, $headers);
+				curl_close($ch);
 				die($error_msg);
+			} else {
+				curl_close($ch);
 			}
-			curl_close($ch);
 		}
 	}
 	/*
@@ -94,6 +92,26 @@ if (isset($_POST["FoxyData"])) {
 	//Import FoxyData Response and Parse with SimpleXML
 	$xml = simplexml_load_string($FoxyData_decrypted, NULL, LIBXML_NOCDATA);
 
+
+	//Update Inventory
+	if ($foxyshop_settings['manage_inventory_levels']) {
+		foxyshop_datafeed_inventory_update($xml);
+	}
+
+
+	//Set Subscription Features If Using SSO
+	if ($foxyshop_settings['enable_subscriptions'] && $foxyshop_settings['enable_sso']) {
+		foxyshop_datafeed_sso_update($xml);
+	}
+
+
+	//Add/Update WordPress User
+	if ($foxyshop_settings['checkout_customer_create']) {
+		foxyshop_datafeed_user_update($xml);
+	}
+
+
+	//Manual Processes Go Here
 	//For Each Transaction
 	foreach($xml->transactions->transaction as $transaction) {
 
@@ -112,6 +130,8 @@ if (isset($_POST["FoxyData"])) {
 		$customer_postal_code = (string)$transaction->customer_postal_code;
 		$customer_country = (string)$transaction->customer_country;
 		$customer_phone = (string)$transaction->customer_phone;
+		
+		//This is setup for a single ship store. Multi-ship store looks different.
 		$shipping_first_name = ((string)$transaction->shipping_first_name ? (string)$transaction->shipping_first_name : $customer_first_name);
 		$shipping_last_name = ((string)$transaction->shipping_last_name ? (string)$transaction->shipping_last_name : $customer_last_name);
 		$shipping_address1 = ((string)$transaction->shipping_address1 ? (string)$transaction->shipping_address1 : $customer_address1);
@@ -130,66 +150,6 @@ if (isset($_POST["FoxyData"])) {
 			$product_price = (double)$transactiondetails->product_price;
 			$sub_token_url = (string)$transactiondetails->sub_token_url;
 
-			//Get List of Target ID's for Inventory Update
-			$meta_list = $wpdb->get_results("SELECT post_id, meta_id, meta_value FROM $wpdb->postmeta WHERE meta_key = '_inventory_levels' AND meta_value LIKE '%" . str_replace("'","\'",$product_code) . "%'");
-			foreach ($meta_list as $meta) {
-				$productID = $meta->post_id;
-				$metaID = $meta->meta_id;
-				$val = unserialize(unserialize($meta->meta_value));
-				foreach ($val as $ivcode => $iv) {
-					if ($ivcode == $product_code) {
-						$original_count = $iv['count'];
-						$new_count = $original_count - $product_quantity;
-						$alert_level = ($iv['alert'] == '' ? $foxyshop_settings['inventory_alert_level'] : $iv['alert']);
-						$val[$ivcode]['count'] = $new_count;
-						
-						//Send Email Alert Email
-						if ($foxyshop_settings['inventory_alert_email'] && $new_count <= $alert_level) {
-							
-							$subject_line = "Inventory Alert: " . $product_name;
-							$to_email = get_bloginfo('admin_email');
-							$message = "The inventory for one of your products is getting low:\n\n";
-							$message .= "Product Name: $product_name\n";
-							$message .= "Product Code: $product_code\n";
-							$message .= "Current Inventory Level: $new_count\n";
-							$message .= "Inventory Alert Level: $alert_level\n";
-							$message .= "\n". get_bloginfo('wpurl') . "/wp-admin/edit.php?post_type=foxyshop_product\n";
-							$headers = 'From: ' . get_bloginfo('name') . ' <' . $to_email . '>' . "\r\n";
-							wp_mail($to_email, $subject_line, $message, $headers);
-						}
-						
-					}
-				}
-				//Run the Update
-				update_post_meta($productID,"_inventory_levels",serialize($val));
-			}
-
-
-			//Set Subscription Features if using SSO
-			if ($foxyshop_settings['enable_subscriptions'] && $foxyshop_settings['enable_sso'] && $sub_token_url != "") {
-
-				//Get WordPress User ID
-				$select_user = "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = 'foxycart_customer_id' AND meta_value = '$customer_id'";
-				$user_id = $wpdb->get_var($select_user);
-				if ($user_id) {
-
-					//Get User's Subscription Array
-					$foxyshop_subscription = unserialize(get_user_meta($user_id, 'foxyshop_subscription', true));
-					if (!is_array($foxyshop_subscription)) $foxyshop_subscription = array();
-
-					//Add On To Array
-					$foxyshop_subscription[$product_code] = array(
-						"is_active" => 1,
-						"sub_token_url" => $sub_token_url
-					);
-
-					//Write Serialized Array Back to DB
-					update_user_meta($user_id, 'foxyshop_subscription', serialize($foxyshop_subscription));
-				}		
-
-
-			}
-
 			//If you have custom code to run for each product, put it here:
 
 
@@ -197,49 +157,6 @@ if (isset($_POST["FoxyData"])) {
 
 		}
 		
-		//Add or Update WordPress User
-		if ($foxyshop_settings['checkout_customer_create'] && $customer_id != '') {
-			
-			//Check To See if WordPress User Already Exists
-			$current_user = get_user_by_email($customer_email);
-			
-			//No Return, Add New User, Username will be email address
-			if (!$current_user) {
-				$new_user_id = wp_insert_user(array(
-					'user_login' => $customer_email,
-					'user_email' => $customer_email,
-					'first_name' => $customer_first_name,
-					'last_name' => $customer_last_name,
-					'user_email' => $customer_email,
-					'user_pass' => wp_generate_password(),
-					'user_nicename' => $customer_first_name . ' ' . $customer_last_name,
-					'display_name' => $customer_first_name . ' ' . $customer_last_name,
-					'nickname' => $customer_first_name . ' ' . $customer_last_name,
-					'role' => 'subscriber'
-				));
-				add_user_meta($new_user_id, 'foxycart_customer_id', $customer_id, true);
-				$wpdb->query("UPDATE $wpdb->users SET user_pass = '$customer_password' WHERE ID = $new_user_id");
-			
-			//Update User
-			} else {
-
-				//Update First Name and Last Name
-				$updated_user_id = wp_update_user(array(
-					'ID' => $current_user->ID,
-					'first_name' => $customer_first_name,
-					'last_name' => $customer_last_name
-				));
-
-				//Add FoxyCart User ID - if not added before
-				add_user_meta($current_user->ID, 'foxycart_customer_id', $customer_id, true);
-				
-				//Update Password - you may or may not want to do this, trned off by default
-				//$wpdb->query("UPDATE $wpdb->users SET user_pass = '$customer_password' WHERE ID = $current_user->ID");
-			}
-		}
-
-
-
 		//If you have custom code to run for each order, put it here:
 
 
@@ -247,17 +164,20 @@ if (isset($_POST["FoxyData"])) {
 
 	}
 	
-	//Done
+	//All Done!
 	die("foxy");
+
+
+
 
 
 //SUBSCRIPTION DATAFEED
 } elseif (isset($_POST["FoxySubscriptionData"])) {
 
-	$failedDaysBeforeCancel = 7;
-	$billingReminderFrequencyInDays = 3;
-	$updatePaymentMethodReminderDaysOfTheMonth = array(1,15);
-
+	$failed_days_before_cancel = 7;
+	$billing_reminder_frequency_in_days = 3;
+	$update_payment_method_reminder_days_of_month = array(1,15);
+	
 	// make sure we have a valid character encoding
 	$enc = mb_detect_encoding($FoxyData_decrypted);
 	$FoxyData_decrypted = mb_convert_encoding($FoxyData_decrypted, 'UTF-8', $enc);
@@ -265,29 +185,32 @@ if (isset($_POST["FoxyData"])) {
 	foreach($FoxyDataArray->subscriptions->subscription AS $subscription) {
 
 		//Get Variables
-		$customer_id = $subscription->customer_id;
+		$customer_id = (string)$subscription->customer_id;
+		$customer_first_name = (string)$subscription->customer_first_name;
+		$customer_last_name = (string)$subscription->customer_last_name;
+		$transaction_date = (string)$subscription->transaction_date;
 		$sub_token_url = (string)$subscription->sub_token_url;
-		$past_due_amount = $subscription->past_due_amount;
-		$end_date = $subscription->end_date;
+		$past_due_amount = (double)$subscription->past_due_amount;
+		$end_date = (string)$subscription->end_date;
 
-
+		//Get Product Code
 		foreach($subscription->transaction_details->transaction_detail AS $transaction_detail) {
-			//Get Product Code
 			$product_code = (string)$transaction_detail->product_code;
 		}
 
 		$canceled = 0;
 		$sendReminder = 0;
-		if (date("Y-m-d",strtotime("now")) == date("Y-m-d", strtotime($subscription->end_date))) {
-			// this entry was canceled today...
+		
+		//This Entry Was Canceled Today
+		if (date("Y-m-d",strtotime("now")) == date("Y-m-d", strtotime($end_date))) {
 			$canceled = 1;
 		}
-		if (!$canceled && $subscription->past_due_amount > 0) {
-			$failedDays = floor((strtotime("now") - strtotime($subscription->transaction_date)) / (60 * 60 * 24));
-			if ($failedDays > $failedDaysBeforeCancel) {
+		if (!$canceled && $past_due_amount > 0) {
+			$failedDays = floor((strtotime("now") - strtotime($transaction_date)) / (60 * 60 * 24));
+			if ($failedDays > $failed_days_before_cancel) {
 				$canceled = 1;
 			} else {
-				if (($failedDays % $billingReminderFrequencyInDays) == 0) {
+				if (($failedDays % $billing_reminder_frequency_in_days) == 0) {
 					$sendReminder = 1;
 				}
 			}
@@ -297,12 +220,11 @@ if (isset($_POST["FoxyData"])) {
 		if ($canceled) {
 
 			//Get WordPress User ID
-			$select_user = "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = 'foxycart_customer_id' AND meta_value = '$customer_id'";
-			$user_id = $wpdb->get_var($select_user);
+			$user_id = $wpdb->get_var("SELECT user_id FROM $wpdb->usermeta WHERE meta_key = 'foxycart_customer_id' AND meta_value = '$customer_id'");
 			if ($user_id) {
 
 				//Get User's Subscription Array
-				$foxyshop_subscription = unserialize(get_user_meta($user_id, 'foxyshop_subscription', true));
+				$foxyshop_subscription = get_user_meta($user_id, 'foxyshop_subscription', true);
 				if (!is_array($foxyshop_subscription)) $foxyshop_subscription = array();
 
 				//Set To NON-ACTIVE
@@ -312,125 +234,49 @@ if (isset($_POST["FoxyData"])) {
 				);
 
 				//Write Serialized Array Back to DB
-				update_user_meta($user_id, 'foxyshop_subscription', serialize($foxyshop_subscription));
+				update_user_meta($user_id, 'foxyshop_subscription', $foxyshop_subscription);
 			}		
 
 
 		}
+
+		//Send reminder email
 		if ($sendReminder) {
-			// send reminder emails, etc...
-			// This has not been built yet. Feel free to roll your own functionality.
-			
-			
+			$subject_line = "Reminder to Update Your Credit Card";
+			$to_email = $customer_email;
+			$message = "Dear $customer_first_name,\n\n";
+			$message .= "This is a reminder that the credit card you have on file with us is about to expire. Please login to your account by clicking the link below to update your card. Thank you!\n\n";
+			$message .= $sub_token_url . "&cart=checkout\n\n";
+			$message .= "";
+			$headers = 'From: ' . get_bloginfo('name') . ' <' . get_bloginfo('admin_email') . '>' . "\r\n";
+			wp_mail($to_email, $subject_line, $message, $headers);
 		}
 	}
+	
 	// send emails to customers with soon to expire credit cards. Ignore already expired cards, since they should have already been
 	// sent an email when their payment failed.
-	if (in_array(date("j"),$updatePaymentMethodReminderDaysOfTheMonth)) {
+	if (in_array(date("j"),$update_payment_method_reminder_days_of_month)) {
 		foreach($FoxyDataArray->payment_methods_soon_to_expire->customer AS $customer) {
-			if (mktime(0,0,0,$customer->cc_exp_month+1, 1, $customer->cc_exp_year+0) > strtotime("now")) {
-				// email reminders
-				// This has not been built yet. Feel free to roll your own functionality.
-				
-				
+
+			$customer_id = (string)$subscription->customer_id;
+			$customer_first_name = (string)$subscription->customer_first_name;
+			$customer_last_name = (string)$subscription->customer_last_name;
+			$cc_exp_month = (int)$subscription->cc_exp_month;
+			$cc_exp_year = (int)$subscription->cc_exp_year;
+			
+			if (mktime(0,0,0,cc_exp_month+1, 1, $cc_exp_year) > strtotime("now")) {
+				$subject_line = "Reminder to Update Your Credit Card";
+				$to_email = $customer_email;
+				$message = "Dear $customer_first_name,\n\n";
+				$message .= "This is a reminder that the credit card you have on file with us is about to expire. Please login to your account by clicking the link below to update your card. Thank you!\n\n";
+				$message .= $sub_token_url . "&cart=checkout\n\n";
+				$message .= "";
+				$headers = 'From: ' . get_bloginfo('name') . ' <' . get_bloginfo('admin_email') . '>' . "\r\n";
+				wp_mail($to_email, $subject_line, $message, $headers);
 			}
 		}
 	}
-	echo "foxysub";
+
+	//All Done!
+	die("foxysub");
 }
-
-
-
-
-
-
-
-
-// ======================================================================================
-// RC4 ENCRYPTION CLASS
-// Do not modify.
-// ======================================================================================
-/**
- * RC4Crypt 3.2
- *
- * RC4Crypt is a petite library that allows you to use RC4
- * encryption easily in PHP. It's OO and can produce outputs
- * in binary and hex.
- *
- * (C) Copyright 2006 Mukul Sabharwal [http://mjsabby.com]
- *     All Rights Reserved
- *
- * @link http://rc4crypt.devhome.org
- * @author Mukul Sabharwal <mjsabby@gmail.com>
- * @version $Id: class.rc4crypt.php,v 3.2 2006/03/10 05:47:24 mukul Exp $
- * @copyright Copyright &copy; 2006 Mukul Sabharwal
- * @license http://www.gnu.org/copyleft/gpl.html
- * @package RC4Crypt
- */
- 
-/**
- * RC4 Class
- * @package RC4Crypt
- */
-class rc4crypt {
-	/**
-	 * The symmetric encryption function
-	 *
-	 * @param string $pwd Key to encrypt with (can be binary of hex)
-	 * @param string $data Content to be encrypted
-	 * @param bool $ispwdHex Key passed is in hexadecimal or not
-	 * @access public
-	 * @return string
-	 */
-	function encrypt ($pwd, $data, $ispwdHex = 0)
-	{
-		if ($ispwdHex)
-			$pwd = @pack('H*', $pwd); // valid input, please!
- 
-		$key[] = '';
-		$box[] = '';
-		$cipher = '';
- 
-		$pwd_length = strlen($pwd);
-		$data_length = strlen($data);
- 
-		for ($i = 0; $i < 256; $i++)
-		{
-			$key[$i] = ord($pwd[$i % $pwd_length]);
-			$box[$i] = $i;
-		}
-		for ($j = $i = 0; $i < 256; $i++)
-		{
-			$j = ($j + $box[$i] + $key[$i]) % 256;
-			$tmp = $box[$i];
-			$box[$i] = $box[$j];
-			$box[$j] = $tmp;
-		}
-		for ($a = $j = $i = 0; $i < $data_length; $i++)
-		{
-			$a = ($a + 1) % 256;
-			$j = ($j + $box[$a]) % 256;
-			$tmp = $box[$a];
-			$box[$a] = $box[$j];
-			$box[$j] = $tmp;
-			$k = $box[(($box[$a] + $box[$j]) % 256)];
-			$cipher .= chr(ord($data[$i]) ^ $k);
-		}
-		return $cipher;
-	}
-	/**
-	 * Decryption, recall encryption
-	 *
-	 * @param string $pwd Key to decrypt with (can be binary of hex)
-	 * @param string $data Content to be decrypted
-	 * @param bool $ispwdHex Key passed is in hexadecimal or not
-	 * @access public
-	 * @return string
-	 */
-	function decrypt ($pwd, $data, $ispwdHex = 0)
-	{
-		return rc4crypt::encrypt($pwd, $data, $ispwdHex);
-	}
-}
-
-?>

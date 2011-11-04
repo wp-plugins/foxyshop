@@ -26,7 +26,7 @@ function save_foxyshop_setup() {
 	$foxyshop_settings['domain'] = trim(stripslashes(str_replace("http://","",$_POST['foxyshop_domain'])));
 	$foxyshop_settings['version'] = $_POST['foxyshop_version'];
 
-	update_option("foxyshop_settings", serialize($foxyshop_settings));
+	update_option("foxyshop_settings", $foxyshop_settings);
 	delete_option("foxyshop_setup_required");
 	header('location: edit.php?post_type=foxyshop_product&page=foxyshop_options&setup=1');
 	die;

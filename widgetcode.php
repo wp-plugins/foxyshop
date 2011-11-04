@@ -189,7 +189,7 @@ class FoxyShop_Cart_Link extends WP_Widget {
 		<p>
 			<div><?php _e('Link Text:'); ?></div>
 			<textarea id="<?php echo $this->get_field_id( 'linkText' ); ?>" name="<?php echo $this->get_field_name( 'linkText' ); ?>" style="width: 100%;"><?php echo $instance['linkText']; ?></textarea>
-			<span class="small">Example: View Cart (%q% Items) ($%p%)</span>
+			<span class="small">Example: View Cart (%q Items) ($%p)</span>
 		</p>
 
 		<p>

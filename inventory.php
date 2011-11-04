@@ -16,17 +16,19 @@ function foxyshop_inventory_update() {
 			if ($_POST["new_count_$i"] == "") continue;
 			if ($original_count == $new_count) continue;
 
-			$inventory = unserialize(get_post_meta($productid, "_inventory_levels", 1));
+			$inventory = get_post_meta($productid, "_inventory_levels", 1);
+			if (!is_array($inventory)) $inventory = array();
+			
 			$db_count = $inventory[$code]['count'];
 			$inventory[$code]['count'] = $db_count + $count_change;
-			update_post_meta($productid, '_inventory_levels', serialize($inventory));	
+			update_post_meta($productid, '_inventory_levels', $inventory);	
 		}
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_inventory_management_page&saved=1');
 		die;
 	} elseif (isset($_POST['foxyshop_inventory_updates'])) {
 		if (!check_admin_referer('import-foxyshop-inventory-updates')) return;
 		
-		$lines = preg_split("/(\r\n|\n)/", $_POST['foxyshop_inventory_updates']);
+		$lines = preg_split("/(\r\n|\n|\r)/", $_POST['foxyshop_inventory_updates']);
 		$save_count = 0;
 		foreach ($lines as $line) {
 			$line = explode("\t", $line);
@@ -37,9 +39,10 @@ function foxyshop_inventory_update() {
 			$productcode = $line[2];
 			$newcount = (int)$line[4];
 			
-			$inventory = unserialize(get_post_meta($productid, "_inventory_levels", 1));
+			$inventory = get_post_meta($productid, "_inventory_levels", 1);
+			if (!is_array($inventory)) $inventory = array();
 			$inventory[$productcode]['count'] = $newcount;
-			update_post_meta($productid, '_inventory_levels', serialize($inventory));	
+			update_post_meta($productid, '_inventory_levels', $inventory);	
 			
 			$save_count++;
 		}
@@ -103,7 +106,7 @@ function foxyshop_inventory_management_page() {
 			$alternate = "";
 			foreach ($product_list as $single_product) {
 				$product = foxyshop_setup_product($single_product);
-				$inventory_levels = maybe_unserialize(get_post_meta($single_product->ID,'_inventory_levels',TRUE));
+				$inventory_levels = get_post_meta($single_product->ID,'_inventory_levels',TRUE);
 				if (!is_array($inventory_levels)) $inventory_levels = array();
 				foreach ($inventory_levels as $ivcode => $iv) {
 					

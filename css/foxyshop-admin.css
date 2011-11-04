@@ -110,6 +110,17 @@ body .foxyshop-list-table tbody tr.foxyshop-row-updated {
 	float: left;
 	margin: 7px 0 0 5px;
 }
+#product_variations_meta.variation_minimized .product_variation {
+	cursor: move;
+}
+#product_variations_meta.variation_minimized .sortable-variation-placeholder {
+	height: 27px;
+}
+#product_variations_meta.variation_minimized .variation_holder,
+#product_variations_meta.variation_minimized .dkeycontainer,
+#product_variations_meta.variation_minimized .variationsortnum {
+	display: none;
+}
 .product_variation {
 	border: 1px solid #ccc;
 	background-color: #F2F2F2;
@@ -353,9 +364,10 @@ body label.variationtypelabel {
 .sortable-variation-placeholder { 
 	border:1px dashed #B2B2B2;
 	margin-top:5px;
-	margin-bottom:5px; 
-	padding: 5px;
-	height:150px
+	margin-bottom:10px; 
+	padding: 7px 9px;
+	height: 150px;
+	border-radius: 3px;
 }
 .foxyshop_sort_list .sortable-placeholder-category { 
 	border:1px dashed #B2B2B2;

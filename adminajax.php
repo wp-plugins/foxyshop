@@ -5,8 +5,9 @@ add_action('wp_ajax_foxyshop_display_list_ajax_action', 'foxyshop_display_ajax')
 function foxyshop_display_ajax() {
 	global $wpdb, $foxyshop_settings;
 	check_ajax_referer('foxyshop-display-list-function', 'security');
-	$id = (isset($_POST['id']) ? $_POST['id'] : 0);
 	if (!isset($_POST['foxyshop_action'])) die;
+	$id = isset($_POST['id']) ? $_POST['id'] : 0;
+	$transaction_template_id = isset($_POST['transaction_template_id']) ? (int)$_POST['transaction_template_id'] : 0;
 	
 	//Change Subscription
 	if ($_POST['foxyshop_action'] == 'subscription_modify') {
@@ -20,6 +21,7 @@ function foxyshop_display_ajax() {
 		);
 		if ($_POST['end_date'] == "0000-00-00" || strtotime($_POST['end_date']) > strtotime("now")) $foxy_data['end_date'] = $_POST['end_date'];
 		if (strtotime($_POST['next_transaction_date']) > strtotime("now")) $foxy_data['next_transaction_date'] = $_POST['next_transaction_date'];
+		if ($transaction_template_id) $foxy_data['transaction_template'] = foxyshop_subscription_template($transaction_template_id);
 		$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 		$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
 		echo (string)$xml->result . ": " . (string)$xml->messages->message;

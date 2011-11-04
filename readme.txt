@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
 Tested up to: 3.3
-Stable tag: 3.5.4
+Stable tag: 3.6
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -62,6 +62,18 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 3.6 =
+* Important: Double serialization corrected!
+* Updated datafeed so that FoxyShop processes are now protected within functions
+* Added filters for the related products areas
+* Added "Minimize" button to product variations to help manage when there are many
+* Added 0.7.2 custom field search support to orders, subscriptions, and customers
+* Added transaction template change support for subscriptions
+* Subscription detail view now updated immediately after saving in admin
+* Bugfix: Bundled text link wasn't adding url with numeric prefix
+* Ampersand not allowed in product variation name. Doesn't work with validation.
+* See [Release Notes](http://www.foxy-shop.com/2011/11/version-3-6-no-more-double-serialization/) for more details
 
 = 3.5.4 =
 * Fixing a variation javascript syntax error from 3.5.3
@@ -193,5 +205,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 3.5.2 =
-CSS update for smaller screens + removes some erroneous testing text
+= 3.6 =
+IMPORTANT: Manual change may be required on custom datafeed! See blog for more info.

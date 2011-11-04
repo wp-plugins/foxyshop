@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 3.5.4
+Version: 3.6
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -35,7 +35,7 @@ the most out of FoxyShop.
 **************************************************************************/
 
 //Setup Plugin Variables
-define('FOXYSHOP_VERSION', "3.5.4");
+define('FOXYSHOP_VERSION', "3.6");
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 $foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
@@ -53,10 +53,11 @@ require_once('adminfunctions.php');
 require_once('adminajax.php');
 
 //Set FoxyShop Settings Array
-$foxyshop_settings = maybe_unserialize(get_option("foxyshop_settings"));
+$foxyshop_settings = get_option("foxyshop_settings");
 if (!is_array($foxyshop_settings)) $foxyshop_settings = foxyshop_activation(); //Runs for the first time
 elseif ($foxyshop_settings['foxyshop_version'] != FOXYSHOP_VERSION) $foxyshop_settings = foxyshop_activation(); //Checks for Old Plugin Version and Perform Upgrade
-$foxyshop_category_sort = maybe_unserialize(get_option('foxyshop_category_sort'));
+$foxyshop_category_sort = get_option('foxyshop_category_sort');
+if (!is_array($foxyshop_category_sort)) $foxyshop_category_sort = array();
 
 //Sets the Locale for Currency Internationalization
 setlocale(LC_MONETARY, $foxyshop_settings['locale_code']);

@@ -66,20 +66,17 @@ function foxyshop_insert_google_analytics() {
 	//Advanced
 	if ($foxyshop_settings['ga_advanced']) {
 		?><script type="text/javascript" charset="utf-8">
-
 	var _gaq = _gaq || [];
 	_gaq.push(['_setAccount', '<?php echo htmlspecialchars($foxyshop_settings['ga']); ?>']);
 	_gaq.push(['_setDomainName', '<?php echo $_SERVER['SERVER_NAME']; ?>']);
 	_gaq.push(['_setAllowHash', 'false']);
 	<?php if (strpos($foxyshop_settings['domain'], '.foxycart.com') !== false) echo "_gaq.push(['_setAllowLinker', true]);\n"; ?>
 	_gaq.push(['_trackPageview']);
-
 	(function() {
 		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
 		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
 		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 	})();
-
 	fcc.events.cart.preprocess.add(function(e, arr) {
 		if (arr['cart'] == 'checkout' || arr['cart'] == 'updateinfo' || arr['output'] == 'json') {
 			return true;
@@ -97,8 +94,7 @@ function foxyshop_insert_google_analytics() {
 		return true;
 	});
 </script><?php
-	
-	
+
 	} else {
 		if (!is_user_logged_in()) {
 		?><script type="text/javascript">
@@ -112,7 +108,7 @@ _gaq.push(['_trackPageview']);
 })();
 </script><?php
 		} else {
-			echo "<!-- Google Analytics Not Loaded Because This is a Logged-In User -->";
+			echo "\n<!-- Google Analytics Not Loaded Because This is a Logged-In User -->\n";
 		}
 	}
 }
@@ -173,9 +169,7 @@ function foxyshop_dblquotes($str) {
 
 //Plugin Activation Function
 function foxyshop_activation() {
-	
-	//Initialize Category Sort Holder If Not Set
-	add_option('foxyshop_category_sort',serialize(array()));
+	global $wpdb;
 	
 	//Get Locale
 	$current_locale = get_locale();
@@ -214,7 +208,7 @@ function foxyshop_activation() {
 		"inventory_alert_level" => 3,
 		"inventory_alert_email" => "",
 		"checkout_customer_create" => "",
-		"datafeed_url_key" => substr(MD5(rand(1000, 99999)."{urlkey}" . date("H:i:s")),1,12),
+		"datafeed_url_key" => "",
 		"default_image" => "",
 		"foxycart_include_cache" => "",
 		"template_url_cart" => "",
@@ -225,14 +219,24 @@ function foxyshop_activation() {
 	
 	//Set For the First Time
 	if (!get_option("foxyshop_settings")) {
-		update_option("foxyshop_settings", serialize($default_foxyshop_settings));
+		update_option("foxyshop_settings", $default_foxyshop_settings);
 		add_option("foxyshop_setup_required", 1);
 		return $default_foxyshop_settings;
 	
 	//Upgrade Tasks
 	} else {
 		
-		$foxyshop_settings = maybe_unserialize(get_option("foxyshop_settings"));
+		$foxyshop_settings = maybe_unserialize(get_option("foxyshop_settings")); //Double Serialization Repair 3.6
+
+		//Double Serialization Repair 3.6
+		$foxyshop_category_sort = get_option("foxyshop_category_sort");
+		if (is_serialized($foxyshop_category_sort)) {
+			update_option('foxyshop_category_sort', unserialize($foxyshop_category_sort));
+		}
+		$foxyshop_saved_variations = get_option("foxyshop_saved_variations");
+		if (is_serialized($foxyshop_saved_variations)) {
+			update_option('foxyshop_saved_variations', unserialize($foxyshop_saved_variations));
+		}
 		
 		//Run Some Upgrades
 		if (!array_key_exists('version',$foxyshop_settings)) $foxyshop_settings['version'] = "0";
@@ -276,7 +280,7 @@ function foxyshop_activation() {
 					}
 				}
 				if (count($variations) > 0) {
-					if (update_post_meta($product->ID, '_variations', serialize($variations))) {
+					if (update_post_meta($product->ID, '_variations', $variations)) {
 						for ($i=1; $i<=$temp_max_variations; $i++) {
 							delete_post_meta($product->ID,'_variation_name_'.$i);
 							delete_post_meta($product->ID,'_variation_type_'.$i);
@@ -289,14 +293,36 @@ function foxyshop_activation() {
 			}
 			if (array_key_exists('max_variations', $foxyshop_settings)) unset($foxyshop_settings['max_variations']);
 		}
+		
+		//Remove Double Serialization in 3.6
+		if (version_compare($foxyshop_settings['foxyshop_version'], '3.6', "<")) {
+			
+			//Product Variations and Inventory Levels
+			$products = get_posts(array('post_type' => 'foxyshop_product', 'numberposts' => -1, 'post_status' => null));
+			foreach ($products as $product) {
+				$variations = get_post_meta($product->ID,'_variations',1);
+				$inventory_levels = get_post_meta($product->ID,'_inventory_levels',1);
+				if (is_serialized($variations)) update_post_meta($product->ID, '_variations', unserialize($variations));
+				if (is_serialized($inventory_levels)) update_post_meta($product->ID, '_inventory_levels', unserialize($inventory_levels));
+			}
 
-		//Load in New Defaults and Save New Version
+			//User Subscriptions
+			$user_list = $wpdb->get_results("SELECT user_id, meta_value from $wpdb->usermeta WHERE meta_key = 'foxyshop_subscription' AND meta_value != ''");
+			foreach ((array)$user_list as $user) {
+				$meta_value = $user->meta_value;
+				$meta_value = maybe_unserialize($meta_value);
+				if (is_serialized($meta_value)) update_user_meta($user->user_id, 'foxyshop_subscription', unserialize($meta_value));
+			}
+		}
+		
+
+		//Load in New Defaults and Version Number
 		$foxyshop_settings = wp_parse_args($foxyshop_settings,$default_foxyshop_settings);
 		$foxyshop_settings['foxyshop_version'] = FOXYSHOP_VERSION;
 		if (!$foxyshop_settings['datafeed_url_key']) $foxyshop_settings['datafeed_url_key'] = substr(MD5(rand(1000, 99999)."{urlkey}" . date("H:i:s")),1,12);
 
 		//Save Settings
-		update_option("foxyshop_settings", serialize($foxyshop_settings));
+		update_option("foxyshop_settings", $foxyshop_settings);
 		return $foxyshop_settings;
 	}
 }
@@ -390,10 +416,11 @@ function foxyshop_get_foxycart_data($foxyData, $silent_fail = true) {
 		if ($silent_fail) {
 			$response = "<?xml version='1.0' encoding='UTF-8'?><foxydata><result>ERROR</result><messages><message>" . __('Request Timed Out. Please Try Again.') . "</message></messages></foxydata>";
 		} else {
-			die("cURL Error: " . curl_error($ch));
+			die("Connection Error: " . curl_error($ch));
 		}
 	}
 	curl_close($ch);
 	return $response;
 }
+
 ?>

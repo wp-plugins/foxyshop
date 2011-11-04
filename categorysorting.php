@@ -19,7 +19,7 @@ function foxyshop_category_update_order() {
 	
 	//Add or Replace With New Fields
 	$foxyshop_category_sort[$categoryID] = $returned_ids;
-	update_option('foxyshop_category_sort', serialize($foxyshop_category_sort));
+	update_option('foxyshop_category_sort', $foxyshop_category_sort);
 
 	return '<div id="message" class="updated fade"><p>'. __('Category order updated successfully.').'</p></div>';
 }
@@ -32,7 +32,7 @@ function foxyshop_category_revert_order() {
 		$categoryID = $_POST['categoryID'];
 		unset($foxyshop_category_sort[$categoryID]);
 	}
-	update_option('foxyshop_category_sort', serialize($foxyshop_category_sort));
+	update_option('foxyshop_category_sort', $foxyshop_category_sort);
 	return '<div id="message" class="updated fade"><p>'. __('Category order reset to alphabetical.').'</p></div>';
 }
 

@@ -16,11 +16,15 @@ function foxyshop_customer_management() {
 		"customer_last_name_filter" => "",
 		"customer_state_filter" => ""
 	);
+	if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) {
+		$foxy_data_defaults["custom_field_name_filter"] = "";
+		$foxy_data_defaults["custom_field_value_filter"] = "";
+	}
 	$foxy_data = wp_parse_args(array("api_action" => "customer_list"), $foxy_data_defaults);
 	$querystring = "?post_type=foxyshop_product&amp;page=foxyshop_customer_management&amp;foxyshop_search=1";
 
 	if (isset($_GET['foxyshop_search'])) {
-		$fields = array("customer_id_filter", "customer_email_filter", "customer_first_name_filter", "customer_last_name_filter", "customer_state_filter");
+		$fields = array("customer_id_filter", "customer_email_filter", "customer_first_name_filter", "customer_last_name_filter", "customer_state_filter", "custom_field_name_filter", "custom_field_value_filter");
 		foreach ($fields as $field) {
 			if (isset($_GET[$field])) {
 				$foxy_data[$field] = $_GET[$field];
@@ -57,6 +61,12 @@ function foxyshop_customer_management() {
 			<div class="foxyshop_field_control">
 				<label for="customer_last_name_filter">Customer Last Name</label><input type="text" name="customer_last_name_filter" id="customer_last_name_filter" value="<?php echo $foxy_data['customer_last_name_filter']; ?>" />
 			</div>
+			<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) { ?>
+			<div class="foxyshop_field_control">
+				<label for="custom_field_name_filter">Custom Field Name</label><input type="text" name="custom_field_name_filter" id="custom_field_name_filter" value="<?php echo $foxy_data['custom_field_name_filter']; ?>" />
+				<label for="custom_field_value_filter" style="margin-left: 15px; margin-top: 4px; width: 30px;">Value</label><input type="text" name="custom_field_value_filter" id="custom_field_value_filter" value="<?php echo $foxy_data['custom_field_value_filter']; ?>" />
+			</div>
+			<?php } ?>
 		</td><td>
 			<div class="foxyshop_field_control">
 				<label for="customer_email_filter">Customer Email</label><input type="text" name="customer_email_filter" id="customer_email_filter" value="<?php echo $foxy_data['customer_email_filter']; ?>" />

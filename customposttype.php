@@ -330,7 +330,7 @@ function foxyshop_product_details_setup() {
 		<select name="_category" id="_category">
 			<option value=""><?php _e('Default'); ?></option>
 			<?php
-			$arrShipCategories = preg_split("/(\r\n|\n)/", $foxyshop_settings['ship_categories']);
+			$arrShipCategories = preg_split("/(\r\n|\n|\r)/", $foxyshop_settings['ship_categories']);
 			for ($i = 0; $i < count($arrShipCategories); $i++) {
 				$shipping_category = explode("|", $arrShipCategories[$i]);
 				if (count($shipping_category) > 1) {
@@ -526,7 +526,7 @@ function foxyshop_product_pricing_setup() {
 	<div style="float: left; width: 50px; margin-bottom: 5px; font-size: 11px;" title="<?php echo sprintf(__('If not set, default value will be used (%s)'), $foxyshop_settings['inventory_alert_level']); ?>">Alert Lvl</div>
 	<ul id="inventory_levels">
 		<?php
-		$inventory_levels = maybe_unserialize(get_post_meta($post->ID,'_inventory_levels',TRUE));
+		$inventory_levels = get_post_meta($post->ID,'_inventory_levels',TRUE);
 		if (!is_array($inventory_levels)) $inventory_levels = array();
 		$i = 1;
 		foreach ($inventory_levels as $ivcode => $iv) {
@@ -875,9 +875,11 @@ function foxyshop_product_variations_setup() {
 	$variation_key = __('Name{p+1.50|w-1|c:product_code|y:shipping_category|dkey:display_key|ikey:image_id}');
 	
 	//Setup Variations
-	$variations = maybe_unserialize(get_post_meta($post->ID, '_variations', 1));
+	$variations = get_post_meta($post->ID, '_variations', 1);
 	if (!is_array($variations)) $variations = array();
-	$saved_variations = maybe_unserialize(get_option('foxyshop_saved_variations'));
+
+	$saved_variations = get_option('foxyshop_saved_variations');
+	if (!is_array($saved_variations)) $saved_variations = array();
 	
 	echo '<input type="hidden" id="variation_order_value" name="variation_order_value" />'."\n";
 	
@@ -886,12 +888,19 @@ function foxyshop_product_variations_setup() {
 	if ($max_variations == 0) $max_variations = 1;
 	for ($i=1;$i<=$max_variations;$i++) {
 		$dkeyhide = '';
-		$_variationName = (array_key_exists($i, $variations) ? $variations[$i]['name'] : '');
-		$_variation_type = (array_key_exists($i, $variations) ? $variations[$i]['type'] : 'dropdown');
-		$_variationValue = (array_key_exists($i, $variations) ? $variations[$i]['value'] : '');
-		$_variationDisplayKey = (array_key_exists($i, $variations) ? $variations[$i]['displayKey'] : '');
-		$_variationRequired = (array_key_exists($i, $variations) ? $variations[$i]['required'] : '');
-		if (!array_key_exists($_variation_type, $var_type_array)) {
+		$_variationName = '';
+		$_variation_type = 'dropdown';
+		$_variationValue = '';
+		$_variationDisplayKey = '';
+		$_variationRequired = '';
+		if (isset($variations[$i])) {
+			$_variationName = isset($variations[$i]['name']) ? $variations[$i]['name'] : '';
+			$_variation_type = isset($variations[$i]['type']) ? $variations[$i]['type'] : 'dropdown';
+			$_variationValue = isset($variations[$i]['value']) ? $variations[$i]['value'] : '';
+			$_variationDisplayKey = isset($variations[$i]['displayKey']) ? $variations[$i]['displayKey'] : '';
+			$_variationRequired = isset($variations[$i]['required']) ? $variations[$i]['required'] : '';
+		}
+		if (!array_key_exists($_variation_type, $var_type_array) && $_variationName != "") {
 			foreach($saved_variations as $saved_var) {
 				if (sanitize_title($saved_var['refname']) == $_variation_type) {
 					$_variationName = $saved_var['name'];
@@ -923,7 +932,7 @@ function foxyshop_product_variations_setup() {
 				foreach ($var_type_array as $var_name => $var_val) {
 					echo '<option value="' . $var_name . '"' . ($_variation_type == $var_name ? ' selected="selected"' : '') . '>' . $var_val . '  </option>'."\n";
 				}
-				if (is_array($saved_variations)) {
+				if (is_array($saved_variations) && count($saved_variations) > 0) {
 					echo '<optgroup label="' . __('Saved Variations') . '">'."\n";
 					foreach($saved_variations as $saved_var) {
 						$saved_ref = $saved_var['refname'];
@@ -1024,10 +1033,26 @@ function foxyshop_product_variations_setup() {
 	echo "</div>";	
 	?>
 	<button type="button" id="AddVariation" class="button"><?php _e('Add Another Variation'); ?></button>
+	<button type="button" id="VariationMinimizeAll" class="button" style="float: right;"><?php _e('Minimize All'); ?></button>
+	<button type="button" id="VariationMaximizeAll" class="button" style="display:none; float: right;"><?php _e('Maximize All'); ?></button>
 	<input type="hidden" name="max_variations" id="max_variations" value="<?php echo $max_variations; ?>" />
 
 <script type="text/javascript">
 jQuery(document).ready(function($){
+	$("#product_variations_meta").before('<a name="product_variations_meta"></a>');
+	$("#VariationMinimizeAll").click(function() {
+		$("#product_variations_meta").addClass("variation_minimized");
+		$("#VariationMaximizeAll").show();
+		$(this).hide();
+		$('html,body').animate({scrollTop: $("#product_variations_meta").offset().top - 30},'fast');
+	});
+	$("#VariationMaximizeAll").click(function() {
+		$("#product_variations_meta").removeClass("variation_minimized");
+		$(".product_variation").css("cursor", "cursor");
+		$("#VariationMinimizeAll").show();
+		$(this).hide();
+	});
+	
 	$('.deleteVariation').live("click", function() {
 		variationID = $(this).attr("rel");
 		$("#variation" + variationID).slideUp(function() {
@@ -1383,7 +1408,7 @@ function foxyshop_product_meta_save($post_id) {
 			}
 		}
 		if (count($inventory_array) > 0) {
-			foxyshop_save_meta_data('_inventory_levels',serialize($inventory_array));
+			foxyshop_save_meta_data('_inventory_levels',$inventory_array);
 		} else {
 			foxyshop_save_meta_data('_inventory_levels',"");
 		}
@@ -1403,7 +1428,7 @@ function foxyshop_product_meta_save($post_id) {
 		
 		//Set Values, Skip if Not There or Empty Name
 		if ($target_id == 0) continue;
-		$_variationName = trim(str_replace(".","",str_replace('"','',$_POST['_variation_name_'.$target_id])));
+		$_variationName = trim(str_replace("&","and",str_replace(".","",str_replace('"','',$_POST['_variation_name_'.$target_id]))));
 		$_variationType = $_POST['_variation_type_'.$target_id];
 		$_variationDisplayKey = $_POST['_variation_dkey_'.$target_id];
 		$_variationRequired = (isset($_POST['_variation_required_'.$target_id]) ? $_POST['_variation_required_'.$target_id] : '');
@@ -1438,7 +1463,7 @@ function foxyshop_product_meta_save($post_id) {
 		$currentID++;
 	}
 	if (count($variations) > 0) {
-		foxyshop_save_meta_data('_variations', serialize($variations));
+		foxyshop_save_meta_data('_variations', $variations);
 	} else {
 		foxyshop_save_meta_data('_variations', "");
 	}
@@ -1465,29 +1490,10 @@ function foxyshop_product_meta_save($post_id) {
 function foxyshop_save_meta_data($fieldname,$input) {
 	global $post_id;
 	$current_data = get_post_meta($post_id, $fieldname, TRUE);	
- 	$new_data = $input;
- 	if (!$new_data) $new_data = NULL;
- 	foxyshop_meta_clean($new_data);
-	if ($current_data) {
-		if (is_null($new_data)) delete_post_meta($post_id,$fieldname);
-		else update_post_meta($post_id,$fieldname,$new_data);
-	} elseif (!is_null($new_data)) {
-		add_post_meta($post_id,$fieldname,$new_data);
-	}
-}
-
-function foxyshop_meta_clean(&$arr) {
-	if (is_array($arr)) {
-		foreach ($arr as $i => $v) {
-			if (is_array($arr[$i]))  {
-				foxyshop_meta_clean($arr[$i]);
-				if (!count($arr[$i])) unset($arr[$i]);
-			} else  {
-				if (trim($arr[$i]) == '') unset($arr[$i]);
-			}
-		}
-		if (!count($arr)) $arr = NULL;
-	}
+	$new_data = $input;
+	if (!$new_data) $new_data = NULL;
+	if ($current_data != "" && is_null($new_data)) delete_post_meta($post_id,$fieldname);
+	if (!is_null($new_data)) update_post_meta($post_id,$fieldname,$new_data);
 }
 
 ?>
