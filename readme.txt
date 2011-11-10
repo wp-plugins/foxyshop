@@ -212,5 +212,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 3.6 =
-IMPORTANT: Manual change may be required on custom datafeed! See blog for more info.
+= 3.6.1 =
+Product Sitemap Links Will Change
