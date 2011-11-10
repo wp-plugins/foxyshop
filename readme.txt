@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
 Tested up to: 3.3
-Stable tag: 3.6
+Stable tag: 3.6.1
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -62,6 +62,13 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 3.6.1 =
+* Product sitemap is now a dynamic url + fixed namespace issue
+* Added 0.7.2 feature to automatically pull your shipping category list from FoxyCart
+* Added 0.7.2 receipt template caching functionality
+* Updated to jQuery 1.7.0
+* Made some admin styling tweaks
 
 = 3.6 =
 * Important: Double serialization corrected!

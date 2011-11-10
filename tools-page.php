@@ -29,10 +29,11 @@ function foxyshop_save_tools() {
 		die;
 
 	//Update FoxyCart Template
-	} elseif (isset($_POST['foxycart_cart_update_save']) || isset($_POST['foxycart_checkout_update_save'])) {
+	} elseif (isset($_POST['foxycart_cart_update_save']) || isset($_POST['foxycart_checkout_update_save']) || isset($_POST['foxycart_receipt_update_save'])) {
 		if (!check_admin_referer('update-foxycart-template')) return;
 		$foxyshop_settings['template_url_cart'] = $_POST['foxycart_cart_update'];
 		$foxyshop_settings['template_url_checkout'] = $_POST['foxycart_checkout_update'];
+		$foxyshop_settings['template_url_receipt'] = $_POST['foxycart_receipt_update'];
 		update_option("foxyshop_settings", $foxyshop_settings);
 		
 		//If just clearing the urls, return now
@@ -56,12 +57,24 @@ function foxyshop_save_tools() {
 
 		
 		//Checkout
-		} else {
+		} elseif (isset($_POST['foxycart_checkout_update_save'])) {
 			$foxy_data = array("api_action" => "store_template_cache", "template_type" => "checkout", "template_url" => $_POST['foxycart_checkout_update']);
 			$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 			$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
 			if ($xml->result != "ERROR") {
 				header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&updatetemplate=checkout');
+			} else {
+				header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&updatetemplate=error&error='.urlencode((string)$xml->messages->message));
+			}
+			die;
+		
+		//Receipt
+		} elseif (isset($_POST['foxycart_receipt_update_save'])) {
+			$foxy_data = array("api_action" => "store_template_cache", "template_type" => "receipt", "template_url" => $_POST['foxycart_receipt_update']);
+			$foxy_response = foxyshop_get_foxycart_data($foxy_data);
+			$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
+			if ($xml->result != "ERROR") {
+				header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&updatetemplate=receipt');
 			} else {
 				header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&updatetemplate=error&error='.urlencode((string)$xml->messages->message));
 			}
@@ -357,9 +370,15 @@ function foxyshop_tools() {
 
 					<div style="clear: both;"></div>
 					
-					<label for="foxycart_cart_update" style="width: 150px;">Checkout Template URL</label>
+					<label for="foxycart_checkout_update" style="width: 150px;">Checkout Template URL</label>
 					<input type="text" name="foxycart_checkout_update" id="foxycart_checkout_update" style="width: 450px;" value="<?php echo htmlspecialchars($foxyshop_settings['template_url_checkout']); ?>" />
 					<input type="submit" name="foxycart_checkout_update_save" value="Update Checkout Cache" class="button" />
+
+					<div style="clear: both;"></div>
+					
+					<label for="foxycart_receipt_update" style="width: 150px;">Receipt Template URL</label>
+					<input type="text" name="foxycart_receipt_update" id="foxycart_receipt_update" style="width: 450px;" value="<?php echo htmlspecialchars($foxyshop_settings['template_url_receipt']); ?>" />
+					<input type="submit" name="foxycart_receipt_update_save" value="Update Receipt Cache" class="button" />
 					
 					<?php wp_nonce_field('update-foxycart-template'); ?>
 					<input type="hidden" name="foxyshop_save_tools" value="1" />
@@ -424,6 +443,7 @@ echo '<div id="variation_sortable">'."\n";
 $max_variations = count($variations);
 if ($max_variations == 0) $max_variations = 1;
 for ($i=1;$i<=$max_variations;$i++) {
+	$_variationRefName = '';
 	$_variationName = '';
 	$_variation_type = '';
 	$_variationValue = '';
@@ -431,6 +451,7 @@ for ($i=1;$i<=$max_variations;$i++) {
 	$_variationRequired = '';
 	if (isset($variations[$i])) {
 		$_variationName = isset($variations[$i]['name']) ? $variations[$i]['name'] : '';
+		$_variationRefName = isset($variations[$i]['refname']) ? $variations[$i]['refname'] : '';
 		$_variation_type = isset($variations[$i]['type']) ? $variations[$i]['type'] : 'dropdown';
 		$_variationValue = isset($variations[$i]['value']) ? $variations[$i]['value'] : '';
 		$_variationDisplayKey = isset($variations[$i]['displayKey']) ? $variations[$i]['displayKey'] : '';

@@ -5,9 +5,6 @@ function foxyshop_save_settings() {
 	if (!check_admin_referer('update-foxyshop-options')) return;
 	global $foxyshop_settings;
 
-	//Do initial product sitemap creation
-	if (isset($_POST['foxyshop_generate_product_sitemap'])) foxyshop_create_product_sitemap();
-
 	//Loop Through Most Fields
 	$fields = array(
 		"version",
@@ -93,7 +90,7 @@ function foxyshop_settings_menu() {
 	add_submenu_page('edit.php?post_type=foxyshop_product', __('Settings'), __('Settings'), 'manage_options', 'foxyshop_options', 'foxyshop_options');
 }
 function foxyshop_options() {
-	global $foxyshop_settings;
+	global $foxyshop_settings, $foxycart_version_array;
 	if (!defined('FOXYSHOP_TEMPLATE_PATH')) define('FOXYSHOP_TEMPLATE_PATH',STYLESHEETPATH);
 ?>
 <div id="foxyshop_settings_wrap" class="wrap">
@@ -117,22 +114,11 @@ function foxyshop_options() {
 	if (isset($_GET['setup'])) echo '<div class="updated"><p>' . __('<strong>Congratulations!</strong> You are all set up and ready to go. You may now review all the settings on this page and start entering products.') . '</p></div>';
 	
 	//Warning PHP Version
-	if (version_compare(PHP_VERSION, '5.1.2', "<")) echo '<div class="error"><p>' . sprintf(__('<strong>Warning:</strong> You are using PHP version %s FoxyShop requires PHP version 5.1.2 or higher to utilize the required hmac_has() functions. Without upgrading you will experience problems adding items to the cart and completing other tasks. After upgrading, make sure that you reset your API key (scroll to the bottom of the page) to ensure that you have a fully secure key.'), PHP_VERSION) . '</p></div>';
+	if (version_compare(PHP_VERSION, '5.1.2', "<")) echo '<div class="error"><p>' . sprintf(__('<strong>Warning:</strong> You are using PHP version %s. FoxyShop requires PHP version 5.1.2 or higher to utilize the required hmac_has() functions. Without upgrading you will experience problems adding items to the cart and completing other tasks. After upgrading, make sure that you reset your API key (on the FoxyShop Tools page) to ensure that you have a fully secure key.'), PHP_VERSION) . '</p></div>';
 
 	//Warning Header/Footer Missing
 	if (!file_exists(TEMPLATEPATH.'/header.php') || !file_exists(TEMPLATEPATH.'/footer.php')) echo '<div class="error"><p>' . __('<strong>Warning:</strong> Your theme does not appear to be using header.php or footer.php. Without these files FoxyShop pages will show up unstyled. This error can often show up if you are using a WordPress framework that is bypassing the get_header() and get_footer() functions.') . '</p></div>';
 	
-	//Warning Sitemap Not Writeable
-	if ($foxyshop_settings['generate_product_sitemap']) {
-		$sitemap_filename = FOXYSHOP_DOCUMENT_ROOT.'/sitemap-products.xml';
-		if (file_exists($sitemap_filename)) {
-			if (!is_writeable($sitemap_filename)) echo '<div class="error"><p><strong>Warning:</strong> ' . FOXYSHOP_DOCUMENT_ROOT.'/sitemap-products.xml not writeable.</p></div>';
-		} else {
-			$sitemap_directory = FOXYSHOP_DOCUMENT_ROOT;
-			if (!is_writeable($sitemap_directory)) echo '<div class="error"><p><strong>Warning:</strong> ' . FOXYSHOP_DOCUMENT_ROOT.'/sitemap-products.xml does not exist and the directory is not writeable.</p></div>';
-		}
-	}
-
 	//Warning Upload Folders
 	$upload_dir = wp_upload_dir();
 	if ($upload_dir['error'] != '') {
@@ -216,7 +202,7 @@ function foxyshop_options() {
 					<?php if ($foxyshop_settings['generate_product_sitemap']) { ?>
 						<div style="clear: both;margin-bottom: 5px;"></div>
 						<label for="foxyshop_sitemap"><?php _e('Sitemap'); ?>:</label>
-						<input type="text" id="foxyshop_sitemap" name="foxyshop_sitemap" value="http://<?php echo $_SERVER['SERVER_NAME'] . '/sitemap-products.xml'; ?>" readonly="readonly" onclick="this.select();" />
+						<input type="text" id="foxyshop_sitemap" name="foxyshop_sitemap" value="http://<?php echo $_SERVER['SERVER_NAME'] . '/' . FOXYSHOP_PRODUCT_SITEMAP_SLUG . '/'; ?>" readonly="readonly" onclick="this.select();" />
 						<a href="#" class="foxyshophelp">This is the url where you can find your sitemap for submitting to search engines.</a>
 					<?php } ?>
 
@@ -248,18 +234,17 @@ function foxyshop_options() {
 					<label for="foxyshop_version"><?php _e('FoxyCart Version'); ?>:</label> 
 					<select name="foxyshop_version" id="foxyshop_version">
 					<?php
-					$versionArray = array('0.7.2' => '0.7.2', '0.7.1' => '0.7.1', '0.7.0' => '0.7.0');
-					foreach ($versionArray as $key => $val) {
+					foreach ($foxycart_version_array as $key => $val) {
 						echo '<option value="' . $key . '"' . ($foxyshop_settings['version'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
 					} ?>
 					</select>
-					<small>Version 0.7.1 is recommended.</small>
+					<small>Version 0.7.2 is recommended.</small>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_use_jquery" name="foxyshop_use_jquery"<?php checked($foxyshop_settings['use_jquery'], "on"); ?> />
-					<label for="foxyshop_use_jquery"><?php echo __('Automatically Insert jQuery ') . FOXYSHOP_JQUERY_VERSION . __(' from Google CDN'); ?></label>
+					<label for="foxyshop_use_jquery"><?php echo sprintf(__('Automatically Insert jQuery %s from Google CDN'), FOXYSHOP_JQUERY_VERSION); ?></label>
 					<a href="#" class="foxyshophelp">If you are already manually inserting jQuery you should uncheck this option.</a>
 				</td>
 			</tr>
@@ -352,12 +337,13 @@ function foxyshop_options() {
 		<tbody>
 			<tr>
 				<td>
-					<label for="foxyshop_ship_categories" style="vertical-align: top;"><?php _e('Your Shipping Categories'); ?>:</label>
-					<a href="#" class="foxyshophelp">These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?> setup page. Separate each category with a line break. If you only use one category this is not required. If you would like to also display a nice name in the dropdown menu, use a pipe sign "|" like this: free_shipping|Free Shipping.</a>
-					<div style="clear: both;margin-bottom: 1px;"></div>
-					<textarea id="name="foxyshop_ship_categories" name="foxyshop_ship_categories" wrap="auto" style="float: left; width:500px;height: <?php echo strlen($foxyshop_settings['ship_categories']) > 110 ? "160px" : "80px" ?>;"><?php echo $foxyshop_settings['ship_categories']; ?></textarea>
-					<span style="display:block; clear: both; padding-top: 3px;">Example: shipping_category_code|Shipping Category Nice Display Name</span>
-					
+					<div id="foxyshop_ship_category_label">
+						<label for="foxyshop_ship_categories" style="vertical-align: top;"><?php _e('Your Shipping Categories'); ?>:</label>
+						<a href="#" class="foxyshophelp">These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?> setup page. Separate each category with a line break. If you only use one category this is not required. If you would like to also display a nice name in the dropdown menu, use a pipe sign "|" like this: free_shipping|Free Shipping.</a>
+						<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=") && $foxyshop_settings['domain']) echo '<button type="button" class="button" id="ajax_get_category_list">Pull Category List From FoxyCart</button><div id="foxyshop_category_list_waiter"></div>'; ?>
+					</div>
+					<textarea id="foxyshop_ship_categories" name="foxyshop_ship_categories" wrap="auto" style="float: left; width:640px;height: <?php echo strlen($foxyshop_settings['ship_categories']) > 110 ? "160px" : "80px" ?>;"><?php echo $foxyshop_settings['ship_categories']; ?></textarea>
+					<span style="display:block; clear: both; padding-top: 3px;"><strong>Example:</strong> shipping_category_code|Nice Display Name</span>
 				</td>
 			</tr>
 			<tr>
@@ -549,6 +535,23 @@ jQuery(document).ready(function($){
 	}).click(function() {
 		return false;
 	});			
+
+	<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=") && $foxyshop_settings['domain']) { ?>
+	$("#ajax_get_category_list").click(function() {
+		var data = {
+			action: 'foxyshop_ajax_get_category_list',
+			security: '<?php echo wp_create_nonce("foxyshop-ajax-get-category-list"); ?>'
+		};
+		$("#foxyshop_category_list_waiter").show();
+		$.post(ajaxurl, data, function(response) {
+			if (response) {
+				$("#foxyshop_ship_categories").val(response);
+			}
+			$("#foxyshop_category_list_waiter").hide();
+		});
+
+	});
+	<?php } ?>
 
 
 

@@ -39,6 +39,13 @@ function foxyshop_display_ajax() {
 }
 
 
+//Get New Category List AJAX
+add_action('wp_ajax_foxyshop_ajax_get_category_list', 'foxyshop_ajax_get_category_list');
+function foxyshop_ajax_get_category_list() {
+	check_ajax_referer('foxyshop-ajax-get-category-list', 'security');
+	echo foxyshop_get_category_list();
+	die;
+}
 
 
 
@@ -87,7 +94,7 @@ function foxyshop_product_ajax() {
 	} elseif ($_POST['foxyshop_action'] == "refresh_images") {
 		echo foxyshop_redraw_images($productID);
 	}
-	die();
+	die;
 }
 
 //Function to redraw images

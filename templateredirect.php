@@ -144,10 +144,15 @@ function foxyshop_theme_redirect() {
 		$wp_query->is_404 = false;
 		include FOXYSHOP_PATH . '/uploadprocessor.php';
 		die;
+
+	//Dynamic Product Sitemap
+	} elseif ($currentPageName == FOXYSHOP_PRODUCT_SITEMAP_SLUG && $foxyshop_settings['generate_product_sitemap']) {
+		status_header(200);
+		$wp_query->is_404 = false;
+		include FOXYSHOP_PATH . '/generatesitemap.php';
+		die;
 	}
 }
-
-
 
 function title_filter_all_products() {
 	global $foxyshop_settings;

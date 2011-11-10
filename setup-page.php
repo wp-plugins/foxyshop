@@ -25,6 +25,9 @@ function save_foxyshop_setup() {
 
 	$foxyshop_settings['domain'] = trim(stripslashes(str_replace("http://","",$_POST['foxyshop_domain'])));
 	$foxyshop_settings['version'] = $_POST['foxyshop_version'];
+	
+	//Get Category List if >= 0.7.2
+	if ($cached_shipping_categories = foxyshop_get_category_list()) $foxyshop_settings['ship_categories'] = $cached_shipping_categories;
 
 	update_option("foxyshop_settings", $foxyshop_settings);
 	delete_option("foxyshop_setup_required");
@@ -34,7 +37,7 @@ function save_foxyshop_setup() {
 
 
 function foxyshop_setup() {
-	global $foxyshop_settings;
+	global $foxyshop_settings, $foxycart_version_array;
 ?>
 <div class="wrap">
 <div class="icon32" id="icon-options-general"><br></div>
@@ -85,12 +88,11 @@ function foxyshop_setup() {
 				<label for="foxyshop_version">What FoxyCart version are you using?</label> 
 				<select name="foxyshop_version" id="foxyshop_version" style="min-width: 100px;">
 				<?php
-				$versionArray = array('0.7.2' => '0.7.2', '0.7.1' => '0.7.1', '0.7.0' => '0.7.0');
-				foreach ($versionArray as $key => $val) {
+				foreach ($foxycart_version_array as $key => $val) {
 					echo '<option value="' . $key . '"' . ($foxyshop_settings['version'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
 				} ?>
 				</select>
-				<small>Version 0.7.1 is recommended.</small>
+				<small>Version 0.7.2 is recommended.</small>
 			</td>
 		</tr>
 	</tbody>

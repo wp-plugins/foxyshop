@@ -681,7 +681,6 @@ function foxyshop_addon_products_setup() {
 
 
 
-
 //-------------------------------------------
 //Product Images
 //-------------------------------------------
@@ -1471,12 +1470,6 @@ function foxyshop_product_meta_save($post_id) {
 	//Save Action (For Other Integrations)
 	do_action("foxyshop_save_product", $post_id);
 	
-	
-	//Rewrite Product Sitemap
-	if ($foxyshop_settings['generate_product_sitemap']) {
-		foxyshop_create_product_sitemap();
-	}
-
 	return $post_id;
 }
 

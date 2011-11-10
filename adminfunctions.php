@@ -1,8 +1,9 @@
 <?php
 //Insert jQuery
 function foxyshop_insert_jquery() {
+	$jquery_url = "http".($_SERVER['SERVER_PORT'] == 443 ? 's' : '')."://ajax.googleapis.com/ajax/libs/jquery/".FOXYSHOP_JQUERY_VERSION."/jquery.min.js";
 	wp_deregister_script('jquery');
-	wp_register_script('jquery', "http".($_SERVER['SERVER_PORT'] == 443 ? 's' : '')."://ajax.googleapis.com/ajax/libs/jquery/".FOXYSHOP_JQUERY_VERSION."/jquery.min.js", array(), NULL, false);
+	wp_register_script('jquery', apply_filters('foxyshop_jquery_url', $jquery_url), array(), NULL, false);
 	wp_enqueue_script('jquery');
 }
 
@@ -47,13 +48,12 @@ function foxyshop_date_picker() {
 	}
 }
 
-
 //Check Permalinks on all admin pages and warn if incorrect
 add_action('admin_notices', 'foxyshop_check_permalinks');
 function foxyshop_check_permalinks() {
 	$permalink_structure = (isset($_POST['permalink_structure']) ? $_POST['permalink_structure'] : get_option('permalink_structure'));
 	if ($permalink_structure == '') {
-		echo '<div class="error"><p><strong>Warning:</strong> Your <a href="options-permalink.php">permalink structure</a> is set to default. It is recommend that you set to Month and Name. Other settings may cause difficulties using FoxyShop.</p></div>';
+		echo '<div class="error"><p><strong>Warning:</strong> Your <a href="options-permalink.php">permalink structure</a> is set to default. Your product links will not work correctly until you have turned on Permalink support. It is recommend that you set to "Month and Name".</p></div>';
 	}
 }
 
@@ -197,7 +197,7 @@ function foxyshop_activation() {
 		"default_weight" => "1 0.0",
 		"use_jquery" => "on",
 		"hide_subcat_children" => "on",
-		"generate_product_sitemap" => "",
+		"generate_product_sitemap" => "on",
 		"sort_key" => "menu_order",
 		"enable_sso" => "",
 		"sso_account_required" => "0",
@@ -213,6 +213,7 @@ function foxyshop_activation() {
 		"foxycart_include_cache" => "",
 		"template_url_cart" => "",
 		"template_url_checkout" => "",
+		"template_url_receipt" => "",
 		"products_per_page" => -1,
 		"api_key" => "sp92fx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time())
 	);
@@ -256,6 +257,7 @@ function foxyshop_activation() {
 		if (!array_key_exists('enable_addon_products',$foxyshop_settings)) $foxyshop_settings['enable_addon_products'] = ""; //3.4
 		if (!array_key_exists('template_url_cart',$foxyshop_settings)) $foxyshop_settings['template_url_cart'] = ""; //3.5.1
 		if (!array_key_exists('template_url_checkout',$foxyshop_settings)) $foxyshop_settings['template_url_checkout'] = ""; //3.5.1
+		if (!array_key_exists('template_url_receipt',$foxyshop_settings)) $foxyshop_settings['template_url_receipt'] = ""; //3.6.1
 
 		//Upgrade Variations in 3.0
 		if (version_compare($foxyshop_settings['foxyshop_version'], '3.0', "<")) {
@@ -335,66 +337,29 @@ function foxyshop_deactivation() {
 	flush_rewrite_rules();
 }
 
-//Create Product Sitemap
-function foxyshop_create_product_sitemap() {
-	$args = array(
-		'post_type' => array('foxyshop_product'),
-		'post_status' => 'publish',
-		'numberposts' => -1
-	);
-	$products = get_posts($args);
-	$write = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
-	$write .= '<urlset xmlns="http://www.google.com/schemas/sitemap/0.90">'."\n";
-	foreach ($products as $product) {
-		$write .= '<url>'."\n";
-		$write .= '<loc>' . get_bloginfo('wpurl') . '/' . FOXYSHOP_PRODUCTS_SLUG . '/' . htmlspecialchars($product->post_name) . '/</loc>'."\n";
-		$write .= '<lastmod>' . date('Y-m-d\TH:i:s+00:00',strtotime($product->post_modified)) . '</lastmod>'."\n";
-		$write .= '<changefreq>weekly</changefreq>'."\n";
-		$write .= '<priority>1.0</priority>'."\n";
-		$write .= '</url>'."\n";
-	}
-
-	$termchildren = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&orderby=name&order=ASC');
-	if ($termchildren) {
-		$write .= '<url>'."\n";
-		$write .= '<loc>' . get_bloginfo('wpurl') . '/' . FOXYSHOP_PRODUCT_CATEGORY_SLUG . '/</loc>'."\n";
-		$write .= '<lastmod>' . date('Y-m-d\TH:i:s+00:00',time()) . '</lastmod>'."\n";
-		$write .= '<changefreq>weekly</changefreq>'."\n";
-		$write .= '<priority>1.0</priority>'."\n";
-		$write .= '</url>'."\n";
-		foreach ($termchildren as $child) {
-			$write .= '<url>'."\n";
-			$write .= '<loc>' . get_term_link((int)$child->term_id, "foxyshop_categories") . '</loc>'."\n";
-			$write .= '<lastmod>' . date('Y-m-d\TH:i:s+00:00',time()) . '</lastmod>'."\n";
-			$write .= '<changefreq>weekly</changefreq>'."\n";
-			$write .= '<priority>1.0</priority>'."\n";
-			$write .= '</url>'."\n";
-		}
-	} else {
-		$write .= '<url>'."\n";
-		$write .= '<loc>' . get_bloginfo('wpurl') . '/' . FOXYSHOP_PRODUCTS_SLUG . '/</loc>'."\n";
-		$write .= '<lastmod>' . date('Y-m-d\TH:i:s+00:00',time()) . '</lastmod>'."\n";
-		$write .= '<changefreq>weekly</changefreq>'."\n";
-		$write .= '<priority>1.0</priority>'."\n";
-		$write .= '</url>'."\n";
-	}
-	$write .= '</urlset>';
-	
-	//Write Sitemap File If Possible
-	$sitemap_filename = FOXYSHOP_DOCUMENT_ROOT.'/sitemap-products.xml';
-	if (file_exists($sitemap_filename)) {
-		if (is_writeable($sitemap_filename)) file_put_contents($sitemap_filename, $write);
-	} else {
-		if (is_writeable(FOXYSHOP_DOCUMENT_ROOT)) file_put_contents($sitemap_filename, $write);
-	}
-}
-
 //Flushes Rewrite Rules if Structure Has Changed
 function foxyshop_check_rewrite_rules() {
 	if (get_option('foxyshop_rewrite_rules') != FOXYSHOP_PRODUCTS_SLUG."|".FOXYSHOP_PRODUCT_CATEGORY_SLUG || isset($_GET["foxyshop_flush_rewrite_rules"])) {
 		flush_rewrite_rules(false);
 		update_option('foxyshop_rewrite_rules', FOXYSHOP_PRODUCTS_SLUG."|".FOXYSHOP_PRODUCT_CATEGORY_SLUG);
 	}
+}
+
+//Get Category List from FoxyCart API
+function foxyshop_get_category_list() {
+	global $foxyshop_settings;
+	if (version_compare($foxyshop_settings['version'], '0.7.2', "<") || !$foxyshop_settings['domain']) return "";
+	$foxy_data = array("api_action" => "category_list");
+	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
+	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
+	if ($xml->result == "ERROR") return "";
+	$output = "";
+	foreach($xml->categories->category as $category) {
+		$code = (string)$category->code;
+		$description = (string)$category->description;
+		if ($code != "DEFAULT") $output .= "$code|$description\n";
+	}
+	return trim($output);
 }
 
 //Access the FoxyCart API

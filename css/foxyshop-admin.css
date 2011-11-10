@@ -142,7 +142,10 @@ body .foxyshop-list-table tbody tr.foxyshop-row-updated {
 	cursor: move;
 }
 .product_variation {
-	line-height: auto;
+	line-height: normal;
+}
+#product_variations_meta {
+	min-width: 465px;
 }
 #foxyshop_settings_wrap .product_variation span {
 	margin: 7px 0 0 5px;
@@ -504,7 +507,25 @@ body label.variationtypelabel {
 	margin: 7px;
 	float: left;
 }
-
+#foxyshop_category_list_waiter {
+	display: none;
+	width: 16px;
+	height: 16px;
+	background: url("../../../../wp-admin/images/wpspin_light.gif") repeat scroll 0 0 transparent;
+	margin: 3px 5px 0 0;
+	float: right;
+}
+#foxyshop_ship_category_label {
+	width: 640px;
+	overflow: auto;
+}
+#ajax_get_category_list {
+	float: right;
+	margin-bottom: 3px;
+}
+#_category {
+	max-width: 163px;
+}
 .inventory_count {
 	margin-left: 10px;
 	width: 40px;
