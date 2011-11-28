@@ -254,6 +254,7 @@ function foxyshop_product_meta_init() {
 	add_meta_box('product_pricing_meta', 'Pricing Details', 'foxyshop_product_pricing_setup', 'foxyshop_product', 'side', 'low');
 	add_meta_box('product_images_meta', FOXYSHOP_PRODUCT_NAME_SINGULAR.' Images', 'foxyshop_product_images_setup', 'foxyshop_product', 'normal', 'high');
 	add_meta_box('product_variations_meta', FOXYSHOP_PRODUCT_NAME_SINGULAR.' Variations', 'foxyshop_product_variations_setup', 'foxyshop_product', 'normal', 'high');
+	if ($foxyshop_settings['google_product_support']) add_meta_box('google_products_data', __('Google Product Feed Data'), 'foxyshop_google_products_data', 'foxyshop_product', 'normal', 'low');
 	if ($foxyshop_settings['related_products_custom']) add_meta_box('product_related_meta', __('Related').' '.FOXYSHOP_PRODUCT_NAME_PLURAL, 'foxyshop_related_products_setup', 'foxyshop_product', 'normal', 'low');
 	if ($foxyshop_settings['enable_bundled_products']) add_meta_box('product_bundled_meta', __('Bundled').' '.FOXYSHOP_PRODUCT_NAME_PLURAL, 'foxyshop_bundled_products_setup', 'foxyshop_product', 'normal', 'low');
 	if ($foxyshop_settings['enable_addon_products']) add_meta_box('product_addon_meta', __('Add-On').' '.FOXYSHOP_PRODUCT_NAME_PLURAL, 'foxyshop_addon_products_setup', 'foxyshop_product', 'normal', 'low');
@@ -295,8 +296,44 @@ function foxyshop_product_details_setup() {
 		}
 	}
 	
+	if ($foxyshop_settings['downloadables_sync'] && version_compare($foxyshop_settings['version'], '0.7.2', ">=") && $foxyshop_settings['domain']) {
+		$show_downloadables = 1;
+	} else {
+		$show_downloadables = 0;
+	}
+	
+	
 	$_hide_product = get_post_meta($post->ID,'_hide_product',TRUE);
 	?>
+	<?php if ($show_downloadables) { ?>
+	<a href="#" id="show_downloadable_list" title="<?php _e('Show Available Downloadables'); ?>">Show Available Downloadables</a>
+	<div class="foxyshop_field_control" id="downloadable_list_parent">
+		<a href="#" id="hide_downloadable_list" title="<?php _e('Hide Available Downloadables'); ?>">Hide Available Downloadables</a>
+		<label for="downloadable_list" style="width:100%;"><?php _e('Select Downloadable To Prefill Data'); ?></label>
+		<select name="downloadable_list" id="downloadable_list">
+			<?php
+			foxyshop_get_downloadable_list();
+			$downloadable_list = get_option("foxyshop_downloadables");
+			if (!is_array($downloadable_list)) {
+				$downloadable_list = array();
+				echo '<option value="">' . __('None Found') . '</option>'."\n";
+			} else {
+				echo '<option value="">- - ' . __('Select Below') . ' - -</option>'."\n";
+
+			}
+			foreach ($downloadable_list as $downloadable) {
+				echo '<option value="' . esc_attr($downloadable['product_code']) . '"';
+				echo ' category_code="' . esc_attr($downloadable['category_code']) . '"';
+				echo ' product_price="' . esc_attr($downloadable['product_price']) . '"';
+				echo '>' . esc_attr($downloadable['product_name']) . '</option>';
+				echo "\n";
+			}
+			?>
+		</select>
+		<a href="#" id="ajax_get_downloadable_list" title="<?php _e('Refresh List'); ?>">Refresh List</a>
+		<div style="clear:both"></div>
+	</div>
+	<?php } ?>
 	<div class="foxyshop_field_control">
 		<label for="_price"><?php _e('Base Price'); ?></label>
 		<input type="text" name="_price" id="_price" value="<?php echo $_price; ?>" onblur="foxyshop_check_number(this);" style="width: 90px; float: left;" />
@@ -323,6 +360,7 @@ function foxyshop_product_details_setup() {
 		<span id="quantity_max_label" style="float: left; margin: 6px 0 0 1px; width: 26px;" class="iconsprite <?php echo $_quantity_max ? "up_color" : "up_gray"; ?>"></span>
 		<input type="checkbox" name="_quantity_hide" id="_quantity_hide" title="<?php _e('Hide Quantity Box'); ?>" style="float: left; margin-top: 7px;"<?php echo checked($_quantity_hide,"on"); ?> />
 		<label id="quantity_hide_label" for="_quantity_hide" style="float: left; margin: 6px 0 0 2px; width: 16px;" title="<?php _e('Hide Quantity Box'); ?>" class="iconsprite <?php echo $_quantity_hide ? "hide_color" : "hide_gray"; ?>"></label>
+		<div style="clear:both"></div>
 	</div>
 	<?php if ($foxyshop_settings['ship_categories']) { ?>
 	<div class="foxyshop_field_control">
@@ -333,14 +371,13 @@ function foxyshop_product_details_setup() {
 			$arrShipCategories = preg_split("/(\r\n|\n|\r)/", $foxyshop_settings['ship_categories']);
 			for ($i = 0; $i < count($arrShipCategories); $i++) {
 				$shipping_category = explode("|", $arrShipCategories[$i]);
-				if (count($shipping_category) > 1) {
-					$shipping_category_code = trim($shipping_category[0]);
-					$shipping_category_name = trim($shipping_category[1]);
-				} else {
-					$shipping_category_code = trim($shipping_category[0]);
-					$shipping_category_name = trim($shipping_category[0]);
-				}
+				$shipping_category_code = trim($shipping_category[0]);
+				$shipping_category_name = $shipping_category_code;
+				$shipping_category_type = '';
+				if (isset($shipping_category[1])) $shipping_category_name = trim($shipping_category[1]);
+				if (isset($shipping_category[2])) $shipping_category_type = trim($shipping_category[2]);
 				echo '<option value="' . esc_attr($shipping_category_code) . '"';
+				if ($shipping_category_type) echo ' rel="' . esc_attr($shipping_category_type) . '"';
 				if (esc_attr($shipping_category_code == $_category)) echo ' selected="selected"';
 				echo '>' . esc_attr($shipping_category_name) . '</option>';
 				echo "\n";
@@ -364,6 +401,63 @@ function foxyshop_product_details_setup() {
 	<!-- JavaScript -->
 	<script type="text/javascript">
 	jQuery(document).ready(function($){
+		$("#_category").change(function() {
+			var current_shipping_type = $("#_category option:selected").attr("rel");
+			if (current_shipping_type == "notshipped" || current_shipping_type == "downloaded") {
+				$("#weight_disable").prop("checked", true).triggerHandler("click");
+			}
+			<?php if ($show_downloadables) { ?>
+			if (current_shipping_type == "downloaded" && !$("#_code").val()) {
+				$("#downloadable_list_parent").show();
+				$("#show_downloadable_list").hide();
+			} else {
+				$("#downloadable_list_parent").hide();
+				$("#show_downloadable_list").show();
+			}
+			<?php } ?>
+		});
+		<?php if ($show_downloadables) { ?>
+			$("#ajax_get_downloadable_list").click(function() {
+				var data = {
+					action: 'foxyshop_ajax_get_downloadable_list',
+					security: '<?php echo wp_create_nonce("foxyshop-ajax-get-downloadable-list"); ?>'
+				};
+				$("#downloadable_list option").remove();
+				$("#downloadable_list").append('<option value="">Refreshing Now...</option>' + "\n");
+				$(this).addClass("waiting");
+				$.post(ajaxurl, data, function(response) {
+					if (response) {
+						$("#downloadable_list option").remove();
+						if (response) {
+							$("#downloadable_list").append('<option value="">- - <?php _e('Select Below'); ?> - -</option>' + "\n" + response);
+						} else {
+							$("#downloadable_list").append('<option value=""><?php _e('None Found'); ?></option>' + "\n" + response);
+						}
+					}
+					$("#ajax_get_downloadable_list").removeClass("waiting");
+				});
+
+			});
+			$("#show_downloadable_list").click(function(){
+				$("#downloadable_list_parent").show();
+				$(this).hide();
+				return false;
+			});
+			$("#hide_downloadable_list").click(function(){
+				$("#downloadable_list_parent").hide();
+				$("#show_downloadable_list").show();
+				return false;
+			});
+			$("#downloadable_list").change(function(){
+				var sel = $("#downloadable_list option:selected");
+				if (!sel.val()) return;
+				$("#title").val(sel.text()).focus().blur();
+				$("#_code").val(sel.val());
+				$("#_price").val(sel.attr("product_price"));
+				$("#_category option[value='" + sel.attr("category_code") + "']").prop("selected", true);
+			});
+
+		<?php } ?>
 		$("#weight_disable").click(function() {
 			if ($(this).is(":checked")) {
 				$("#weight_disable_label").addClass("hide_color").removeClass("hide_gray");
@@ -674,6 +768,38 @@ function foxyshop_addon_products_setup() {
 	<div class="foxyshop_field_control">
 		<label for="_addon_order" style="width: 220px; margin-left: 0;">Set Custom Order For Add-on Products</label> <input type="text" style="width: 220px; float: left;" name="_addon_order" id="_addon_order" value="<?php echo get_post_meta($post->ID, "_addon_order", 1) ?>" /> <span>ID's separated by comma</span>
 	</div>
+	<div style="clear: both;"></div>
+	<?php
+}
+
+
+
+
+//-------------------------------------------
+//Google Products Data
+//-------------------------------------------
+function foxyshop_google_products_data() {
+	global $post, $google_product_field_names;
+	
+	echo '<p>The following data is used by the Google Product Search tool. Read the <a href="http://www.google.com/support/merchants/bin/answer.py?hl=en&answer=188494#US" target="_blank">feed specification</a> for specific field.<br /><em>Google Product Category</em> is required.</p>';
+	
+	foreach($google_product_field_names as $field) {
+		$display_title = ucwords(str_replace("_", " ", $field));
+		if (strlen($display_title) <= 4 && $display_title != "Size") $display_title = strtoupper($display_title);
+		echo '<div class="foxyshop_field_control">'."\n";
+		echo '<label for="_' . $field . '">' . $display_title . '</label>'."\n";
+		echo '<input type="text" id="_' . $field . '" name="_' . $field . '" value="' . esc_attr(get_post_meta($post->ID, "_" . $field, 1)) . '" />'."\n";
+		switch ($field) {
+			case "google_product_category": echo '<span>(<a href="http://www.google.com/basepages/producttype/taxonomy.en-US.txt" target="_blank">options</a>)</span>'; break;
+			//case "condition": echo '<span>(new, used, refurbished)</span>'; break;
+			//case "gender": echo '<span>(male, female, unisex)</span>'; break;
+			//case "age_group": echo '<span>(adult, kids)</span>'; break;
+		}
+		echo '</div>'."\n";
+	}
+
+
+	?>
 	<div style="clear: both;"></div>
 	<?php
 }
@@ -1315,7 +1441,7 @@ jQuery(document).ready(function($){
 //Save All Product Info
 //-------------------------------------------
 function foxyshop_product_meta_save($post_id) {
-	global $foxyshop_settings;
+	global $foxyshop_settings, $google_product_field_names;
 	if (!wp_verify_nonce((isset($_POST['products_meta_noncename']) ? $_POST['products_meta_noncename'] : ""),__FILE__)) return $post_id;
 	if (!current_user_can('edit_'.($_POST['post_type'] == 'page' ? 'page' : 'post'), $post_id)) return $post_id;
 	
@@ -1348,7 +1474,9 @@ function foxyshop_product_meta_save($post_id) {
 	}
 
 	//Save Sale Pricing Data
-	foxyshop_save_meta_data('_saleprice',number_format((double)str_replace(",","",$_POST['_saleprice']),2,".",""));
+	$saleprice = number_format((double)str_replace(",","",$_POST['_saleprice']),2,".","");
+	if ($saleprice == 0) $saleprice = "";
+	foxyshop_save_meta_data('_saleprice',$saleprice);
 	if (($_salestartdate = strtotime($_POST['_salestartdate'])) === false) foxyshop_save_meta_data('_salestartdate',"999999999999999999");
 	else foxyshop_save_meta_data('_salestartdate',$_salestartdate);
 	if (($_saleenddate = strtotime($_POST['_saleenddate'])) === false) foxyshop_save_meta_data('_saleenddate',"999999999999999999");
@@ -1465,6 +1593,14 @@ function foxyshop_product_meta_save($post_id) {
 		foxyshop_save_meta_data('_variations', $variations);
 	} else {
 		foxyshop_save_meta_data('_variations', "");
+	}
+
+
+	//Google Products Fields
+	if ($foxyshop_settings['google_product_support']) {
+		foreach($google_product_field_names as $field) {
+			foxyshop_save_meta_data("_" . $field,$_POST["_" . $field]);
+		}
 	}
 	
 	//Save Action (For Other Integrations)

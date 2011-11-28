@@ -4,8 +4,7 @@
 //-------------------------------------------
 function foxyshop_cfbe_metabox($post_type) {
 	if ($post_type != 'foxyshop_product') return;
-	global $foxyshop_settings;
-	global $wp_version;
+	global $foxyshop_settings, $wp_version, $google_product_field_names;
 	?>
 	<table class="widefat cfbe_table cfbe_foxyshop_table">
 		<thead>
@@ -164,7 +163,7 @@ function foxyshop_cfbe_metabox($post_type) {
 					<input type="radio" name="_discount_quantity_amount_status" id="_discount_quantity_amount_status1" value="1" />
 					<label for="_discount_quantity_amount_status1"><?php _e("Change To"); ?>:</label>
 					<input type="text" name="_discount_quantity_amount" id="_discount_quantity_amount" value="" class="cfbe_field_name" onfocus="jQuery('#_discount_quantity_amount_status1').prop('checked', true);" style="width: 300px;" />
-					<small>(<a href="http://wiki.foxycart.com/v/0.7.1/coupons_and_discounts" target="_blank"><?php _e('Reference'); ?></a>)</small>
+					<small>(<a href="http://wiki.foxycart.com/v/0.7.2/coupons_and_discounts" target="_blank"><?php _e('Reference'); ?></a>)</small>
 					<div style="clear: both;"></div>
 				</td>
 			</tr>
@@ -176,7 +175,7 @@ function foxyshop_cfbe_metabox($post_type) {
 					<input type="radio" name="_discount_quantity_percentage_status" id="_discount_quantity_percentage_status1" value="1" />
 					<label for="_discount_quantity_percentage_status1"><?php _e("Change To"); ?>:</label>
 					<input type="text" name="_discount_quantity_percentage" id="_discount_quantity_percentage" value="" class="cfbe_field_name" onfocus="jQuery('#_discount_quantity_percentage_status1').prop('checked', true);" style="width: 300px;" />
-					<small>(<a href="http://wiki.foxycart.com/v/0.7.1/coupons_and_discounts" target="_blank"><?php _e('Reference'); ?></a>)</small>
+					<small>(<a href="http://wiki.foxycart.com/v/0.7.2/coupons_and_discounts" target="_blank"><?php _e('Reference'); ?></a>)</small>
 					<div style="clear: both;"></div>
 				</td>
 			</tr>
@@ -188,7 +187,7 @@ function foxyshop_cfbe_metabox($post_type) {
 					<input type="radio" name="_discount_price_amount_status" id="_discount_price_amount_status1" value="1" />
 					<label for="_discount_price_amount_status1"><?php _e("Change To"); ?>:</label>
 					<input type="text" name="_discount_price_amount" id="_discount_price_amount" value="" class="cfbe_field_name" onfocus="jQuery('#_discount_price_amount_status1').prop('checked', true);" style="width: 300px;" />
-					<small>(<a href="http://wiki.foxycart.com/v/0.7.1/coupons_and_discounts" target="_blank"><?php _e('Reference'); ?></a>)</small>
+					<small>(<a href="http://wiki.foxycart.com/v/0.7.2/coupons_and_discounts" target="_blank"><?php _e('Reference'); ?></a>)</small>
 					<div style="clear: both;"></div>
 				</td>
 			</tr>
@@ -200,7 +199,7 @@ function foxyshop_cfbe_metabox($post_type) {
 					<input type="radio" name="_discount_price_percentage_status" id="_discount_price_percentage_status1" value="1" />
 					<label for="_discount_price_percentage_status1"><?php _e("Change To"); ?>:</label>
 					<input type="text" name="_discount_price_percentage" id="_discount_price_percentage" value="" class="cfbe_field_name" onfocus="jQuery('#_discount_price_percentage_status1').prop('checked', true);" style="width: 300px;" />
-					<small>(<a href="http://wiki.foxycart.com/v/0.7.1/coupons_and_discounts" target="_blank"><?php _e('Reference'); ?></a>)</small>
+					<small>(<a href="http://wiki.foxycart.com/v/0.7.2/coupons_and_discounts" target="_blank"><?php _e('Reference'); ?></a>)</small>
 					<div style="clear: both;"></div>
 				</td>
 			</tr>
@@ -213,7 +212,7 @@ function foxyshop_cfbe_metabox($post_type) {
 					<input type="radio" name="_sub_frequency_status" id="_sub_frequency_status1" value="1" />
 					<label for="_sub_frequency_status1"><?php _e("Change To"); ?>:</label>
 					<input type="text" name="_sub_frequency" id="_sub_frequency" value="" class="cfbe_field_name" onfocus="jQuery('#_sub_frequency_status1').prop('checked', true);" style="width: 46px;" />
-					<small>(<a href="http://wiki.foxycart.com/v/0.7.1/cheat_sheet#subscription_product_options" target="_blank"><?php _e('Reference'); ?></a>)</small>
+					<small>(<a href="http://wiki.foxycart.com/v/0.7.2/cheat_sheet#subscription_product_options" target="_blank"><?php _e('Reference'); ?></a>)</small>
 					<div style="clear: both;"></div>
 				</td>
 			</tr>
@@ -225,7 +224,7 @@ function foxyshop_cfbe_metabox($post_type) {
 					<input type="radio" name="_sub_startdate_status" id="_sub_startdate_status1" value="1" />
 					<label for="_sub_startdate_status1"><?php _e("Change To"); ?>:</label>
 					<input type="text" name="_sub_startdate" id="_sub_startdate" value="" class="cfbe_field_name" onfocus="jQuery('#_sub_startdate_status1').prop('checked', true);" />
-					<small>(<a href="http://wiki.foxycart.com/v/0.7.1/cheat_sheet#subscription_product_options" target="_blank"><?php _e('Reference'); ?></a>)</small>
+					<small>(<a href="http://wiki.foxycart.com/v/0.7.2/cheat_sheet#subscription_product_options" target="_blank"><?php _e('Reference'); ?></a>)</small>
 					<div style="clear: both;"></div>
 				</td>
 			</tr>
@@ -237,7 +236,7 @@ function foxyshop_cfbe_metabox($post_type) {
 					<input type="radio" name="_sub_enddate_status" id="_sub_enddate_status1" value="1" />
 					<label for="_sub_enddate_status1"><?php _e("Change To"); ?>:</label>
 					<input type="text" name="_sub_enddate" id="_sub_enddate" value="" class="cfbe_field_name" onfocus="jQuery('#_sub_enddate_status1').prop('checked', true);" />
-					<small>(<a href="http://wiki.foxycart.com/v/0.7.1/cheat_sheet#subscription_product_options" target="_blank"><?php _e('Reference'); ?></a>)</small>
+					<small>(<a href="http://wiki.foxycart.com/v/0.7.2/cheat_sheet#subscription_product_options" target="_blank"><?php _e('Reference'); ?></a>)</small>
 					<div style="clear: both;"></div>
 				</td>
 			</tr>
@@ -246,6 +245,28 @@ function foxyshop_cfbe_metabox($post_type) {
 				<input type="hidden" name="_sub_startdate_status" value="0" />
 				<input type="hidden" name="_sub_enddate_status" value="0" />
 			<?php endif; ?>
+			<?php
+			if ($foxyshop_settings['google_product_support']) :
+				foreach ($google_product_field_names as $field) {
+					$display_title = ucwords(str_replace("_", " ", $field));
+					if (strlen($display_title) <= 4 && $display_title != "Size") $display_title = strtoupper($display_title);
+					?>
+					<tr>
+						<td>
+							<label for="_<?php echo $field; ?>" class="cfbe_special_label"><?php echo $display_title; ?></label>
+							<input type="radio" name="_<?php echo $field; ?>_status" id="_<?php echo $field; ?>_status0" value="0" checked="checked" />
+							<label for="_<?php echo $field; ?>_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
+							<input type="radio" name="_<?php echo $field; ?>_status" id="_<?php echo $field; ?>_status1" value="1" />
+							<label for="_<?php echo $field; ?>_status1"><?php _e("Change To"); ?>:</label>
+							<input type="text" name="_<?php echo $field; ?>" id="_<?php echo $field; ?>" value="" class="cfbe_field_name" onfocus="jQuery('#_<?php echo $field; ?>_status1').prop('checked', true);" style="width: 300px;" />
+							<?php if ($field == "google_product_category") echo '<small>(<a href="http://www.google.com/basepages/producttype/taxonomy.en-US.txt" target="_blank">' . __('Reference') . '</a>)</small>'; ?>
+							<div style="clear: both;"></div>
+						</td>
+					</tr>
+					<?php
+				}			
+			endif;
+			?>
 			<tr>
 				<td>
 					<?php
@@ -325,6 +346,7 @@ add_action('cfbe_before_metabox', 'foxyshop_cfbe_metabox');
 
 function foxyshop_cfbe_save($post_type, $post_id) {
 	if ($post_type != "foxyshop_product") return;
+	global $foxyshop_settings, $google_product_field_names;
 	
 	//Generic Fields Needing No Special Treatment
 	$fields = array("category", "weight", "discount_quantity_amount", "discount_quantity_percentage", "discount_price_amount", "discount_price_percentage", "sub_frequency", "sub_startdate", "sub_enddate");
@@ -382,6 +404,17 @@ function foxyshop_cfbe_save($post_type, $post_id) {
 			cfbe_save_meta_data('_addon_products',"");
 		}
 	}
+
+
+	//Google Products Fields
+	if ($foxyshop_settings['google_product_support']) {
+		foreach($google_product_field_names as $field) {
+			if ($_POST['_' . $field . '_status'] == 1) {
+				cfbe_save_meta_data('_'.$field, $_POST['_'.$field]);
+			}
+		}
+	}
+
 }
 add_action('cfbe_save_fields', 'foxyshop_cfbe_save', 10, 2);
 ?>

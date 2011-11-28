@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
 Tested up to: 3.3
-Stable tag: 3.6.1
+Stable tag: 3.7
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -63,12 +63,25 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Changelog ==
 
+= 3.7 =
+* New: UPS WorldShip Integration
+* New: Manage your Google Products directly from the FoxyShop admin
+* Added built-in Google Product Feed fields
+* Manage Google Product Feed with the Customer Field Bulk Editor
+* Added 0.7.2 feature: sync with FoxyCart's list of downloadables for easier product entry
+* Updated to jQuery 1.7.1
+* FoxyShop Import/Export tool now includes saved variations
+* Fix: reset post data after related product WP_Query loop
+* Fix: uninstall issue and potential missing datafeed key on new installs
+* See [Release Notes](http://www.foxy-shop.com/2011/11/version-3-7-google-products-integration-ups-worldship/) for more details
+
 = 3.6.1 =
 * Product sitemap is now a dynamic url + fixed namespace issue
 * Added 0.7.2 feature to automatically pull your shipping category list from FoxyCart
 * Added 0.7.2 receipt template caching functionality
 * Updated to jQuery 1.7.0
 * Made some admin styling tweaks
+* See [Release Notes](http://www.foxy-shop.com/2011/11/version-3-6-1-dynamic-sitemaps/) for more details
 
 = 3.6 =
 * Important: Double serialization corrected!

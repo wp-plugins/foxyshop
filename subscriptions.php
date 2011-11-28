@@ -280,7 +280,7 @@ function foxyshop_subscription_management() {
 		$holder .= '</div>'."\n";
 		$holder .= '<div class="foxyshop_field_control">'."\n";
 		$holder .= '<label for="end_date_' . $sub_token. '">End Date</label>'."\n";
-		$holder .= '<input type="text" name="end_date" id="end_date_' . $sub_token. '" value="' . $end_date. '" class="foxyshop_date_field" /><span>(YYYY-MM-DD) <a href="#" onclick="jQuery(\'#end_date_' . $sub_token. '\').val(\'0000-00-00\'); return false;">Never?</a></span>'."\n";
+		$holder .= '<input type="text" name="end_date" id="end_date_' . $sub_token. '" value="' . $end_date. '" class="foxyshop_date_field" /><span>(YYYY-MM-DD)</span> <a href="#" onclick="jQuery(\'#end_date_' . $sub_token. '\').val(\'0000-00-00\'); this.blur(); return false;" class="button" style="margin: 5px 0 0 5px; float: left;">Never</a> <a href="#" onclick="jQuery(\'#end_date_' . $sub_token. '\').val(\'' . date("Y-m-d", strtotime("+1 day")) . '\'); this.blur(); return false;" class="button" style="margin: 5px 0 0 5px; float: left;">Tomorrow</a>'."\n";
 		$holder .= '</div>'."\n";
 		$holder .= '<div class="foxyshop_field_control">'."\n";
 		$holder .= '<label for="frequency_' . $sub_token. '">Frequency</label>'."\n";

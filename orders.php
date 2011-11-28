@@ -50,6 +50,12 @@ function foxyshop_print_invoice() {
 	die;
 }
 
+
+//Shipping Integrations
+include_once('shippingintegration.php');
+
+
+//Order Management
 add_action('admin_menu', 'foxyshop_order_management_menu');
 function foxyshop_order_management_menu() {
 	add_submenu_page('edit.php?post_type=foxyshop_product', __('Order Management'), __('Orders'), 'manage_options', 'foxyshop_order_management', 'foxyshop_order_management');
@@ -217,7 +223,10 @@ function foxyshop_order_management() {
 			<button type="submit" id="foxyshop_search_submit" name="foxyshop_search_submit" class="button-primary" style="clear: left; margin-top: 10px;">Search Records Now</button>
 			<button type="button" class="button submitcancel" style="margin-left: 15px;" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_order_management';">Reset Form</button>
 			<button type="submit" class="button" style="margin-left: 15px;" name="foxyshop_print_invoice" id="foxyshop_print_invoice">Print Invoices</button>
-			<?php do_action("foxyshop_order_search_buttons", $foxy_data); ?>
+			<?php
+			if ($foxyshop_settings['ups_worldship_export'] && !$foxyshop_settings['enable_ship_to']) echo '<button class="button" style="margin-left: 15px;" name="foxyshop_ups_export" id="foxyshop_ups_export" type="submit">' . __('UPS Export') . '</button>'."\n";
+			do_action("foxyshop_order_search_buttons", $foxy_data);
+			?>
 			
 		</td></tr></tbody></table>
 			
@@ -439,19 +448,19 @@ function foxyshop_order_management() {
 			$holder .= '<div class="details_div">';
 			$holder .= '<h4>' . $transaction_details->product_name . '</h4>';
 			$holder .= '<ul>';
-			if ((string)$transaction_details->shipto != "") $holder .= '<li>Ship To: ' . $transaction_details->shipto . '</li>';
-			$holder .= '<li>Code: ' . $transaction_details->product_code . '</li>';
+			if ((string)$transaction_details->shipto != "") $holder .= '<li>Ship To: ' . (string)$transaction_details->shipto . '</li>';
+			$holder .= '<li>Code: ' . (string)$transaction_details->product_code . '</li>';
 			$holder .= '<li>Price: ' . foxyshop_currency((double)$transaction_details->product_price). '</li>';
 			$holder .= '<li>Qty: ' . $transaction_details->product_quantity . '</li>';
-			if ((string)$transaction_details->product_weight != "0.000") $holder .= '<li>Weight: ' . $transaction_details->product_weight . '</li>';
-			if ((string)$transaction_details->category_code != "DEFAULT") $holder .= '<li>Category: ' . $transaction_details->category_description . '</li>';
-			if ((string)$transaction_details->product_delivery_type != "shipped") $holder .= '<li>Delivery Type: ' . $transaction_details->product_delivery_type . '</li>';
-			if ((string)$transaction_details->downloadable_url != "") $holder .= '<li>Downloadable URL: <a href="' . $transaction_details->downloadable_url . '" target="_blank">Click Here</a></li>';
+			if ((string)$transaction_details->product_weight != "0.000") $holder .= '<li>Weight: ' . (string)$transaction_details->product_weight . '</li>';
+			if ((string)$transaction_details->category_code != "DEFAULT") $holder .= '<li>Category: ' . (string)$transaction_details->category_description . '</li>';
+			if ((string)$transaction_details->product_delivery_type != "shipped") $holder .= '<li>Delivery Type: ' . (string)$transaction_details->product_delivery_type . '</li>';
+			if ((string)$transaction_details->downloadable_url != "") $holder .= '<li>Downloadable URL: <a href="' . (string)$transaction_details->downloadable_url . '" target="_blank">Click Here</a></li>';
 			if ($transaction_details->subscription_frequency != "") {
-				$holder .= '<li>Subscription Frequency: ' . $transaction_details->subscription_frequency . '</li>';
-				$holder .= '<li>Subscription Start Date: ' . $transaction_details->subscription_startdate . '</li>';
-				$holder .= '<li>Subscription Next Date: ' . $transaction_details->subscription_nextdate . '</li>';
-				if ((string)$transaction_details->subscription_enddate != "0000-00-00") $holder .= '<li>Subscription End Date: ' . $transaction_details->subscription_enddate . '</li>';
+				$holder .= '<li>Subscription Frequency: ' . (string)$transaction_details->subscription_frequency . '</li>';
+				$holder .= '<li>Subscription Start Date: ' . (string)$transaction_details->subscription_startdate . '</li>';
+				$holder .= '<li>Subscription Next Date: ' . (string)$transaction_details->subscription_nextdate . '</li>';
+				if ((string)$transaction_details->subscription_enddate != "0000-00-00") $holder .= '<li>Subscription End Date: ' . (string)$transaction_details->subscription_enddate . '</li>';
 			}
 			foreach($transaction_details->transaction_detail_options->transaction_detail_option as $transaction_detail_option) {
 				$holder .= '<li>';

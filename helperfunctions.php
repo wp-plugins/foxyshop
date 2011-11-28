@@ -1034,6 +1034,7 @@ function foxyshop_related_products($sectiontitle = "Related Products", $maxprodu
 		echo "</ul>\n";
 		echo '<div class="clr"></div>';
 		$product = $original_product;
+		wp_reset_postdata();
 	}
 	if ($related_order) remove_filter('posts_orderby', 'foxyshop_related_order');
 }

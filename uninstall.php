@@ -10,6 +10,7 @@ delete_option('foxyshop_categories_children');
 delete_option('foxyshop_rewrite_rules');
 delete_option('foxyshop_setup_required');
 delete_option('foxyshop_saved_variations');
+delete_option('foxyshop_downloadables');
 delete_option('widget_foxyshop-cart-link-widget');
 delete_option('widget_foxyshop-category-list-widget');
 delete_option('widget_foxyshop-category-widget');

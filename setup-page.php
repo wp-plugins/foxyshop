@@ -5,7 +5,7 @@ if (get_option("foxyshop_setup_required")) {
 function foxyshop_show_setup_prompt() {
 	if (isset($_GET['hide_setup_prompt']) || isset($_GET['setup'])) return;
 	$page = (isset($_GET['page']) ? $_GET['page'] : "");
-	if ($page != "foxyshop_setup") echo '<div class="error"><p style="height: 16px;"><img src="' . FOXYSHOP_DIR . '/images/icon.png" alt="" style="float: left; margin: 0 4px 0 0;" /><strong style="float: left; margin-top: 1px;">Your FoxyShop store needs to be synced with your FoxyCart account: <a href="admin.php?page=foxyshop_setup">Setup Now</a></strong><small style="float: right;"><a href="edit.php?post_type=foxyshop_product&page=foxyshop_options&hide_setup_prompt=1">I&rsquo;ll Do It Later</a></small></p></div>';
+	if ($page != "foxyshop_setup") echo '<div class="updated"><p style="height: 16px;"><img src="' . FOXYSHOP_DIR . '/images/icon.png" alt="" style="float: left; margin: 0 4px 0 0;" /><strong style="float: left; margin-top: 1px;">Your FoxyShop store needs to be synced with your FoxyCart account: <a href="admin.php?page=foxyshop_setup">Setup Now</a></strong><small style="float: right;"><a href="edit.php?post_type=foxyshop_product&page=foxyshop_settings_page&hide_setup_prompt=1">I&rsquo;ll Do It Later</a></small></p></div>';
 }
 
 
@@ -31,7 +31,7 @@ function save_foxyshop_setup() {
 
 	update_option("foxyshop_settings", $foxyshop_settings);
 	delete_option("foxyshop_setup_required");
-	header('location: edit.php?post_type=foxyshop_product&page=foxyshop_options&setup=1');
+	header('location: edit.php?post_type=foxyshop_product&page=foxyshop_settings_page&setup=1');
 	die;
 }
 

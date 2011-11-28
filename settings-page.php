@@ -4,7 +4,12 @@ function foxyshop_save_settings() {
 	if (!isset($_POST['foxyshop_settings_update'])) return;
 	if (!check_admin_referer('update-foxyshop-options')) return;
 	global $foxyshop_settings;
-
+	
+	//Check for downloadables sync first and perform if setting is new
+	if (!$foxyshop_settings['downloadables_sync'] && isset($_POST['foxyshop_downloadables_sync'])) {
+		foxyshop_get_downloadable_list();
+	}
+	
 	//Loop Through Most Fields
 	$fields = array(
 		"version",
@@ -29,11 +34,14 @@ function foxyshop_save_settings() {
 		"enable_sso",
 		"sso_account_required",
 		"checkout_customer_create",
+		"ups_worldship_export",
+		"downloadables_sync",
+		"google_product_support",
+		"google_product_merchant_id",
 		"locale_code"
 	);
 	foreach ($fields as $field1) {
-		$val = (isset($_POST['foxyshop_'.$field1]) ? trim(stripslashes($_POST['foxyshop_'.$field1])) : '');
-		$foxyshop_settings[$field1] = $val;
+		$foxyshop_settings[$field1] = isset($_POST['foxyshop_'.$field1]) ? trim(stripslashes($_POST['foxyshop_'.$field1])) : '';
 	}
 	//Loop Through No Trim Fields
 	$fields = array(
@@ -44,8 +52,7 @@ function foxyshop_save_settings() {
 		"browser_title_5"
 	);
 	foreach ($fields as $field1) {
-		$val = (isset($_POST['foxyshop_'.$field1]) ? stripslashes($_POST['foxyshop_'.$field1]) : '');
-		$foxyshop_settings[$field1] = $val;
+		$foxyshop_settings[$field1] = isset($_POST['foxyshop_'.$field1]) ? stripslashes($_POST['foxyshop_'.$field1]) : '';
 	}
 
 	//Default Image
@@ -58,7 +65,7 @@ function foxyshop_save_settings() {
 	}
 
 	//Delete the setup prompt if domain entered
-	if ($_POST['foxyshop_domain'] != '') delete_option("foxyshop_setup_required");
+	if ($_POST['foxyshop_domain']) delete_option("foxyshop_setup_required");
 
 	$foxyshop_settings["domain"] = trim(stripslashes(str_replace("http://","",$_POST['foxyshop_domain'])));
 	$foxyshop_settings["default_weight"] = (int)$_POST['foxyshop_default_weight1'] . ' ' . (double)$_POST['foxyshop_default_weight2'];
@@ -81,15 +88,15 @@ function foxyshop_save_settings() {
 
 	//Save
 	update_option("foxyshop_settings", $foxyshop_settings);
-	header('location: edit.php?post_type=foxyshop_product&page=foxyshop_options&saved=1');
+	header('location: edit.php?post_type=foxyshop_product&page=foxyshop_settings_page&saved=1');
 	die;
 }
 
 add_action('admin_menu', 'foxyshop_settings_menu');
 function foxyshop_settings_menu() {
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Settings'), __('Settings'), 'manage_options', 'foxyshop_options', 'foxyshop_options');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Settings'), __('Settings'), 'manage_options', 'foxyshop_settings_page', 'foxyshop_settings_page');
 }
-function foxyshop_options() {
+function foxyshop_settings_page() {
 	global $foxyshop_settings, $foxycart_version_array;
 	if (!defined('FOXYSHOP_TEMPLATE_PATH')) define('FOXYSHOP_TEMPLATE_PATH',STYLESHEETPATH);
 ?>
@@ -289,7 +296,7 @@ function foxyshop_options() {
 					<input type="radio" name="foxyshop_default_image" id="foxyshop_default_image_1" value="1"<?php if ($foxyshop_settings['default_image'] && $foxyshop_settings['default_image'] != "") echo ' checked="checked"'; ?> /><label for="foxyshop_default_image_1" style="width: 95px;"><?php _e('Custom Image'); ?></label> <input type="text" id="foxyshop_default_image_custom" name="foxyshop_default_image_custom" value="<?php if ($foxyshop_settings['default_image'] != "none") echo $foxyshop_settings['default_image']; ?>" style="width:544px;" onclick="jQuery('#foxyshop_default_image_1').prop('checked', true);" />
 					<div style="clear: both;"></div>
 					<input type="radio" name="foxyshop_default_image" id="foxyshop_default_image_2" value="2"<?php if ($foxyshop_settings['default_image'] == "none") echo ' checked="checked"'; ?> /><label for="foxyshop_default_image_2"><?php _e("Don't Show a Default Image"); ?></label>
-					<div class="small">Note: If you are loading a custom image, it is not recommended to load a full url in your dev environment. Changing the url later via a mass mysql update can invalidate your settings and erase them. Use a relative path starting with /wp-content/</div>
+					<div class="small" style="line-height: 13px;"><strong>Note:</strong> If you are loading a custom image, it is not recommended to load a full url in your dev environment. Changing the url later via<br />a mass mysql update can invalidate your settings and erase them. Use a relative path starting with /wp-content/</div>
 				</td>
 			</tr>
 
@@ -339,18 +346,18 @@ function foxyshop_options() {
 				<td>
 					<div id="foxyshop_ship_category_label">
 						<label for="foxyshop_ship_categories" style="vertical-align: top;"><?php _e('Your Shipping Categories'); ?>:</label>
-						<a href="#" class="foxyshophelp">These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?> setup page. Separate each category with a line break. If you only use one category this is not required. If you would like to also display a nice name in the dropdown menu, use a pipe sign "|" like this: free_shipping|Free Shipping.</a>
+						<a href="#" class="foxyshophelp">These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?> setup page. Separate each category with a line break. If you only use one category this is not required. If you would like to also display a nice name in the dropdown menu, use a pipe sign "|" like this: free_shipping|Free Shipping. There's also an optional third entry you can put with the product delivery type (shipped, downloaded, not_shipped, flat_rate).</a>
 						<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=") && $foxyshop_settings['domain']) echo '<button type="button" class="button" id="ajax_get_category_list">Pull Category List From FoxyCart</button><div id="foxyshop_category_list_waiter"></div>'; ?>
 					</div>
 					<textarea id="foxyshop_ship_categories" name="foxyshop_ship_categories" wrap="auto" style="float: left; width:640px;height: <?php echo strlen($foxyshop_settings['ship_categories']) > 110 ? "160px" : "80px" ?>;"><?php echo $foxyshop_settings['ship_categories']; ?></textarea>
-					<span style="display:block; clear: both; padding-top: 3px;"><strong>Example:</strong> shipping_category_code|Nice Display Name</span>
+					<span style="display:block; clear: both; padding-top: 3px;"><strong>Example:</strong> category_code<strong>|</strong>category_description<strong>|</strong>product_delivery_type</span>
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_shipto" name="foxyshop_enable_ship_to"<?php checked($foxyshop_settings['enable_ship_to'], "on"); ?> />
 					<label for="foxyshop_shipto"><?php _e('Enable Multi-Ship'); ?></label>
-					<a href="#" class="foxyshophelp">Remember that FoxyCart charges an extra fee for this service. You must enable it on your FoxyCart account or it will not work.</a>
+					<a href="#" class="foxyshophelp">Remember that FoxyCart charges an extra fee for this service. You must enable it on your FoxyCart account or it will not work. NOTE: At this time, this feature is not available for multi-ship stores.</a>
 				</td>
 			</tr>
 			<tr>
@@ -471,6 +478,18 @@ function foxyshop_options() {
 			</tr>
 			<tr>
 				<td>
+					<input type="checkbox" id="foxyshop_google_product_support" name="foxyshop_google_product_support"<?php checked($foxyshop_settings['google_product_support'], "on"); ?> />
+					<label for="foxyshop_google_product_support"><?php _e('Enable Google Product Feed Connection'); ?></label>
+					<a href="#" class="foxyshophelp"><?php _e('If checked, you will be able to create a feed suitable for submitting to Google Product Search.'); ?></a>
+					<div id="google_merchant_id_holder"<?php if (!$foxyshop_settings['google_product_support']) echo ' style="display:none;"'; ?>>
+						<label for="foxyshop_google_product_merchant_id"><?php echo __('Google Merchant Account ID'); ?>:</label>
+						<input type="text" id="foxyshop_google_product_merchant_id" name="foxyshop_google_product_merchant_id" value="<?php echo esc_attr($foxyshop_settings['google_product_merchant_id']); ?>" />
+						<a href="#" class="foxyshophelp"><?php _e('Enter your Google Merchant Account ID found in the Google Merchant Center.'); ?></a>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
 					<input type="checkbox" id="foxyshop_enable_dashboard_stats" name="foxyshop_enable_dashboard_stats"<?php checked($foxyshop_settings['enable_dashboard_stats'], "on"); ?> />
 					<label for="foxyshop_enable_dashboard_stats"><?php echo __('Show FoxyShop Stats on Dashboard'); ?></label>
 				</td>
@@ -482,6 +501,24 @@ function foxyshop_options() {
 					<a href="#" class="foxyshophelp"><?php echo sprintf(__('If checked, a sitemap file with all of your %s will be created in your root folder.'), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></a>
 				</td>
 			</tr>
+			<tr>
+				<td>
+					<input type="checkbox" id="foxyshop_ups_worldship_export" name="foxyshop_ups_worldship_export"<?php checked($foxyshop_settings['ups_worldship_export'], "on"); ?> />
+					<label for="foxyshop_ups_worldship_export"><?php echo __('Enable UPS WorldShip Label Export'); ?></label>
+					<a href="#" class="foxyshophelp"><?php echo __('If checked, you will be able to click a button on your order page to export orders to an xml file for import into UPS WorldShip.'); ?></a>
+				</td>
+			</tr>
+			<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) : ?>
+			<tr>
+				<td>
+					<input type="checkbox" id="foxyshop_downloadables_sync" name="foxyshop_downloadables_sync"<?php checked($foxyshop_settings['downloadables_sync'], "on"); ?> />
+					<label for="foxyshop_downloadables_sync"><?php echo __('Enable FoxyCart Downloadables Sync'); ?></label>
+					<a href="#" class="foxyshophelp"><?php echo sprintf(__('If checked, you will be able to select from a list of the downloadables loaded at FoxyCart to help set up your new downloadable %s.'), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></a>
+				</td>
+			</tr>
+			<?php endif; ?>
+
+
 		</tbody>
 	</table>
 	
@@ -514,6 +551,13 @@ jQuery(document).ready(function($){
 	$("#resetimage").click(function() {
 		$("#foxyshop_default_image").val("<?php echo FOXYSHOP_DIR."/images/no-photo.png"; ?>");
 		return false;
+	});
+	$("#foxyshop_google_product_support").click(function() {
+		if ($(this).is(":checked")) {
+			$("#google_merchant_id_holder").show();
+		} else {
+			$("#google_merchant_id_holder").hide();
+		}
 	});
 
 	//Tooltip

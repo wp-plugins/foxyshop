@@ -48,6 +48,52 @@ function foxyshop_ajax_get_category_list() {
 }
 
 
+//Get New Downloadable List AJAX
+add_action('wp_ajax_foxyshop_ajax_get_downloadable_list', 'foxyshop_ajax_get_downloadable_list');
+function foxyshop_ajax_get_downloadable_list() {
+	check_ajax_referer('foxyshop-ajax-get-downloadable-list', 'security');
+	$output = foxyshop_get_downloadable_list();
+	foreach ($output as $downloadable) {
+		echo '<option value="' . esc_attr($downloadable['product_code']) . '"';
+		echo ' category_code="' . esc_attr($downloadable['category_code']) . '"';
+		echo ' product_price="' . esc_attr($downloadable['product_price']) . '"';
+		echo '>' . esc_attr($downloadable['product_name']) . '</option>';
+		echo "\n";
+	}
+	die;
+}
+
+
+
+//Set Google Auth Code
+add_action('wp_ajax_foxyshop_set_google_auth', 'foxyshop_ajax_set_google_auth');
+function foxyshop_ajax_set_google_auth() {
+	global $foxyshop_settings;
+	check_ajax_referer('foxyshop-ajax-set-google-auth', 'security');
+	$header_array = array("Content-Type: application/x-www-form-urlencoded");
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, "https://www.google.com/accounts/ClientLogin");
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $header_array);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, "Email=" . urlencode($_POST['Email']) . "&Passwd=" . urlencode($_POST['Passwd']) . "&service=structuredcontent&source=FoxyShop");
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+	$response_line = preg_split("[\r\n|\r|\n]", trim(curl_exec($ch)));
+	foreach($response_line as $response) {
+		$r = explode("=", $response);
+		if ($r[0] == "Error") {
+			die("Error");
+		} elseif ($r[0] == "Auth") {
+			$foxyshop_settings['google_product_auth'] = strip_tags($r[1]);
+			update_option("foxyshop_settings", $foxyshop_settings);
+			die("Success");
+		}
+	}
+	die;
+}
+
+
+
 
 //FoxyShop Product AJAX Functions
 add_action('wp_ajax_foxyshop_product_ajax_action', 'foxyshop_product_ajax');

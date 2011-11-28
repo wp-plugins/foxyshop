@@ -12,6 +12,13 @@ h4 {
 	width: 74px;
 	margin:7px 6px 0 6px;
 }
+#google_products_data .foxyshop_field_control label {
+	width: 150px;
+}
+#google_products_data .foxyshop_field_control input {
+	width: 350px;
+	float: left;
+}
 .foxyshop_field_control label span {
 	display:inline;
 	font-weight:normal;
@@ -86,7 +93,62 @@ body .foxyshop-list-table tbody tr.foxyshop-row-updated {
 .inventory_update_width {
 	width: 40px;
 }
-
+#ajax_get_downloadable_list {
+	width: 16px;
+	height: 16px;
+	text-indent: -99999px;
+	float: left;
+	background: url(../images/refresh.png) no-repeat;
+	margin-top: 4px;
+}
+#ajax_get_downloadable_list:hover {
+	background-position: 0 -16px;
+}
+#ajax_get_downloadable_list.waiting {
+	background: url("../../../../wp-admin/images/wpspin_light.gif") repeat scroll 0 0 transparent;
+}
+#show_downloadable_list {
+	width: 16px;
+	height: 16px;
+	text-indent: -99999px;
+	display: block;
+	background: url(../images/plusminus.png) no-repeat;
+	position: absolute;
+	top: -5px;
+	right: 1px;
+	opacity: .6;
+	filter:alpha(opacity=60);
+}
+#hide_downloadable_list {
+	width: 16px;
+	height: 16px;
+	text-indent: -99999px;
+	display: block;
+	background: url(../images/plusminus.png) 0 -16px no-repeat;
+	position: absolute;
+	top: 0px;
+	right: 1px;
+	opacity: .6;
+	filter:alpha(opacity=60);
+}
+#show_downloadable_list:hover, #hide_downloadable_list:hover {
+	opacity: 1;
+	filter:alpha(opacity=100);
+}
+#downloadable_list_parent {
+	background-color: #FBEEB2;
+	border: 1px solid #E3CD69;
+	margin: 0 5px 5px 5px;
+	padding: 0 5px;
+	border-radius: 4px;
+	position: relative;
+	display: none;
+}
+#downloadable_list_parent select {
+	width: 177px;
+	float: left;
+	margin-bottom: 8px;
+}
 #_weight1, #_weight2 {
 	width: 33px;
 	float: left;
@@ -317,7 +379,10 @@ body label.variationtypelabel {
 	margin-left: 10px;
 	width: 50%;
 }
-
+#google_merchant_id_holder {
+	clear: both;
+	padding-top: 5px;
+}
 #foxyshop_product_order_list {
 	width: 90%; 
 	border:1px solid #B2B2B2; 
@@ -582,6 +647,7 @@ body label.variationtypelabel {
 	float: left;
 	margin-right: 25px;
 	font-size: 13px;
+	max-width: 20%;
 }
 .foxyshop_list_col li, .foxyshop_list_col h4 {
 	margin: 0;
@@ -722,6 +788,12 @@ table.widefat tr:last-child td {
 	font-family: Georgia;
 	line-height: 150%;
 	max-width: 450px;
+}
+.productfeedimage {
+	max-width: 50px;
+	max-height: 50px;
+	width: auto;
+	height: auto;
 }
 .settings_indent {
 	clear: both;
