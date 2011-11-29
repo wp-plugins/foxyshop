@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns='http://www.w3.org/2005/Atom' xmlns:batch='http://schemas.google.com/gdata/batch'>
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:app='http://www.w3.org/2007/app' xmlns:gd="http://schemas.google.com/g/2005" xmlns:sc="http://schemas.google.com/structuredcontent/2009" xmlns:scp="http://schemas.google.com/structuredcontent/2009/products" >
+<app:control>
+<sc:required_destination dest="ProductSearch"/>
+</app:control>
+<batch:operation type='INSERT'/>
+<title>Test Product</title>
+<content type="text">&lt;p&gt;Test description&lt;/p&gt;
+</content>
+<sc:id>4</sc:id>
+<sc:availability>in stock</sc:availability>
+
+<link rel="alternate" type="text/html" href="http://www.toydle.com/products/test-product/"/>
+<sc:image_link>http://www.toydle.com/wp-content/uploads/2011/02/bird3-150x150.jpg</sc:image_link>
+<sc:additional_image_link>http://www.toydle.com/wp-content/uploads/2011/06/friday_1-150x150.jpg</sc:additional_image_link>
+<sc:target_country>US</sc:target_country>
+<sc:content_language>en</sc:content_language>
+<scp:availability>in stock</scp:availability>
+<scp:price unit="usd">0.00</scp:price>
+<scp:product_type>Deep Category</scp:product_type>
+<scp:google_product_category>Animals &gt; Pet Supplies &gt; Dog Supplies &gt; Dog Grooming</scp:google_product_category>
+
+<scp:mpn>123X</scp:mpn>
+<scp:condition>new</scp:condition>
+</entry>
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:app='http://www.w3.org/2007/app' xmlns:gd="http://schemas.google.com/g/2005" xmlns:sc="http://schemas.google.com/structuredcontent/2009" xmlns:scp="http://schemas.google.com/structuredcontent/2009/products" >
+<app:control>
+<sc:required_destination dest="ProductSearch"/>
+</app:control>
+<batch:operation type='INSERT'/>
+<title>Test Product 2</title>
+<content type="text">&lt;p&gt;Lots of text here&lt;/p&gt;
+</content>
+
+<sc:id>17</sc:id>
+<sc:availability>in stock</sc:availability>
+<link rel="alternate" type="text/html" href="http://www.toydle.com/products/test-product-2/"/>
+<sc:image_link>http://www.toydle.com/wp-content/uploads/2011/08/dogkillerbowl-150x150.jpg</sc:image_link>
+<sc:additional_image_link>http://www.toydle.com/wp-content/uploads/2011/03/affenpinscher_2-150x150.jpg,http://www.toydle.com/wp-content/uploads/2011/03/af-dog-1_6.jpg</sc:additional_image_link>
+<sc:target_country>US</sc:target_country>
+<sc:content_language>en</sc:content_language>
+<scp:availability>in stock</scp:availability>
+<scp:price unit="usd">2.69</scp:price>
+
+<scp:product_type>Deep Category</scp:product_type>
+<scp:google_product_category>Animals &gt; Pet Supplies &gt; Dog Supplies &gt; Dog Grooming</scp:google_product_category>
+<scp:mpn>123X</scp:mpn>
+<scp:condition>new</scp:condition>
+</entry>
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:app='http://www.w3.org/2007/app' xmlns:gd="http://schemas.google.com/g/2005" xmlns:sc="http://schemas.google.com/structuredcontent/2009" xmlns:scp="http://schemas.google.com/structuredcontent/2009/products" >
+<app:control>
+
+<sc:required_destination dest="ProductSearch"/>
+</app:control>
+<batch:operation type='INSERT'/>
+<title>Date Picker Event Test</title>
+<content type="text">&lt;p&gt;This is a test of the add-in to enable date selection in a dropdown.&lt;/p&gt;
+</content>
+<sc:id>275</sc:id>
+<sc:availability>in stock</sc:availability>
+<link rel="alternate" type="text/html" href="http://www.toydle.com/products/date-picker-event-test/"/>
+<sc:image_link>http://www.toydle.com/wp-content/plugins/foxyshop/images/no-photo.png</sc:image_link>
+
+<sc:target_country>US</sc:target_country>
+<sc:content_language>en</sc:content_language>
+<scp:availability>in stock</scp:availability>
+<scp:price unit="usd">99.00</scp:price>
+<scp:google_product_category>Arts &amp; Entertainment &gt; Collectibles &gt; Collectible Weapons &gt; Sword Stands &amp; Displays
+Software &gt; Video Game Software</scp:google_product_category>
+
+<scp:condition>new</scp:condition>
+</entry>
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:app='http://www.w3.org/2007/app' xmlns:gd="http://schemas.google.com/g/2005" xmlns:sc="http://schemas.google.com/structuredcontent/2009" xmlns:scp="http://schemas.google.com/structuredcontent/2009/products" >
+<app:control>
+<sc:required_destination dest="ProductSearch"/>
+</app:control>
+<batch:operation type='INSERT'/>
+<title>Picture Frames</title>
+<content type="text"></content>
+<sc:id>356</sc:id>
+<sc:availability>in stock</sc:availability>
+<link rel="alternate" type="text/html" href="http://www.toydle.com/products/picture-frames/"/>
+<sc:image_link>http://www.toydle.com/wp-content/uploads/2011/10/classic-frame-white-510x510-150x150.jpg</sc:image_link>
+
+<sc:additional_image_link>http://www.toydle.com/wp-content/uploads/2011/10/classic-frame-black-510x510-150x150.jpg,http://www.toydle.com/wp-content/uploads/2011/10/classic-frame-brown-510x510-150x150.jpg,http://www.toydle.com/wp-content/uploads/2011/10/classic-frame-beige-510x510-150x150.jpg,http://www.toydle.com/wp-content/uploads/2011/10/classic-fram-taupe-510x510-150x150.jpg,http://www.toydle.com/wp-content/uploads/2011/10/classic-frame-chocolate-510x510-150x150.jpg</sc:additional_image_link>
+<sc:target_country>US</sc:target_country>
+<sc:content_language>en</sc:content_language>
+<scp:availability>in stock</scp:availability>
+<scp:price unit="usd">0.00</scp:price>
+<scp:google_product_category>Animals &gt; Pet Supplies &gt; Cat Supplies &gt; Cat Carriers &amp; Crates</scp:google_product_category>
+
+<scp:mpn>256</scp:mpn>
+<scp:brand>ACME</scp:brand>
+<scp:condition>new</scp:condition>
+<scp:gender>Male</scp:gender>
+</entry>
+</feed>
