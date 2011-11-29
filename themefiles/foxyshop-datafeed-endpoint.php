@@ -159,7 +159,7 @@ if (isset($_POST["FoxyData"])) {
 				'tax_total' => (string)$shipto_address->shipto_tax_total,
 				'shipping_total' => (string)$shipto_address->shipto_shipping_total,
 				'total' => (string)$shipto_address->shipto_,
-				'custom_fields' = array()
+				'custom_fields' => array()
 			);
 			
 			//Putting the Custom Fields in an array if they are there
@@ -180,7 +180,7 @@ if (isset($_POST["FoxyData"])) {
 			$shipping_postal_code = ((string)$transaction->shipping_postal_code ? (string)$transaction->shipping_postal_code : $customer_postal_code);
 			$shipping_country = ((string)$transaction->shipping_country ? (string)$transaction->shipping_country : $customer_country);
 			$shipping_phone = ((string)$transaction->shipping_phone ? (string)$transaction->shipping_phone : $customer_phone);
-			$shipto_shipping_service_description = ((string)$transaction->shipto_shipping_service_description;
+			$shipto_shipping_service_description = (string)$transaction->shipto_shipping_service_description;
 		}
 
 		//Putting the Custom Fields in an array if they are there. These are on the top level and could be there for both single ship and multiship stores
