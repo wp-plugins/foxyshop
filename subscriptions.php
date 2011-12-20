@@ -36,18 +36,26 @@ function foxyshop_subscription_management() {
 	}
 
 	$foxy_data = wp_parse_args(array("api_action" => "subscription_list"), $foxy_data_defaults);
-	$querystring = "?post_type=foxyshop_product&amp;page=foxyshop_subscription_management&amp;foxyshop_search=1";
+	$foxyshop_querystring = "?post_type=foxyshop_product&amp;page=foxyshop_subscription_management&amp;foxyshop_search=1";
+	$foxyshop_hidden_input = "";
 	
 	if (isset($_GET['foxyshop_search']) || !defined('FOXYSHOP_AUTO_API_DISABLED')) {
 		$fields = array("is_active_filter", "frequency_filter", "past_due_amount_filter","start_date_filter_begin", "start_date_filter_end", "next_transaction_date_filter_begin", "next_transaction_date_filter_end", "end_date_filter_begin", "end_date_filter_end", "third_party_id_filter", "last_transaction_id_filter", "customer_id_filter", "customer_email_filter", "customer_first_name_filter", "customer_last_name_filter", "product_code_filter", "product_name_filter", "product_option_name_filter", "product_option_value_filter", "custom_field_name_filter", "custom_field_value_filter");
 		foreach ($fields as $field) {
 			if (isset($_GET[$field])) {
 				$foxy_data[$field] = $_GET[$field];
-				$querystring .= "&amp;$field=" . urlencode($_GET[$field]);
+				$foxyshop_querystring .= "&amp;$field=" . urlencode($_GET[$field]);
+				$foxyshop_hidden_input .= '<input type="hidden" name="' . $field . '" value="' . htmlspecialchars($_GET[$field]) . '" />' . "\n";
 			}
 		}
 		$foxy_data['pagination_start'] = (isset($_GET['pagination_start']) ? $_GET['pagination_start'] : 0);
-		if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) $foxy_data['entries_per_page'] = 50;
+		$p = (int)(version_compare($foxyshop_settings['version'], '0.7.1', "<") ? 50 : FOXYSHOP_API_ENTRIES_PER_PAGE);
+		if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) $foxy_data['entries_per_page'] = $p;
+		$start_offset = (int)(version_compare($foxyshop_settings['version'], '0.7.1', "<=") ? -1 : 0);
+		if (isset($_GET['paged-top']) || isset($_GET['paged-bottom'])) {
+			if ($_GET['paged-top'] != $_GET['paged-top-original']) $foxy_data['pagination_start'] = $p * ((int)$_GET['paged-top'] - 1) + 1 + $start_offset;
+			if ($_GET['paged-bottom'] != $_GET['paged-bottom-original']) $foxy_data['pagination_start'] = $p * ((int)$_GET['paged-bottom'] - 1) + 1 + $start_offset;
+		}
 	}
 	
 	$subscription_products = get_posts(array('post_type' => 'foxyshop_product', "meta_key" => "_sub_frequency", "meta_value" => "", 'meta_compare' => '!=', "_sub_frequency", 'numberposts' => -1));
@@ -129,21 +137,18 @@ function foxyshop_subscription_management() {
 				<input type="text" name="start_date_filter_begin" id="start_date_filter_begin" value="<?php echo $foxy_data['start_date_filter_begin']; ?>" class="foxyshop_date_field" />
 				<span>to</span>
 				<input type="text" name="start_date_filter_end" id="start_date_filter_end" value="<?php echo $foxy_data['start_date_filter_end']; ?>" class="foxyshop_date_field" />
-				<span>YYYY-MM-DD</span>
 			</div>
 			<div class="foxyshop_field_control">
 				<label for="next_transaction_date_filter_begin">Next Transaction Date</label>
 				<input type="text" name="next_transaction_date_filter_begin" id="next_transaction_date_filter_begin" value="<?php echo $foxy_data['next_transaction_date_filter_begin']; ?>" class="foxyshop_date_field" />
 				<span>to</span>
 				<input type="text" name="next_transaction_date_filter_end" id="next_transaction_date_filter_end" value="<?php echo $foxy_data['next_transaction_date_filter_end']; ?>" class="foxyshop_date_field" />
-				<span>YYYY-MM-DD</span>
 			</div>
 			<div class="foxyshop_field_control">
 				<label for="end_date_filter_begin">End Date</label>
 				<input type="text" name="end_date_filter_begin" id="end_date_filter_begin" value="<?php echo $foxy_data['end_date_filter_begin']; ?>" class="foxyshop_date_field" />
 				<span>to</span>
 				<input type="text" name="end_date_filter_end" id="end_date_filter_end" value="<?php echo $foxy_data['end_date_filter_end']; ?>" class="foxyshop_date_field" />
-				<span>YYYY-MM-DD</span>
 			</div>
 		
 			<div class="foxyshop_field_control">
@@ -186,7 +191,20 @@ function foxyshop_subscription_management() {
 		return;
 	}
 	?>
-	<table cellpadding="0" cellspacing="0" border="0" class="wp-list-table widefat foxyshop-list-table" id="subscription_table" style="margin-top: 14px;">
+
+
+
+	<form action="edit.php" method="get">
+	<input type="hidden" name="foxyshop_search" value="1" />
+	<input type="hidden" name="post_type" value="foxyshop_product" />
+	<input type="hidden" name="page" value="foxyshop_subscription_management" />
+	
+	<?php
+	echo $foxyshop_hidden_input;
+	foxyshop_api_paging_nav('subscriptions', 'top', $xml, $foxyshop_querystring);
+	?>
+
+	<table cellpadding="0" cellspacing="0" border="0" class="wp-list-table widefat foxyshop-list-table" id="subscription_table">
 		<thead>
 			<tr>
 				<th><span><?php _e('Customer'); ?></span><span class="sorting-indicator"></span></th>
@@ -328,6 +346,11 @@ function foxyshop_subscription_management() {
 	</tbody>
 	</table>
 	
+	<?php
+	foxyshop_api_paging_nav('subscriptions', 'bottom', $xml, $foxyshop_querystring);
+	?>
+	</form>
+	
 	<div id="details_holder"><?php echo $holder; ?></div>
 	
 	<script type="text/javascript" src="<?php echo FOXYSHOP_DIR; ?>/js/jquery.tablesorter.js"></script>
@@ -399,26 +422,7 @@ function foxyshop_subscription_management() {
 	</script>
 	<?php
 	
-	
-	//Pagination
-	$p = (int)(version_compare($foxyshop_settings['version'], '0.7.0', "==") ? 50 : 50);
-	$total_records = (int)$xml->statistics->total_subscriptions;
-	$filtered_total = (int)$xml->statistics->filtered_total;
-	$pagination_start = (int)$xml->statistics->pagination_start;
-	$pagination_end = (int)$xml->statistics->pagination_end;
-	if ($pagination_start > 1 || $filtered_total > $pagination_end) {
-		echo '<div id="admin_list_pagination">';
-		echo $xml->messages->message[1] . '<br />';
-		if ($pagination_start > 1) echo '<a href="edit.php' . $querystring . '&amp;pagination_start=' . ($pagination_start - $p - 1) . '">&laquo; Previous</a>';
-		if ($pagination_end < $filtered_total) {
-			if ($pagination_start > 1) echo ' | ';
-			echo '<a href="edit.php' . $querystring . '&amp;pagination_start=' . $pagination_end . '">Next &raquo;</a>';
-		}
-		echo '</div>';
-	}
-
 	echo '</div>';
-
 }
 
 

@@ -345,6 +345,7 @@ function foxyshop_dashboard_stats() {
 
 //AJAX Order History - this is in an AJAX call to avoid a delay in rendering the dashboard
 function foxyshop_order_history_dashboard_ajax() {
+	global $foxyshop_settings;
 	check_ajax_referer('foxyshop-order-info-dashboard', 'security');
 
 	//Get Order Info
@@ -355,6 +356,7 @@ function foxyshop_order_history_dashboard_ajax() {
 		"is_test_filter" => "0",
 		"hide_transaction_filter" => ""
 	);
+	if ($foxyshop_settings['version'] >= "0.7.1") $foxy_data['entries_per_page'] = FOXYSHOP_API_ENTRIES_PER_PAGE;
 	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
 	$orderstats = array(1 => array(0, 0), 7 => array(0, 0), 30 => array(0, 0));

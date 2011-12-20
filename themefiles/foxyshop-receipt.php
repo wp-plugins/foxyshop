@@ -7,7 +7,7 @@ $show_phone = true;
 $show_country = true;
 $show_custom_fields = true;
 $receipt_title = get_bloginfo("name");
-//$receipt_title = '<img src="' . get_bloginfo("stylesheet_directory") . '/images/your_logo.png" alt="' . esc_attr(get_bloginfo("name")) . '" />';
+//$receipt_title = '<img src="' . get_bloginfo("stylesheet_directory") . '/images/your_logo.png" alt="' . esc_attr(get_bloginfo("name")) . '" style="width: 190px;" />';
 $date_style = "n/j/Y"; // Default Style 6/20/2012
 
 //----------------------------------------------

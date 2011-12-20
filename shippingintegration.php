@@ -67,7 +67,7 @@ function foxyshop_ups_export() {
 			}
 		}
 		$foxy_data['pagination_start'] = (isset($_GET['pagination_start']) ? $_GET['pagination_start'] : 0);
-		if ($foxyshop_settings['version'] != "0.7.0") $foxy_data['entries_per_page'] = 50;
+		if ($foxyshop_settings['version'] != "0.7.0") $foxy_data['entries_per_page'] = FOXYSHOP_API_ENTRIES_PER_PAGE;
 	}	
 
 	$foxy_response = foxyshop_get_foxycart_data($foxy_data);

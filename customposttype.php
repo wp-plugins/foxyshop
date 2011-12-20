@@ -1,7 +1,7 @@
 <?php
-//-------------------------------------------
-//Custom Post Type Initialization
-//-------------------------------------------
+//----------------------------------------------------------------------
+//Custom Post Type Initialization (Initialisation for you British Types)
+//----------------------------------------------------------------------
 add_action('init', 'foxyshop_create_post_type', 1);
 function foxyshop_create_post_type() {
 	global $foxyshop_settings;
@@ -150,7 +150,7 @@ function foxyshop_manage_custom_columns($column_name, $id) {
 		}
 		if (!$src) $src = $foxyshop_settings['default_image'];
 		if (!$src) $src = WP_PLUGIN_URL."/foxyshop/images/no-photo.png";
-		echo '<a href="post.php?post=' . $id . '&amp;action=edit"><img src="' . $src . '" alt="" /></a>';
+		echo $src != 'none' ? '<a href="post.php?post=' . $id . '&amp;action=edit"><img src="' . $src . '" alt="" /></a>' : '&nbsp;';
 		break;
 	case 'productcode':
 		$productcode = get_post_meta($id, "_code", true);
@@ -288,8 +288,14 @@ function foxyshop_product_details_setup() {
 		if (!$original_weight) $_weight = array($defaultweight1, $defaultweight2);
 		$disable_weight_checked = "";
 		if ((int)$_weight[0] == 0 && (double)$_weight[1] == 0) {
-			$_weight[0] = $defaultweight1;
-			$_weight[1] = $defaultweight2;
+			if ($defaultweight1 == 0 && $defaultweight2 == 0.0) {
+				$disable_weight_checked = ' checked="checked"';
+				$_weight[0] = "";
+				$_weight[1] = "";
+			} else {
+				$_weight[0] = $defaultweight1;
+				$_weight[1] = $defaultweight2;
+			}
 		} else {
 			$_weight[0] = (int)$_weight[0];
 			$_weight[1] = number_format($_weight[1],1);
@@ -525,6 +531,8 @@ function foxyshop_product_details_setup() {
 			}
 		});
 
+		<?php if ($foxyshop_settings['related_products_custom'] || $foxyshop_settings['related_products_tags'] || $foxyshop_settings['enable_addon_products']) echo '$(".chzn-select").chosen();'; ?>
+
 	});
 	function foxyshop_format_number_single(num) { num = num.toString().replace(/\$|\,/g,''); if(isNaN(num)) num = "0"; sign = (num == (num = Math.abs(num))); num = Math.floor(num*100+0.50000000001); cents = num%100; num = Math.floor(num/100).toString(); if(cents<10) cents = "0" + cents; for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++) num = num.substring(0,num.length-(4*i+3))+','+ num.substring(num.length-(4*i+3)); return (((sign)?'':'-') + num); }
 	function foxyshop_format_number(num) { num = num.toString().replace(/\$|\,/g,''); if(isNaN(num)) num = "0"; sign = (num == (num = Math.abs(num))); num = Math.floor(num*100+0.50000000001); cents = num%100; num = Math.floor(num/100).toString(); if(cents<10) cents = "0" + cents; for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++) num = num.substring(0,num.length-(4*i+3))+','+ num.substring(num.length-(4*i+3)); return (((sign)?'':'-') + num + '.' + cents); }
@@ -640,6 +648,22 @@ function foxyshop_product_pricing_setup() {
 	<div style="clear:both;"></div>
 	<script type="text/javascript">
 	jQuery(document).ready(function($){
+	
+		<?php if (version_compare($wp_version, '3.1', '>=')) { ?>
+		$("#_salestartdate, #_saleenddate").datepicker({ dateFormat: 'm/d/yy' });
+		<?php } ?>
+
+
+		$("#_saleprice").blur(function() {
+			saleprice = foxyshop_format_number($(this).val());
+			if (saleprice == "0.00") {
+				$(this).val("");
+			} else {
+				$(this).val(saleprice);
+			}
+		});
+
+
 		$("#_code").blur(function() {
 			if ($("#max_inventory_count").val() == 1 && !$("#inventory_code_1").val()) {
 				$("#inventory_code_1").val($("#_code").val());
@@ -1407,23 +1431,6 @@ jQuery(document).ready(function($){
 		return new_contents;
 	}
 
-
-	
-	<?php if (version_compare($wp_version, '3.1', '>=')) { ?>
-	$("#_salestartdate, #_saleenddate").datepicker({ dateFormat: 'm/d/yy' });
-	<?php } ?>
-
-	
-	$("#_saleprice").blur(function() {
-		saleprice = foxyshop_format_number($(this).val());
-		if (saleprice == "0.00") {
-			$(this).val("");
-		} else {
-			$(this).val(saleprice);
-		}
-	});
-
-	<?php if ($foxyshop_settings['related_products_custom'] || $foxyshop_settings['related_products_tags'] || $foxyshop_settings['enable_addon_products']) echo '$(".chzn-select").chosen();'; ?>
 });
 
 </script>

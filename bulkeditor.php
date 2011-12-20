@@ -57,6 +57,7 @@ function foxyshop_cfbe_metabox($post_type) {
 					<input type="radio" name="_saleprice_status" id="_saleprice_status1" value="1" />
 					<label for="_saleprice_status1"><?php _e("Change To"); ?>:</label>
 					<input type="text" name="_saleprice" id="_saleprice" value="" class="cfbe_field_name" onfocus="jQuery('#_saleprice_status1').prop('checked', true);" />
+					<small>5.00, +5.00, -5.00, or +5%</small>
 					<div style="clear: both;"></div>
 				</td>
 			</tr>
@@ -92,6 +93,7 @@ function foxyshop_cfbe_metabox($post_type) {
 					<input type="radio" name="_price_status" id="_price_status1" value="1" />
 					<label for="_price_status1"><?php _e("Change To"); ?>:</label>
 					<input type="text" name="_price" id="_price" value="" class="cfbe_field_name" onfocus="jQuery('#_price_status1').prop('checked', true);" />
+					<small>5.00, +5.00, -5.00, or +5%</small>
 					<div style="clear: both;"></div>
 				</td>
 			</tr>
@@ -353,6 +355,53 @@ function foxyshop_cfbe_save($post_type, $post_id) {
 	foreach ($fields as $field) {
 		if ($_POST['_' . $field . '_status'] == 1) cfbe_save_meta_data('_'.$field, $_POST['_'.$field]);
 	}
+
+
+	//Generic Price Fields Needing Special Treatment
+	$fields = array("price", "saleprice");
+	foreach ($fields as $field) {
+		if ($_POST['_' . $field . '_status'] == 1 && $_POST['_' . $field] != "") {
+			
+			$new_price = (string)$_POST['_' . $field];
+			$modifier = (string)substr($new_price, 0, 1);
+			
+			//Price modifier in play
+			if ($modifier == "+" || $modifier == "-") {
+				
+				//Get original price
+				$original_price = (double)get_post_meta($post_id,'_' . $field, true);
+				
+				//Percentage
+				if ((string)substr($new_price, -1) == "%") {
+					$new_price = (double)substr($new_price, 1, -1);
+					
+					if ($modifier == "-") {
+						$new_price = $original_price - ($original_price * ($new_price / 100));
+					} else {
+						$new_price = $original_price + ($original_price * ($new_price / 100));
+					}
+				
+				//Addition or Subtraction
+				} else {
+					$new_price = (double)substr($new_price, 1);
+
+					if ($modifier == "-") {
+						$new_price = $original_price - $new_price;
+					} else {
+						$new_price = $original_price + $new_price;
+					}
+				}
+				
+				
+			}
+			
+			if ($new_price < 0) $new_price = 0;
+			$new_price = number_format($new_price, 2);
+			
+			//Do the save
+			cfbe_save_meta_data('_'.$field, $new_price);
+		}
+	}
 	
 	//All Other Fields
 	if ($_POST['_quantity_min_status'] == 1) {
@@ -360,14 +409,6 @@ function foxyshop_cfbe_save($post_type, $post_id) {
 	}
 	if ($_POST['_quantity_max_status'] == 1) {
 		cfbe_save_meta_data('_quantity_max', (int)$_POST['_quantity_max']);
-	}
-	if ($_POST['_price_status'] == 1) {
-		$new_price = number_format((double)str_replace("$","",str_replace(",","",$_POST['_price'])),2,".","");
-		cfbe_save_meta_data('_price', $new_price);
-	}
-	if ($_POST['_saleprice_status'] == 1) {
-		$new_price = number_format((double)str_replace("$","",str_replace(",","",$_POST['_saleprice'])),2,".","");
-		cfbe_save_meta_data('_saleprice', $new_price);
 	}
 	if ($_POST['_salestartdate_status'] == 1) {
 		if (($_salestartdate = strtotime($_POST['_salestartdate'])) === false) cfbe_save_meta_data('_salestartdate',"999999999999999999");

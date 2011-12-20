@@ -1,4 +1,22 @@
 <?php
+if (isset($_GET['action-top']) && isset($_GET['action-bottom'])) add_action('admin_init', 'foxyshop_multi_api_edit');
+function foxyshop_multi_api_edit() {
+	if (!isset($_GET['post'])) return;
+	if ($_GET['action-top'] == -1) $act = $_GET['action-bottom'];
+	if ($_GET['action-bottom'] == -1) $act = $_GET['action-top'];
+	if ($act == -1) return;
+	$posts = $_GET['post'];
+	if (!is_array($posts)) $posts = array($_POST['post']);
+
+	if ($act == "archive" || $act == "unarchive") {
+		$hide_transaction = $act == "archive" ? 1 : 0;
+		foreach ($posts as $postid) {
+			$foxy_data = array("api_action" => "transaction_modify", "transaction_id" => $postid, "hide_transaction" => $hide_transaction);
+			foxyshop_get_foxycart_data($foxy_data);
+		}
+	}
+}
+
 if (isset($_GET['foxyshop_print_invoice'])) add_action('admin_init', 'foxyshop_print_invoice');
 function foxyshop_print_invoice() {
 	global $foxyshop_settings;
@@ -35,7 +53,7 @@ function foxyshop_print_invoice() {
 			}
 		}
 		$foxy_data['pagination_start'] = (isset($_GET['pagination_start']) ? $_GET['pagination_start'] : 0);
-		if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) $foxy_data['entries_per_page'] = 50;
+		if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) $foxy_data['entries_per_page'] = FOXYSHOP_API_ENTRIES_PER_PAGE;
 	}	
 
 	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
@@ -91,18 +109,27 @@ function foxyshop_order_management() {
 		$foxy_data_defaults["custom_field_value_filter"] = "";
 	}
 	$foxy_data = wp_parse_args(array("api_action" => "transaction_list"), $foxy_data_defaults);
-	$querystring = "?post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;foxyshop_search=1";
+	$foxyshop_querystring = "?post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;foxyshop_search=1";
+	$foxyshop_hidden_input = "";
+	
 
 	if (isset($_GET['foxyshop_search']) || !defined('FOXYSHOP_AUTO_API_DISABLED')) {
 		$fields = array("is_test_filter", "hide_transaction_filter", "data_is_fed_filter", "id_filter", "order_total_filter", "coupon_code_filter", "transaction_date_filter_begin", "transaction_date_filter_end", "customer_id_filter", "customer_email_filter", "customer_first_name_filter", "customer_last_name_filter","customer_state_filter", "shipping_state_filter", "customer_ip_filter", "product_code_filter", "product_name_filter", "product_option_name_filter", "product_option_value_filter", "custom_field_name_filter", "custom_field_value_filter");
 		foreach ($fields as $field) {
 			if (isset($_GET[$field])) {
 				$foxy_data[$field] = $_GET[$field];
-				$querystring .= "&amp;$field=" . urlencode($_GET[$field]);
+				$foxyshop_querystring .= "&amp;$field=" . urlencode($_GET[$field]);
+				$foxyshop_hidden_input .= '<input type="hidden" name="' . $field . '" value="' . htmlspecialchars($_GET[$field]) . '" />' . "\n";
 			}
 		}
 		$foxy_data['pagination_start'] = (isset($_GET['pagination_start']) ? $_GET['pagination_start'] : 0);
-		if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) $foxy_data['entries_per_page'] = 50;
+		$p = (int)(version_compare($foxyshop_settings['version'], '0.7.1', "<") ? 50 : FOXYSHOP_API_ENTRIES_PER_PAGE);
+		if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) $foxy_data['entries_per_page'] = $p;
+		$start_offset = (int)(version_compare($foxyshop_settings['version'], '0.7.1', "<=") ? -1 : 0);
+		if (isset($_GET['paged-top']) || isset($_GET['paged-bottom'])) {
+			if ($_GET['paged-top'] != $_GET['paged-top-original']) $foxy_data['pagination_start'] = $p * ((int)$_GET['paged-top'] - 1) + 1 + $start_offset;
+			if ($_GET['paged-bottom'] != $_GET['paged-bottom-original']) $foxy_data['pagination_start'] = $p * ((int)$_GET['paged-bottom'] - 1) + 1 + $start_offset;
+		}
 	}	
 
 
@@ -180,6 +207,7 @@ function foxyshop_order_management() {
 				<label for="product_option_name_filter"><?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?> Option Name</label><input type="text" name="product_option_name_filter" id="product_option_name_filter" value="<?php echo $foxy_data['product_option_name_filter']; ?>" />
 				<label for="product_option_value_filter" style="margin-left: 15px; margin-top: 4px; width: 30px;">Value</label><input type="text" name="product_option_value_filter" id="product_option_value_filter" value="<?php echo $foxy_data['product_option_value_filter']; ?>" />
 			</div>
+			
 			<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) { ?>
 			<div class="foxyshop_field_control">
 				<label for="custom_field_name_filter">Custom Field Name</label><input type="text" name="custom_field_name_filter" id="custom_field_name_filter" value="<?php echo $foxy_data['custom_field_name_filter']; ?>" />
@@ -192,7 +220,6 @@ function foxyshop_order_management() {
 			<div class="foxyshop_field_control">
 				<label for="transaction_date_filter_begin">Date Range</label><input type="text" name="transaction_date_filter_begin" id="transaction_date_filter_begin" value="<?php echo $foxy_data['transaction_date_filter_begin']; ?>" class="foxyshop_date_field" />
 				<span>to</span><input type="text" name="transaction_date_filter_end" id="transaction_date_filter_end" value="<?php echo $foxy_data['transaction_date_filter_end']; ?>" class="foxyshop_date_field" />
-				<span>YYYY-MM-DD</span>
 			</div>
 
 
@@ -222,16 +249,16 @@ function foxyshop_order_management() {
 			<div style="clear: both;"></div>
 			<button type="submit" id="foxyshop_search_submit" name="foxyshop_search_submit" class="button-primary" style="clear: left; margin-top: 10px;">Search Records Now</button>
 			<button type="button" class="button submitcancel" style="margin-left: 15px;" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_order_management';">Reset Form</button>
-			<button type="submit" class="button" style="margin-left: 15px;" name="foxyshop_print_invoice" id="foxyshop_print_invoice">Print Invoices</button>
+			<button type="submit" class="button" style="margin-left: 15px;" name="foxyshop_print_invoice" id="foxyshop_print_invoice">Print Receipts</button>
 			<?php
 			if ($foxyshop_settings['ups_worldship_export'] && !$foxyshop_settings['enable_ship_to']) echo '<button class="button" style="margin-left: 15px;" name="foxyshop_ups_export" id="foxyshop_ups_export" type="submit">' . __('UPS Export') . '</button>'."\n";
 			do_action("foxyshop_order_search_buttons", $foxy_data);
 			?>
 			
 		</td></tr></tbody></table>
-			
 		
 		</form>
+		
 		<script type="text/javascript">
 		jQuery(document).ready(function($) {
 			$("#foxyshop_searchform button").live("click", function() {
@@ -241,16 +268,15 @@ function foxyshop_order_management() {
 					$("#foxyshop_searchform").attr("target","_self");
 				}
 			});
-		});
-		</script>
+			$(".tablenav a.disabled").click(function() {
+				return false;
+			});
 
-		<?php if (version_compare($wp_version, '3.1', '>=')) { ?>
-		<script type="text/javascript">
-		jQuery(document).ready(function($) {
+			<?php if (version_compare($wp_version, '3.1', '>=')) { ?>
 			$(".foxyshop_date_field").datepicker({ dateFormat: 'yy-mm-dd' });
+			<?php } ?>
 		});
 		</script>
-		<?php } ?>
 
 	<?php
 	if (!isset($_GET['foxyshop_search']) && defined('FOXYSHOP_AUTO_API_DISABLED')) return;
@@ -265,9 +291,20 @@ function foxyshop_order_management() {
 	}
 	?>
 
-	<table cellpadding="0" cellspacing="0" border="0" class="wp-list-table widefat foxyshop-list-table" id="customer_table" style="margin-top: 14px;">
+	<form action="edit.php" method="get">
+	<input type="hidden" name="foxyshop_search" value="1" />
+	<input type="hidden" name="post_type" value="foxyshop_product" />
+	<input type="hidden" name="page" value="foxyshop_order_management" />
+	
+	<?php
+	echo $foxyshop_hidden_input;
+	foxyshop_api_paging_nav('transactions', 'top', $xml, $foxyshop_querystring);
+	?>
+
+	<table cellpadding="0" cellspacing="0" border="0" class="wp-list-table widefat foxyshop-list-table" id="transaction_table">
 		<thead>
 			<tr>
+				<th id="cb" class="manage-column column-cb check-column" scope="col"><input type="checkbox"></th>
 				<th><span><?php _e('Order ID'); ?></span><span class="sorting-indicator"></span></th>
 				<th><span><?php _e('Order Date'); ?></span><span class="sorting-indicator"></span></th>
 				<th><span><?php _e('Customer'); ?></span><span class="sorting-indicator"></span></th>
@@ -277,6 +314,7 @@ function foxyshop_order_management() {
 		</thead>
 		<tfoot>
 			<tr>
+				<th class="manage-column column-cb check-column" style="" scope="col"><input type="checkbox"></th>
 				<th><?php _e('Order ID'); ?></th>
 				<th><?php _e('OrderDate'); ?></th>
 				<th><?php _e('Customer'); ?></th>
@@ -291,18 +329,22 @@ function foxyshop_order_management() {
 	$hide_transaction_filter = isset($_REQUEST['hide_transaction_filter']) ? $_REQUEST['hide_transaction_filter'] : 0;
 	foreach($xml->transactions->transaction as $transaction) {
 		$transaction_id = (string)$transaction->id;
-		$transaction_date = (string)$transaction->transaction_date;
 		$customer_first_name = (string)$transaction->customer_first_name;
 		$customer_last_name = (string)$transaction->customer_last_name;
 		$is_anonymous = (int)$transaction->is_anonymous;
 		$customer_id = (string)$transaction->customer_id;
+		$minfraud_score = (int)$transaction->minfraud_score;
+
+		$transaction_date = (string)$transaction->transaction_date;
+		$transaction_date = date(apply_filters("foxyshop_date_time_format", "Y-m-d H:i"), strtotime($transaction_date));
 		
 		$customer_name = $customer_last_name . ', ' . $customer_first_name;
 		if ($is_anonymous != 1 && $customer_id) $customer_name = '<a href="edit.php?post_type=foxyshop_product&page=foxyshop_customer_management&customer_id_filter=' . $customer_id . '&foxyshop_search=1" title="Customer ' . $customer_id . '">' . $customer_name . '</a>';
 		
-		$print_receipt_link = "edit.php?foxyshop_search=1&post_type=foxyshop_product&page=foxyshop_order_management&id_filter=" . $transaction_id . "&foxyshop_print_invoice=1&is_test_filter=&skip_print=1";
+		$print_receipt_link = "edit.php?foxyshop_search=1&amp;post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;id_filter=" . $transaction_id . "&amp;foxyshop_print_invoice=1&amp;is_test_filter=&amp;skip_print=1&amp;transaction_date_filter_begin=" . $foxy_data['transaction_date_filter_begin'] . "&amp;transaction_date_filter_end=" . $foxy_data['transaction_date_filter_end'];
 		
 		echo '<tr rel="' . $transaction_id . '">';
+		echo '<th class="check-column" scope="row"><input type="checkbox" value="' . $transaction_id . '" name="post[]"></th>'."\n";
 		echo '<td>';
 		echo '<a href="' . (string)$transaction->receipt_url . '" title="' . __('FoxyCart Receipt') . '" target="_blank" style="float: left;"><img src="' . FOXYSHOP_DIR . '/images/foxycart-icon.png" alt="" align="top" /></a>';
 		echo '<strong><a href="#" class="view_detail" style="float: left; line-height: 18px; margin: 0 0 0 5px;">' . $transaction_id . '</a></strong>';
@@ -335,12 +377,13 @@ function foxyshop_order_management() {
 		$holder .= '<div class="foxyshop_list_col">';
 		$holder .= '<h4>Transaction Details</h4>';
 		$holder .= '<ul>';
-		$holder .= '<li>Order ID: ' . $transaction->id . '</li>';
-		$holder .= '<li>Date: ' . $transaction->transaction_date. '</li>';
-		$holder .= '<li>' . $transaction->processor_response. '</li>';
-		if ((string)$transaction->cc_number_masked != "") $holder .= '<li>' . __('Card') . ': ' . $transaction->cc_number_masked. ' (' . $transaction->cc_type . ')</li>';
-		if ((string)$transaction->cc_exp_month != "") $holder .= '<li>' . __('Exp') . ': ' . $transaction->cc_exp_month . '-' . $transaction->cc_exp_year . '</li>';
-		if ((string)$transaction->shipto_shipping_service_description != "") $holder .= '<li>Shipping Type: ' . $transaction->shipto_shipping_service_description . '</li>';
+		$holder .= '<li>Order ID: ' . (string)$transaction->id . '</li>';
+		$holder .= '<li>Date: ' . $transaction_date. '</li>';
+		$holder .= '<li>' . (string)$transaction->processor_response. '</li>';
+		if ((string)$transaction->cc_number_masked != "") $holder .= '<li>' . __('Card') . ': ' . (string)$transaction->cc_number_masked. ' (' . (string)$transaction->cc_type . ')</li>';
+		if ((string)$transaction->cc_exp_month != "") $holder .= '<li>' . __('Exp') . ': ' . (string)$transaction->cc_exp_month . '-' . (string)$transaction->cc_exp_year . '</li>';
+		if ($minfraud_score > 0) $holder .= '<li>' . __('MinFraud Score') . ': ' . $minfraud_score . '</li>';
+		if ((string)$transaction->shipto_shipping_service_description != "") $holder .= '<li>Shipping Type: ' . (string)$transaction->shipto_shipping_service_description . '</li>';
 		$holder .= '</ul>';
 		$holder .= '</div>';
 
@@ -364,12 +407,12 @@ function foxyshop_order_management() {
 		$holder .= '<div class="foxyshop_list_col">';
 		$holder .= '<h4>Customer Address</h4>';
 		$holder .= '<ul>';
-		$holder .= '<li>' . $transaction->customer_first_name . ' ' . $transaction->customer_last_name . '</li>';
-		if ((string)$transaction->customer_company != "") $holder .= '<li>' . $transaction->customer_company . '</li>';
-		$holder .= '<li>' . $transaction->customer_address1 . '</li>';
-		if ((string)$transaction->customer_address2 != "") $holder .= '<li>' . $transaction->customer_address2 . '</li>';
-		$holder .= '<li>' . $transaction->customer_city . ', ' . $transaction->customer_state . ' ' . $transaction->customer_postal_code . '</li>';
-		$holder .= '<li>' . $transaction->customer_country . '</li>';
+		$holder .= '<li>' . (string)$transaction->customer_first_name . ' ' . (string)$transaction->customer_last_name . '</li>';
+		if ((string)$transaction->customer_company != "") $holder .= '<li>' . (string)$transaction->customer_company . '</li>';
+		$holder .= '<li>' . (string)$transaction->customer_address1 . '</li>';
+		if ((string)$transaction->customer_address2 != "") $holder .= '<li>' . (string)$transaction->customer_address2 . '</li>';
+		$holder .= '<li>' . (string)$transaction->customer_city . ', ' . (string)$transaction->customer_state . ' ' . (string)$transaction->customer_postal_code . '</li>';
+		$holder .= '<li>' . (string)$transaction->customer_country . '</li>';
 		$holder .= '</ul>';
 		$holder .= '</div>';
 
@@ -378,13 +421,13 @@ function foxyshop_order_management() {
 			$holder .= '<div class="foxyshop_list_col">';
 			$holder .= '<h4>Shipping Details</h4>';
 			$holder .= '<ul>';
-			$holder .= '<li>' . $transaction->shipping_first_name . ' ' . $transaction->shipping_last_name . '</li>';
-			if ((string)$transaction->shipping_company != "") $holder .= '<li>' . $transaction->shipping_company . '</li>';
-			$holder .= '<li>' . $transaction->shipping_address1 . '</li>';
-			if ((string)$transaction->shipping_address2 != "") $holder .= '<li>' . $transaction->shipping_address2 . '</li>';
-			$holder .= '<li>' . $transaction->shipping_city . ', ' . $transaction->shipping_state . ' ' . $transaction->shipping_postal_code . '</li>';
-			$holder .= '<li>' . $transaction->shipping_country . '</li>';
-			if ((string)$transaction->shipping_phone != "") $holder .= '<li>' . $transaction->shipping_phone . '</li>';
+			$holder .= '<li>' . (string)$transaction->shipping_first_name . ' ' . (string)$transaction->shipping_last_name . '</li>';
+			if ((string)$transaction->shipping_company != "") $holder .= '<li>' . (string)$transaction->shipping_company . '</li>';
+			$holder .= '<li>' . (string)$transaction->shipping_address1 . '</li>';
+			if ((string)$transaction->shipping_address2 != "") $holder .= '<li>' . (string)$transaction->shipping_address2 . '</li>';
+			$holder .= '<li>' . (string)$transaction->shipping_city . ', ' . (string)$transaction->shipping_state . ' ' . (string)$transaction->shipping_postal_code . '</li>';
+			$holder .= '<li>' . (string)$transaction->shipping_country . '</li>';
+			if ((string)$transaction->shipping_phone != "") $holder .= '<li>' . (string)$transaction->shipping_phone . '</li>';
 			$holder .= '</ul>';
 			$holder .= '</div>';
 		}
@@ -411,9 +454,9 @@ function foxyshop_order_management() {
 		$holder .= '<div class="foxyshop_list_col">';
 		$holder .= '<h4>Customer Details</h4>';
 		$holder .= '<ul>';
-		if ((string)$transaction->customer_phone != "") $holder .= '<li>' . $transaction->customer_phone . '</li>';
-		$holder .= '<li><a href="mailto:' . $transaction->customer_email . '">' . $transaction->customer_email . '</a></li>';
-		$holder .= '<li>' . apply_filters('foxyshop_order_ip', '<a href="http://whatismyipaddress.com/ip/' . $transaction->customer_ip . '" target="_blank">' . $transaction->customer_ip . '</a>', $transaction->customer_ip) . '</li>';
+		if ((string)$transaction->customer_phone != "") $holder .= '<li>' . (string)$transaction->customer_phone . '</li>';
+		$holder .= '<li><a href="mailto:' . (string)$transaction->customer_email . '">' . (string)$transaction->customer_email . '</a></li>';
+		$holder .= '<li>' . apply_filters('foxyshop_order_ip', '<a href="http://whatismyipaddress.com/ip/' . (string)$transaction->customer_ip . '" target="_blank">' . (string)$transaction->customer_ip . '</a>', (string)$transaction->customer_ip) . '</li>';
 		$holder .= '<li>&nbsp;</li>';
 
 		//Custom Fields
@@ -487,8 +530,13 @@ function foxyshop_order_management() {
 	}
 	
 	echo '</tbody></table>';
-
+	
+	foxyshop_api_paging_nav('transactions', 'bottom', $xml, $foxyshop_querystring);
 	?>
+	</form>
+
+
+
 	<div id="details_holder"><?php echo $holder; ?></div>
 	
 	<script type="text/javascript" src="<?php echo FOXYSHOP_DIR; ?>/js/jquery.tablesorter.js"></script>
@@ -500,7 +548,8 @@ function foxyshop_order_management() {
 		});
 		$(".foxyshop-list-table").tablesorter({
 			'cssDesc': 'asc sorted',
-			'cssAsc': 'desc sorted'
+			'cssAsc': 'desc sorted',
+			'headers': { 0: { sorter: false} }
 		});
 		$(".view_detail").click(function() {
 			var id = $(this).parents("tr").attr("rel");
@@ -548,27 +597,7 @@ function foxyshop_order_management() {
 
 	
 	<?php
-	//Pagination
-	$p = (int)(version_compare($foxyshop_settings['version'], '0.7.0', "==") ? 50 : 50);
-	$total_records = (int)$xml->statistics->total_orders;
-	$filtered_total = (int)$xml->statistics->filtered_total;
-	$pagination_start = (int)$xml->statistics->pagination_start;
-	$pagination_end = (int)$xml->statistics->pagination_end;
-	if ($pagination_start > 1 || $filtered_total > $pagination_end) {
-		echo '<div id="admin_list_pagination">';
-		echo $xml->messages->message[1] . '<br />';
-		if ($pagination_start > 1) echo '<a href="edit.php' . $querystring . '&amp;pagination_start=' . ($pagination_start - $p - 1) . '">&laquo; Previous</a>';
-		if ($pagination_end < $filtered_total) {
-			if ($pagination_start > 1) echo ' | ';
-			echo '<a href="edit.php' . $querystring . '&amp;pagination_start=' . $pagination_end . '">Next &raquo;</a>';
-		}
-		echo '</div>';
-	}
-
-	echo '</div>';
 
 }
 
 
-
-?>

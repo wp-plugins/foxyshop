@@ -25,6 +25,8 @@ function foxyshop_inventory_update() {
 		}
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_inventory_management_page&saved=1');
 		die;
+	
+	//Saving Values From Uploaded Data
 	} elseif (isset($_POST['foxyshop_inventory_updates'])) {
 		if (!check_admin_referer('import-foxyshop-inventory-updates')) return;
 		
@@ -33,17 +35,13 @@ function foxyshop_inventory_update() {
 		foreach ($lines as $line) {
 			$line = explode("\t", $line);
 			if (count($line) < 5) continue;
-			if ((int)$line[0] == 0) continue;
+			if ($line[0] == "ID") continue;
 			
 			$productid = (int)$line[0];
 			$productcode = $line[2];
 			$newcount = (int)$line[4];
 			
-			$inventory = get_post_meta($productid, "_inventory_levels", 1);
-			if (!is_array($inventory)) $inventory = array();
-			$inventory[$productcode]['count'] = $newcount;
-			update_post_meta($productid, '_inventory_levels', $inventory);	
-			
+			foxyshop_inventory_count_update($productcode, $newcount, $productid);
 			$save_count++;
 		}
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_inventory_management_page&importcompleted='.$save_count);
@@ -114,7 +112,7 @@ function foxyshop_inventory_management_page() {
 					$inventory_alert = (int)($iv['alert'] == '' ? $foxyshop_settings['inventory_alert_level'] : $iv['alert']);
 					$inventory_count = $iv['count'];
 					
-					$variation = "";
+					$variation = "&nbsp;";
 					foreach ($product['variations'] as $product_variation) {
 						$product_variation1 = preg_split("/(\r\n|\n)/", $product_variation['value']);
 						foreach ($product_variation1 as $product_variation2) {
@@ -169,7 +167,10 @@ function foxyshop_inventory_management_page() {
 			<tbody>
 				<tr>
 					<td>
-						<p>Copy and paste these values into Excel. Make your changes, then copy and paste back in and click update.</p> 
+						<p>
+							Copy and paste these values into Excel. Make your changes, then copy and paste back in and click update.<br />
+							You can also add new inventory levels by using the template to add new rows with code and inventory fields.
+						</p> 
 						<textarea id="name="foxyshop_inventory_updates" name="foxyshop_inventory_updates" wrap="auto" style="float: left; width:650px;height: 200px;"><?php echo $exported; ?></textarea>
 						<div style="clear: both;"></div>
 						<p><input type="submit" class="button-primary" value="<?php _e('Update Inventory Values'); ?>" /></p>

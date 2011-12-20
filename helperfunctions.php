@@ -423,7 +423,7 @@ function foxyshop_run_variations($variationValue, $variationName, $showPriceVari
 				$test_variation_name = $variation_display_name;
 				if ($test_variation_name == $displaypricechange || $test_variation_name.'.00' == $displaypricechange) $displaypricechange = "";
 			}
-			if ($showPriceVariations && $displaypricechange) $option_show_price_change = ' (' . $displaypricechange . ')';
+			if ($showPriceVariations && $displaypricechange) $option_show_price_change = apply_filters('foxyshop_variation_price_change', ' (' . $displaypricechange . ')');
 
 			if ($priceset) $option_attributes .= ' priceset="' . $priceset . '"';
 			if ($pricechange) $option_attributes .= ' pricechange="' . $pricechange . '"';

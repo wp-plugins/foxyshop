@@ -1,4 +1,50 @@
 <?php
+//Decrypt Data From Source
+function foxyshop_decrypt($src) {
+    	global $foxyshop_settings;
+	return rc4crypt::decrypt($foxyshop_settings['api_key'],urldecode($src));
+}
+
+
+//Push Feed to External Datafeeds
+function foxyshop_run_external_datafeeds($external_datafeeds) {
+    	global $foxyshop_settings;
+
+
+	foreach($external_datafeeds as $feedurl) {
+		if ($feedurl) {
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $feedurl);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, array("FoxyData" => $_POST["FoxyData"]));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, FOXYSHOP_CURL_CONNECTTIMEOUT);
+			curl_setopt($ch, CURLOPT_TIMEOUT, FOXYSHOP_CURL_TIMEOUT);
+			if (defined('FOXYSHOP_CURL_SSL_VERIFYPEER')) curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FOXYSHOP_CURL_SSL_VERIFYPEER);
+			$response = trim(curl_exec($ch));
+
+			//If Error, Send Email and Kill Process
+			if ($response != 'foxy') {
+				$error_msg = ($response == false ? "Datafeed Processing Error: " . curl_error($ch) : $response);
+				$to_email = get_bloginfo('admin_email');
+				$message = "A FoxyCart datafeed error was encountered at " . date("F j, Y, g:i a") . ".\n\n";
+				$message .= "The feed that failed was $feedurl.\n\n";
+				$message .= "The error is listed below:\n\n";
+				$message .= $error_msg;
+				$headers = 'From: ' . get_bloginfo('name') . ' Server Admin <' . $to_email . '>' . "\r\n";
+				wp_mail($to_email, 'Data Feed Error on ' . get_bloginfo('name'), $message, $headers);
+				curl_close($ch);
+				die($error_msg);
+			} else {
+				curl_close($ch);
+			}
+		}
+	}
+
+
+}
+
+
+
 //Update the FoxyShop Inventory
 function foxyshop_datafeed_inventory_update($xml) {
 	global $wpdb, $foxyshop_settings;
@@ -13,7 +59,7 @@ function foxyshop_datafeed_inventory_update($xml) {
 			$product_quantity = (int)$transactiondetails->product_quantity;
 
 			//Get List of Target ID's for Inventory Update
-			$meta_list = $wpdb->get_results("SELECT post_id, meta_id, meta_value FROM $wpdb->postmeta WHERE meta_key = '_inventory_levels' AND meta_value LIKE '%" . str_replace("'","\'",$product_code) . "%'");
+			$meta_list = $wpdb->get_results("SELECT post_id, meta_id, meta_value FROM $wpdb->postmeta WHERE meta_key = '_inventory_levels' AND meta_value LIKE '%" . mysql_real_escape_string($product_code) . "%'");
 			foreach ($meta_list as $meta) {
 				$productID = $meta->post_id;
 				$val = unserialize($meta->meta_value);
@@ -42,7 +88,7 @@ function foxyshop_datafeed_inventory_update($xml) {
 					}
 				}
 				//Run the Update
-				update_post_meta($productID,"_inventory_levels",$val);
+				foxyshop_inventory_count_update($product_code, $new_count, $productID, 0);
 			}
 		}
 	}
@@ -153,6 +199,32 @@ function foxyshop_datafeed_user_update($xml) {
 			}
 		}
 	}
+}
+
+
+
+//ConsoliBYTE Inventory Processor
+function foxyshop_consolibyte_inventory_process() {
+
+	//DECRYPT (required)
+	//-----------------------------------------------------
+	$FoxyData_decrypted = foxyshop_decrypt($_POST["FoxyInventory"]);
+	$xml = simplexml_load_string($FoxyData_decrypted, NULL, LIBXML_NOCDATA);
+
+	//For Each Item
+	foreach($xml->foxyinventory->item as $item) {
+		
+		//Set Variables
+		$product_code = (string)$item->product_code;
+		$quantity_on_hand = (int)$item->quantity_on_hand;
+		
+		//Update Inventory
+		foxyshop_inventory_count_update($product_code, $quantity_on_hand, 0);
+	}
+
+
+	//All Done!
+	die("foxyinventory");
 }
 
 

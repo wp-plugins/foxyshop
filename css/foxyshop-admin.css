@@ -92,6 +92,8 @@ body .foxyshop-list-table tbody tr.foxyshop-row-updated {
 
 .inventory_update_width {
 	width: 40px;
+	margin-top: -2px;
+	padding: 2px 3px;
 }
 #ajax_get_downloadable_list {
 	width: 16px;

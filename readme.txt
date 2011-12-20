@@ -4,7 +4,7 @@ Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
 Tested up to: 3.3
-Stable tag: 3.7.1
+Stable tag: 3.8
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -62,6 +62,25 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 3.8 =
+* Updating price in bulk now lets you update dynamically with +, -, or by percentage.
+* Added a helper function for updating inventory levels
+* Added ability to show more than 50 orders per page for 0.7.1+ users with FOXYSHOP_API_ENTRIES_PER_PAGE constant
+* Improved paging navigation for API processes (transactions, customers, subscriptions)
+* Added an "Archive All" option for the Manage Orders screen
+* Inventory codes can now be forced from the inventory import system even if they haven't been added before
+* Inventory connectors available for QuickBooks (through ConsoliBYTE) and SmartTurn
+* cURL connection error now displays actual error
+* Transaction receipts outside the default date filter now viewable
+* Added MinFraud score (0.7.2+) to transaction details
+* Many datafeed template improvements
+* "No Weight" can now be set as a system default if your products don't use weight
+* Added a filter so that the date format can be adjusted on order page
+* Admin nag bars are now limited to admins only
+* Fixed jQuery error (variations) which was appearing in iOS 4
+* Fixed some errors in the subscription datafeed process
+* See [Release Notes](http://www.foxy-shop.com/2011/12/version-3-8-inventory-and-api-updates/) for more details
 
 = 3.7.1 =
 * Fixed a PHP error in the default theme file causing the datafeed to fail
@@ -228,5 +247,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 3.6.1 =
-Product Sitemap Links Will Change
+= 3.7.2 =
+Improving Inventory Features, Fixing Subscription Datafeeds

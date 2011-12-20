@@ -443,7 +443,6 @@ function foxyshop_settings_page() {
 					$arrweight = explode(" ",$foxyshop_settings['default_weight']);
 					$weight1 = (int)$arrweight[0];
 					$weight2 = (count($arrweight) > 1 ? (double)$arrweight[1] : "0.0");
-					if ($weight1 == 0 && $weight2 == 0) $weight1 = 1;
 					?>
 					<input type="text" id="foxyshop_default_weight1" name="foxyshop_default_weight1" value="<?php echo $weight1; ?>" style="width: 46px;" /><small id="weight_title1" style="width: 28px;">lbs</small>
 					<input type="text" id="foxyshop_default_weight2" name="foxyshop_default_weight2" value="<?php echo $weight2; ?>" style="width: 46px;" /><small id="weight_title2">oz</small>
@@ -454,7 +453,7 @@ function foxyshop_settings_page() {
 					<label for="foxyshop_locale_code"><?php _e('Currency Locale Code'); ?>:</label> <input type="text" id="foxyshop_locale_code" name="foxyshop_locale_code" value="<?php echo $foxyshop_settings['locale_code']; ?>" style="width: 150px;" />
 					<a href="#" class="foxyshophelp"><?php _e('If you would like to use something other than $ for your currency, enter your locale code here. For the British Pound, enter "en_GB".'); ?></a>
 					<small><a href="http://www.roseindia.net/tutorials/I18N/locales-list.shtml" target="_blank">full list of locale codes</a></small>
-					<?php if (!function_exists('money_format')) echo '<div>' . __('Attention, you are using Windows which does not support internationalization. You will be limited to $ or £.') . '</div>'; ?>
+					<?php if (!function_exists('money_format')) echo '<div style="clear: both; padding-top: 5px;"><em>' . __('Attention: you are using Windows which does not support internationalization. You will be limited to $ (en_US) or &pound; (en_GB).') . '</em></div>'; ?>
 				</td>
 			</tr>
 			<tr>

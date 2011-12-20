@@ -52,7 +52,7 @@ function foxyshop_date_picker() {
 add_action('admin_notices', 'foxyshop_check_permalinks');
 function foxyshop_check_permalinks() {
 	$permalink_structure = (isset($_POST['permalink_structure']) ? $_POST['permalink_structure'] : get_option('permalink_structure'));
-	if ($permalink_structure == '') {
+	if ($permalink_structure == '' && current_user_can('manage_options')) {
 		echo '<div class="error"><p><strong>Warning:</strong> Your <a href="options-permalink.php">permalink structure</a> is set to default. Your product links will not work correctly until you have turned on Permalink support. It is recommend that you set to "Month and Name".</p></div>';
 	}
 }
@@ -368,6 +368,52 @@ function foxyshop_check_rewrite_rules() {
 	}
 }
 
+
+//Inventory Update Helper
+function foxyshop_inventory_count_update($code, $new_count, $product_id = 0, $force = true) {
+	global $wpdb;
+	
+	//If Product ID is provided
+	if ((int)$product_id > 0) {
+		$inventory = get_post_meta($product_id, "_inventory_levels", 1);
+		if (!is_array($inventory) && $force) $inventory = array();
+		if (is_array($inventory)) {
+			if ($force || isset($inventory[$code])) {
+				$inventory[$code]['count'] = $new_count;
+				update_post_meta($product_id, '_inventory_levels', $inventory);
+			}
+		}
+	
+	//If No Product ID provided
+	} elseif ($product_id == 0) {
+		$meta_list = $wpdb->get_row("SELECT `post_id`, `meta_id`, `meta_value`, `meta_key` FROM $wpdb->postmeta WHERE `meta_key` = '_inventory_levels' AND `meta_value` LIKE '%:\"" . mysql_real_escape_string($code) . "\";%'");
+		if (!$meta_list && $force) $meta_list = $wpdb->get_row("SELECT `post_id`, `meta_id`, `meta_value`, `meta_key` FROM $wpdb->postmeta WHERE `meta_key` = '_variations' AND `meta_value` LIKE '%" . mysql_real_escape_string($code) . "%'");
+		if (!$meta_list && $force) $meta_list = $wpdb->get_row("SELECT `post_id`, `meta_id`, `meta_value`, `meta_key` FROM $wpdb->postmeta WHERE `meta_key` = '_code' AND `meta_value` = '" . mysql_real_escape_string($code) . "'");
+		if ($meta_list) {
+			$product_id = $meta_list->post_id;
+			$meta_key = $meta_list->meta_key;
+			$meta_value = $meta_list->meta_value;
+			
+			//No Inventory Already, Create Inventory Record
+			if (($meta_key == "_code" || $meta_key == "_variations") && $force) {
+				$inventory = get_post_meta($product_id, "_inventory_levels", 1);
+				if (!is_array($inventory)) $inventory = array();
+				$inventory[$code]['count'] = $new_count;
+				$inventory[$code]['alert'] = "";
+				update_post_meta($product_id, '_inventory_levels', $inventory);	
+			
+			
+			//Inventory Already Exists
+			} elseif ($meta_key == "_inventory_levels") {
+				$inventory = maybe_unserialize($meta_value);
+				$inventory[$code]['count'] = $new_count;
+				update_post_meta($product_id, '_inventory_levels', $inventory);	
+			}
+		}
+	}
+}
+
+
 //Get Category List from FoxyCart API
 function foxyshop_get_category_list() {
 	global $foxyshop_settings;
@@ -424,7 +470,7 @@ function foxyshop_get_foxycart_data($foxyData, $silent_fail = true) {
 	$response = trim(curl_exec($ch));
 	if (!$response) {
 		if ($silent_fail) {
-			$response = "<?xml version='1.0' encoding='UTF-8'?><foxydata><result>ERROR</result><messages><message>" . __('Request Timed Out. Please Try Again.') . "</message></messages></foxydata>";
+			$response = "<?xml version='1.0' encoding='UTF-8'?><foxydata><result>ERROR</result><messages><message>" . __('Connection Error') . ": " . curl_error($ch) . "</message></messages></foxydata>";
 		} else {
 			die("Connection Error: " . curl_error($ch));
 		}
@@ -433,4 +479,62 @@ function foxyshop_get_foxycart_data($foxyData, $silent_fail = true) {
 	return $response;
 }
 
-?>
+
+
+//Paging for Orders, Customers, Subscriptions
+function foxyshop_api_paging_nav($type, $position, $xml, $querystring) {
+	global $foxyshop_settings, $wp_version;
+	
+	//Pagination
+	$p = (int)(version_compare($foxyshop_settings['version'], '0.7.1', "<") ? 50 : FOXYSHOP_API_ENTRIES_PER_PAGE);
+	$start_offset = (int)(version_compare($foxyshop_settings['version'], '0.7.1', "<=") ? -1 : 0);
+	$filtered_total = (int)$xml->statistics->filtered_total;
+	$pagination_start = (int)$xml->statistics->pagination_start;
+	$pagination_end = (int)$xml->statistics->pagination_end;
+	$current_page = $pagination_start >= 1 ? ceil($pagination_start / $p) : 1;
+	$total_pages = $filtered_total > 0 ? ceil($filtered_total / $p) : 0;
+
+	//echo print_r($xml->statistics);
+	//echo "<br />Current Page: " . $current_page . "";
+	//echo "<br />Total Pages: " . $total_pages . "<br />";
+
+
+	echo '<div class="tablenav ' . $position . '">';
+	
+	//All Transaction
+	if ($type == "transactions") {
+		echo '<div class="alignleft actions">'."\n";
+		echo '<select name="action-' . $position . '">';
+		echo '<option selected="selected" value="-1">Bulk Actions</option>';
+		echo '<option value="archive">Archive</option>';
+		echo '<option value="unarchive">Unarchive</option>';
+		echo '</select>'."\n";
+		echo '<input type="submit" value="Apply" class="button-secondary action" id="doaction" name="">'."\n";		
+		echo '</div>'."\n";
+	}
+
+	echo '<input type="hidden" name="paged-' . $position . '-original" value="' . $current_page . '" />'."\n";
+	echo '<div class="tablenav-pages"><span class="displaying-num">' . $filtered_total . ' item' . ($filtered_total == 1 ? '' : 's') . '</span>'."\n";
+
+	if ($pagination_start > 1 || $filtered_total > $pagination_end) {
+		//First
+		echo '<span class="pagination-links"><a href="edit.php' . $querystring . '&amp;pagination_start=' . (1 + $start_offset) . '" title="Go to the first page" class="first-page' . ($current_page == 1 ? ' disabled' : '') . '">&laquo;</a>'."\n";
+
+		//Previous
+		echo '<a href="edit.php' . $querystring . '&amp;pagination_start=' . ($pagination_start - $p + $start_offset) . '" title="Go to the previous page" class="prev-page' . ($current_page == 1 ? ' disabled' : '') . '">&lsaquo;</a>'."\n";
+
+		//Enter Page
+		echo '<span class="paging-input"><input type="text" size="1" class="foxyshop_paged_number" value="' . $current_page . '" name="paged-' . $position . '" title="Current page" class="current-page"> of <span class="total-pages">' . $total_pages . '</span></span>'."\n";
+
+		//Next
+		echo '<a href="edit.php' . $querystring . '&amp;pagination_start=' . ($pagination_end + 1 + $start_offset) . '" title="Go to the next page" class="next-page' . ($filtered_total <= $pagination_end ? ' disabled' : '') . '">&rsaquo;</a>'."\n";
+
+		//Last
+		echo '<a href="edit.php' . $querystring . '&amp;pagination_start=' . ((($total_pages - 1) * $p) + 1 + $start_offset) . '" title="Go to the last page" class="last-page' . ($filtered_total <= $pagination_end ? ' disabled' : '') . '">&raquo;</a></span>'."\n";
+	}
+
+	echo '</div>'."\n";
+	
+	echo '</div>'."\n";
+}
+

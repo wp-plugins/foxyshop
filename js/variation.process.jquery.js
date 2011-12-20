@@ -9,6 +9,7 @@ jQuery(document).ready(function($){
 
 	function updateVariations(elSelect) {
 		var current_product_id = elSelect.parents("form").attr("rel");
+		if (typeof current_product_id == 'undefined') current_product_id = elSelect.parent("form").attr("rel");
 		displayKey = new Array();
 		var new_price = $("#fs_price_" + current_product_id).val();
 		var new_price_original = $("#originalprice_" + current_product_id).val();

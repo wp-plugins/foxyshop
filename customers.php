@@ -21,18 +21,26 @@ function foxyshop_customer_management() {
 		$foxy_data_defaults["custom_field_value_filter"] = "";
 	}
 	$foxy_data = wp_parse_args(array("api_action" => "customer_list"), $foxy_data_defaults);
-	$querystring = "?post_type=foxyshop_product&amp;page=foxyshop_customer_management&amp;foxyshop_search=1";
+	$foxyshop_querystring = "?post_type=foxyshop_product&amp;page=foxyshop_customer_management&amp;foxyshop_search=1";
+	$foxyshop_hidden_input = "";
 
 	if (isset($_GET['foxyshop_search'])) {
 		$fields = array("customer_id_filter", "customer_email_filter", "customer_first_name_filter", "customer_last_name_filter", "customer_state_filter", "custom_field_name_filter", "custom_field_value_filter");
 		foreach ($fields as $field) {
 			if (isset($_GET[$field])) {
 				$foxy_data[$field] = $_GET[$field];
-				$querystring .= "&amp;$field=" . urlencode($_GET[$field]);
+				$foxyshop_querystring .= "&amp;$field=" . urlencode($_GET[$field]);
+				$foxyshop_hidden_input .= '<input type="hidden" name="' . $field . '" value="' . htmlspecialchars($_GET[$field]) . '" />' . "\n";
 			}
 		}
 		$foxy_data['pagination_start'] = (isset($_GET['pagination_start']) ? $_GET['pagination_start'] : 0);
-		if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) $foxy_data['entries_per_page'] = 50;
+		$p = (int)(version_compare($foxyshop_settings['version'], '0.7.1', "<") ? 50 : FOXYSHOP_API_ENTRIES_PER_PAGE);
+		if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) $foxy_data['entries_per_page'] = $p;
+		$start_offset = (int)(version_compare($foxyshop_settings['version'], '0.7.1', "<=") ? -1 : 0);
+		if (isset($_GET['paged-top']) || isset($_GET['paged-bottom'])) {
+			if ($_GET['paged-top'] != $_GET['paged-top-original']) $foxy_data['pagination_start'] = $p * ((int)$_GET['paged-top'] - 1) + 1 + $start_offset;
+			if ($_GET['paged-bottom'] != $_GET['paged-bottom-original']) $foxy_data['pagination_start'] = $p * ((int)$_GET['paged-bottom'] - 1) + 1 + $start_offset;
+		}
 	}	
 
 
@@ -94,7 +102,19 @@ function foxyshop_customer_management() {
 		return;
 	}
 	?>
-	<table cellpadding="0" cellspacing="0" border="0" class="wp-list-table widefat foxyshop-list-table" id="customer_table" style="margin-top: 14px;">
+
+	<form action="edit.php" method="get">
+	<input type="hidden" name="foxyshop_search" value="1" />
+	<input type="hidden" name="post_type" value="foxyshop_product" />
+	<input type="hidden" name="page" value="foxyshop_customer_management" />
+	
+	<?php
+	echo $foxyshop_hidden_input;
+	foxyshop_api_paging_nav('customers', 'top', $xml, $foxyshop_querystring);
+	?>
+
+
+	<table cellpadding="0" cellspacing="0" border="0" class="wp-list-table widefat foxyshop-list-table" id="customer_table">
 		<thead>
 			<tr>
 				<th><span><?php _e('Customer ID'); ?></span><span class="sorting-indicator"></span></th>
@@ -124,6 +144,9 @@ function foxyshop_customer_management() {
 		$customer_first_name = (string)$customer->customer_first_name;
 		$customer_last_name = (string)$customer->customer_last_name;
 		$customer_email = (string)$customer->customer_email;
+		
+		$last_modified_date = (string)$customer->last_modified_date;
+		$last_modified_date = date(apply_filters("foxyshop_date_time_format", "Y-m-d H:i"), strtotime($last_modified_date));
 
 		echo '<tr rel="' . $customer_id . '">';
 		echo '<td><strong><a href="#" class="view_detail">' . (string)$customer_id . '</a></strong></td>';
@@ -146,7 +169,7 @@ function foxyshop_customer_management() {
 		if ((string)$customer->cc_number != "") $holder .= '<li>' . __('Card') . ': ' . (string)$customer->cc_number . '</li>'; // 0.7.1 and lower
 		if ((string)$customer->cc_number_masked != "") $holder .= '<li>' . __('Card') . ': ' . (string)$customer->cc_number_masked . '</li>'; //0.7.2+
 		if ((string)$customer->cc_exp_month != "") $holder .= '<li>' . __('Exp') . ': ' . (string)$customer->cc_exp_month . '-' . (string)$customer->cc_exp_year . '</li>';
-		$holder .= '<li>' . __('Last Modified') . ': ' . (string)$customer->last_modified_date . '</li>';
+		$holder .= '<li>' . __('Last Modified') . ': ' . $last_modified_date . '</li>';
 		$holder .= '<li>&nbsp;</li>';
 
 		//Attributes
@@ -211,7 +234,10 @@ function foxyshop_customer_management() {
 
 	echo '</tbody></table>';
 
+	foxyshop_api_paging_nav('customers', 'bottom', $xml, $foxyshop_querystring);
 	?>
+	</form>
+
 	<div id="details_holder"><?php echo $holder; ?></div>
 	
 	<script type="text/javascript" src="<?php echo FOXYSHOP_DIR; ?>/js/jquery.tablesorter.js"></script>
@@ -246,23 +272,6 @@ function foxyshop_customer_management() {
 
 	
 	<?php
-	//Pagination
-	$p = (int)(version_compare($foxyshop_settings['version'], '0.7.0', "==") ? 50 : 50);
-	$total_records = (int)$xml->statistics->total_customers;
-	$filtered_total = (int)$xml->statistics->filtered_total;
-	$pagination_start = (int)$xml->statistics->pagination_start;
-	$pagination_end = (int)$xml->statistics->pagination_end;
-	if ($pagination_start > 1 || $filtered_total > $pagination_end) {
-		echo '<div id="admin_list_pagination">';
-		echo $xml->messages->message[1] . '<br />';
-		if ($pagination_start > 1) echo '<a href="edit.php' . $querystring . '&amp;pagination_start=' . ($pagination_start - $p - 1) . '">&laquo; Previous</a>';
-		if ($pagination_end < $filtered_total) {
-			if ($pagination_start > 1) echo ' | ';
-			echo '<a href="edit.php' . $querystring . '&amp;pagination_start=' . $pagination_end . '">Next &raquo;</a>';
-		}
-		echo '</div>';
-	}
-
 	echo '</div>';
 }
 
