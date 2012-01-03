@@ -3,7 +3,7 @@ Contributors: sparkweb
 Donate link: http://www.foxy-shop.com/contact/
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.0
-Tested up to: 3.3
+Tested up to: 3.3.1
 Stable tag: 3.8
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
