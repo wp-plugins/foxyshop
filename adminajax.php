@@ -24,6 +24,7 @@ function foxyshop_display_ajax() {
 		if ($transaction_template_id) $foxy_data['transaction_template'] = foxyshop_subscription_template($transaction_template_id);
 		$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 		$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
+		do_action("foxyshop_after_subscription_modify", $xml);
 		echo (string)$xml->result . ": " . (string)$xml->messages->message;
 		die;
 	
@@ -32,6 +33,7 @@ function foxyshop_display_ajax() {
 		$foxy_data = array("api_action" => "transaction_modify", "transaction_id" => $id, "hide_transaction" => (int)$_POST['hide_transaction']);
 		$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 		$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
+		do_action("foxyshop_after_transaction_archive", $xml);
 		echo (string)$xml->result . ": " . (string)$xml->messages->message;
 		die;
 	}

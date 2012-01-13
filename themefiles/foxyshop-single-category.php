@@ -5,10 +5,9 @@
 if (function_exists('foxyshop_insert_foxycart_files')) {
 global $product;
 ?>
+<?php foxyshop_include('header'); ?>
 <div id="foxyshop_container">
 	<?php
-	//Product Page Header
-	foxyshop_include('header');
 	
 	//Write Breadcrumbs
 	foxyshop_breadcrumbs(" &raquo; ");
@@ -49,11 +48,9 @@ global $product;
 	
 	//Pagination
 	foxyshop_get_pagination();
-
-	//Product Page Footer
-	foxyshop_include('footer');
 	?>
 </div>
+<?php foxyshop_include('footer'); ?>
 <?php } ?>
 
 <script type="text/javascript">
@@ -68,6 +65,5 @@ jQuery(document).ready(function($){
 
 });
 </script>
-
 
 <?php get_footer(); ?>

@@ -368,16 +368,17 @@ function foxyshop_product_details_setup() {
 		<label id="quantity_hide_label" for="_quantity_hide" style="float: left; margin: 6px 0 0 2px; width: 16px;" title="<?php _e('Hide Quantity Box'); ?>" class="iconsprite <?php echo $_quantity_hide ? "hide_color" : "hide_gray"; ?>"></label>
 		<div style="clear:both"></div>
 	</div>
-	<?php if ($foxyshop_settings['ship_categories']) { ?>
 	<div class="foxyshop_field_control">
-		<label for="_category"><?php _e('Shipping Cat'); ?></label>
+		<label for="_category"><?php _e('FoxyCart Cat'); ?></label>
 		<select name="_category" id="_category">
-			<option value=""><?php _e('Default'); ?></option>
 			<?php
+			if (strpos($foxyshop_settings['ship_categories'], "DEFAULT") === false) $foxyshop_settings['ship_categories'] = "DEFAULT|Default for all products\n" . $foxyshop_settings['ship_categories'];
 			$arrShipCategories = preg_split("/(\r\n|\n|\r)/", $foxyshop_settings['ship_categories']);
 			for ($i = 0; $i < count($arrShipCategories); $i++) {
+				if ($arrShipCategories[$i] == "") continue;
 				$shipping_category = explode("|", $arrShipCategories[$i]);
 				$shipping_category_code = trim($shipping_category[0]);
+				if ($shipping_category_code == "DEFAULT") $shipping_category_code = "";
 				$shipping_category_name = $shipping_category_code;
 				$shipping_category_type = '';
 				if (isset($shipping_category[1])) $shipping_category_name = trim($shipping_category[1]);
@@ -391,7 +392,6 @@ function foxyshop_product_details_setup() {
 			?>
 		</select>
 	</div>
-	<?php } ?>
 	<?php if ($foxyshop_settings['enable_sso'] && $foxyshop_settings['sso_account_required'] == 2) { ?>
 	<div class="foxyshop_field_control">
 		<input type="checkbox" name="_require_sso" id="_require_sso" style="float: left; margin: 5px 0 0 10px;"<?php echo checked(get_post_meta($post->ID,'_require_sso',TRUE),"on"); ?> />
@@ -404,9 +404,18 @@ function foxyshop_product_details_setup() {
 	</div>
 	<div style="clear:both"></div>
 
-	<!-- JavaScript -->
 	<script type="text/javascript">
 	jQuery(document).ready(function($){
+
+		//Check For Illegal Code
+		$("#_code").live("blur", function() {
+			var thisval = $(this).val();
+			if (thisval.indexOf("&") > -1 || thisval.indexOf('"') > -1) {
+				alert("Sorry! You can't use & or \" in the <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?> code.");
+				return false;
+			}
+		});
+
 		$("#_category").change(function() {
 			var current_shipping_type = $("#_category option:selected").attr("rel");
 			if (current_shipping_type == "notshipped" || current_shipping_type == "downloaded") {
@@ -1457,18 +1466,22 @@ function foxyshop_product_meta_save($post_id) {
 	} else {
 		$_weight = (int)$_POST['_weight1'] . ' ' . (double)$_POST['_weight2'];
 	}
+	
+	$_code = trim($_POST['_code']);
+	$_code = str_replace('"', '', $_code);
+	$_code = str_replace('&', '', $_code);
 
 	//Save Product Detail Data
 	foxyshop_save_meta_data('_weight',$_weight);
 	foxyshop_save_meta_data('_price',number_format((double)str_replace(",","",$_POST['_price']),2,".",""));
-	foxyshop_save_meta_data('_code',trim($_POST['_code']));
+	foxyshop_save_meta_data('_code',$_code);
 	if (isset($_POST['_category'])) foxyshop_save_meta_data('_category',$_POST['_category']);
 	foxyshop_save_meta_data('_hide_product',(isset($_POST['_hide_product']) ? $_POST['_hide_product'] : ""));
 
 	//Quantity Settings
 	$_quantity_min = (int)$_POST['_quantity_min'];
 	$_quantity_max = (int)$_POST['_quantity_max'];
-	if ($_quantity_min > $_quantity_max) $_quantity_min = "";
+	if ($_quantity_min > $_quantity_max && $_quantity_max > 0) $_quantity_min = "";
 	if ($_quantity_min <= 0) $_quantity_min = "";
 	if ($_quantity_max <= 0) $_quantity_max = "";
 	foxyshop_save_meta_data('_quantity_min',$_quantity_min);

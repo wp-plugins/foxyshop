@@ -2,7 +2,7 @@
 add_action('admin_menu', 'foxyshop_customer_management_menu');
 
 function foxyshop_customer_management_menu() {
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Customer Management'), __('Customers'), 'manage_options', 'foxyshop_customer_management', 'foxyshop_customer_management');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Customer Management'), __('Customers'), apply_filters('foxyshop_customer_perm', 'manage_options'), 'foxyshop_customer_management', 'foxyshop_customer_management');
 }
 
 function foxyshop_customer_management() {

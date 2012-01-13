@@ -1,16 +1,7 @@
+<?php foxyshop_include('header'); ?>
 <div id="foxyshop_container">
 <?php
 global $foxyshop_prettyphoto_included;
-foxyshop_include('header');
-
-	
-	//PrettyPhoto Includes (can be removed if you want to use a different javascript slideshow plugin)
-	if (!isset($foxyshop_prettyphoto_included)) {
-		echo '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/prettyphoto/jquery.prettyPhoto.js"></script>'."\n";
-		echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/prettyphoto/prettyPhoto.css" type="text/css" media="screen" />'."\n";
-		?><script type="text/javascript">jQuery(document).ready(function($){$("a[rel^='foxyshop_gallery']").prettyPhoto({theme: 'light_square', overlay_gallery: false, social_tools: ''});});</script><?php
-		$foxyshop_prettyphoto_included = 1;
-	}
 	
 	//Initialize Product
 	global $product, $prod;
@@ -31,24 +22,18 @@ foxyshop_include('header');
 	//foxyshop_breadcrumbs(" &raquo; ", "&laquo; Back to Products");
 	
 
-	//Show the Main Image and Slideshow if Available
-	$mediumSRC = foxyshop_get_main_image("medium");
-	$mediumSRCtitle = foxyshop_get_main_image("title");
-	$largeSRC = foxyshop_get_main_image("large");
-	$imagecount = count($product['images']);
-	if ($mediumSRC) {
-		echo '<div class="foxyshop_product_image">';
-		if ($mediumSRC != $largeSRC || $imagecount > 1) echo '<a href="' . $largeSRC . '" rel="foxyshop_gallery' . ($imagecount > 1 ? '[fs_gall]' : '') . '"  title="">';
-		echo '<img src="' . $mediumSRC . '" id="foxyshop_main_product_image" alt="' . htmlspecialchars($mediumSRCtitle) . '" title="" />';
-		if ($mediumSRC != $largeSRC || $imagecount > 1) echo '</a>';
-		foxyshop_image_slideshow("thumbnail", false, "Click Below For More Images:");
-		echo "</div>\n";
-	}
-				
-	
+	//Shows Main Image and Optional Slideshow
+	//Available Built-in Options: prettyPhoto (lightbox), cloud-zoom (inline zooming)
+	//Second arg writes css and js includes on page
+	//If you want to make more customizations, you can grab the code from helperfunctions.php line ~650 and paste here
+	//-------------------------------------------------------------------------------------------------------------------------
+	foxyshop_build_image_slideshow("prettyPhoto", true);
+	//foxyshop_build_image_slideshow("cloud-zoom", true);
+
+
+
 	//Main Product Information Area
 	echo '<div class="foxyshop_product_info">';
-	//edit_post_link('<img src="' . FOXYSHOP_DIR . '/images/editicon.png" alt="Edit Product" width="16" height="16" />','<span class="foxyshop_edit_product">','</span>');
 	echo '<h2>' . apply_filters('the_title', $product['name']) . '</h2>';
 	
 	//Show a sale tag if the product is on sale
@@ -85,6 +70,12 @@ foxyshop_include('header');
 	foxyshop_related_products("Related Products");
 
 
+
+	//Custom Code Can Go Here
+
+
+
+
 	//Ends the form
 	echo '</div>';
 	echo '</form>';
@@ -92,5 +83,5 @@ foxyshop_include('header');
 
 	?>
 	<div class="clr"></div>
-	<?php foxyshop_include('footer'); ?>
 </div>
+<?php foxyshop_include('footer'); ?>

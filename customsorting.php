@@ -2,7 +2,7 @@
 //Only run this if sort key is set to custom
 if ($foxyshop_settings['sort_key'] == "menu_order") add_action('admin_menu', 'foxyshop_custom_sorting_menu');
 function foxyshop_custom_sorting_menu() {    
-	add_submenu_page('edit.php?post_type=foxyshop_product', sprintf(__('Custom %s Sorting'), FOXYSHOP_PRODUCT_NAME_SINGULAR), sprintf(__('Set %s Order'), FOXYSHOP_PRODUCT_NAME_SINGULAR), 'edit_others_pages', 'foxyshop_custom_sort', 'foxyshop_custom_sort');
+	add_submenu_page('edit.php?post_type=foxyshop_product', sprintf(__('Custom %s Sorting'), FOXYSHOP_PRODUCT_NAME_SINGULAR), sprintf(__('Set %s Order'), FOXYSHOP_PRODUCT_NAME_SINGULAR), apply_filters('foxyshop_product_sort_perm', 'edit_others_pages'), 'foxyshop_custom_sort', 'foxyshop_custom_sort');
 }
 
 

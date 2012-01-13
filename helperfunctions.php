@@ -48,7 +48,7 @@ function foxyshop_setup_product($thepost = false) {
 	$new_product['quantity_max_original'] = $new_product['quantity_max'];
 	$new_product['quantity_hide'] = get_post_meta($thepost->ID,'_quantity_hide', 1);
 	$new_product['hide_product'] = get_post_meta($thepost->ID,'_hide_product', 1);
-	$new_product['url'] = get_bloginfo("url") . FOXYSHOP_URL_BASE . '/' . FOXYSHOP_PRODUCTS_SLUG . '/' . $thepost->post_name . '/';
+	$new_product['url'] = get_bloginfo("url") . FOXYSHOP_URL_BASE . '/' . apply_filters('foxyshop_product_url_slug', FOXYSHOP_PRODUCTS_SLUG, $thepost->ID) . '/' . $thepost->post_name . '/';
 	$new_product['post_date'] = strtotime($thepost->post_date);
 
 	//All fields that are loaded straight in without changing or checking data
@@ -308,7 +308,8 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 		} elseif ($variationType == "descriptionfield") {
 			$write .= $writeBeforeVariation;
 			$write .= '<div id="fs_title_' . esc_attr($product['code']) . '_' . $i . '" class="foxyshop_descriptionfield_title ' . $className . $dkeyclass . '"'. $dkey . '>' . esc_attr(str_replace('_',' ',$variationName)) . '</div>'."\n";
-			$write .= '<div id="fs_text_' . esc_attr($product['code']) . '_' . $i . '" class="foxyshop_descriptionfield_text ' . $className . $dkeyclass . '"'. $dkey . '>' . $variationValue . '</div>'."\n";
+			$description_field = '<div id="fs_text_' . esc_attr($product['code']) . '_' . $i . '" class="foxyshop_descriptionfield_text ' . $className . $dkeyclass . '"'. $dkey . '>' . $variationValue . '</div>'."\n";
+			$write .= apply_filters('foxyshop_descriptionfield_variation', $description_field, $product['code'], $i, $className, $dkeyclass, $dkey, $variationValue);
 			$write .= $writeAfterVariation;
 
 		//Select, Checkbox, Radio
@@ -355,8 +356,6 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 		echo '<div class="foxyshop_variations">' . $write . "</div>\n\n";
 	}
 }
-
-
 
 
 function foxyshop_run_variations($variationValue, $variationName, $showPriceVariations, $variationType, $dkey, $dkeyclass, $i, $className) {
@@ -649,9 +648,84 @@ function foxyshop_get_main_image($size = "thumbnail") {
 }
 
 
+function foxyshop_build_image_slideshow($slideshow_type = "prettyPhoto", $use_includes = true) {
+	global $product, $foxyshop_slideshow_includes_set;
+	
+	if (!foxyshop_get_main_image()) return;
+
+	//PrettyPhoto (Lightbox)
+	if ($slideshow_type == "prettyPhoto") {
+		
+		if ($use_includes && !isset($foxyshop_slideshow_includes_set)) {
+			echo '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/prettyphoto/jquery.prettyPhoto.js"></script>'."\n";
+			echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/prettyphoto/prettyPhoto.css" type="text/css" media="screen" />'."\n";
+			?>
+			<script type="text/javascript">
+			jQuery(document).ready(function($) {
+				$("a[rel^='foxyshop_gallery']").prettyPhoto({
+					theme: 'light_square',
+					overlay_gallery: false,
+					slideshow: 3000,
+					social_tools: ''
+				});
+			});
+			</script><?php
+			$foxyshop_slideshow_includes_set = 1;
+		}
+
+
+		$imagecount = count($product['images']);
+		$use_link = (foxyshop_get_main_image("medium") != foxyshop_get_main_image("full") || $imagecount > 1 ? 1 : 0);
+
+		echo '<div class="foxyshop_product_image">'."\n";
+		echo '<div class="foxyshop_product_image_holder">'."\n";
+		
+		if ($use_link) echo '<a href="' . foxyshop_get_main_image('large') . '" rel="foxyshop_gallery' . ($imagecount > 1 ? '[fs_gall]' : '') . '"  title="">';
+		echo '<img src="' . foxyshop_get_main_image('medium') . '" id="foxyshop_main_product_image" alt="' . htmlspecialchars(foxyshop_get_main_image('title')) . '" title="" />';
+		if ($use_link) echo "</a>\n";
+		
+		echo "</div>\n";
+		foxyshop_image_slideshow("thumbnail", false, "Click Below For More Images:", $rel = "foxyshop_gallery[fs_gall]");
+		echo "</div>\n";
+	
+	
+	//Cloudzoom (inline zooming)
+	} elseif ($slideshow_type == "cloud-zoom") {
+
+		if ($use_includes && !isset($foxyshop_slideshow_includes_set)) {
+			echo '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/cloud-zoom.1.0.2.js"></script>'."\n";
+			echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/css/cloud-zoom.css" type="text/css" />'."\n";
+			?>
+			<script type="text/javascript">
+			function foxyshop_cloudzoom_image_change(new_ikey) {
+				jQuery("#foxyshop_slideshow_thumb_" + ikey[new_ikey][0]).trigger("click");
+			}
+			</script><?php
+			$foxyshop_slideshow_includes_set = 1;
+		}
+		
+		$imagecount = count($product['images']);
+		$use_link = (foxyshop_get_main_image("medium") != foxyshop_get_main_image("full") || $imagecount > 1 ? 1 : 0);
+		echo '<div class="foxyshop_product_image">'."\n";
+		echo '<div class="foxyshop_product_image_holder">'."\n";
+
+		if ($use_link) echo '<a href="' . foxyshop_get_main_image("full") . '" id="foxyshop_main_product_image_link_' . $product['id'] . '" class="cloud-zoom" rel="adjustX: 10, adjustY:-4"  title="">';
+		echo '<img src="' . foxyshop_get_main_image("medium") . '" id="foxyshop_main_product_image" alt="' . htmlspecialchars(foxyshop_get_main_image("title")) . '" title="" />';
+		if ($use_link) echo "</a>\n";
+
+		echo "</div>\n";
+
+		foxyshop_image_slideshow("thumbnail", true, "Click Below For More Images:", "useZoom: 'foxyshop_main_product_image_link_" . $product['id'] . "', smallImage: '%medium'", "cloud-zoom-gallery");
+
+		echo "</div>\n";
+	
+	}
+}
+
+
 //Writes Image Slideshow (if available)
 //Arguments Accepted: Small Size, Include Featured, Title Text, and Rel (can use %small and %large)
-function foxyshop_image_slideshow($size = "thumbnail", $includeFeatured = true, $titleText = "Click Below For More Images:", $rel = "foxyshop_gallery[fs_gall]") {
+function foxyshop_image_slideshow($size = "thumbnail", $includeFeatured = true, $titleText = "Click Below For More Images:", $rel = "foxyshop_gallery[fs_gall]", $linkclass = "") {
 	global $product;
 	$write = "";
 	$ikey = "";
@@ -663,21 +737,23 @@ function foxyshop_image_slideshow($size = "thumbnail", $includeFeatured = true, 
 	}
 	if ($useikey) $includeFeatured = true;
 	
-	if (!$size) $size = "thumbnail";
+	$largesize = $linkclass == "cloud-zooom" ? "full" : "large";
 	foreach ($product['images'] as $imageArray) {
 		if ($useikey) {
 			$ikey .= "ikey.push(['" . $imageArray['id'] . "'";
 			$ikey .= ",'" . $imageArray['thumbnail'] . "'";
 			$ikey .= ",'" . $imageArray['medium'] . "'";
-			$ikey .= ",'" . $imageArray['large'] . "'";
+			$ikey .= ",'" . $imageArray[$largesize] . "'";
 			$ikey .= ",'" . str_replace("'","\'",$imageArray['title']) . "'";
 			$ikey .= ",'" . foxyshop_get_verification('image',$imageArray['thumbnail']) . "'";
 			$ikey .= "]);\n";
 		}
 		if (!$imageArray['featured'] || $includeFeatured) {
-			$rel = str_replace("%small", $imageArray[$size], $rel);
-			$rel = str_replace("%large", $imageArray[$size], $rel);
-			$write .= '<li><a href="' . $imageArray['large'] . '" rel="' . $rel . '" title=""><img src="' . $imageArray[$size] . '" alt="' . esc_attr($imageArray['title']) . '" /></a></li>'."\n";
+			$current_rel = $rel;
+			$current_rel = str_replace("%small", $imageArray['thumbnail'], $current_rel);
+			$current_rel = str_replace("%medium", $imageArray['medium'], $current_rel);
+			$current_rel = str_replace("%large", $imageArray[$largesize], $current_rel);
+			$write .= '<li><a href="' . $imageArray[$largesize] . '" id="foxyshop_slideshow_thumb_' . $imageArray['id'] . '"' . ($linkclass ? ' class="' . $linkclass . '"' : '') . ' rel="' . $current_rel . '" title=""><img src="' . $imageArray[$size] . '" alt="' . esc_attr($imageArray['title']) . '" /></a></li>'."\n";
 		}
 	}
 	if ($write && (count($product['images']) != 1 || $includeFeatured)) {

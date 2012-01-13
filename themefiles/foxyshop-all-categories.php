@@ -4,11 +4,9 @@
 //Hide page content if plugin is disabled
 if (function_exists('foxyshop_insert_foxycart_files')) {
 ?>
+<?php foxyshop_include('header'); ?>
 <div id="foxyshop_container">
 	<?php
-	//Product Page Header
-	foxyshop_include('header');
-	
 	
 	//echo '<h1 id="foxyshop_category_title">Products</h1>';
 	
@@ -16,10 +14,9 @@ if (function_exists('foxyshop_insert_foxycart_files')) {
 	//Options: (Parent ID) (Show Product Count in Parentheses) <- Shows all child products (including sub categories)
 	foxyshop_category_children(0, false);
 	
-	//Product Page Footer
-	foxyshop_include('footer');
 	?>
 </div>
+<?php foxyshop_include('footer'); ?>
 <?php } ?>
 
 <script type="text/javascript">

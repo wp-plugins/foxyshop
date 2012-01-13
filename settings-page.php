@@ -38,6 +38,7 @@ function foxyshop_save_settings() {
 		"downloadables_sync",
 		"google_product_support",
 		"google_product_merchant_id",
+		"include_exception_list",
 		"locale_code"
 	);
 	foreach ($fields as $field1) {
@@ -94,7 +95,7 @@ function foxyshop_save_settings() {
 
 add_action('admin_menu', 'foxyshop_settings_menu');
 function foxyshop_settings_menu() {
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Settings'), __('Settings'), 'manage_options', 'foxyshop_settings_page', 'foxyshop_settings_page');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Settings'), __('Settings'), apply_filters('foxyshop_settings_perm', 'manage_options'), 'foxyshop_settings_page', 'foxyshop_settings_page');
 }
 function foxyshop_settings_page() {
 	global $foxyshop_settings, $foxycart_version_array;
@@ -226,7 +227,7 @@ function foxyshop_settings_page() {
 	<table class="widefat">
 		<thead>
 			<tr>
-				<th><img src="<?php echo $settings_icon; ?>" alt="" /><?php _e('FoxyCart Basic Settings'); ?></th>
+				<th><img src="<?php echo $settings_icon; ?>" alt="" /><?php _e('FoxyCart Settings'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -246,6 +247,13 @@ function foxyshop_settings_page() {
 					} ?>
 					</select>
 					<small>Version 0.7.2 is recommended.</small>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="foxyshop_include_exception_list"><?php _e("Skip FoxyCart Includes on These Pages"); ?>:</label>
+					<input type="text" name="foxyshop_include_exception_list" id="foxyshop_include_exception_list" value="<?php echo $foxyshop_settings['include_exception_list']; ?>" size="50" />
+					<a href="#" class="foxyshophelp">Enter page slugs or ID's, separated by comma and the FoxyCart includes will not be included on these pages. This is helpful if you are setting up a template for checkout caching.<br /><br />Enter * to keep includes from showing on any page. This is useful if you want to enter the includes manually.</a>
 				</td>
 			</tr>
 			<tr>
@@ -345,12 +353,12 @@ function foxyshop_settings_page() {
 			<tr>
 				<td>
 					<div id="foxyshop_ship_category_label">
-						<label for="foxyshop_ship_categories" style="vertical-align: top;"><?php _e('Your Shipping Categories'); ?>:</label>
-						<a href="#" class="foxyshophelp">These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?> setup page. Separate each category with a line break. If you only use one category this is not required. If you would like to also display a nice name in the dropdown menu, use a pipe sign "|" like this: free_shipping|Free Shipping. There's also an optional third entry you can put with the product delivery type (shipped, downloaded, not_shipped, flat_rate).</a>
+						<label for="foxyshop_ship_categories" style="vertical-align: top;"><?php _e('FoxyCart Categories'); ?>:</label>
+						<a href="#" class="foxyshophelp">These categories should correspond to the category codes you set up in your FoxyCart admin and will be available in a drop-down on your <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?> setup page. Separate each category with a line break. If you would like to also display a nice name in the dropdown menu, use a pipe sign "|" like this: free_shipping|Free Shipping. There's also an optional third entry you can put with the product delivery type (shipped, downloaded, not_shipped, flat_rate).</a>
 						<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=") && $foxyshop_settings['domain']) echo '<button type="button" class="button" id="ajax_get_category_list">Pull Category List From FoxyCart</button><div id="foxyshop_category_list_waiter"></div>'; ?>
 					</div>
 					<textarea id="foxyshop_ship_categories" name="foxyshop_ship_categories" wrap="auto" style="float: left; width:640px;height: <?php echo strlen($foxyshop_settings['ship_categories']) > 110 ? "160px" : "80px" ?>;"><?php echo $foxyshop_settings['ship_categories']; ?></textarea>
-					<span style="display:block; clear: both; padding-top: 3px;"><strong>Example:</strong> category_code<strong>|</strong>category_description<strong>|</strong>product_delivery_type</span>
+					<span style="display:block; clear: both; padding-top: 3px;"><strong>Syntax:</strong> category_code<strong>|</strong>category_description<strong>|</strong>product_delivery_type</span>
 				</td>
 			</tr>
 			<tr>
@@ -452,7 +460,7 @@ function foxyshop_settings_page() {
 				<td>
 					<label for="foxyshop_locale_code"><?php _e('Currency Locale Code'); ?>:</label> <input type="text" id="foxyshop_locale_code" name="foxyshop_locale_code" value="<?php echo $foxyshop_settings['locale_code']; ?>" style="width: 150px;" />
 					<a href="#" class="foxyshophelp"><?php _e('If you would like to use something other than $ for your currency, enter your locale code here. For the British Pound, enter "en_GB".'); ?></a>
-					<small><a href="http://www.roseindia.net/tutorials/I18N/locales-list.shtml" target="_blank">full list of locale codes</a></small>
+					<small><a href="http://www.roseindia.net/tutorials/I18N/locales-list.shtml" target="_blank" tabindex="99999">full list of locale codes</a></small>
 					<?php if (!function_exists('money_format')) echo '<div style="clear: both; padding-top: 5px;"><em>' . __('Attention: you are using Windows which does not support internationalization. You will be limited to $ (en_US) or &pound; (en_GB).') . '</em></div>'; ?>
 				</td>
 			</tr>
@@ -470,8 +478,8 @@ function foxyshop_settings_page() {
 					<div class="settings_indent">
 						<input type="checkbox" id="foxyshop_ga_advanced" name="foxyshop_ga_advanced"<?php checked($foxyshop_settings['ga_advanced'], "on"); ?> />
 						<label for="foxyshop_ga_advanced"><?php _e('Advanced Google Analytics Code'); ?></label>
-						<a href="#" class="foxyshophelp"><?php _e('Check this box if you are using the amazing FoxyCart Google Analytics Sync. We will put the appropriate code in your footer (but you\'ll still have to setup Google Analytics and your template).'); ?></a>
-						<small><a href="http://wiki.foxycart.com/integration/googleanalytics_async" target="_blank">advanced instructions here</a></small>
+						<a href="#" class="foxyshophelp"><?php _e('Check this box if you are using the advanced FoxyCart Google Analytics Sync. We will put the appropriate code in your footer (but you\'ll still have to setup Google Analytics and your template).'); ?></a>
+						<small><a href="http://wiki.foxycart.com/integration/googleanalytics_async" target="_blank" tabindex="99999">advanced instructions here</a></small>
 					</div>
 				</td>
 			</tr>
@@ -577,7 +585,7 @@ jQuery(document).ready(function($){
 			.css("left",(e.pageX + yOffset) + "px");
 	}).click(function() {
 		return false;
-	});			
+	}).attr("tabindex", "99999");			
 
 	<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=") && $foxyshop_settings['domain']) { ?>
 	$("#ajax_get_category_list").click(function() {

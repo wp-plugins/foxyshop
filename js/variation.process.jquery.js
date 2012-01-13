@@ -126,7 +126,15 @@ jQuery(document).ready(function($){
 			if (typeof window.foxyshop_before_image_change == 'function') foxyshop_before_image_change(new_ikey);
 
 			$(parentForm + " #foxyshop_main_product_image").attr("src",ikey[new_ikey][2]).attr("alt",ikey[new_ikey][4]).parent().attr("href",ikey[new_ikey][3]);
-			$("#foxyshop_cart_product_image_" + current_product_id).attr("name",'image'+ikey[new_ikey][5]).val(ikey[new_ikey][1]);
+			
+			//Cloud-zoom
+			if (typeof window.foxyshop_cloudzoom_image_change == 'function') {
+				foxyshop_cloudzoom_image_change(new_ikey);
+			
+			//Replace Image
+			} else {
+				$("#foxyshop_cart_product_image_" + current_product_id).attr("name",'image'+ikey[new_ikey][5]).val(ikey[new_ikey][1]);
+			}
 			
 			//Plugin Function Here
 			if (typeof window.foxyshop_after_image_change == 'function') foxyshop_after_image_change(new_ikey);

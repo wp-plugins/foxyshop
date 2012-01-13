@@ -5,8 +5,8 @@
 if (function_exists('foxyshop_setup_product')) {
 global $product;
 ?>
+<?php foxyshop_include('header'); ?>
 <div id="foxyshop_container">
-	<?php foxyshop_include('header'); ?>
 	<h1 id="foxyshop_category_title">Product Search</h1>
 
 	<form class="searchform" action="<?php bloginfo("url"); ?>/product-search/" method="get">
@@ -34,11 +34,9 @@ global $product;
 	
 	//Pagination
 	foxyshop_get_pagination();
-	
-	//Product Page Footer
-	foxyshop_include('footer');
 	?>
 </div>
+<?php foxyshop_include('header'); ?>
 <?php } ?>
 
 <script type="text/javascript">
@@ -46,6 +44,5 @@ jQuery(document).ready(function($){
 	$(".foxyshop_product_list>li:nth-child(odd)").css("clear","left");
 });
 </script>
-
 
 <?php get_footer(); ?>

@@ -5,7 +5,7 @@ require(FOXYSHOP_PATH.'/datafeedfunctions.php');
 
 
 //-----------------------------------------------------
-//TRANSACTION DATAFEED
+// TRANSACTION DATAFEED
 //-----------------------------------------------------
 if (isset($_POST["FoxyData"])) {
 
@@ -201,7 +201,7 @@ if (isset($_POST["FoxyData"])) {
 
 
 //-----------------------------------------------------
-//SUBSCRIPTION DATAFEED
+// SUBSCRIPTION DATAFEED
 //-----------------------------------------------------
 } elseif (isset($_POST["FoxySubscriptionData"])) {
 
@@ -324,14 +324,18 @@ if (isset($_POST["FoxyData"])) {
 
 
 //-----------------------------------------------------
-//CONSOLIBYTE QUICKBOOKS UPDATE
+// CONSOLIBYTE QUICKBOOKS UPDATE
 //-----------------------------------------------------
 } elseif (isset($_POST["FoxyInventory"])) {
 
 	foxyshop_consolibyte_inventory_process();
 
 
-//No Post Content Sent
+
+
+//-----------------------------------------------------
+// NO POST CONTENT SENT
+//-----------------------------------------------------
 } else {
 	die('No Content Received From Datafeed');
 }

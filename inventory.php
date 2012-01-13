@@ -52,7 +52,7 @@ function foxyshop_inventory_update() {
 
 add_action('admin_menu', 'foxyshop_inventory_menu');
 function foxyshop_inventory_menu() {
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Inventory Management'), __('Inventory'), 'manage_options', 'foxyshop_inventory_management_page', 'foxyshop_inventory_management_page');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Inventory Management'), __('Inventory'), apply_filters('foxyshop_inventory_perm', 'manage_options'), 'foxyshop_inventory_management_page', 'foxyshop_inventory_management_page');
 }
 
 function foxyshop_inventory_management_page() {

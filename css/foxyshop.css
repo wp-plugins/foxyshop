@@ -263,6 +263,9 @@ input[type="text"].foxyshop_quantity {
 	display: block;
 	border: 1px solid #7D268A;
 }
+.foxyshop_product .foxyshop_product_image {
+	margin-bottom: 20px;
+}
 
 
 

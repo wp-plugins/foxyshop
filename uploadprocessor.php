@@ -63,9 +63,11 @@ if (isset($_POST['foxyshop_image_uploader'])) {
 
 	//Setup New Image
 	$wp_filetype = wp_check_filetype(basename($targetFile), null);
+	$product_title = get_the_title($product_id);
+	if ($product_title == "Auto Draft") $product_title = "Image";
 	$attachment = array(
 		'post_mime_type' => $wp_filetype['type'],
-		'post_title' => get_the_title($product_id),
+		'post_title' => $product_title,
 		'guid' => $upload_dir['url'] . "/" . basename($targetFile),
 		'menu_order' => $product_count + 1,
 		'post_content' => '',

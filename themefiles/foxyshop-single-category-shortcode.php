@@ -1,11 +1,9 @@
 <?php
 global $product, $foxyshop_category_slug, $post;
 ?>
+<?php foxyshop_include('header'); ?>
 <div id="foxyshop_container">
 	<?php
-	//Product Page Header
-	foxyshop_include('header');
-	
 	//-------------------------------------------------------------------------------------------------
 	// Remember that the products on these category pages link to the generated page links (permalinks)
 	//-------------------------------------------------------------------------------------------------
@@ -44,11 +42,9 @@ global $product, $foxyshop_category_slug, $post;
 
 	}
 	echo '</ul>';
-	
-	//Product Page Footer
-	foxyshop_include('footer');
 	?>
 </div>
+<?php foxyshop_include('footer'); ?>
 
 <script type="text/javascript">
 jQuery(document).ready(function($){

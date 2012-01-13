@@ -40,6 +40,25 @@ function foxyshop_load_site_scripts() {
 	wp_enqueue_style('foxyshop_css', FOXYSHOP_DIR . '/css/foxyshop.css', array(), FOXYSHOP_VERSION);
 }
 
+//Checking For Includes To Be Removed
+function foxyshop_check_include_status() {
+	global $foxyshop_settings;
+	$skip = 0;
+	if (defined('FOXYSHOP_SKIP_FOXYCART_INCLUDES')) $foxyshop_settings['include_exception_list'] = "*";
+	if ($foxyshop_settings['include_exception_list']) {
+		if ($foxyshop_settings['include_exception_list'] == "*") {
+			$skip = 1;
+		} else {
+			$include_exception_list = explode(",", str_replace(" ", "", $foxyshop_settings['include_exception_list']));
+			if (is_page($include_exception_list) || is_single($include_exception_list)) $skip = 1;
+		}
+	}
+	if ($skip) {
+		remove_action('wp_head', 'foxyshop_insert_foxycart_files');
+	}
+}
+
+
 function foxyshop_date_picker() {
 	global $wp_version;
 	if (version_compare($wp_version, '3.1', '>=')) {
@@ -178,7 +197,7 @@ function foxyshop_activation() {
 	//Defaults For Settings
 	$default_foxyshop_settings = array(
 		"domain" => "",
-		"version" => "0.7.1",
+		"version" => "0.7.2",
 		"foxyshop_version" => FOXYSHOP_VERSION,
 		"ship_categories" => "",
 		"enable_ship_to" => "",
@@ -220,6 +239,7 @@ function foxyshop_activation() {
 		"google_product_support" => "",
 		"google_product_merchant_id" => "",
 		"google_product_auth" => "",
+		"include_exception_list" => "",
 		"api_key" => "sp92fx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time())
 	);
 	
@@ -268,6 +288,7 @@ function foxyshop_activation() {
 		if (!array_key_exists('google_product_support',$foxyshop_settings)) $foxyshop_settings['google_product_support'] = ""; //3.7
 		if (!array_key_exists('google_product_merchant_id',$foxyshop_settings)) $foxyshop_settings['google_product_merchant_id'] = ""; //3.7
 		if (!array_key_exists('google_product_auth',$foxyshop_settings)) $foxyshop_settings['google_product_auth'] = ""; //3.7
+		if (!array_key_exists('include_exception_list',$foxyshop_settings)) $foxyshop_settings['include_exception_list'] = ""; //3.9
 
 		//Upgrade Variations in 3.0
 		if (version_compare($foxyshop_settings['foxyshop_version'], '3.0', "<")) {
@@ -427,7 +448,7 @@ function foxyshop_get_category_list() {
 		$code = (string)$category->code;
 		$description = (string)$category->description;
 		$product_delivery_type = (string)$category->product_delivery_type;
-		if ($code != "DEFAULT") $output .= "$code|$description|$product_delivery_type\n";
+		$output .= "$code|$description|$product_delivery_type\n";
 	}
 	return trim($output);
 }

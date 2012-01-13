@@ -2,7 +2,7 @@
 add_action('admin_menu', 'foxyshop_subscription_management_menu');
 
 function foxyshop_subscription_management_menu() {
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Subscription Management'), __('Subscriptions'), 'manage_options', 'foxyshop_subscription_management', 'foxyshop_subscription_management');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Subscription Management'), __('Subscriptions'), apply_filters('foxyshop_subscription_perm', 'manage_options'), 'foxyshop_subscription_management', 'foxyshop_subscription_management');
 }
 
 function foxyshop_subscription_management() {

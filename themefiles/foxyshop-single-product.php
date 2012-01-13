@@ -4,16 +4,12 @@
 //Hide page content if plugin is disabled
 if (function_exists('foxyshop_insert_foxycart_files')) {
 ?>
+
+<?php foxyshop_include('header'); ?>
 <div id="foxyshop_container">
 <?php
-foxyshop_include('header');
 while (have_posts()) : the_post();
 	
-	//PrettyPhoto Includes (can be removed if you want to use a different javascript slideshow plugin)
-	echo '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/prettyphoto/jquery.prettyPhoto.js"></script>'."\n";
-	echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/prettyphoto/prettyPhoto.css" type="text/css" media="screen" />'."\n";
-	?><script type="text/javascript">jQuery(document).ready(function($){$("a[rel^='foxyshop_gallery']").prettyPhoto({theme: 'light_square', overlay_gallery: false, social_tools: ''});});</script><?php
-
 	//Initialize Product
 	global $product;
 	$product = foxyshop_setup_product();
@@ -29,21 +25,14 @@ while (have_posts()) : the_post();
 	foxyshop_breadcrumbs(" &raquo; ", "&laquo; Back to Products");
 	
 
-	//Show the Main Image and Slideshow if Image Available
-	$mediumSRC = foxyshop_get_main_image("medium");
-	if ($mediumSRC) {
-		$mediumSRCtitle = foxyshop_get_main_image("title");
-		$largeSRC = foxyshop_get_main_image("large");
-		$imagecount = count($product['images']);
-		echo '<div class="foxyshop_product_image">'."\n";
-		echo '<div class="foxyshop_product_image_holder">'."\n";
-		if ($mediumSRC != $largeSRC || $imagecount > 1) echo '<a href="' . $largeSRC . '" rel="foxyshop_gallery' . ($imagecount > 1 ? '[fs_gall]' : '') . '"  title="">';
-		echo '<img src="' . $mediumSRC . '" id="foxyshop_main_product_image" alt="' . htmlspecialchars($mediumSRCtitle) . '" title="" />';
-		if ($mediumSRC != $largeSRC || $imagecount > 1) echo "</a>\n";
-		echo "</div>\n";
-		foxyshop_image_slideshow("thumbnail", false, "Click Below For More Images:");
-		echo "</div>\n";
-	}
+	//Shows Main Image and Optional Slideshow
+	//Available Built-in Options: prettyPhoto (lightbox), cloud-zoom (inline zooming)
+	//Second arg writes css and js includes on page
+	//If you want to make more customizations, you can grab the code from helperfunctions.php line ~650 and paste here
+	//-------------------------------------------------------------------------------------------------------------------------
+	foxyshop_build_image_slideshow("prettyPhoto", true);
+	//foxyshop_build_image_slideshow("cloud-zoom", true);
+
 				
 	//Main Product Information Area
 	echo '<div class="foxyshop_product_info">';
@@ -88,8 +77,10 @@ while (have_posts()) : the_post();
 	//Custom Code Can Go Here
 	
 	
-	
-	
+
+
+
+
 	//Ends the form
 	echo '</div>';
 	echo '</form>';
@@ -99,9 +90,8 @@ endwhile;
 ?>
 
 	<div class="clr"></div>
-	<?php foxyshop_include('footer'); ?>
 </div>
+<?php foxyshop_include('footer'); ?>
 <?php } ?>
 
-<?php
-get_footer(); ?>
+<?php get_footer(); ?>

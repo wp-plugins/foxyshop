@@ -254,7 +254,7 @@ function foxyshop_google_products_act() {
 
 
 function foxyshop_google_product_menu() {
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Google Products'), __('Google Products'), 'manage_options', 'foxyshop_google_products_page', 'foxyshop_google_products_page');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Google Products'), __('Google Products'), apply_filters('foxyshop_google_product_perm', 'manage_options'), 'foxyshop_google_products_page', 'foxyshop_google_products_page');
 }
 function foxyshop_google_products_page() {
 	global $foxyshop_settings, $product;
@@ -394,7 +394,7 @@ function foxyshop_google_products_page() {
 		}
 
 		//Token Has Expired, Remove and Restart Authentication
-		if ((string)$xml->BODY->H1 == "Token invalid") {
+		if ((string)$xml->BODY->H1 == "Token invalid" || (string)$xml->BODY->H1 == "Token expired") {
 			$foxyshop_settings['google_product_auth'] = "";
 			update_option("foxyshop_settings", $foxyshop_settings);
 			$local_products = array();

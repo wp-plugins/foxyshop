@@ -2,7 +2,7 @@
 //Put in Sidebar
 add_action('admin_menu', 'foxyshop_category_sorting_menu');
 function foxyshop_category_sorting_menu() {    
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Category Sorting'), __('Set Category Order'), 'edit_others_pages', 'foxyshop_category_sort', 'foxyshop_category_sort');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Category Sorting'), __('Set Category Order'), apply_filters('foxyshop_category_sort_perm', 'edit_others_pages'), 'foxyshop_category_sort', 'foxyshop_category_sort');
 }
 
 //Update Order

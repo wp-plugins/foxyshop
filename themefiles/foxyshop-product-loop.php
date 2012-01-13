@@ -5,6 +5,7 @@ referenced in:
 - foxyshop-all-products.php
 - foxyshop-search.php
 - foxyshop-single-category.php
+- foxyshop-single-category-shortcode.php
 - foxyshop-single-category-widget.php
 ****************************/
 

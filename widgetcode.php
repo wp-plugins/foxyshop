@@ -298,7 +298,7 @@ if (is_array($foxyshop_settings)) {
 }
 
 function add_foxyshop_dashboard_stats() {
-	if (!current_user_can('manage_options')) return;
+	if (!current_user_can(apply_filters('foxyshop_dashboard_stats_perm', 'manage_options'))) return;
 	wp_add_dashboard_widget('foxyshop_dashboard_widget', 'FoxyShop Statistics', 'foxyshop_dashboard_stats');	
 	
 	//Move Widget to Right Column

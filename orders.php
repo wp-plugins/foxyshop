@@ -76,7 +76,7 @@ include_once('shippingintegration.php');
 //Order Management
 add_action('admin_menu', 'foxyshop_order_management_menu');
 function foxyshop_order_management_menu() {
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Order Management'), __('Orders'), 'manage_options', 'foxyshop_order_management', 'foxyshop_order_management');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Order Management'), __('Orders'), apply_filters('foxyshop_order_perm', 'manage_options'), 'foxyshop_order_management', 'foxyshop_order_management');
 }
 
 function foxyshop_order_management() {
@@ -205,13 +205,13 @@ function foxyshop_order_management() {
 			</div>
 			<div class="foxyshop_field_control">
 				<label for="product_option_name_filter"><?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?> Option Name</label><input type="text" name="product_option_name_filter" id="product_option_name_filter" value="<?php echo $foxy_data['product_option_name_filter']; ?>" />
-				<label for="product_option_value_filter" style="margin-left: 15px; margin-top: 4px; width: 30px;">Value</label><input type="text" name="product_option_value_filter" id="product_option_value_filter" value="<?php echo $foxy_data['product_option_value_filter']; ?>" />
+				<label for="product_option_value_filter" style="margin-left: 15px; margin-top: 4px; width: 34px;">Value</label><input type="text" name="product_option_value_filter" id="product_option_value_filter" value="<?php echo $foxy_data['product_option_value_filter']; ?>" />
 			</div>
 			
 			<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) { ?>
 			<div class="foxyshop_field_control">
 				<label for="custom_field_name_filter">Custom Field Name</label><input type="text" name="custom_field_name_filter" id="custom_field_name_filter" value="<?php echo $foxy_data['custom_field_name_filter']; ?>" />
-				<label for="custom_field_value_filter" style="margin-left: 15px; margin-top: 4px; width: 30px;">Value</label><input type="text" name="custom_field_value_filter" id="custom_field_value_filter" value="<?php echo $foxy_data['custom_field_value_filter']; ?>" />
+				<label for="custom_field_value_filter" style="margin-left: 15px; margin-top: 4px; width: 34px;">Value</label><input type="text" name="custom_field_value_filter" id="custom_field_value_filter" value="<?php echo $foxy_data['custom_field_value_filter']; ?>" />
 			</div>
 			<?php } ?>
 

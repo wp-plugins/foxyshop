@@ -156,7 +156,7 @@ function foxyshop_save_tools() {
 
 add_action('admin_menu', 'foxyshop_tools_menu');
 function foxyshop_tools_menu() {
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Tools'), __('Tools'), 'manage_options', 'foxyshop_tools', 'foxyshop_tools');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Tools'), __('Tools'), apply_filters('foxyshop_tools_perm', 'manage_options'), 'foxyshop_tools', 'foxyshop_tools');
 }
 
 function foxyshop_check_plugin_status($plugin) {
