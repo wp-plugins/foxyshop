@@ -175,7 +175,7 @@ function foxyshop_plugin_action_links($links, $file) {
 	static $this_plugin;
 	if (!$this_plugin) $this_plugin = "foxyshop/foxyshop.php";
 	if ($file == $this_plugin) {
-		$settings_link = '<a href="' . get_bloginfo('wpurl') . '/wp-admin/edit.php?post_type=foxyshop_product&page=foxyshop_options">Settings</a>';
+		$settings_link = '<a href="' . get_bloginfo('wpurl') . '/wp-admin/edit.php?post_type=foxyshop_product&page=foxyshop_settings_page">Settings</a>';
 		array_unshift($links, $settings_link);
 	}
 	return $links;
