@@ -41,6 +41,34 @@ function foxyshop_display_ajax() {
 }
 
 
+//Attribute AJAX Functions
+add_action('wp_ajax_foxyshop_attribute_manage', 'foxyshop_manage_attribute_ajax');
+function foxyshop_manage_attribute_ajax() {
+	global $wpdb, $foxyshop_settings;
+	check_ajax_referer('foxyshop-save-attribute', 'security');
+	if (!isset($_POST['foxyshop_action'])) die;
+	if (!isset($_POST['att_type'])) die;
+	if (!isset($_POST['id'])) die;
+	
+	$id = $_POST['id'];
+	$att_type = $_POST['att_type'];
+	$att_name = $_POST['att_name'];
+
+	//Save
+	if ($_POST['foxyshop_action'] == 'save_attribute') {
+		$att_value = str_replace('\"', '"', $_POST['att_value']);
+		echo foxyshop_save_attribute($att_type, $id, $att_name, $att_value);
+		die;
+	
+	//Delete
+	} elseif ($_POST['foxyshop_action'] == 'delete_attribute') {
+		echo foxyshop_delete_attribute($att_type, $id, $att_name);
+		die;
+	}
+	die;
+}
+
+
 //Get New Category List AJAX
 add_action('wp_ajax_foxyshop_ajax_get_category_list', 'foxyshop_ajax_get_category_list');
 function foxyshop_ajax_get_category_list() {

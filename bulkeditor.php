@@ -16,7 +16,7 @@ function foxyshop_cfbe_metabox($post_type) {
 			<?php if ($foxyshop_settings['ship_categories']) : ?>
 			<tr>
 				<td>
-					<label for="_category" class="cfbe_special_label"><?php _e('Shipping Category'); ?></label>
+					<label for="_category" class="cfbe_special_label"><?php _e('FoxyCart Category'); ?></label>
 					<input type="radio" name="_category_status" id="_category_status0" value="0" checked="checked" />
 					<label for="_category_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged"); ?></label>
 					<input type="radio" name="_category_status" id="_category_status1" value="1" />
@@ -332,10 +332,7 @@ function foxyshop_cfbe_metabox($post_type) {
 
 <script type="text/javascript">
 jQuery(document).ready(function($){
-
-	<?php if (version_compare($wp_version, '3.1', '>=')) { ?>
 	$("#_salestartdate, #_saleenddate").datepicker({ dateFormat: 'm/d/yy' });
-	<?php } ?>
 	$(".chzn-select").chosen();
 	$(".chzn-container").css("width", "400px");
 	$(".chzn-drop").css("width", "399px");

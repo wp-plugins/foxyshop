@@ -35,7 +35,8 @@ if (isset($_POST["FoxyData"])) {
 	//If you need to use more than one datafeed with FoxyCart, you can enter as many as you like in the $external_datafeeds array
 	//If you are using more than one integration and one of them fails, the entire process will fail and that failure will be sent to FoxyCart.
 	//If you have more than one additional datafeed and one is more unreliable than another, put the most unreliable one first so that any failures will result in a full retry from FoxyCart.
-	//This function will send the WordPress admin an email if any datafeeds fail.
+	//This function will send the WordPress admin (this is filterable) an email if any datafeeds fail.
+	//There are reports that this won't work on GoDaddy's hosting, which begs the question: why are you hosting on GoDaddy?
 	$external_datafeeds = array();
 	foxyshop_run_external_datafeeds($external_datafeeds);
 
@@ -151,9 +152,30 @@ if (isset($_POST["FoxyData"])) {
 			$product_quantity = (int)$transaction_detail->product_quantity;
 			$product_price = (double)$transaction_detail->product_price;
 			$product_shipto = (double)$transaction_detail->shipto;
-			$category_code= (string)$transaction_detail->category_code;
-			$product_delivery_type= (string)$transaction_detail->product_delivery_type;
+			$category_code = (string)$transaction_detail->category_code;
+			$product_delivery_type = (string)$transaction_detail->product_delivery_type;
 			$sub_token_url = (string)$transaction_detail->sub_token_url;
+			$subscription_frequency = (string)$transaction_detail->subscription_frequency;
+			$subscription_startdate = (string)$transaction_detail->subscription_startdate;
+			$subscription_nextdate = (string)$transaction_detail->subscription_nextdate;
+			$subscription_enddate = (string)$transaction_detail->subscription_enddate;
+			
+			//These are the options for the product
+			$transaction_detail_options = array();
+			foreach($transaction_detail->transaction_detail_options->transaction_detail_option as $transaction_detail_option) {
+				$product_option_name = $transaction_detail_option->product_option_name;
+				$product_option_value = (string)$transaction_detail_option->product_option_value;
+				$price_mod = (double)$transaction_detail_option->price_mod;
+				$weight_mod = (double)$transaction_detail_option->weight_mod;
+				
+
+
+
+			}
+
+
+
+
 
 			//If you have custom code to run for each product, put it here:
 
@@ -282,7 +304,7 @@ if (isset($_POST["FoxyData"])) {
 			$to_email = $customer_email;
 			$message = "Dear $customer_first_name,\n\n";
 			$message .= "This is a reminder that your recent subscription payment failed. Please click the link below to update the credit card you have on file with us. Thank you!\n\n";
-			$message .= $sub_token_url . "&cart=checkout\n\n";
+			$message .= $sub_token_url . "&empty=true&cart=checkout\n\n";
 			$message .= "";
 			$headers = 'From: ' . get_bloginfo('name') . ' <' . get_bloginfo('admin_email') . '>' . "\r\n";
 			wp_mail($to_email, $subject_line, $message, $headers);
@@ -308,7 +330,7 @@ if (isset($_POST["FoxyData"])) {
 				$to_email = $customer_email;
 				$message = "Dear $customer_first_name,\n\n";
 				$message .= "This is a reminder that the credit card you have on file with us is about to expire. Please login to your account by clicking the link below to update your card. Thank you!\n\n";
-				$message .= "https://" . $foxyshop_settings['domain'] . "/cart?cart=updateinfo&customer_email=" . urlencode($customer_email) . "\n\n";
+				$message .= "https://" . $foxyshop_settings['domain'] . "/cart?empty=true&cart=updateinfo&customer_email=" . urlencode($customer_email) . "\n\n";
 				$message .= "";
 				$headers = 'From: ' . get_bloginfo('name') . ' <' . get_bloginfo('admin_email') . '>' . "\r\n";
 				wp_mail($to_email, $subject_line, $message, $headers);

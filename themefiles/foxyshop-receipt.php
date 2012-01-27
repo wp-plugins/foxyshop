@@ -232,7 +232,9 @@ foreach($xml->transactions->transaction as $transaction) {
 					echo '<div class="variation">';
 					echo str_replace("_", " ", (string)$transaction_detail_option->product_option_name) . ': ';
 					echo (string)$transaction_detail_option->product_option_value;
-					if ((string)$transaction_detail_option->price_mod != '0.000') echo ' (' . (strpos("-",$transaction_detail_option->price_mod) >= 0 ? '' : '+') . foxyshop_currency((double)$transaction_detail_option->price_mod) . ')';
+					if ((string)$transaction_detail_option->price_mod != '0.000') {
+						echo ' (' . (strpos("-",$transaction_detail_option->price_mod) !== false ? '-' : '+') . foxyshop_currency((double)$transaction_detail_option->price_mod) . ')';
+					}
 					echo '</div>';
 				}
 				?></td>
@@ -250,13 +252,19 @@ foreach($xml->transactions->transaction as $transaction) {
 				<td class="short_cell bold"><?php echo foxyshop_currency((double)$transaction->shipping_total); ?></td>
 
 			</tr>
-			<tr>
-				<td>&nbsp;</td>
-				<td colspan="2" align="right">Tax:</td>
-				<td class="short_cell bold"><?php echo foxyshop_currency((double)$transaction->tax_total); ?></td>
-			</tr>
 			
 			<?php
+			//Taxes
+			foreach($transaction->taxes->tax as $tax) {
+				?>
+				<tr>
+					<td>&nbsp;</td>
+					<td colspan="2" align="right"><?php echo (string)$tax->tax_name; ?>:</td>
+					<td class="short_cell bold"><?php echo foxyshop_currency((double)$tax->tax_amount); ?></td>
+				</tr>
+				<?php
+			}
+
 			//Show Each Discount (if applicable)
 			foreach($transaction->discounts->discount as $discount) {
 				?>

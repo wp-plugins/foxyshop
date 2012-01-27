@@ -111,9 +111,11 @@
         };
 
         this.controlLoop = function () {
+        	
             if (lens) {
                 var x = (mx - sImg.offset().left - (cw * 0.5)) >> 0;
                 var y = (my - sImg.offset().top - (ch * 0.5)) >> 0;
+                
                
                 if (x < 0) {
                     x = 0;
@@ -132,6 +134,7 @@
                     left: x,
                     top: y
                 });
+
                 lens.css('background-position', (-x) + 'px ' + (-y) + 'px');
 
                 destU = (((x) / sImg.outerWidth()) * zoomImage.width) >> 0;
@@ -172,15 +175,24 @@
 		*/
             $mouseTrap = jWin.parent().append(format("<div class='mousetrap' style='background-image:url(\".\");z-index:999;position:absolute;width:%0px;height:%1px;left:%2px;top:%3px;\'></div>", sImg.outerWidth(), sImg.outerHeight(), 0, 0)).find(':last');
 
+			// Detect device type, normal mouse or touchy(ipad android) by albanx
+            var touchy=("ontouchstart" in document.documentElement)?true:false;
+			var m_move='touchmove mousemove';
+			var m_end='touchend mouseleave';
+			var m_ent='touchstart mouseenter';
+			var m_click='touchstart click';
             //////////////////////////////////////////////////////////////////////			
             /* Do as little as possible in mousemove event to prevent slowdown. */
-            $mouseTrap.bind('mousemove', this, function (event) {
-                // Just update the mouse position
-                mx = event.pageX;
-                my = event.pageY;
+            
+            $mouseTrap.bind(m_move, this, function (e) {
+                // Just update the mouse position         
+            	mx=( typeof(e.originalEvent.touches) !='undefined')?
+            			e.originalEvent.touches[0].pageX:e.pageX;
+            	my=( typeof(e.originalEvent.touches) !='undefined')?
+            			e.originalEvent.touches[0].pageY:e.pageY;
             });
             //////////////////////////////////////////////////////////////////////					
-            $mouseTrap.bind('mouseleave', this, function (event) {
+            $mouseTrap.bind(m_end, this, function (event) {
                 clearTimeout(controlTimer);
                 //event.data.removeBits();                
 				if(lens) { lens.fadeOut(299); }
@@ -190,19 +202,25 @@
                     ctx.fadedOut();
                     
                     //FOXYSHOP ADDED
-                    $mouseTrap.css("z-index", "auto");
+                    if ($mouseTrap != null) $mouseTrap.css("z-index", "auto");
                 });																
                 return false;
             });
             //////////////////////////////////////////////////////////////////////			
-            $mouseTrap.bind('mouseenter', this, function (event) {
-			 
+            $mouseTrap.bind(m_ent, this, function (event) {
+
 			 //FOXYSHOP ADDED
 			 $mouseTrap.css("z-index", "999");
-			 
-			 
-			 mx = event.pageX;
-                my = event.pageY;
+
+            	if(touchy)//i consider only one touches for zooming
+				{
+            		event.preventDefault();
+				}
+            	mx=( typeof(event.originalEvent.touches) !='undefined')?
+            			event.originalEvent.touches[0].pageX:event.pageX;
+            	my=( typeof(event.originalEvent.touches) !='undefined')?
+            			event.originalEvent.touches[0].pageY:event.pageY;
+            			
                 zw = event.data;
                 if (zoomDiv) {
                     zoomDiv.stop(true, false);
@@ -355,7 +373,8 @@
                 // Wrap an outer div around the link so we can attach things without them becoming part of the link.
                 // But not if wrap already exists.
                 if ($(this).parent().attr('id') != 'wrap') {
-                    
+
+
                     //FOXYSHOP CHANGED z-index TO auto
                     $(this).wrap('<div id="wrap" style="top:0px;z-index:auto;position:relative;"></div>');
                 }
@@ -366,7 +385,8 @@
             } else if ($(this).is('.cloud-zoom-gallery')) {
                 opts = $.extend({}, relOpts, options);
                 $(this).data('relOpts', opts);
-                $(this).bind('click', $(this), function (event) {
+                var m_click='touchstart click';
+                $(this).bind(m_click, $(this), function (event) {
                     var data = event.data.data('relOpts');
                     // Destroy the previous zoom
                     $('#' + data.useZoom).data('zoom').destroy();

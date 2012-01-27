@@ -9,8 +9,6 @@ function foxyshop_decrypt($src) {
 //Push Feed to External Datafeeds
 function foxyshop_run_external_datafeeds($external_datafeeds) {
     	global $foxyshop_settings;
-
-
 	foreach($external_datafeeds as $feedurl) {
 		if ($feedurl) {
 			$ch = curl_init();
@@ -39,8 +37,6 @@ function foxyshop_run_external_datafeeds($external_datafeeds) {
 			}
 		}
 	}
-
-
 }
 
 
@@ -74,7 +70,7 @@ function foxyshop_datafeed_inventory_update($xml) {
 						//Send Email Alert Email
 						if ($foxyshop_settings['inventory_alert_email'] && $new_count <= $alert_level) {
 							$subject_line = "Inventory Alert: " . $product_name;
-							$to_email = get_bloginfo('admin_email');
+							$to_email = apply_filters('foxyshop_inventory_alert_email', get_bloginfo('admin_email'));
 							$message = "The inventory for one of your products is getting low:\n\n";
 							$message .= "Product Name: $product_name\n";
 							$message .= "Product Code: $product_code\n";

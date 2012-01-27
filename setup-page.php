@@ -23,7 +23,11 @@ function save_foxyshop_setup() {
 
 	global $foxyshop_settings;
 
-	$foxyshop_settings['domain'] = trim(stripslashes(str_replace("http://","",$_POST['foxyshop_domain'])));
+	$domain = $_POST['foxyshop_domain'];
+	if ($domain) delete_option("foxyshop_setup_required"); //Delete the setup prompt if domain entered
+	if ($domain && strpos($domain, ".") === false) $domain .= ".foxycart.com";
+	$foxyshop_settings["domain"] = trim(stripslashes(str_replace("http://","",$domain)));
+
 	$foxyshop_settings['version'] = $_POST['foxyshop_version'];
 	
 	//Get Category List if >= 0.7.2
@@ -43,7 +47,7 @@ function foxyshop_setup() {
 <div class="icon32" id="icon-options-general"><br></div>
 <h2>FoxyShop Setup Wizard</h2>
 
-<a href="http://www.foxy-shop.com/" target="_blank"><img src="<?php echo FOXYSHOP_DIR; ?>/images/logo.png" alt="FoxyShop" style="float: right; margin-left: 20px;" /></a>
+<a href="http://www.foxy-shop.com/?utm_source=plugin&utm_medium=app&utm_campaign=pluginlink_<?php echo FOXYSHOP_VERSION ?>" target="_blank"><img src="<?php echo FOXYSHOP_DIR; ?>/images/logo.png" alt="FoxyShop" style="float: right; margin-left: 20px;" /></a>
 <h3>Cool! You've got your new FoxyShop store installed and you are ready to get started.</h3>
 
 <p>The first thing you'll need to do is open up your FoxyCart account in another window so we can copy some information over there. If you don't have a FoxyCart account yet, that's no problem. Here's a short video overview that may help.</p>
@@ -76,11 +80,22 @@ function foxyshop_setup() {
 	<tbody>
 		<tr>
 			<td><h3>1A</h3></td>
-			<td>
-				<label for="foxyshop_domain"><?php _e('Enter Your Full FoxyCart Domain'); ?>:</label>
-				<input type="text" name="foxyshop_domain" id="foxyshop_domain" value="<?php echo $foxyshop_settings['domain']; ?>" size="50" />
-				<small>Example: yourname.foxycart.com</small>
-			</td>
+
+				<?php
+				if (substr($foxyshop_settings['domain'], -13) == ".foxycart.com") {
+					$foxycart_domain_class = "simple";
+					$foxycart_domain = str_replace(".foxycart.com", "", $foxyshop_settings['domain']);
+				} else {
+					$foxycart_domain_class = "advanced";
+					$foxycart_domain = $foxyshop_settings['domain'];
+				}
+				?>
+				<td class="foxycartdomain <?php echo $foxycart_domain_class; ?>">
+					<label for="foxyshop_domain"><?php _e('Enter Your FoxyCart Domain'); ?>:</label> <input type="text" name="foxyshop_domain" id="foxyshop_domain" value="<?php echo htmlspecialchars($foxycart_domain); ?>" size="50" />
+					<label id="foxydomainsimplelabel">.foxycart.com</label>
+					<div id="foxydomain_simple">Have a customized FoxyCart domain like store.yoursite.com? <a href="#" class="foxydomainpicker" rel="advanced">Click here.</a></div>
+					<div id="foxydomain_advanced">Have a regular FoxyCart domain like yourstore.foxycart.com? <a href="#" class="foxydomainpicker" rel="simple">Click here.</a></div>
+				</td>
 		</tr>
 		<tr>
 			<td><h3>1B</h3></td>
@@ -139,13 +154,17 @@ function foxyshop_setup() {
 </form>
 
 <script type="text/javascript">
-function foxyshop_check_settings_form() {
-	var domain_name = jQuery("#foxyshop_domain").val();
-	if (domain_name && domain_name.indexOf('.') <= 0) {
-		alert('Uh oh! It looks like your domain name might not be entered correctly.\nIt should be your full foxycart domain like this: "yourname.foxycart.com".\nPlease try again or remove your entry for now.');
-		jQuery("#foxyshop_domain").focus();
+jQuery(document).ready(function($){
+	$(".foxydomainpicker").click(function(e) {
+		$(".foxycartdomain").removeClass("simple advanced");
+		$(".foxycartdomain").addClass($(this).attr("rel"));
+		$("#foxyshop_domain").focus().select();
+		e.preventDefault();
 		return false;
-	}
+	});
+});
+
+function foxyshop_check_settings_form() {
 	return true;
 }
 </script>

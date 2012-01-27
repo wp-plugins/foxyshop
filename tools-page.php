@@ -198,7 +198,7 @@ function foxyshop_tools() {
 	if (isset($_GET['foxyshop_flush_rewrite_rules'])) echo '<div class="updated"><p>' . __('WordPress rewrite rules have been flushed.') . '</p></div>';
 
 	//Process Saved Variations
-	if (isset($_GET['processedvars'])) echo '<div class="updated"><p>' . __('Saved variations have been successfully saved.') . '</p></div>';
+	if (isset($_GET['processedvars'])) echo '<div class="updated"><p>' . __('Saved variations have been successfully updated.') . '</p></div>';
 
 	//Update Template
 	if (isset($_GET['updatetemplate'])) {
@@ -242,13 +242,6 @@ function foxyshop_tools() {
 			<tr>
 				<td>
 					<ul id="foxyshoprecommendedplugins">
-						<li><h3><a href="plugin-install.php?tab=search&type=term&s=duplicate+post">Duplicate Post</a></h3> 
-						(quickly copy products)
-						<?php
-						foxyshop_check_plugin_status("duplicate-post");
-						?>
-						</li>
-
 						<li><h3><a href="plugin-install.php?tab=search&type=term&s=taxonomy+images">Taxonomy Images</a></h3> 
 						(set category images)
 						<?php
@@ -260,6 +253,13 @@ function foxyshop_tools() {
 						(change products in bulk)
 						<?php
 						foxyshop_check_plugin_status("custom-field-bulk-editor");
+						?>
+						</li>
+
+						<li><h3><a href="plugin-install.php?tab=search&type=term&s=duplicate+post">Duplicate Post</a></h3> 
+						(quickly copy products)
+						<?php
+						foxyshop_check_plugin_status("duplicate-post");
 						?>
 						</li>
 
@@ -281,6 +281,20 @@ function foxyshop_tools() {
 						(change roles and user abilities)
 						<?php
 						foxyshop_check_plugin_status("capsman");
+						?>
+						</li>
+
+						<li><h3><a href="plugin-install.php?tab=search&type=term&s=sidebar+login">Sidebar Login</a></h3> 
+						(adds a login widget to your sidebar)
+						<?php
+						foxyshop_check_plugin_status("sidebar-login");
+						?>
+						</li>
+
+						<li><h3><a href="plugin-install.php?tab=search&type=term&s=login-logo">Login Logo</a></h3> 
+						(easily add logo to your login pages)
+						<?php
+						foxyshop_check_plugin_status("login-logo");
 						?>
 						</li>
 
@@ -543,7 +557,7 @@ for ($i=1;$i<=$max_variations;$i++) {
 			<input type="text" name="_variation_dkey_<?php echo $i; ?>" id="_variation_dkey_<?php echo $i; ?>" value="<?php echo esc_attr($_variationDisplayKey); ?>" class="dkeynamefield" />
 
 			<!-- Required -->
-			<div class="variation_required_container" rel="<?php echo $i; ?>"<?php echo ($_variation_type == 'text' || $_variation_type == 'textarea' || $_variation_type == 'upload' ? '' : ' style="display: none;"'); ?>>
+			<div class="variation_required_container" rel="<?php echo $i; ?>"<?php echo ($_variation_type == 'dropdown' || $_variation_type == 'text' || $_variation_type == 'textarea' || $_variation_type == 'upload' ? '' : ' style="display: none;"'); ?>>
 				<input type="checkbox" name="_variation_required_<?php echo $i; ?>" id="_variation_required_<?php echo $i; ?>"<?php echo checked($_variationRequired,"on"); ?> />
 				<label for="_variation_required_<?php echo $i; ?>"><?php _e('Make Field Required'); ?></label>
 			</div>
@@ -686,7 +700,7 @@ jQuery(document).ready(function($){
 		$("#variation_holder_"+this_id).html(getVariationContents(new_type, this_id));
 
 		//Hide or Show Required Checkbox Option
-		if (new_type == 'text' || new_type == 'textarea' || new_type == 'upload') {
+		if (new_type == 'dropdown' || new_type == 'text' || new_type == 'textarea' || new_type == 'upload') {
 			$(this).parents(".product_variation").find(".variation_required_container").show();
 		} else {
 			$(this).parents(".product_variation").find(".variation_required_container").hide();
@@ -735,7 +749,7 @@ jQuery(document).ready(function($){
 		new_content += '<label class="dkeylabel" title="Enter a value here if you want your variation to be invisible until called by another variation.">Display Key</label>';
 		new_content += '<input type="text" name="_variation_dkey_' + this_id + '" id="_variation_dkey_' + this_id + '" value="" class="dkeynamefield" />';
 		new_content += '<!-- Required -->';
-		new_content += '<div class="variation_required_container" rel="' + this_id + '" style="display: none;">';
+		new_content += '<div class="variation_required_container" rel="' + this_id + '">';
 		new_content += '<input type="checkbox" name="_variation_required_' + this_id + '" id="_variation_required_' + this_id + '" />';
 		new_content += '<label for="_variation_required_' + this_id + '"><?php _e('Make Field Required'); ?></label>';
 		new_content += '</div>';

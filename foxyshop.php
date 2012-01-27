@@ -5,12 +5,12 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 3.9
+Version: 4.0
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
 
-Copyright (C) 2011 SparkWeb Interactive, Inc.
+Copyright (C) 2012 SparkWeb Interactive, Inc.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -35,7 +35,7 @@ the most out of FoxyShop.
 **************************************************************************/
 
 //Setup Plugin Variables
-define('FOXYSHOP_VERSION', "3.9");
+define('FOXYSHOP_VERSION', "4.0");
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 $foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
@@ -58,8 +58,11 @@ require_once('adminajax.php');
 
 //Set FoxyShop Settings Array
 $foxyshop_settings = get_option("foxyshop_settings");
-if (!is_array($foxyshop_settings)) $foxyshop_settings = foxyshop_activation(); //Runs for the first time
-elseif ($foxyshop_settings['foxyshop_version'] != FOXYSHOP_VERSION) $foxyshop_settings = foxyshop_activation(); //Checks for Old Plugin Version and Perform Upgrade
+if (!is_array($foxyshop_settings)) {
+	$foxyshop_settings = foxyshop_activation(); //Runs for the first time
+} elseif ($foxyshop_settings['foxyshop_version'] != FOXYSHOP_VERSION) {
+	$foxyshop_settings = foxyshop_activation(); //Checks for Old Plugin Version and Perform Upgrade
+}
 $foxyshop_category_sort = get_option('foxyshop_category_sort');
 if (!is_array($foxyshop_category_sort)) $foxyshop_category_sort = array();
 
@@ -125,7 +128,7 @@ if ($foxyshop_settings['manage_inventory_levels']) {
 
 //Generate Product Feed
 if ($foxyshop_settings['google_product_support']) {
-	include_once('productfeed.php');
+	include_once('googleproductfeed.php');
 }
 
 //Tools Page
@@ -145,9 +148,9 @@ add_filter('plugin_action_links', 'foxyshop_plugin_action_links', 10, 2);
 //Frontend Helper Functions
 include_once('helperfunctions.php');
 
-//Template Redirect (files are in /themefiles/)
+//Template Redirect (reference files are in /plugins/foxyshop/themefiles)
 include_once('templateredirect.php');
 
 //Plugin Activation Functions
 register_activation_hook(__FILE__, 'foxyshop_activation');
-register_deactivation_hook( __FILE__, 'foxyshop_deactivation' );
+register_deactivation_hook( __FILE__, 'foxyshop_deactivation');

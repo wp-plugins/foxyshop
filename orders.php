@@ -12,7 +12,7 @@ function foxyshop_multi_api_edit() {
 		$hide_transaction = $act == "archive" ? 1 : 0;
 		foreach ($posts as $postid) {
 			$foxy_data = array("api_action" => "transaction_modify", "transaction_id" => $postid, "hide_transaction" => $hide_transaction);
-			foxyshop_get_foxycart_data($foxy_data);
+			foxyshop_get_foxycart_data($foxy_data); //Run the API Update Call
 		}
 	}
 }
@@ -272,9 +272,7 @@ function foxyshop_order_management() {
 				return false;
 			});
 
-			<?php if (version_compare($wp_version, '3.1', '>=')) { ?>
 			$(".foxyshop_date_field").datepicker({ dateFormat: 'yy-mm-dd' });
-			<?php } ?>
 		});
 		</script>
 
@@ -390,16 +388,20 @@ function foxyshop_order_management() {
 		$holder .= '<div class="foxyshop_list_col">';
 		$holder .= '<h4>Order Details</h4>';
 		$holder .= '<ul>';
-		$holder .= '<li>' . FOXYSHOP_PRODUCT_NAME_PLURAL . ': ' . foxyshop_currency((double)$transaction->product_total) . '</li>';
-		$holder .= '<li>Tax: ' . foxyshop_currency((double)$transaction->tax_total) . '</li>';
-		$holder .= '<li>Shipping: ' . foxyshop_currency((double)$transaction->shipping_total) . '</li>';
-		$holder .= '<li><strong>Order Total: ' . foxyshop_currency((double)$transaction->order_total) . '</strong></li>';
-		$holder .= '<li>&nbsp;</li>';
+		$holder .= '<li>Subtotal: ' . foxyshop_currency((double)$transaction->product_total) . '</li>';
 
 		//Discounts
 		foreach($transaction->discounts->discount as $discount) {
-			$holder .= '<li>' . $discount->name . ': ' . foxyshop_currency((double)$discount->amount) . '</li>';
+			$holder .= '<li>' . (string)$discount->name . ': ' . foxyshop_currency((double)$discount->amount) . '</li>';
 		}
+
+		//Taxes
+		foreach($transaction->taxes->tax as $tax) {
+			$holder .= '<li>' . (string)$tax->tax_name . ': ' . foxyshop_currency((double)$tax->tax_amount) . '</li>';
+		}
+		
+		$holder .= '<li>Shipping: ' . foxyshop_currency((double)$transaction->shipping_total) . '</li>';
+		$holder .= '<li><strong>Order Total: ' . foxyshop_currency((double)$transaction->order_total) . '</strong></li>';
 
 		$holder .= '</ul>';
 		$holder .= '</div>';
@@ -462,59 +464,69 @@ function foxyshop_order_management() {
 		//Custom Fields
 		foreach($transaction->custom_fields->custom_field as $custom_field) {
 			if ($custom_field->custom_field_name != 'ga') {
-				$holder .= '<li><strong>' . str_replace("_"," ",$custom_field->custom_field_name) . ':</strong> ' . $custom_field->custom_field_value . '</li>';
+				$holder .= '<li><strong>' . str_replace("_"," ",(string)$custom_field->custom_field_name) . ':</strong> ' . (string)$custom_field->custom_field_value . '</li>';
 			}
 		}
 		
-		//Attributes
-		if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) {
-			foreach($transaction->attributes->attribute as $attribute) {
-				$holder .= '<li><strong>' . str_replace("_"," ",$attribute->attribute_name) . ':</strong> ' . $attribute->attribute_value . '</li>';
-			}
-		}
-
 		$holder .= '</ul>';
 		$holder .= '</div>';
 
 
+		
+		//Custom Attributes
+		$holder .= foxyshop_manage_attributes($transaction->attributes, $transaction_id, "transaction");
+
+
+
 		$holder .= '<div style="clear: both; height: 20px;"></div>';
 
-		foreach($transaction->transaction_details->transaction_detail as $transaction_details) {
+		foreach($transaction->transaction_details->transaction_detail as $transaction_detail) {
 			$holder .= '<div class="product_listing">';
-			if ($transaction_details->image != "") {
+			if ($transaction_detail->image != "") {
 				$holder .= '<div class="image_div">';
-				if ($transaction_details->url != "") $holder .= '<a href="' . $transaction_details->url . '" target="_blank">';
-				$holder .= '<img src="' . $transaction_details->image . '" />';
-				if ($transaction_details->url != "") $holder .= '</a>';
+				if ($transaction_detail->url != "") $holder .= '<a href="' . $transaction_detail->url . '" target="_blank">';
+				$holder .= '<img src="' . $transaction_detail->image . '" />';
+				if ($transaction_detail->url != "") $holder .= '</a>';
 				$holder .= '</div>';
 			}
-			$holder .= '<div class="details_div">';
-			$holder .= '<h4>' . $transaction_details->product_name . '</h4>';
-			$holder .= '<ul>';
-			if ((string)$transaction_details->shipto != "") $holder .= '<li>Ship To: ' . (string)$transaction_details->shipto . '</li>';
-			$holder .= '<li>Code: ' . (string)$transaction_details->product_code . '</li>';
-			$holder .= '<li>Price: ' . foxyshop_currency((double)$transaction_details->product_price). '</li>';
-			$holder .= '<li>Qty: ' . $transaction_details->product_quantity . '</li>';
-			if ((string)$transaction_details->product_weight != "0.000") $holder .= '<li>Weight: ' . (string)$transaction_details->product_weight . '</li>';
-			if ((string)$transaction_details->category_code != "DEFAULT") $holder .= '<li>Category: ' . (string)$transaction_details->category_description . '</li>';
-			if ((string)$transaction_details->product_delivery_type != "shipped") $holder .= '<li>Delivery Type: ' . (string)$transaction_details->product_delivery_type . '</li>';
-			if ((string)$transaction_details->downloadable_url != "") $holder .= '<li>Downloadable URL: <a href="' . (string)$transaction_details->downloadable_url . '" target="_blank">Click Here</a></li>';
-			if ($transaction_details->subscription_frequency != "") {
-				$holder .= '<li>Subscription Frequency: ' . (string)$transaction_details->subscription_frequency . '</li>';
-				$holder .= '<li>Subscription Start Date: ' . (string)$transaction_details->subscription_startdate . '</li>';
-				$holder .= '<li>Subscription Next Date: ' . (string)$transaction_details->subscription_nextdate . '</li>';
-				if ((string)$transaction_details->subscription_enddate != "0000-00-00") $holder .= '<li>Subscription End Date: ' . (string)$transaction_details->subscription_enddate . '</li>';
+
+			$product_discount = 0;
+			$weight_discount = 0;
+			foreach($transaction_detail->transaction_detail_options->transaction_detail_option as $transaction_detail_option) {
+				$product_discount += (double)$transaction_detail_option->price_mod;
+				$weight_discount += (double)$transaction_detail_option->weight_mod;
 			}
-			foreach($transaction_details->transaction_detail_options->transaction_detail_option as $transaction_detail_option) {
+
+			
+			$holder .= '<div class="details_div">';
+			$holder .= '<h4>' . $transaction_detail->product_name . '</h4>';
+			$holder .= '<ul>';
+			if ((string)$transaction_detail->shipto != "") $holder .= '<li>Ship To: ' . (string)$transaction_detail->shipto . '</li>';
+			$holder .= '<li>Code: ' . (string)$transaction_detail->product_code . '</li>';
+			$holder .= '<li>Price: ' . foxyshop_currency((double)$transaction_detail->product_price). '</li>';
+			if ($product_discount != 0) $holder .= '<li>Adjusted Price: ' . foxyshop_currency((double)$transaction_detail->product_price + $product_discount). '</li>';
+			$holder .= '<li>Qty: ' . $transaction_detail->product_quantity . '</li>';
+			if ((string)$transaction_detail->product_weight != "0.000") $holder .= '<li>Weight: ' . (string)$transaction_detail->product_weight . '</li>';
+			if ($weight_discount != 0) $holder .= '<li>Adjusted Weight: ' . ((double)$transaction_detail->product_weight + $weight_discount). '</li>';
+			if ((string)$transaction_detail->category_code != "DEFAULT") $holder .= '<li>Category: ' . (string)$transaction_detail->category_description . '</li>';
+			if ((string)$transaction_detail->product_delivery_type != "shipped") $holder .= '<li>Delivery Type: ' . (string)$transaction_detail->product_delivery_type . '</li>';
+			if ((string)$transaction_detail->downloadable_url != "") $holder .= '<li>Downloadable URL: <a href="' . (string)$transaction_detail->downloadable_url . '" target="_blank">Click Here</a></li>';
+			if ($transaction_detail->subscription_frequency != "") {
+				$holder .= '<li>Subscription Frequency: ' . (string)$transaction_detail->subscription_frequency . '</li>';
+				$holder .= '<li>Subscription Start Date: ' . (string)$transaction_detail->subscription_startdate . '</li>';
+				$holder .= '<li>Subscription Next Date: ' . (string)$transaction_detail->subscription_nextdate . '</li>';
+				if ((string)$transaction_detail->subscription_enddate != "0000-00-00") $holder .= '<li>Subscription End Date: ' . (string)$transaction_detail->subscription_enddate . '</li>';
+			}
+			foreach($transaction_detail->transaction_detail_options->transaction_detail_option as $transaction_detail_option) {
 				$holder .= '<li>';
-				$holder .= str_replace("_", " ", $transaction_detail_option->product_option_name) . ': ';
-				if (substr($transaction_detail_option->product_option_value,0,5) == "file-") {
+				$holder .= str_replace("_", " ", (string)$transaction_detail_option->product_option_name) . ': ';
+				if (substr((string)$transaction_detail_option->product_option_value,0,5) == "file-") {
 					$upload_dir = wp_upload_dir();
-					$holder .= '<a href="' . $upload_dir['baseurl'] . '/customuploads/' . $transaction_detail_option->product_option_value . '" target="_blank">' . $transaction_detail_option->product_option_value . '</a>';
+					$holder .= '<a href="' . $upload_dir['baseurl'] . '/customuploads/' . (string)$transaction_detail_option->product_option_value . '" target="_blank">' . (string)$transaction_detail_option->product_option_value . '</a>';
 				} else {
 					$holder .= $transaction_detail_option->product_option_value;
 				}
-				if ((string)$transaction_detail_option->price_mod != '0.000') $holder .= ' (' . (strpos("-",$transaction_detail_option->price_mod) >= 0 ? '' : '+') . foxyshop_currency((double)$transaction_detail_option->price_mod) . ')';
+				if ((string)$transaction_detail_option->price_mod != '0.000') $holder .= ' (' . (strpos("-",$transaction_detail_option->price_mod) !== false ? '-' : '+') . foxyshop_currency((double)$transaction_detail_option->price_mod) . ')';
 				$holder .= '</li>';
 			}
 
@@ -591,6 +603,8 @@ function foxyshop_order_management() {
 			
 			return false;
 		});
+
+		<?php foxyshop_manage_attributes_jquery('transaction'); ?>
 
 	});
 	</script>

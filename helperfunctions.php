@@ -8,7 +8,7 @@ function foxyshop_insert_foxycart_files() {
 			echo $foxyshop_settings['foxycart_include_cache'];
 		} else {
 			echo "<!-- BEGIN FOXYCART FILES -->\n";
-			echo '<link rel="stylesheet" href="//cdn.foxycart.com/static/scripts/colorbox/1.3.17/style1_fc/colorbox.css" type="text/css" media="screen" charset="utf-8" />'."\n";
+			echo '<link rel="stylesheet" href="//cdn.foxycart.com/static/scripts/colorbox/1.3.18/style1_fc/colorbox.css" type="text/css" media="screen" charset="utf-8" />'."\n";
 			echo '<script src="//cdn.foxycart.com/' . str_replace('.foxycart.com','',$foxyshop_settings['domain']) . '/foxycart.colorbox.js" type="text/javascript" charset="utf-8"></script>'."\n";
 			echo "<!-- END FOXYCART FILES -->\n";
 		}
@@ -166,7 +166,7 @@ function foxyshop_start_form() {
 	if ($localsettings['n_sep_by_space'] == 127) $l18n_value = "$|.|,|1|0";
 
 	echo "\n";
-	echo '<form action="https://' . esc_attr($foxyshop_settings['domain']) . '/cart" method="post" accept-charset="utf-8" class="foxyshop_product" id="foxyshop_product_form_' . $product['id'] . '" rel="' . $product['id'] . '">'."\n";
+	echo '<form action="https://' . esc_attr($foxyshop_settings['domain']) . '/cart" method="post" accept-charset="utf-8" class="foxyshop_product" id="foxyshop_product_form_' . $product['id'] . '" rel="' . $product['id'] . '"' . apply_filters('foxyshop_form_attributes', '') . '">'."\n";
 	echo '<input type="hidden" name="price' . foxyshop_get_verification('price') . '" id="fs_price_' . $product['id'] . '" value="' . $product['price'] . '" />'."\n";
 	echo '<input type="hidden" name="x:originalprice" value="' . $product['originalprice'] . '" id="originalprice_' . $product['id'] . '" />'."\n";
 	echo '<input type="hidden" name="x:l18n" value="' . apply_filters("foxyshop_form_l18n", $l18n_value) . '" id="foxyshop_l18n_' . $product['id'] . '" />'."\n";
@@ -715,7 +715,7 @@ function foxyshop_build_image_slideshow($slideshow_type = "prettyPhoto", $use_in
 
 		echo "</div>\n";
 
-		foxyshop_image_slideshow("thumbnail", true, "Click Below For More Images:", "useZoom: 'foxyshop_main_product_image_link_" . $product['id'] . "', smallImage: '%medium'", "cloud-zoom-gallery");
+		if ($imagecount > 1) foxyshop_image_slideshow("thumbnail", true, "Click Below For More Images:", "useZoom: 'foxyshop_main_product_image_link_" . $product['id'] . "', smallImage: '%medium'", "cloud-zoom-gallery");
 
 		echo "</div>\n";
 	
@@ -895,17 +895,7 @@ function foxyshop_breadcrumbs($sep = " &raquo; ", $product_fallback = "&laquo; B
 	//Do The Write
 	if ($this_term_id > 0) {
 
-		//WP >= 3.1
-		if (function_exists('get_ancestors')) {
-			$breadcrumbarray = array_merge($breadcrumbarray,get_ancestors($tempterm->term_id, 'foxyshop_categories'));
-		
-		//WP 3.0
-		} else {
-			while ($tempterm->parent != 0) {
-				$tempterm = get_term_by('id',$tempterm->parent,'foxyshop_categories');
-				$breadcrumbarray[] .= $tempterm->term_id;
-			}
-		}
+		$breadcrumbarray = array_merge($breadcrumbarray,get_ancestors($tempterm->term_id, 'foxyshop_categories'));
 		$breadcrumbarray = array_reverse($breadcrumbarray);
 
 		$write1 = '<li class="foxyshop_breadcrumb_base"><a href="' . get_bloginfo('url') . FOXYSHOP_URL_BASE . '/' . FOXYSHOP_PRODUCT_CATEGORY_SLUG . '/">'. $base_name . '</a></li>';

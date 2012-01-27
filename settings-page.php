@@ -65,10 +65,13 @@ function foxyshop_save_settings() {
 		$foxyshop_settings["default_image"] = "";
 	}
 
-	//Delete the setup prompt if domain entered
-	if ($_POST['foxyshop_domain']) delete_option("foxyshop_setup_required");
-
-	$foxyshop_settings["domain"] = trim(stripslashes(str_replace("http://","",$_POST['foxyshop_domain'])));
+	//Set FoxyCart Domain Name
+	$domain = $_POST['foxyshop_domain'];
+	if ($domain) delete_option("foxyshop_setup_required"); //Delete the setup prompt if domain entered
+	if ($domain && strpos($domain, ".") === false) $domain .= ".foxycart.com";
+	$foxyshop_settings["domain"] = trim(stripslashes(str_replace("http://","",$domain)));
+	
+	//Other Settings Treadted Specially
 	$foxyshop_settings["default_weight"] = (int)$_POST['foxyshop_default_weight1'] . ' ' . (double)$_POST['foxyshop_default_weight2'];
 	$foxyshop_settings["products_per_page"] = ((int)$_POST['foxyshop_products_per_page'] == 0 ? -1 : (int)$_POST['foxyshop_products_per_page']);
 
@@ -105,7 +108,7 @@ function foxyshop_settings_page() {
 	
 	
 	<div class="icon32" id="icon-options-general"><br></div>
-	<h2>FoxyShop Settings <a class="<?php if (version_compare(get_bloginfo('version'), '3.1', "<=")) echo "button "; ?>add-new-h2" href="admin.php?page=foxyshop_setup">Setup Wizard</a></h2>
+	<h2>FoxyShop Settings <a class="<?php if (version_compare(get_bloginfo('version'), '3.2', "<")) echo "button "; ?>add-new-h2" href="admin.php?page=foxyshop_setup">Setup Wizard</a></h2>
 	
 
 	<?php
@@ -153,7 +156,7 @@ function foxyshop_settings_page() {
 		<tbody>
 			<tr>
 				<td style="border-bottom: 0 none;">
-					<a href="http://www.foxy-shop.com/" target="_blank"><img src="<?php echo FOXYSHOP_DIR; ?>/images/logo.png" alt="FoxyShop" style="float: right; margin-left: 20px;" /></a>
+					<a href="http://www.foxy-shop.com/?utm_source=plugin&utm_medium=app&utm_campaign=pluginlink_<?php echo FOXYSHOP_VERSION ?>" target="_blank"><img src="<?php echo FOXYSHOP_DIR; ?>/images/logo.png" alt="FoxyShop" style="float: right; margin-left: 20px;" /></a>
 					
 					<p>Stay up to date with the latest updates from FoxyShop by following on Twitter and Facebook.</p>
 					<a href="http://twitter.com/FoxyShopWP" class="twitter-follow-button">Follow @FoxyShopWP</a>
@@ -161,7 +164,7 @@ function foxyshop_settings_page() {
 					<iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo urlencode('https://www.facebook.com/pages/FoxyShop/188079417920111'); ?>&amp;layout=button_count&amp;show_faces=false&amp;width=190&amp;action=like&amp;colorscheme=light&amp;font=arial" scrolling="no" frameborder="0" allowTransparency="true" style="border:none; overflow:hidden; width:190px; height:26px;"></iframe>
 					
 					<p>
-					<a href="http://www.foxy-shop.com/documentation/" target="_blank" class="button"><?php _e('FoxyShop Documentation'); ?></a>
+					<a href="http://www.foxy-shop.com/documentation/?utm_source=plugin&utm_medium=app&utm_campaign=pluginlink_<?php echo FOXYSHOP_VERSION ?>" target="_blank" class="button"><?php _e('FoxyShop Documentation'); ?></a>
 					<a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&url=http://www.foxycart.com/" target="_blank" class="button"><?php _e('FoxyCart Information'); ?></a>
 					<a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&url=http://wiki.foxycart.com/" target="_blank" class="button"><?php _e('FoxyCart Wiki'); ?></a>
 					<a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&url=http://admin.foxycart.com/" target="_blank" class="button"><?php _e('FoxyCart Admin Panel'); ?></a>
@@ -232,9 +235,21 @@ function foxyshop_settings_page() {
 		</thead>
 		<tbody>
 			<tr>
-				<td>
-					<label for="foxyshop_domain"><?php _e('Your FoxyCart Domain'); ?>:</label> <input type="text" name="foxyshop_domain" id="foxyshop_domain" value="<?php echo $foxyshop_settings['domain']; ?>" size="50" />
-					<a href="#" class="foxyshophelp">Example: yourname.foxycart.com<br /><br />If you have your own custom domain, you may enter that as well (cart.yourdomain.com). Do not include the "http://". The FoxyCart include files will be inserted automatically so you won't need to add anything to the header of your site.</a>
+<?php
+if (substr($foxyshop_settings['domain'], -13) == ".foxycart.com") {
+	$foxycart_domain_class = "simple";
+	$foxycart_domain = str_replace(".foxycart.com", "", $foxyshop_settings['domain']);
+} else {
+	$foxycart_domain_class = "advanced";
+	$foxycart_domain = $foxyshop_settings['domain'];
+}
+?>
+				<td class="foxycartdomain <?php echo $foxycart_domain_class; ?>">
+					<label for="foxyshop_domain"><?php _e('Your FoxyCart Domain'); ?>:</label> <input type="text" name="foxyshop_domain" id="foxyshop_domain" value="<?php echo htmlspecialchars($foxycart_domain); ?>" size="50" />
+					<label id="foxydomainsimplelabel">.foxycart.com</label>
+					<a href="#" class="foxyshophelp">If you have your own custom domain, you may enter that as well (store.yoursite.com). Do not include the "http://". The FoxyCart include files will be inserted automatically so you won't need to add anything to the header of your site.</a>
+					<div id="foxydomain_simple">Have a customized FoxyCart domain like store.yoursite.com? <a href="#" class="foxydomainpicker" rel="advanced">Click here.</a></div>
+					<div id="foxydomain_advanced">Have a regular FoxyCart domain like yourstore.foxycart.com? <a href="#" class="foxydomainpicker" rel="simple">Click here.</a></div>
 				</td>
 			</tr>
 			<tr>
@@ -246,7 +261,8 @@ function foxyshop_settings_page() {
 						echo '<option value="' . $key . '"' . ($foxyshop_settings['version'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
 					} ?>
 					</select>
-					<small>Version 0.7.2 is recommended.</small>
+					<a href="#" class="foxyshophelp">Version 0.7.0 was a big step up from 0.6.0 and used the new ColorBox overlay. Version 0.7.1 added images to the cart checkout. Version 0.7.2 added new API options and more new gateways.<br /><br />If you are upgrading to 0.7.2, change your version at FoxyCart and save, then update here.</a>
+					<small>Version 0.7.2 is recommended</small>
 				</td>
 			</tr>
 			<tr>
@@ -583,10 +599,19 @@ jQuery(document).ready(function($){
 		$("#tooltip")
 			.css("top",(e.pageY - xOffset) + "px")
 			.css("left",(e.pageX + yOffset) + "px");
-	}).click(function() {
+	}).click(function(e) {
+		e.preventDefault();
 		return false;
-	}).attr("tabindex", "99999");			
-
+	}).attr("tabindex", "99999");
+	
+	$(".foxydomainpicker").click(function(e) {
+		$(".foxycartdomain").removeClass("simple advanced");
+		$(".foxycartdomain").addClass($(this).attr("rel"));
+		$("#foxyshop_domain").focus().select();
+		e.preventDefault();
+		return false;
+	});
+	
 	<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=") && $foxyshop_settings['domain']) { ?>
 	$("#ajax_get_category_list").click(function() {
 		var data = {
@@ -608,14 +633,7 @@ jQuery(document).ready(function($){
 
 });
 function foxyshop_check_settings_form() {
-	var domain_name = jQuery("#foxyshop_domain").val();
-	if (domain_name && domain_name.indexOf('.') <= 0) {
-		alert('Uh oh! It looks like your domain name might not be entered correctly.\nIt should be your full foxycart domain like this: "yourname.foxycart.com".\nPlease try again or remove your entry for now.');
-		jQuery("#foxyshop_domain").focus();
-		return false;
-	}
 	return true;
 }
 </script>
-<?php }
-?>
+<?php } ?>

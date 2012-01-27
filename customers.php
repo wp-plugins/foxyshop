@@ -172,13 +172,6 @@ function foxyshop_customer_management() {
 		$holder .= '<li>' . __('Last Modified') . ': ' . $last_modified_date . '</li>';
 		$holder .= '<li>&nbsp;</li>';
 
-		//Attributes
-		if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) {
-			foreach($customer->attributes->attribute as $attribute) {
-				$holder .= '<li><strong>' . str_replace("_"," ",$attribute->attribute_name) . ':</strong> ' . $attribute->attribute_value . '</li>';
-			}
-		}
-
 		$holder .= '</ul>';
 		$holder .= '</div>';
 
@@ -226,6 +219,11 @@ function foxyshop_customer_management() {
 			$holder .= '</ul>';
 			$holder .= '</div>';
 		}
+
+		
+		//Custom Attributes
+		$holder .= foxyshop_manage_attributes($customer->attributes, $customer_id, "customer");
+
 		$holder .= '<div style="clear: both; height: 20px;"></div>';
 		$holder .= "</div>\n";
 
@@ -267,6 +265,10 @@ function foxyshop_customer_management() {
 
 			return false;
 		});
+		
+		
+		<?php foxyshop_manage_attributes_jquery('customer'); ?>
+
 	});
 	</script>
 

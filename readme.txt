@@ -2,9 +2,9 @@
 Contributors: sparkweb
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2AHG2QMABF8SG
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
-Requires at least: 3.0
+Requires at least: 3.1
 Tested up to: 3.3.1
-Stable tag: 3.9
+Stable tag: 4.0
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -54,14 +54,33 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 == Screenshots ==
 
 1. Admin Settings
-2. Product Listing
-3. Product Management
-4. Custom Product Order
-5. Order Management
-6. Inventory Levels
+2. Product Management
+3. Custom Product Order
+4. Order Management
+5. Inventory Levels
 
 
 == Changelog ==
+
+= 4.0 =
+* Transaction, Customer, and Subscription attributes can now be managed within FoxyShop (0.7.2+)
+* The discount entry interface has been rebuilt with a more natural entry option
+* Dropdown variations can now click the Required checkbox if they want the first option in the dropdown to be an invalid choice
+* Instead of one tax total, all taxes are now displayed by name on admin order page and default receipt
+* Adjusted item price and weight variations on admin order page now show accurately
+* Cloud-Zoom updated for better mobile device support and removed slideshow if just one image returned
+* Improved Google Product Feed available product matching method
+* Added hook for updating inventory alert email destination
+* Subscriptions now show all products in the subscription, not just the first one
+* Fixed settings link on plugins page
+* Menu name changed from "Products" to "FoxyShop" for easier recognition
+* Removed jQuery from the enqueue if FoxyShop includes skipped
+* Subscription management urls now have empty=true in them to ensure an easier update experience
+* Updated fallback FoxyCart Colorbox CSS to version 3.1.18 (for 0.7.2 users)
+* Added two recommended plugins to tools page for user logins
+* Made the FoxyCart domain entry box on the settings and setup pages a little more self-explanatory
+* WordPress 3.0 support has been removed. Do not upgrade if you are still using WordPress 3.0!
+* See [Release Notes](http://www.foxy-shop.com/2012/01/version-4-0-something-special/) for more details
 
 = 3.9 =
 * Added cloud-zoom image slideshow support
@@ -170,5 +189,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 3.9 =
-Added cloud-zoom feature, fine-grained permissions, and other features and bugfixes
+= 4.0 =
+Support Removed For WordPress 3.0. Added attribute support and better coupon handling. Lots of other minor improvments.

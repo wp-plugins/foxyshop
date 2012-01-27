@@ -5,12 +5,15 @@ h4 {
 	clear: both;
 }
 .foxyshop_field_control .description {
-	display:none;
+	display: none;
 }
 .foxyshop_field_control label {
 	float:left;
 	width: 74px;
-	margin:7px 6px 0 6px;
+	margin: 7px 6px 0 6px;
+}
+.foxyshop_field_control select {
+	margin-bottom: 2px;
 }
 #google_products_data .foxyshop_field_control label {
 	width: 150px;
@@ -38,21 +41,6 @@ h4 {
 	margin:15px 6px;
 	text-transform:uppercase;
 }
-.discount_fields {
-	position: relative;
-	float: left;
-	width: 100%;
-	height: 28px;
-}
-.discount_fields input {
-	position: absolute;
-	right: 7px;
-}
-.discount_fields input:focus {
-	width: 350px!important;
-	z-index:999;
-	text-align: right;
-}
 .foxyshop-list-table tbody .inventory_update_width_highlight {
 	background-color: #FFFFE0!important;
 }
@@ -70,6 +58,47 @@ h4 {
 }
 #customer_table #foxyshop-list-inline td {
 	line-height: 17px;
+}
+.foxyshop_attribute_list {
+	background-color: #fff;
+	border: 1px solid #DFDFDF;
+	margin-bottom: 10px;
+}
+.foxyshop_attribute_list input[type=text] {
+	width: 200px;
+}
+.foxyshop_attribute_list textarea {
+	width: 350px;
+	height: 65px;
+	float: left;
+	margin-bottom: 5px;
+	margin-right: 10px;
+}
+.foxyshop_add_new_attribute, .foxyshop_cancel_new_attribute, .foxyshop_save_attribute, .foxyshop_cancel_save_attribute {
+	margin-bottom: 5px;
+}
+.foxyshop_attribute_delete, .foxyshop_attribute_edit {
+	text-indent: -99999px;
+	float: right;
+	width: 16px;
+	height: 16px;
+	margin: 0 0 5px 10px;
+	visibility: hidden;
+}
+.foxyshop_attribute_list tr.viewing:hover .foxyshop_attribute_delete, .foxyshop_attribute_list tr.viewing:hover .foxyshop_attribute_edit {
+	visibility: visible;
+}
+.foxyshop_attribute_delete {
+	background: url(../images/delete.png) no-repeat;
+}
+.foxyshop_attribute_edit {
+	background: url(../images/editicon.png) no-repeat;
+}
+.foxyshop_attribute_list td div {
+	float: left;
+}
+.foxyshop_attribute_list .col1 {
+	font-weight: bold;
 }
 #foxyshop-list-inline {
 	padding: 4px 7px 2px;
@@ -89,6 +118,33 @@ body .foxyshop-list-table tbody tr.foxyshop-row-updated {
 	width: 80px;
 	margin-top: 3px;
 }
+
+.prediscountlevel, .prediscountamount, .postdiscountamount {
+	color: #999999;
+	float: left;
+	width: 12px;
+	margin-top: 4px;
+}
+.prediscountamount {
+	margin-left: 10px;
+}
+.postdiscountamount {
+	margin-left: 2px;
+}
+#computed_discount {
+	clear: both;
+	width: 100%;
+}
+#discount_levels input {
+	float: left;
+	margin: 0;
+	width: 45px;
+}
+.discountto {
+	float: left;
+	margin: 4px 10px;
+}
+
 
 .inventory_update_width {
 	width: 40px;
@@ -168,7 +224,7 @@ body .foxyshop-list-table tbody tr.foxyshop-row-updated {
 }
 #_sub_frequency {
 	float: left;
-	width: 35px;
+	width: 55px;
 }
 #foxyshop_subscription_attributes span {
 	float: left;
@@ -705,6 +761,9 @@ table.widefat tr:last-child td {
 	padding: 3px;
 }
 
+#foxyshoprecommendedplugins {
+	margin: 0;
+}
 #foxyshoprecommendedplugins li {
 	height: 21px;
 }
@@ -812,9 +871,33 @@ table.widefat tr:last-child td {
 	padding: 5px 7px 10px 7px;
 }
 
+.foxycartdomain.advanced #foxydomainsimplelabel {
+	display: none;
+}
+.foxycartdomain.simple #foxydomain_advanced {
+	display: none
+}
+.foxycartdomain.advanced #foxydomain_simple {
+	display: none
+}
+.foxycartdomain.simple #foxyshop_domain {
+	width: 130px;
+}
+.foxycartdomain.advanced #foxyshop_domain {
+	width: 270px;
+}
+#foxydomain_simple, #foxydomain_advanced {
+	padding-top: 3px;
+	font-style: italic;
+	clear: both;
+}
+#foxyshop_settings_wrap #foxydomainsimplelabel {
+	margin-left: 5px;
+}
+
 
 /* Icons Sprite */
-.iconsprite { background-image: url('../images/iconsprite.png'); background-repeat: no-repeat; text-indent: -99999px; }
+.iconsprite { background-image: url("../images/iconsprite.png"); background-repeat: no-repeat; text-indent: -99999px; }
 .down_color { background-position: 0 0; width: 16px; height: 16px; } 
 .up_color { background-position: 0 -66px; width: 16px; height: 16px; } 
 .hide_color { background-position: 0 -132px; width: 16px; height: 16px; } 

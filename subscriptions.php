@@ -172,13 +172,11 @@ function foxyshop_subscription_management() {
 			
 		
 		</form>
-		<?php if (version_compare($wp_version, '3.1', '>=')) { ?>
 		<script type="text/javascript" charset="utf-8">
 		jQuery(document).ready(function($) {
 			$(".foxyshop_date_field").datepicker({ dateFormat: 'yy-mm-dd' });
 		});
 		</script>
-		<?php } ?>
 
 	<?php
 	if (!isset($_GET['foxyshop_search']) && defined('FOXYSHOP_AUTO_API_DISABLED')) return;
@@ -230,6 +228,10 @@ function foxyshop_subscription_management() {
 		<tbody>
 		
 	<?php
+//echo '<pre>';
+//print_r($xml);
+//echo '</pre>';
+
 	$holder = "";
 	foreach($xml->subscriptions->subscription as $subscription) {
 		$sub_token = (string)$subscription->sub_token;
@@ -242,17 +244,24 @@ function foxyshop_subscription_management() {
 		$frequency = (string)$subscription->frequency;
 		$past_due_amount = (string)$subscription->past_due_amount;
 		$is_active = (string)$subscription->is_active;
+		$product_name = "";
 		if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) {
 			foreach($subscription->transaction_template->transaction_details->transaction_detail as $transaction_detail) {
-				$product_code = (string)$transaction_detail->product_code;
-				$product_name = (string)$transaction_detail->product_name;
+				if ($product_name) $product_name .= "<br />";
 				$product_price = (double)$transaction_detail->product_price;
+				foreach($transaction_detail->transaction_detail_options->transaction_detail_option as $transaction_detail_option) {
+					$product_price += (double)$transaction_detail_option->price_mod;
+				}
+				$product_name .= (string)$transaction_detail->product_name . ' ' . foxyshop_currency($product_price);
 			}
-		} else { // The 0.7.0 code had an extra node, removed in subsequent versions
+		} else { // The 0.7.0 code had an extra transaction_template node which was removed in subsequent versions
 			foreach($subscription->transaction_template->transaction_template->transaction_details->transaction_detail as $transaction_detail) {
-				$product_code = (string)$transaction_detail->product_code;
-				$product_name = (string)$transaction_detail->product_name;
+				if ($product_name) $product_name .= "<br />";
 				$product_price = (double)$transaction_detail->product_price;
+				foreach($transaction_detail->transaction_detail_options->transaction_detail_option as $transaction_detail_option) {
+					$product_price += (double)$transaction_detail_option->price_mod;
+				}
+				$product_name .= (string)$transaction_detail->product_name . ' ' . foxyshop_currency($product_price);
 			}
 		}
 		
@@ -275,7 +284,7 @@ function foxyshop_subscription_management() {
 		echo '<td class="next_transaction_date">' . $next_transaction_date . '</td>';
 		echo '<td class="end_date">' . $end_date . '</td>';
 		echo '<td class="past_due_amount">' . $past_due_amount . '</td>';
-		echo '<td class="product_description">' . $product_name . ' ' . foxyshop_currency($product_price) . '</td>';
+		echo '<td class="product_description">' . $product_name . '</td>';
 		echo '<td class="frequency">' . $frequency . '</td>';
 		echo "</tr>\n";
 
@@ -310,11 +319,11 @@ function foxyshop_subscription_management() {
 		$holder .= '</div>'."\n";
 		$holder .= '<div class="foxyshop_field_control">'."\n";
 		$holder .= '<label for="update_url_' . $sub_token. '">Update URL</label>'."\n";
-		$holder .= '<input type="text" name="update_url" id="update_url_' . $sub_token. '" value="https://' . $foxyshop_settings['domain']. '/cart?sub_token=' . $sub_token . '&amp;cart=checkout" style="width: 390px;" onclick="this.select();" />'."\n";
+		$holder .= '<input type="text" name="update_url" id="update_url_' . $sub_token. '" value="https://' . $foxyshop_settings['domain']. '/cart?sub_token=' . $sub_token . '&amp;empty=true&amp;cart=checkout" style="width: 390px;" onclick="this.select();" />'."\n";
 		$holder .= '</div>'."\n";
 		$holder .= '<div class="foxyshop_field_control">'."\n";
 		$holder .= '<label for="cancel_url_' . $sub_token. '">Cancellation URL</label>'."\n";
-		$holder .= '<input type="text" name="cancel_url" id="cancel_url_' . $sub_token. '" value="https://' . $foxyshop_settings['domain']. '/cart?sub_token=' . $sub_token . '&amp;cart=checkout&amp;sub_cancel=true" style="width: 390px;" onclick="this.select();" />'."\n";
+		$holder .= '<input type="text" name="cancel_url" id="cancel_url_' . $sub_token. '" value="https://' . $foxyshop_settings['domain']. '/cart?sub_token=' . $sub_token . '&amp;empty=true&amp;cart=checkout&amp;sub_cancel=true" style="width: 390px;" onclick="this.select();" />'."\n";
 		$holder .= '</div>'."\n";
 		$holder .= '<div class="foxyshop_field_control">'."\n";
 		$holder .= '<label for="transaction_template_id_' . $sub_token. '">' . __('Transaction Template') . '</label>'."\n";
@@ -326,18 +335,16 @@ function foxyshop_subscription_management() {
 		$holder .= '</select>'."\n";
 		$holder .= '</div>'."\n";
 
-		//Custom Attributes
-		if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) {
-			foreach($subscription->attributes->attribute as $attribute) {
-				$holder .= '<strong>' . str_replace("_"," ",(string)$attribute->attribute_name) . ':</strong> ' . (string)$attribute->attribute_value . '<br />';
-			}
-		}
-
 		$holder .= '<p style="padding-top: 5px; clear: both"><a href="#" class="subscription_save button-primary">Save Changes</a> <a href="#" class="detail_close button">Cancel</a></p>'."\n";
 		$holder .= '<input type="hidden" name="sub_token" value="' . $sub_token. '" />'."\n";
 		$holder .= '<input type="hidden" name="action" value="foxyshop_display_list_ajax_action" />'."\n";
 		$holder .= '<input type="hidden" name="foxyshop_action" value="subscription_modify" />'."\n";
 		$holder .= '<input type="hidden" name="security" value="' . wp_create_nonce("foxyshop-display-list-function") . '" />'."\n";
+
+		
+		//Custom Attributes
+		$holder .= foxyshop_manage_attributes($subscription->attributes, $sub_token, "subscription");
+
 		$holder .= '</form>'."\n";
 		$holder .= '</div>'."\n";
 		
@@ -414,6 +421,9 @@ function foxyshop_subscription_management() {
 			});
 			return false;
 		});
+
+		<?php foxyshop_manage_attributes_jquery('subscription'); ?>
+
 	});
 
 	function foxyshop_format_number(num) { num = num.toString().replace(/\$|\,/g,''); if(isNaN(num)) num = "0"; sign = (num == (num = Math.abs(num))); num = Math.floor(num*100+0.50000000001); cents = num%100; num = Math.floor(num/100).toString(); if(cents<10) cents = "0" + cents; for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++) num = num.substring(0,num.length-(4*i+3))+','+ num.substring(num.length-(4*i+3)); return (((sign)?'':'-') + num + '.' + cents); }

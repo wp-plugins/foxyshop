@@ -4,8 +4,8 @@
 //----------------------------------------------------------------------
 add_action('init', 'foxyshop_create_post_type', 1);
 function foxyshop_create_post_type() {
-	global $foxyshop_settings;
-	
+	global $foxyshop_settings, $wp_version;
+
 	//Custom Taxonomy: Product Categories
 	$labels = array(
 		'name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Categories'),
@@ -55,11 +55,11 @@ function foxyshop_create_post_type() {
 		'singular_name' => FOXYSHOP_PRODUCT_NAME_SINGULAR,
 		'add_new' => __('Add New').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR,
 		'add_new_item' => __('Add New ').FOXYSHOP_PRODUCT_NAME_SINGULAR,
-		'all_items' => __('Manage').' '.FOXYSHOP_PRODUCT_NAME_PLURAL,
 		'edit_item' => __('Edit').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR,
 		'new_item' => __('New').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR,
 		'view_item' => __('View').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR,
-		'menu_name' => (function_exists("is_multi_author") ? FOXYSHOP_PRODUCT_NAME_PLURAL : FOXYSHOP_PRODUCT_NAME_PLURAL),
+		'all_items' => __('Manage').' '.FOXYSHOP_PRODUCT_NAME_PLURAL, //Since WP 3.2
+		'menu_name' => (version_compare($wp_version, '3.2', '>=') ? "FoxyShop" : FOXYSHOP_PRODUCT_NAME_PLURAL),
 		'not_found' =>  __('No').' '.FOXYSHOP_PRODUCT_NAME_PLURAL.' '.__('Found'),
 		'not_found_in_trash' => __('No').' '.FOXYSHOP_PRODUCT_NAME_PLURAL.' '.__('Found in Trash'), 
 		'search_items' => __('Search').' '.FOXYSHOP_PRODUCT_NAME_PLURAL,
@@ -369,7 +369,7 @@ function foxyshop_product_details_setup() {
 		<div style="clear:both"></div>
 	</div>
 	<div class="foxyshop_field_control">
-		<label for="_category"><?php _e('FoxyCart Cat'); ?></label>
+		<label for="_category" style="width:76px; margin-right: 4px;"><?php _e('FoxyCart Cat'); ?></label>
 		<select name="_category" id="_category">
 			<?php
 			if (strpos($foxyshop_settings['ship_categories'], "DEFAULT") === false) $foxyshop_settings['ship_categories'] = "DEFAULT|Default for all products\n" . $foxyshop_settings['ship_categories'];
@@ -568,9 +568,9 @@ function foxyshop_product_details_setup() {
 //-------------------------------------------
 function foxyshop_product_pricing_setup() {
 	global $post, $foxyshop_settings;
-	$_saleprice = number_format((double)get_post_meta($post->ID,'_saleprice',TRUE),2,".",",");
-	$_salestartdate = get_post_meta($post->ID,'_salestartdate',TRUE);
-	$_saleenddate = get_post_meta($post->ID,'_saleenddate',TRUE);
+	$_saleprice = number_format((double)get_post_meta($post->ID, '_saleprice', 1),2,".",",");
+	$_salestartdate = get_post_meta($post->ID, '_salestartdate', 1);
+	$_saleenddate = get_post_meta($post->ID, '_saleenddate', 1);
 
 	//Format Sale Date
 	if ($_salestartdate == '999999999999999999') $_salestartdate = "";
@@ -578,14 +578,32 @@ function foxyshop_product_pricing_setup() {
 	if ($_saleenddate == '999999999999999999') $_saleenddate = "";
 	if ($_saleenddate) $_saleenddate = date('n/j/Y', $_saleenddate);
 	
-	$_discount_quantity_amount = get_post_meta($post->ID,'_discount_quantity_amount',TRUE);
-	$_discount_quantity_percentage = get_post_meta($post->ID,'_discount_quantity_percentage',TRUE);
-	$_discount_price_amount = get_post_meta($post->ID,'_discount_price_amount',TRUE);
-	$_discount_price_percentage = get_post_meta($post->ID,'_discount_price_percentage',TRUE);
-	
 	$_sub_frequency = get_post_meta($post->ID,'_sub_frequency',TRUE);
 	$_sub_startdate = get_post_meta($post->ID,'_sub_startdate',TRUE);
 	$_sub_enddate = get_post_meta($post->ID,'_sub_enddate',TRUE);
+
+	$discount_methods = array(
+		"none" => "No Discounts",
+		"discount_quantity_amount" => "Amount Based on Quantity",
+		"discount_quantity_percentage" => "Percentage Based on Quantity",
+		"discount_price_amount" => "Amount Based on Price",
+		"discount_price_percentage" => "Percentage Based on Price"
+	);
+	$discount_types = array(
+		"allunits" => "All Units",
+		"incremental" => "Incremental",
+		"repeat" => "Repeat",
+		"single" => "Single"
+	);
+	$current_discount_method = "none";
+	$computed_discount = "";
+	foreach ($discount_methods as $key => $val) {
+		if ($key == "none") continue;
+		if (get_post_meta($post->ID, '_' . $key, 1) != "") {
+			$current_discount_method = $key;
+			$computed_discount = get_post_meta($post->ID,'_' . $key, 1);
+		}
+	}
 
 	?>
 	<h4><?php _e('Sale'); ?></h4>
@@ -607,28 +625,256 @@ function foxyshop_product_pricing_setup() {
 	<div style="clear: both;"></div>
 	
 
-	<h4><?php _e('Discounts'); ?> <a href="http://wiki.foxycart.com/v/0.7.1/coupons_and_discounts" target="_blank">(<?php _e('reference'); ?>)</a></h4>
-	<div class="foxyshop_field_control discount_fields">
-		<label for="_discount_quantity_amount"><?php _e('Quantity $'); ?></label>
-		<input type="text" name="_discount_quantity_amount" id="_discount_quantity_amount" value="<?php echo $_discount_quantity_amount; ?>" />
-		<div style="clear:both;"></div>
+	<h4><?php _e('Discounts'); ?> <a href="http://wiki.foxycart.com/v/<?php echo $foxyshop_settings['version']; ?>/coupons_and_discounts" target="_blank">(<?php _e('reference'); ?>)</a></h4>
+	<div class="foxyshop_field_control">
+		<select name="discount_method" id="discount_method">
+		<?php
+		foreach ($discount_methods as $key => $val) {
+			echo '<option value="' . $key . '"';
+			if ($current_discount_method == $key) echo ' selected="selected"';
+			echo ">$val</option>\n";
+		}	
+		?>
+		</select>
 	</div>
-	<div class="foxyshop_field_control discount_fields">
-		<label for="_discount_quantity_percentage"><?php _e('Quantity %'); ?></label>
-		<input type="text" name="_discount_quantity_percentage" id="_discount_quantity_percentage" value="<?php echo $_discount_quantity_percentage; ?>" />
+	
+	<div id="discount_container">
+
+		<div class="foxyshop_field_control">
+			<label for="discount_type"><?php _e('Disc. Type'); ?></label>
+			<select name="discount_type" id="discount_type">
+			<?php
+			foreach ($discount_types as $key => $val) {
+				echo '<option value="' . $key . '"';
+				if ($current_discount_type == $key) echo ' selected="selected"';
+				echo ">$val</option>\n";
+			}	
+			?>
+			</select>
+		</div>
+
+		<div class="foxyshop_field_control">
+			<label for="discount_name"><?php _e('Disc. Name'); ?></label>
+			<input type="text" id="discount_name" name="discount_name" value="" />
+		</div>
+
+		<ul id="discount_levels"></ul>
+
+		<label for="computed_discount"><?php _e('This is Your Computed Discount'); ?>:</label>
+		<input type="text" name="computed_discount" id="computed_discount" value="<?php echo $computed_discount; ?>" />
 		<div style="clear:both;"></div>
+	
 	</div>
-	<div class="foxyshop_field_control discount_fields">
-		<label for="_discount_price_amount"><?php _e('Price $'); ?></label>
-		<input type="text" name="_discount_price_amount" id="_discount_price_amount" value="<?php echo $_discount_price_amount; ?>" />
-		<div style="clear:both;"></div>
-	</div>
-	<div class="foxyshop_field_control discount_fields">
-		<label for="_discount_price_percentage"><?php _e('Price %'); ?></label>
-		<input type="text" name="_discount_price_percentage" id="_discount_price_percentage" value="<?php echo $_discount_price_percentage; ?>" />
-		<div style="clear:both;"></div>
-	</div>
-	<div style="clear:both;"></div>
+
+	<script type="text/javascript">
+	jQuery(document).ready(function($){
+		
+		//On Load
+		write_discount_type();
+		rebuild_discount();
+		
+		//When Discount Type is Changed
+		$("#discount_method").change(function() {
+			var discount_method = $("#discount_method").val();
+	
+			$("#discount_levels input").each(function() {
+				format_discount_values($(this));
+			});
+
+			write_discount_type();
+		});
+		
+		//When levels are adjusted
+		$("#discount_levels input").live("blur", function() {
+			var discount_method = $("#discount_method").val();
+			format_discount_values($(this));
+			compute_discount();
+			check_for_new_discount_line();
+		}).live("keypress", function(e) {
+			if (e.keyCode == 13) {
+				compute_discount();
+				return true;
+			}
+		});
+
+		//When Discount Name, Type are Changed
+		$("#discount_name, #discount_type").change(function() {
+			compute_discount();
+		});
+
+		//When Discount String is Manually Change
+		$("#computed_discount").blur(function() {
+			rebuild_discount();
+		});
+
+
+
+		function write_discount_type() {
+			var discount_method = $("#discount_method").val();
+			if (discount_method == "none") {
+				$("#discount_container").hide();
+			} else {
+				if (discount_method == "discount_quantity_amount" || discount_method == "discount_quantity_percentage") {
+					$(".prediscountlevel").text("");
+				} else {
+					$(".prediscountlevel").text("$");
+				}
+				if (discount_method == "discount_quantity_amount" || discount_method == "discount_price_amount") {
+					$(".prediscountamount").text("$");
+					$(".postdiscountamount").text("");
+				} else {
+					$(".prediscountamount").text("");
+					$(".postdiscountamount").text("%");
+				}
+				$("#discount_container").show();
+			}
+		}
+		
+
+		
+		function rebuild_discount() {
+			var computed_discount = $("#computed_discount").val();
+			var discount_method = $("#discount_method").val();
+			
+			//Discount Name
+			var discount_name = computed_discount.split("{")[0];
+			var discount_type = "";
+			if (!discount_name) discount_name = "Discount";
+			$("#discount_name").val(discount_name);
+			
+			//Discount Values
+			$("#discount_levels li").remove();
+			var discount_vals = computed_discount.substr(computed_discount.indexOf("{") + 1).replace("}","").split("|");
+			
+			//Makes Sure that first element of array is discount type
+			if (discount_vals[0] != "allunits" && discount_vals[0] != "incremental" && discount_vals[0] != "repeat" && discount_vals[0] != "single") {
+				discount_vals.unshift("allunits");
+			}
+
+
+			for (var i = 0; i < discount_vals.length; i++) {
+				
+				//Set Discount Type On First Array (if there)
+				if (i == 0) {
+					$("#discount_type").val(discount_vals[i]);
+					continue;
+				}
+				
+				
+				if (discount_vals[i].indexOf("-") >= 0) {
+					discountlevel1 = discount_vals[i].split('-')[0];
+					discountamount = "-" + discount_vals[i].split("-")[1];
+				} else {
+					discountlevel1 = discount_vals[i].substr(0,discount_vals[i].indexOf("+"));
+					discountamount = "+" + discount_vals[i].substr(discount_vals[i].indexOf("+") + 1);
+				}
+
+				//Write New Lines
+				$("#discount_levels").append(write_discount_line(i, discountlevel1, discountamount, discount_method));
+			}
+
+			//Fill in second number
+			$("#discount_levels li").each(function() {
+				current_number = parseInt($(this).attr("rel"));
+				next_number = current_number + 1;
+
+				if ($('#discount' + next_number + 'a').length > 0) {
+					next_val = $('#discount' + next_number + 'a').val();
+					if (discount_method == "discount_quantity_amount" || discount_method == "discount_quantity_percentage") {
+						discountlevel2 = next_val - 1;
+					} else {
+						discountlevel2 = next_val - .01;
+					}
+					$('#discount' + current_number + 'b').val(discountlevel2);
+				} else {
+					$('#discount' + current_number + 'b').val("x");
+				}
+			});
+			
+			write_discount_type();
+		}
+
+		function check_for_new_discount_line() {
+			var discount_method = $("#discount_method").val();
+			total_lines = $("#discount_levels li").length;
+			total_last_boundary = parseFloat($("#discount" + total_lines + "b").val());
+			if (total_last_boundary > 0) {
+				if (discount_method == "discount_quantity_amount" || discount_method == "discount_quantity_percentage") {
+					new_start_value = total_last_boundary + 1;
+				} else {
+					new_start_value = total_last_boundary + .01;
+				}
+				$("#discount_levels").append(write_discount_line(total_lines + 1, new_start_value, '', discount_method));
+			}
+		
+		}
+
+		function write_discount_line(num, discountlevel1, discountamount, discount_method) {
+			discountamount = foxyshop_format_number(discountamount);
+			if (discountamount >= 0) discountamount = "+" + discountamount;
+			if (discount_method == "discount_quantity_amount" || discount_method == "discount_quantity_percentage") {
+				discountlevel1 = foxyshop_format_number_single(discountlevel1);
+			} else {
+				discountlevel1 = foxyshop_format_number(discountlevel1);
+			}
+
+			var line = "<li rel=\"" + num + "\">\n";
+			line += '<div class="prediscountlevel"></div>';
+			line += '<input type="text" name="discount' + num + 'a" id="discount' + num + 'a" class="discountlevel1" value="' + discountlevel1 + '" />';
+			line += '<div class="discountto">to</div>';
+			line += '<div class="prediscountlevel"></div>';
+			line += '<input type="text" name="discount' + num + 'b" id="discount' + num + 'b" class="discountlevel2" value="" />';
+			line += '<div class="prediscountamount"></div>';
+			line += '<input type="text" name="discount' + num + 'c" id="discount' + num + 'c" class="discountamount" value="' + discountamount+ '" />';
+			line += '<div class="postdiscountamount"></div>';
+			line += '<div style="clear:both;"></div>';
+			line += "</li>\n";
+			return line;
+		}
+
+		function compute_discount() {
+			var computed_discount = "";
+			
+			computed_discount += $("#discount_name").val();
+			computed_discount += "{";
+			computed_discount += $("#discount_type").val();
+			
+			//Put All Vals Here
+			$("#discount_levels li").each(function() {
+				current_number = parseInt($(this).attr("rel"));
+				computed_discount += "|" + $('#discount' + current_number + 'a').val() + $('#discount' + current_number + 'c').val();;
+				
+			});
+		
+			computed_discount += "}";
+			
+			$("#computed_discount").val(computed_discount);
+			
+		}
+
+		function format_discount_values(el) {
+			var currentnumber = el.val();
+			var discount_method = $("#discount_method").val();
+
+			//Amount
+			if (el.hasClass("discountamount")) {
+				newval = foxyshop_format_number(currentnumber);
+				if (newval >= 0) newval = "+" + newval;
+				el.val(newval);
+			//Level
+			} else if (currentnumber != "x" && currentnumber != "") {
+				if (discount_method == "discount_quantity_amount" || discount_method == "discount_quantity_percentage") {
+					el.val(foxyshop_format_number_single(currentnumber));
+				} else {
+					el.val(foxyshop_format_number(currentnumber));
+				}
+			}
+		}
+
+	});
+	</script>
+
+
 
 	<?php if ($foxyshop_settings['manage_inventory_levels']) { ?>
 	<h4><?php _e('Set Inventory Levels'); ?></a></h4>
@@ -658,9 +904,7 @@ function foxyshop_product_pricing_setup() {
 	<script type="text/javascript">
 	jQuery(document).ready(function($){
 	
-		<?php if (version_compare($wp_version, '3.1', '>=')) { ?>
 		$("#_salestartdate, #_saleenddate").datepicker({ dateFormat: 'm/d/yy' });
-		<?php } ?>
 
 
 		$("#_saleprice").blur(function() {
@@ -698,7 +942,7 @@ function foxyshop_product_pricing_setup() {
 
 
 	<?php if ($foxyshop_settings['enable_subscriptions']) { ?>
-	<h4 style="margin-bottom: 3px;"><?php _e('Subscription Attributes'); ?> <a href="http://wiki.foxycart.com/v/0.7.1/cheat_sheet#subscription_product_options" target="_blank">(<?php _e('reference'); ?>)</a></h4>
+	<h4 style="margin-bottom: 3px;"><?php _e('Subscription Attributes'); ?> <a href="http://wiki.foxycart.com/v/<?php echo $foxyshop_settings['version']; ?>/cheat_sheet#subscription_product_options" target="_blank">(<?php _e('reference'); ?>)</a></h4>
 	<span style="color: #999999; display: block; line-height: 15px; margin-bottom: 5px;"><?php _e('You may also enter a'); ?> <a href="http://php.net/manual/en/function.strtotime.php" target="_blank" title="PHP Docs" style="color: #999">strtotime</a> <?php _e('argument for start or end (like +3 months)'); ?></span>
 	<div id="foxyshop_subscription_attributes">
 		<div class="foxyshop_field_control">
@@ -749,7 +993,7 @@ function foxyshop_related_products_setup() {
 	</select>
 	<p style="color: #999999; margin-bottom: 2px;"><?php echo sprintf(__("Click the box above for a drop-down menu showing all %s. Type to search and click or press enter to select."), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></p>
 	<div class="foxyshop_field_control">
-		<label for="_related_order" style="width: 220px; margin-left: 0;">Set Custom Order For Related Products</label> <input type="text" style="width: 220px; float: left;" name="_related_order" id="_related_order" value="<?php echo get_post_meta($post->ID, "_related_order", 1) ?>" /> <span>ID's separated by comma</span>
+		<label for="_related_order" style="width: 226px; margin-left: 0;">Set Custom Order For Related Products</label> <input type="text" style="width: 220px; float: left;" name="_related_order" id="_related_order" value="<?php echo get_post_meta($post->ID, "_related_order", 1) ?>" /> <span>ID's separated by comma</span>
 	</div>
 	<div style="clear: both;"></div>
 	<?php
@@ -866,7 +1110,6 @@ function foxyshop_product_images_setup() {
 	echo '<link rel="stylesheet" href="' . FOXYSHOP_DIR . '/js/uploadify/uploadify.css" type="text/css" media="screen" />'."\n";
 	echo '<script type="text/javascript" src="' . FOXYSHOP_DIR . '/js/uploadify/jquery.uploadify.v2.1.4.min.js"></script>'."\n";
 	//echo '<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>'."\n";
-
 	
 	echo '<input type="file" id="foxyshop_new_product_image">'."\n";
 	echo '<div id="foxyshop_image_waiter"></div>';
@@ -1177,7 +1420,7 @@ function foxyshop_product_variations_setup() {
 				<input type="text" name="_variation_dkey_<?php echo $i; ?>" id="_variation_dkey_<?php echo $i; ?>" value="<?php echo esc_attr($_variationDisplayKey); ?>" class="dkeynamefield" />
 
 				<!-- Required -->
-				<div class="variation_required_container" rel="<?php echo $i; ?>"<?php echo ($_variation_type == 'text' || $_variation_type == 'textarea' || $_variation_type == 'upload' ? '' : ' style="display: none;"'); ?>>
+				<div class="variation_required_container" rel="<?php echo $i; ?>"<?php echo ($_variation_type == 'dropdown' || $_variation_type == 'text' || $_variation_type == 'textarea' || $_variation_type == 'upload' ? '' : ' style="display: none;"'); ?>>
 					<input type="checkbox" name="_variation_required_<?php echo $i; ?>" id="_variation_required_<?php echo $i; ?>"<?php echo checked($_variationRequired,"on"); ?> />
 					<label for="_variation_required_<?php echo $i; ?>"><?php _e('Make Field Required'); ?></label>
 				</div>
@@ -1289,7 +1532,7 @@ jQuery(document).ready(function($){
 		$("#variation_holder_"+this_id).html(getVariationContents(new_type, this_id));
 
 		//Hide or Show Required Checkbox Option
-		if (new_type == 'text' || new_type == 'textarea' || new_type == 'upload') {
+		if (new_type == 'dropdown' || new_type == 'text' || new_type == 'textarea' || new_type == 'upload') {
 			$(this).parents(".product_variation").find(".variation_required_container").show();
 		} else {
 			$(this).parents(".product_variation").find(".variation_required_container").hide();
@@ -1467,6 +1710,7 @@ function foxyshop_product_meta_save($post_id) {
 		$_weight = (int)$_POST['_weight1'] . ' ' . (double)$_POST['_weight2'];
 	}
 	
+	//Remove Illegal Characters From Code
 	$_code = trim($_POST['_code']);
 	$_code = str_replace('"', '', $_code);
 	$_code = str_replace('&', '', $_code);
@@ -1503,45 +1747,51 @@ function foxyshop_product_meta_save($post_id) {
 	else foxyshop_save_meta_data('_saleenddate',$_saleenddate);
 
 	//Discounts
-	foxyshop_save_meta_data('_discount_quantity_amount',$_POST['_discount_quantity_amount']);
-	foxyshop_save_meta_data('_discount_quantity_percentage',$_POST['_discount_quantity_percentage']);
-	foxyshop_save_meta_data('_discount_price_amount',$_POST['_discount_price_amount']);
-	foxyshop_save_meta_data('_discount_price_percentage',$_POST['_discount_price_percentage']);
+	$discount_array = array("discount_quantity_amount", "discount_quantity_percentage", "discount_price_amount", "discount_price_percentage");
+	foreach ($discount_array as $val) {
+		if ($_POST['discount_method'] == $val) {
+			foxyshop_save_meta_data('_' . $val, $_POST['computed_discount']);
+		} else {
+			foxyshop_save_meta_data('_' . $val, '');
+		}
+	}
+	
+	
 
 	//Subscriptions
 	if (isset($_POST['_sub_frequency'])) {
 		if ($_POST['_sub_frequency'] == "") {
-			foxyshop_save_meta_data('_sub_frequency',"");
-			foxyshop_save_meta_data('_sub_startdate',"");
-			foxyshop_save_meta_data('_sub_enddate',"");
+			foxyshop_save_meta_data('_sub_frequency', "");
+			foxyshop_save_meta_data('_sub_startdate', "");
+			foxyshop_save_meta_data('_sub_enddate', "");
 		} else {
-			foxyshop_save_meta_data('_sub_frequency',$_POST['_sub_frequency']);
-			foxyshop_save_meta_data('_sub_startdate',$_POST['_sub_startdate']);
-			foxyshop_save_meta_data('_sub_enddate',$_POST['_sub_enddate']);
+			foxyshop_save_meta_data('_sub_frequency', $_POST['_sub_frequency']);
+			foxyshop_save_meta_data('_sub_startdate', $_POST['_sub_startdate']);
+			foxyshop_save_meta_data('_sub_enddate', $_POST['_sub_enddate']);
 		}
 	} 
 
 	//Save Related Product Data
 	if (isset($_POST['_related_products_list'])) {
-		foxyshop_save_meta_data('_related_products',implode(",",$_POST['_related_products_list']));
+		foxyshop_save_meta_data('_related_products', implode(",",$_POST['_related_products_list']));
 	} else {
-		foxyshop_save_meta_data('_related_products',"");
+		foxyshop_save_meta_data('_related_products', "");
 	}
-	if (isset($_POST['_related_order'])) foxyshop_save_meta_data('_related_order',$_POST['_related_order']);
-	if (isset($_POST['_addon_order'])) foxyshop_save_meta_data('_addon_order',$_POST['_addon_order']);
+	if (isset($_POST['_related_order'])) foxyshop_save_meta_data('_related_order', $_POST['_related_order']);
+	if (isset($_POST['_addon_order'])) foxyshop_save_meta_data('_addon_order', $_POST['_addon_order']);
 
 	//Save Bundled Product Data
 	if (isset($_POST['_bundled_products_list'])) {
-		foxyshop_save_meta_data('_bundled_products',implode(",",$_POST['_bundled_products_list']));
+		foxyshop_save_meta_data('_bundled_products', implode(",",$_POST['_bundled_products_list']));
 	} else {
-		foxyshop_save_meta_data('_bundled_products',"");
+		foxyshop_save_meta_data('_bundled_products', "");
 	}
 
 	//Save Add-On Product Data
 	if (isset($_POST['_addon_products_list'])) {
-		foxyshop_save_meta_data('_addon_products',implode(",",$_POST['_addon_products_list']));
+		foxyshop_save_meta_data('_addon_products', implode(",",$_POST['_addon_products_list']));
 	} else {
-		foxyshop_save_meta_data('_addon_products',"");
+		foxyshop_save_meta_data('_addon_products', "");
 	}
 	
 	//Inventory Levels
@@ -1554,11 +1804,8 @@ function foxyshop_product_meta_save($post_id) {
 				$inventory_array[stripslashes(str_replace("'","",$_POST['inventory_code_'.$i]))] = array("count" => (int)$_POST['inventory_count_'.$i], "alert" => $alert_level);
 			}
 		}
-		if (count($inventory_array) > 0) {
-			foxyshop_save_meta_data('_inventory_levels',$inventory_array);
-		} else {
-			foxyshop_save_meta_data('_inventory_levels',"");
-		}
+		if (count($inventory_array) == 0) $inventory_array = "";
+		foxyshop_save_meta_data('_inventory_levels', $inventory_array);
 	}
 	
 	//Save Product Variations
@@ -1609,17 +1856,15 @@ function foxyshop_product_meta_save($post_id) {
 		);
 		$currentID++;
 	}
-	if (count($variations) > 0) {
-		foxyshop_save_meta_data('_variations', $variations);
-	} else {
-		foxyshop_save_meta_data('_variations', "");
-	}
+
+	if (count($variations) == 0) $variations = "";
+	foxyshop_save_meta_data('_variations', $variations);
 
 
 	//Google Products Fields
 	if ($foxyshop_settings['google_product_support']) {
 		foreach($google_product_field_names as $field) {
-			foxyshop_save_meta_data("_" . $field,$_POST["_" . $field]);
+			foxyshop_save_meta_data("_" . $field, $_POST["_" . $field]);
 		}
 	}
 	
@@ -1629,20 +1874,3 @@ function foxyshop_product_meta_save($post_id) {
 	return $post_id;
 }
 
-
-
-
-
-//-------------------------------------------
-//Extra Functions
-//-------------------------------------------
-function foxyshop_save_meta_data($fieldname,$input) {
-	global $post_id;
-	$current_data = get_post_meta($post_id, $fieldname, TRUE);	
-	$new_data = $input;
-	if (!$new_data) $new_data = NULL;
-	if ($current_data != "" && is_null($new_data)) delete_post_meta($post_id,$fieldname);
-	if (!is_null($new_data)) update_post_meta($post_id,$fieldname,$new_data);
-}
-
-?>
