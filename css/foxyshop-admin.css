@@ -558,6 +558,9 @@ body label.variationtypelabel {
 #product_images_meta .inside {
 	min-height: 46px;
 }
+#foxyshop_new_product_image_container {
+	height: 34px;
+}
 #foxyshop_new_product_image {
 	display: none;
 }
@@ -565,6 +568,7 @@ body label.variationtypelabel {
 #foxyshop_new_product_imageUploader {
 	float: left;
 	margin: 3px 14px 20px 5px;
+	height: 23px;
 }
 #foxyshop_new_product_imageQueue {
 	float: left;
@@ -769,6 +773,22 @@ table.widefat tr:last-child td {
 }
 #foxyshoprecommendedplugins h3 {
 	margin: 0 8px 0 0;
+	float: left;
+}
+#foxyshop_search_submit {
+	margin: 10px 5px;
+}
+#foxyshop_order_search_buttons {
+	margin: 10px 0;
+}
+#foxyshop_searchform td .foxyshop_radio_label_container label {
+	width: 60px;
+}
+#foxyshop_searchform td .foxyshop_radio_label_container label:first-child {
+	width: 130px;
+}
+.foxyshop_radio_label_container input {
+	margin: 8px 0 4px 0;
 	float: left;
 }
 

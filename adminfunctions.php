@@ -238,7 +238,6 @@ function foxyshop_activation() {
 		"template_url_checkout" => "",
 		"template_url_receipt" => "",
 		"products_per_page" => -1,
-		"ups_worldship_export" => "",
 		"downloadables_sync" => "",
 		"google_product_support" => "",
 		"google_product_merchant_id" => "",
@@ -293,6 +292,8 @@ function foxyshop_activation() {
 		if (!array_key_exists('google_product_merchant_id',$foxyshop_settings)) $foxyshop_settings['google_product_merchant_id'] = ""; //3.7
 		if (!array_key_exists('google_product_auth',$foxyshop_settings)) $foxyshop_settings['google_product_auth'] = ""; //3.7
 		if (!array_key_exists('include_exception_list',$foxyshop_settings)) $foxyshop_settings['include_exception_list'] = ""; //3.9
+		if (array_key_exists('ups_worldship_export',$foxyshop_settings)) unset($foxyshop_settings['ups_worldship_export']); //4.1
+
 
 		//Upgrade Variations in 3.0
 		if (version_compare($foxyshop_settings['foxyshop_version'], '3.0', "<")) {
@@ -571,13 +572,14 @@ function foxyshop_save_meta_data($fieldname,$input) {
 
 
 //Set FoxyCart Attributes
-function foxyshop_save_attribute($att_type, $id, $att_name, $att_value) {
+function foxyshop_save_attribute($att_type, $id, $att_name, $att_value, $append = 0) {
 	$foxy_data = array(
 		"api_action" => "attribute_save",
 		"name" => $att_name,
 		"value" => $att_value,
 		"type" => $att_type,
-		"identifier" => $id
+		"identifier" => $id,
+		"append" => $append
 	);
 	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);

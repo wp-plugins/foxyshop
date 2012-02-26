@@ -1,10 +1,12 @@
+<?php /*
+------------ ATTENTION ------------
+If you need to edit this template, do not edit the version in the plugin directory. Place a copy in your template folder and edit it there.
+This will allow you to upgrade FoxyShop without breaking your customizations. More details here: http://www.foxy-shop.com/documentation/theme-customization/
+-----------------------------------
+*/ ?>
+
 <?php get_header(); ?>
 
-<?php
-//Hide page content if plugin is disabled
-if (function_exists('foxyshop_setup_product')) {
-global $product;
-?>
 <?php foxyshop_include('header'); ?>
 <div id="foxyshop_container">
 	<h1 id="foxyshop_category_title">Product Search</h1>
@@ -16,6 +18,7 @@ global $product;
 
 
 	<?php
+	global $product;
 	$search = (isset($_REQUEST['search']) ? urlencode($_REQUEST['search']) : "sdafasdfasdfasdfasdfasdf");
 	$args = array('post_type' => 'foxyshop_product', 'post_status' => 'publish', 'posts_per_page' => foxyshop_products_per_page(), 's' => $search, 'paged' => get_query_var('paged'));
 	query_posts($args);
@@ -36,8 +39,7 @@ global $product;
 	foxyshop_get_pagination();
 	?>
 </div>
-<?php foxyshop_include('header'); ?>
-<?php } ?>
+<?php foxyshop_include('footer'); ?>
 
 <script type="text/javascript">
 jQuery(document).ready(function($){

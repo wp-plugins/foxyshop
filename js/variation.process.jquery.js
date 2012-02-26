@@ -251,7 +251,6 @@ foxycart_required_fields_check = function(e, arr) {
 					alert("Error: You must select an option from the dropdown.");
 					jQuery(this).focus();
 			} else if (!jQuery(this).val() && !jQuery(this).is('label')) {
-				console.log($(this).get(0).tagName);
 				if (jQuery(this).hasClass('hiddenimageholder') && jQuery(this).parents('.foxyshop_custom_upload_container').is(':visible')) {
 					strFailed = true;
 					alert('Error: You must upload a file before adding to cart.');

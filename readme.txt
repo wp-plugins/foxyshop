@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.1
 Tested up to: 3.3.1
-Stable tag: 4.0
+Stable tag: 4.1
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -18,7 +18,7 @@ Visit [foxy-shop.com](http://www.foxy-shop.com/) for full documentation and inst
 = Just a Few of the Many FoxyShop Features: =
 
 * Fully customizable theme files and CSS
-* Unlimited images per product with popup slideshow
+* Unlimited images per product with popup slideshow or zooming
 * Widget support for featured categories
 * Manage product inventory within the WordPress admin
 * Set up product categories and subcategories
@@ -61,6 +61,21 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 4.1 =
+* Added Order Export in CSV format (single ship stores only)
+* Added native FoxyCart ColorBox slideshow functionality option. Works best in 0.7.2+
+* Sped up admin product page load by skipping javascript and loading images natively on first load and by caching and condensing a lot of jQuery
+* Removed UPS export option in settings - it will always show up on the View Orders page in the new dropdown
+* Added an argument to the foxyshop_setup_product() function to speed up the inventory page load
+* Added 'foxyshop_main_menu_name' filter so you can customize the main admin menu title
+* Moved the jQuery insert from 'init' to 'wp_enqueue_scripts' so it initializes later
+* The foxyshop_setup_product() function was upgraded to accept product ID's and slugs as well as $post objects
+* Added optional append argument to the foxyshop_save_attribute() helper function
+* Added filters for the order/customer/subscription search defaults
+* Bugfix: Related products were matching an add-on product, not the main parent
+* Bugfix: Search page template was loading the foxyshop header instead of footer at end of file
+* See [Release Notes](http://www.foxy-shop.com/2012/02/version-4-1-export-csv-transactions/) for more details
 
 = 4.0 =
 * Transaction, Customer, and Subscription attributes can now be managed within FoxyShop (0.7.2+)
@@ -151,43 +166,10 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 * Ampersand not allowed in product variation name. Doesn't work with validation.
 * See [Release Notes](http://www.foxy-shop.com/2011/11/version-3-6-no-more-double-serialization/) for more details
 
-= 3.5.4 =
-* Fixing a variation javascript syntax error from 3.5.3
-
-= 3.5.3 =
-* Important: Now trims whitespace around product titles - fix for FoxyCart functionality change
-* New Feature: Set manual order of add-on products
-* Hidden variations won't be sent to cart or be counted for ikey
-* Bugfix: Add-on products box not showing up in admin unless "Related Products" enabled. Fixed!
-* See [Release Notes](http://www.foxy-shop.com/2011/10/version-3-5-3-whitespace-add-on-order/) for more details
-
-= 3.5.2 =
-* Added some responsive CSS to the admin so that variations will look better on smaller screens
-* Removed erroneous "NOT FOUND" text on order management screen
-
-= 3.5.1 =
-* Some plugin filenames renamed for WordPress Multisite support
-* Update to get rid of WP notice in 3.3
-* Changed variation newline splitting method for broader support
-* Added pricing adjustments to product price in receipt template
-* Added FoxyCart template update feature for 0.7.2
-* Added customer, transaction, and subscription attribute support for 0.7.2
-* Added check on tools page to ensure that mcrypt is installed
-
-= 3.5 =
-* New Feature: Saved variations allow you to setup a variation once and reuse it on multiple products 
-* Product paging on the All Products page now works properly. Update your theme file if it has been customized.
-* Rolled back filter that was removing spaces from variation modifiers. Caused inventory bug with codes that had spaces in them.
-* Added uninstall.php to properly clean up after plugin files are deleted
-* Recommended plugins tool improved
-* Added more filters
-* See [Release Notes](http://www.foxy-shop.com/2011/10/version-3-5-saved-variations/) for more details
-
-
 [View Archived Changelog](http://www.foxy-shop.com/changelog-archives/)
 
 
 == Upgrade Notice ==
 
-= 4.0 =
-Support Removed For WordPress 3.0. Added attribute support and better coupon handling. Lots of other minor improvments.
+= 4.1 =
+Maintenance update - added csv transaction exports and native colorbox popup option

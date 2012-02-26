@@ -20,7 +20,7 @@ function foxyshop_customer_management() {
 		$foxy_data_defaults["custom_field_name_filter"] = "";
 		$foxy_data_defaults["custom_field_value_filter"] = "";
 	}
-	$foxy_data = wp_parse_args(array("api_action" => "customer_list"), $foxy_data_defaults);
+	$foxy_data = wp_parse_args(array("api_action" => "customer_list"), apply_filters('foxyshop_customer_filter_defaults',$foxy_data_defaults));
 	$foxyshop_querystring = "?post_type=foxyshop_product&amp;page=foxyshop_customer_management&amp;foxyshop_search=1";
 	$foxyshop_hidden_input = "";
 

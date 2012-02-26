@@ -35,7 +35,7 @@ function foxyshop_subscription_management() {
 		$foxy_data_defaults["custom_field_value_filter"] = "";
 	}
 
-	$foxy_data = wp_parse_args(array("api_action" => "subscription_list"), $foxy_data_defaults);
+	$foxy_data = wp_parse_args(array("api_action" => "subscription_list"), apply_filters('foxyshop_subscription_filter_defaults',$foxy_data_defaults));
 	$foxyshop_querystring = "?post_type=foxyshop_product&amp;page=foxyshop_subscription_management&amp;foxyshop_search=1";
 	$foxyshop_hidden_input = "";
 	

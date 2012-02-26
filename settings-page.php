@@ -34,7 +34,6 @@ function foxyshop_save_settings() {
 		"enable_sso",
 		"sso_account_required",
 		"checkout_customer_create",
-		"ups_worldship_export",
 		"downloadables_sync",
 		"google_product_support",
 		"google_product_merchant_id",
@@ -379,8 +378,8 @@ if (substr($foxyshop_settings['domain'], -13) == ".foxycart.com") {
 			</tr>
 			<tr>
 				<td>
-					<input type="checkbox" id="foxyshop_shipto" name="foxyshop_enable_ship_to"<?php checked($foxyshop_settings['enable_ship_to'], "on"); ?> />
-					<label for="foxyshop_shipto"><?php _e('Enable Multi-Ship'); ?></label>
+					<input type="checkbox" id="foxyshop_ship_to" name="foxyshop_enable_ship_to"<?php checked($foxyshop_settings['enable_ship_to'], "on"); ?> />
+					<label for="foxyshop_ship_to"><?php _e('Enable Multi-Ship'); ?></label>
 					<a href="#" class="foxyshophelp">Remember that FoxyCart charges an extra fee for this service. You must enable it on your FoxyCart account or it will not work. NOTE: At this time, this feature is not available for multi-ship stores.</a>
 				</td>
 			</tr>
@@ -522,13 +521,6 @@ if (substr($foxyshop_settings['domain'], -13) == ".foxycart.com") {
 					<input type="checkbox" id="foxyshop_generate_product_sitemap" name="foxyshop_generate_product_sitemap"<?php checked($foxyshop_settings['generate_product_sitemap'], "on"); ?> />
 					<label for="foxyshop_generate_product_sitemap"><?php echo sprintf(__('Generate %s Sitemap'), FOXYSHOP_PRODUCT_NAME_SINGULAR); ?></label>
 					<a href="#" class="foxyshophelp"><?php echo sprintf(__('If checked, a sitemap file with all of your %s will be created in your root folder.'), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></a>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<input type="checkbox" id="foxyshop_ups_worldship_export" name="foxyshop_ups_worldship_export"<?php checked($foxyshop_settings['ups_worldship_export'], "on"); ?> />
-					<label for="foxyshop_ups_worldship_export"><?php echo __('Enable UPS WorldShip Label Export'); ?></label>
-					<a href="#" class="foxyshophelp"><?php echo __('If checked, you will be able to click a button on your order page to export orders to an xml file for import into UPS WorldShip.'); ?></a>
 				</td>
 			</tr>
 			<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) : ?>

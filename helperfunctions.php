@@ -27,15 +27,34 @@ function foxyshop_insert_foxycart_files() {
 
 
 //Sets up the $product array
-function foxyshop_setup_product($thepost = false) {
+function foxyshop_setup_product($thepost = false, $shortcut = false) {
 	global $foxyshop_settings, $product;
-	if (!$thepost) {
+	
+	//Product ID
+	if (gettype($thepost) == "integer") {
+		$newposts = get_posts(array("post_type" => "foxyshop_product", "page_id" => $thepost));
+		foreach ($newposts as $newpost) {
+			$thepost = $newpost;
+		}
+	
+	//Product Slug
+	} elseif (gettype($thepost) == "string") {	
+		$newposts = get_posts(array("post_type" => "foxyshop_product", "name" => $thepost));
+		foreach ($newposts as $newpost) {
+			$thepost = $newpost;
+		}
+	
+	//Product Object
+	} elseif (!$thepost) {
 		global $post;
 		$thepost = $post;
 	}
+	
+	//Skip if $product is already set and hasn't changed ID's
 	if (isset($product)) {
 		if ($product['id'] == $thepost->ID) return $product;
 	}
+	
 	$new_product = array();
 	$new_product['id'] = $thepost->ID;
 	$new_product['name'] = trim($thepost->post_title);
@@ -104,27 +123,29 @@ function foxyshop_setup_product($thepost = false) {
 	
 	//Images
 	$new_product['images'] = array();
-	$imageNumber = 0;
-	$featuredImageID = (has_post_thumbnail($thepost->ID) ? get_post_thumbnail_id($thepost->ID) : 0);
-	$attachments = get_posts(array('numberposts' => -1, 'post_type' => 'attachment','post_status' => null,'post_parent' => $thepost->ID, "post_mime_type" => "image", 'order' => 'ASC','orderby' => 'menu_order'));
-	$sizes = get_intermediate_image_sizes();
-	$sizes[] = 'full';
-	foreach ($attachments as $attachment) {
-		$thumbnailSRC = wp_get_attachment_image_src($attachment->ID, "thumbnail");
-		$mediumSRC = wp_get_attachment_image_src($attachment->ID, "medium");
-		$largeSRC = wp_get_attachment_image_src($attachment->ID, "large");
-		$fullSRC = wp_get_attachment_image_src($attachment->ID, "full");
-		$imageTitle = $attachment->post_title;
-		$new_product['images'][$imageNumber] = array(
-			"id" => $attachment->ID,
-			"title" => $imageTitle,
-			"featured" => ($featuredImageID == $attachment->ID || ($featuredImageID == 0 && $imageNumber == 0) ? 1 : 0)
-		);
-		foreach($sizes as $size) {
-			$sizearray = wp_get_attachment_image_src($attachment->ID, $size);
-			$new_product['images'][$imageNumber][$size] = $sizearray[0];
+	if (!$shortcut) {
+		$imageNumber = 0;
+		$featuredImageID = (has_post_thumbnail($thepost->ID) ? get_post_thumbnail_id($thepost->ID) : 0);
+		$attachments = get_posts(array('numberposts' => -1, 'post_type' => 'attachment','post_status' => null,'post_parent' => $thepost->ID, "post_mime_type" => "image", 'order' => 'ASC','orderby' => 'menu_order'));
+		$sizes = get_intermediate_image_sizes();
+		$sizes[] = 'full';
+		foreach ($attachments as $attachment) {
+			$thumbnailSRC = wp_get_attachment_image_src($attachment->ID, "thumbnail");
+			$mediumSRC = wp_get_attachment_image_src($attachment->ID, "medium");
+			$largeSRC = wp_get_attachment_image_src($attachment->ID, "large");
+			$fullSRC = wp_get_attachment_image_src($attachment->ID, "full");
+			$imageTitle = $attachment->post_title;
+			$new_product['images'][$imageNumber] = array(
+				"id" => $attachment->ID,
+				"title" => $imageTitle,
+				"featured" => ($featuredImageID == $attachment->ID || ($featuredImageID == 0 && $imageNumber == 0) ? 1 : 0)
+			);
+			foreach($sizes as $size) {
+				$sizearray = wp_get_attachment_image_src($attachment->ID, $size);
+				$new_product['images'][$imageNumber][$size] = $sizearray[0];
+			}
+			$imageNumber++;
 		}
-		$imageNumber++;
 	}
 
 	//Sale Price
@@ -687,6 +708,36 @@ function foxyshop_build_image_slideshow($slideshow_type = "prettyPhoto", $use_in
 		echo "</div>\n";
 		foxyshop_image_slideshow("thumbnail", false, "Click Below For More Images:", $rel = "foxyshop_gallery[fs_gall]");
 		echo "</div>\n";
+
+
+	//ColorBox (Lightbox)
+	} elseif ($slideshow_type == "colorbox") {
+		
+		if ($use_includes && !isset($foxyshop_slideshow_includes_set)) {
+			?>
+			<script type="text/javascript">
+			jQuery(document).ready(function($) {
+				$("a[rel^='foxyshop_gallery']").colorbox({sldeshow: true, maxHeight: "80%"});
+			});
+			</script><?php
+			$foxyshop_slideshow_includes_set = 1;
+		}
+
+
+		$imagecount = count($product['images']);
+		$use_link = (foxyshop_get_main_image("medium") != foxyshop_get_main_image("full") || $imagecount > 1 ? 1 : 0);
+
+		echo '<div class="foxyshop_product_image">'."\n";
+		echo '<div class="foxyshop_product_image_holder">'."\n";
+		
+		if ($use_link) echo '<a href="' . foxyshop_get_main_image('large') . '" rel="foxyshop_gallery' . ($imagecount > 1 ? '[fs_gall]' : '') . '"  title="">';
+		echo '<img src="' . foxyshop_get_main_image('medium') . '" id="foxyshop_main_product_image" alt="' . htmlspecialchars(foxyshop_get_main_image('title')) . '" title="" />';
+		if ($use_link) echo "</a>\n";
+		
+		echo "</div>\n";
+		foxyshop_image_slideshow("thumbnail", false, "Click Below For More Images:", $rel = "foxyshop_gallery[fs_gall]");
+		echo "</div>\n";
+
 	
 	
 	//Cloudzoom (inline zooming)
@@ -1053,16 +1104,16 @@ function foxyshop_related_products($sectiontitle = "Related Products", $maxprodu
 	global $product, $post, $foxyshop_settings;
 	
 	$related_order = "";
-	$args = array('post_type' => 'foxyshop_product', "post__not_in" => array($post->ID));
+	$args = array('post_type' => 'foxyshop_product', "post__not_in" => array($product['id']));
 	//Native Related Products
 	if ($foxyshop_settings['related_products_custom'] && $product['related_products']) {
 		$args['post__in'] = explode(",",$product['related_products']);
 		$args['posts_per_page'] = -1;
-		if ($related_order = get_post_meta($post->ID, "_related_order", 1)) add_filter('posts_orderby', 'foxyshop_related_order');
+		if ($related_order = get_post_meta($product['id'], "_related_order", 1)) add_filter('posts_orderby', 'foxyshop_related_order');
 	
 	//Tags
 	} elseif ($foxyshop_settings['related_products_tags']) {
-		$tags = wp_get_post_terms($post->ID, 'foxyshop_tags', array("fields" => "ids"));
+		$tags = wp_get_post_terms($product['id'], 'foxyshop_tags', array("fields" => "ids"));
 		if (count($tags) > 0) {
 			$args['tax_query'] = array(array('taxonomy' => 'foxyshop_tags', 'field' => 'id', 'terms' => $tags));
 			$args['posts_per_page'] = $maxproducts;
@@ -1164,6 +1215,7 @@ function foxyshop_addon_products($show_qty = false, $before_entry = "", $after_e
 		
 		$num++;	
 	endwhile;
+	wp_reset_query();
 	echo '</div>'."\n";
 	$product = $original_product;
 	?>

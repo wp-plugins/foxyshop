@@ -428,7 +428,7 @@ $var_type_array = array(
 	'upload' => __("Custom File Upload"),
 	'descriptionfield' => __("Description Field")
 );
-$variation_key = __('Name{p+1.50|w-1|c:product_code|y:shipping_category|dkey:display_key|ikey:image_id}');
+$variation_key = __('Name{p+1.50|w-1|c:product_code|y:foxycart_category|dkey:display_key|ikey:image_id}');
 
 //Setup Variations
 $variations = get_option('foxyshop_saved_variations');

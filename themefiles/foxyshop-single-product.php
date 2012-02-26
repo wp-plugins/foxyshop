@@ -1,3 +1,10 @@
+<?php /*
+------------ ATTENTION ------------
+If you need to edit this template, do not edit the version in the plugin directory. Place a copy in your template folder and edit it there.
+This will allow you to upgrade FoxyShop without breaking your customizations. More details here: http://www.foxy-shop.com/documentation/theme-customization/
+-----------------------------------
+*/ ?>
+
 <?php get_header(); ?>
 
 <?php
@@ -26,12 +33,13 @@ while (have_posts()) : the_post();
 	
 
 	//Shows Main Image and Optional Slideshow
-	//Available Built-in Options: prettyPhoto (lightbox), cloud-zoom (inline zooming)
+	//Available Built-in Options: prettyPhoto (lightbox), cloud-zoom (inline zooming), or colorbox (native FoxyCart lightbox)
 	//Second arg writes css and js includes on page
 	//If you want to make more customizations, you can grab the code from helperfunctions.php line ~650 and paste here
 	//-------------------------------------------------------------------------------------------------------------------------
 	foxyshop_build_image_slideshow("prettyPhoto", true);
 	//foxyshop_build_image_slideshow("cloud-zoom", true);
+	//foxyshop_build_image_slideshow("colorbox", true); //only recommended for 0.7.2+
 
 				
 	//Main Product Information Area

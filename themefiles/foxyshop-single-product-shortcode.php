@@ -1,3 +1,10 @@
+<?php /*
+------------ ATTENTION ------------
+If you need to edit this template, do not edit the version in the plugin directory. Place a copy in your template folder and edit it there.
+This will allow you to upgrade FoxyShop without breaking your customizations. More details here: http://www.foxy-shop.com/documentation/theme-customization/
+-----------------------------------
+*/ ?>
+
 <?php foxyshop_include('header'); ?>
 <div id="foxyshop_container">
 <?php
@@ -29,6 +36,7 @@ global $foxyshop_prettyphoto_included;
 	//-------------------------------------------------------------------------------------------------------------------------
 	foxyshop_build_image_slideshow("prettyPhoto", true);
 	//foxyshop_build_image_slideshow("cloud-zoom", true);
+	//foxyshop_build_image_slideshow("colorbox", true); //only recommended for 0.7.2+
 
 
 

@@ -1,4 +1,11 @@
-<?php
+<?php /*
+------------ ATTENTION ------------
+If you need to edit this template, do not edit the version in the plugin directory. Place a copy in your template folder and edit it there.
+This will allow you to upgrade FoxyShop without breaking your customizations. More details here: http://www.foxy-shop.com/documentation/theme-customization/
+-----------------------------------
+*/
+
+
 //Set Globals and Get Settings
 global $wpdb, $foxyshop_settings;
 require(FOXYSHOP_PATH.'/datafeedfunctions.php');
@@ -114,8 +121,10 @@ if (isset($_POST["FoxyData"])) {
 			);
 			
 			//Putting the Custom Fields in an array if they are there
-			foreach($shipto_address->custom_fields->custom_field as $custom_field) {
-				$shipto[$shipto_name]['custom_fields'][(string)$custom_field->custom_field_name] = (string)$custom_field->custom_field_value;
+			if (!empty($shipto_address->custom_fields)) {
+				foreach($shipto_address->custom_fields->custom_field as $custom_field) {
+					$shipto[$shipto_name]['custom_fields'][(string)$custom_field->custom_field_name] = (string)$custom_field->custom_field_value;
+				}
 			}
 		}
 		
@@ -136,8 +145,10 @@ if (isset($_POST["FoxyData"])) {
 
 		//Putting the Custom Fields in an array if they are there. These are on the top level and could be there for both single ship and multiship stores
 		$custom_fields = array();
-		foreach($transaction->custom_fields->custom_field as $custom_field) {
-			$custom_fields[(string)$custom_field->custom_field_name] = (string)$custom_field->custom_field_value;
+		if (!empty($transaction->custom_fields)) {
+			foreach($transaction->custom_fields->custom_field as $custom_field) {
+				$custom_fields[(string)$custom_field->custom_field_name] = (string)$custom_field->custom_field_value;
+			}
 		}
 		
 
@@ -196,8 +207,6 @@ if (isset($_POST["FoxyData"])) {
 		}
 		
 		//If you have custom code to run for each order, put it here:
-
-
 
 
 

@@ -67,8 +67,7 @@ function foxyshop_theme_redirect() {
 			if ($foxyshop_settings['browser_title_4']) add_filter('wp_title', 'title_filter_single_product', 9, 3);
 			add_filter('body_class', 'foxyshop_body_class', 10, 2 );
 			status_header(200);
-			include foxyshop_get_template_file("foxyshop-single-product.php");
-			die;
+			add_filter('template_include', 'foxyshop_template_include');
 		} else {
 			$wp_query->is_404 = true;
 		}
@@ -81,8 +80,7 @@ function foxyshop_theme_redirect() {
 		add_filter('body_class', 'foxyshop_body_class', 10, 2);
 		$wp_query->is_404 = false;
 		status_header(200);
-		include($return_template);
-		die;
+		add_filter('template_include', 'foxyshop_template_include');
 
 	//Single Category Page
 	} elseif ($currentCategory != '') {
@@ -95,8 +93,7 @@ function foxyshop_theme_redirect() {
 			if ($foxyshop_settings['browser_title_3']) add_filter('wp_title', 'title_filter_single_categories', 9, 3);
 			add_filter('body_class', 'foxyshop_body_class', 10, 2 );
 			status_header(200);
-			include foxyshop_get_template_file('foxyshop-single-category.php');
-			die;
+			add_filter('template_include', 'foxyshop_template_include');
 		} else {
 			$wp_query->is_404 = true;
 		}
@@ -110,8 +107,7 @@ function foxyshop_theme_redirect() {
 		add_filter('body_class', 'foxyshop_body_class', 10, 2 );
 		status_header(200);
 		$wp_query->is_404 = false;
-		include foxyshop_get_template_file('foxyshop-all-products.php');
-		die;
+		add_filter('template_include', 'foxyshop_template_include');
 	
 	//Search Product Page
 	} elseif ($currentPageName == 'product-search') {
@@ -120,8 +116,7 @@ function foxyshop_theme_redirect() {
 		add_filter('body_class', 'foxyshop_body_class', 10, 2 );
 		status_header(200);
 		$wp_query->is_404 = false;
-		include foxyshop_get_template_file('foxyshop-search.php');
-		die;
+		add_filter('template_include', 'foxyshop_template_include');
 
 	//FoxyCart Datafeed Endpoint
 	} elseif ($currentPageName == 'foxycart-datafeed-'.$foxyshop_settings['datafeed_url_key']) {
@@ -182,5 +177,10 @@ function foxyshop_body_class($wp_classes, $extra_classes) {
 	$wp_classes[] = "foxyshop";
 	if ($foxyshop_body_class_name) $wp_classes[] = $foxyshop_body_class_name;
 	return array_merge($wp_classes, (array)$extra_classes);
+}
+
+function foxyshop_template_include() {
+	global $foxyshop_body_class_name;
+	return foxyshop_get_template_file($foxyshop_body_class_name . ".php");
 }
 ?>

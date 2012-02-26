@@ -17,7 +17,17 @@ function foxyshop_multi_api_edit() {
 	}
 }
 
-if (isset($_GET['foxyshop_print_invoice'])) add_action('admin_init', 'foxyshop_print_invoice');
+if (isset($_GET['transaction_search_type'])) {
+	$transaction_search_type = $_GET['transaction_search_type'];
+	if ($transaction_search_type == "print_recipts") {
+		add_action('admin_init', 'foxyshop_print_invoice');
+	} elseif ($transaction_search_type == "export_csv" || $transaction_search_type == "export_tab") {
+		add_action('admin_init', 'foxyshop_transaction_export');
+	} elseif ($transaction_search_type == "export_ups") {
+		add_action('admin_init', 'foxyshop_ups_export');
+	}
+}
+
 function foxyshop_print_invoice() {
 	global $foxyshop_settings;
 	
@@ -108,7 +118,7 @@ function foxyshop_order_management() {
 		$foxy_data_defaults["custom_field_name_filter"] = "";
 		$foxy_data_defaults["custom_field_value_filter"] = "";
 	}
-	$foxy_data = wp_parse_args(array("api_action" => "transaction_list"), $foxy_data_defaults);
+	$foxy_data = wp_parse_args(array("api_action" => "transaction_list"), apply_filters('foxyshop_transaction_filter_defaults',$foxy_data_defaults));
 	$foxyshop_querystring = "?post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;foxyshop_search=1";
 	$foxyshop_hidden_input = "";
 	
@@ -130,7 +140,9 @@ function foxyshop_order_management() {
 			if ($_GET['paged-top'] != $_GET['paged-top-original']) $foxy_data['pagination_start'] = $p * ((int)$_GET['paged-top'] - 1) + 1 + $start_offset;
 			if ($_GET['paged-bottom'] != $_GET['paged-bottom-original']) $foxy_data['pagination_start'] = $p * ((int)$_GET['paged-bottom'] - 1) + 1 + $start_offset;
 		}
-	}	
+	}
+	
+	$transaction_search_type = isset($_GET['transaction_search_type']) ? $_GET['transaction_search_type'] : '';
 
 
 	?>	
@@ -149,40 +161,43 @@ function foxyshop_order_management() {
 		<thead><tr><th colspan="2"><img src="<?php echo FOXYSHOP_DIR; ?>/images/search-icon.png" alt="" /><?php _e('Search Options'); ?></th></tr></thead>
 		<tbody><tr><td>
 
-			<div class="foxyshop_field_control">
-				<label for="is_test_filter">Test Transactions</label>
-				<select name="is_test_filter" id="is_test_filter">
-				<?php
-				$selectArray = array("0" => "Live", "1" => "Test", "" => "Both");
-				foreach ($selectArray as $selectKey=>$selectOption) {
-					echo '<option value="' . $selectKey . '"' . ($foxy_data['is_test_filter'] == $selectKey ? ' selected="selected"' : '') . '>' . $selectOption . '</option>'."\n";
-				} ?>
-				</select>
+			<div class="foxyshop_field_control foxyshop_radio_label_container">
+				<label>Transaction Status</label>
 
+				<input type="radio" id="hide_transaction_filter0" name="hide_transaction_filter" value="0"<?php echo $foxy_data['hide_transaction_filter'] == 0 ? ' checked="checked"' : ''; ?> />
+				<label for="hide_transaction_filter0">Unfilled</label>
+
+				<input type="radio" id="hide_transaction_filter1" name="hide_transaction_filter" value="1"<?php echo $foxy_data['hide_transaction_filter'] == 1 ? ' checked="checked"' : ''; ?> />
+				<label for="hide_transaction_filter1">Filled</label>
+
+				<input type="radio" id="hide_transaction_filter" name="hide_transaction_filter" value=""<?php echo $foxy_data['hide_transaction_filter'] == '' ? ' checked="checked"' : ''; ?> />
+				<label for="hide_transaction_filter">Both</label>
 			</div>
 
-			<div class="foxyshop_field_control">
-				<label for="hide_transaction_filter">Transaction Status</label>
-				<select name="hide_transaction_filter" id="hide_transaction_filter">
-				<?php
-				$selectArray = array("0" => "Unfilled Orders", "1" => "Archived Orders", "" => "Both");
-				foreach ($selectArray as $selectKey=>$selectOption) {
-					echo '<option value="' . $selectKey . '"' . ($foxy_data['hide_transaction_filter'] == $selectKey ? ' selected="selected"' : '') . '>' . $selectOption . '</option>'."\n";
-				} ?>
-				</select>
+			<div class="foxyshop_field_control foxyshop_radio_label_container">
+				<label>Datafeed Status</label>
 
+				<input type="radio" id="data_is_fed_filter0" name="data_is_fed_filter" value="0"<?php echo $foxy_data['data_is_fed_filter'] == 0 ? ' checked="checked"' : ''; ?> />
+				<label for="data_is_fed_filter0">Fed</label>
+
+				<input type="radio" id="data_is_fed_filter1" name="data_is_fed_filter" value="1"<?php echo $foxy_data['data_is_fed_filter'] == 1 ? ' checked="checked"' : ''; ?> />
+				<label for="data_is_fed_filter1">Unfed</label>
+
+				<input type="radio" id="data_is_fed_filter" name="data_is_fed_filter" value=""<?php echo $foxy_data['data_is_fed_filter'] == '' ? ' checked="checked"' : ''; ?> />
+				<label for="data_is_fed_filter">Both</label>
 			</div>
 
-			<div class="foxyshop_field_control">
-				<label for="data_is_fed_filter">Datafeed Status</label>
-				<select name="data_is_fed_filter" id="data_is_fed_filter">
-				<?php
-				$selectArray = array("0" => "Fed", "1" => "Unfed", "" => "Both");
-				foreach ($selectArray as $selectKey=>$selectOption) {
-					echo '<option value="' . $selectKey . '"' . ($foxy_data['data_is_fed_filter'] == $selectKey ? ' selected="selected"' : '') . '>' . $selectOption . '</option>'."\n";
-				} ?>
-				</select>
+			<div class="foxyshop_field_control foxyshop_radio_label_container">
+				<label>Test Transactions</label>
 
+				<input type="radio" id="is_test_filter0" name="is_test_filter" value="0"<?php echo $foxy_data['is_test_filter'] == 0 ? ' checked="checked"' : ''; ?> />
+				<label for="is_test_filter0">Live</label>
+
+				<input type="radio" id="is_test_filter1" name="is_test_filter" value="1"<?php echo $foxy_data['is_test_filter'] == 1 ? ' checked="checked"' : ''; ?> />
+				<label for="is_test_filter1">Test</label>
+
+				<input type="radio" id="is_test_filter" name="is_test_filter" value=""<?php echo $foxy_data['is_test_filter'] == '' ? ' checked="checked"' : ''; ?> />
+				<label for="is_test_filter">Both</label>
 			</div>
 
 			<div class="foxyshop_field_control">
@@ -247,14 +262,27 @@ function foxyshop_order_management() {
 			</div>
 			
 			<div style="clear: both;"></div>
-			<button type="submit" id="foxyshop_search_submit" name="foxyshop_search_submit" class="button-primary" style="clear: left; margin-top: 10px;">Search Records Now</button>
-			<button type="button" class="button submitcancel" style="margin-left: 15px;" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_order_management';">Reset Form</button>
-			<button type="submit" class="button" style="margin-left: 15px;" name="foxyshop_print_invoice" id="foxyshop_print_invoice">Print Receipts</button>
-			<?php
-			if ($foxyshop_settings['ups_worldship_export'] && !$foxyshop_settings['enable_ship_to']) echo '<button class="button" style="margin-left: 15px;" name="foxyshop_ups_export" id="foxyshop_ups_export" type="submit">' . __('UPS Export') . '</button>'."\n";
-			do_action("foxyshop_order_search_buttons", $foxy_data);
-			?>
+			<select name="transaction_search_type" id="transaction_search_type">
+				<option value="show_orders"<?php echo ($transaction_search_type == "show_orders" ? ' selected="selected"' : ''); ?>>Show Orders</option>
+				<option value="print_recipts" target="_blank">Print Receipts</option>
+				<?php if (!$foxyshop_settings['enable_ship_to']) { ?>
+				<option value="export_csv">Export CSV</option>
+				<option value="export_tab">Export Tab Delimeted</option>
+				<option value="export_ups">Export to UPS</option>
+				<?php } ?>
+				<?php do_action("foxyshop_order_search_list"); ?>
+			</select>
+			<button type="submit" id="foxyshop_search_submit" name="foxyshop_search_submit" class="button-primary" style="clear: left; margin-top: 10px;">Submit</button>
+			<button type="button" class="button submitcancel" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_order_management';">Reset</button>
 			
+			<div style="clear: both;"></div>
+			<?php
+			if (has_action('foxyshop_order_search_buttons')) {
+				echo '<div id="foxyshop_order_search_buttons">';
+				do_action("foxyshop_order_search_buttons", $foxy_data);
+				echo '</div>';
+			}
+			?>
 		</td></tr></tbody></table>
 		
 		</form>
@@ -262,7 +290,7 @@ function foxyshop_order_management() {
 		<script type="text/javascript">
 		jQuery(document).ready(function($) {
 			$("#foxyshop_searchform button").live("click", function() {
-				if ($(this).attr("id") == "foxyshop_print_invoice") {
+				if ($("#transaction_search_type option:selected").attr("target") == "_blank") {
 					$("#foxyshop_searchform").attr("target","_blank");
 				} else {
 					$("#foxyshop_searchform").attr("target","_self");
