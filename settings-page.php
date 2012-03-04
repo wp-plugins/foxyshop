@@ -235,7 +235,7 @@ function foxyshop_settings_page() {
 		<tbody>
 			<tr>
 <?php
-if (substr($foxyshop_settings['domain'], -13) == ".foxycart.com") {
+if (substr($foxyshop_settings['domain'], -13) == ".foxycart.com" || !$foxyshop_settings['domain']) {
 	$foxycart_domain_class = "simple";
 	$foxycart_domain = str_replace(".foxycart.com", "", $foxyshop_settings['domain']);
 } else {
