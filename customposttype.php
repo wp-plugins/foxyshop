@@ -762,6 +762,7 @@ function foxyshop_product_variations_setup() {
 	//Note: if making any changes, mirror these changes in foxyshoptools.php for saved variations
 	//-------------------------------------------------------------------------------------------
 	$var_type_array = array('dropdown' => __("Dropdown List"), 'radio' => __("Radio Buttons"), 'checkbox' => __("Checkbox"), 'text' => __("Single Line of Text"), 'textarea' => __("Multiple Lines of Text"), 'upload' => __("Custom File Upload"), 'descriptionfield' => __("Description Field"));
+	$variation_key = "Name{p+1.50|w-1|c:product_code|y:foxycart_category|dkey:display_key|ikey:image_id}";
 	
 	//Setup Variations
 	$variations = get_post_meta($post->ID, '_variations', 1);
@@ -928,7 +929,7 @@ function foxyshop_product_variations_setup() {
 
 <script type="text/javascript">
 
-var variation_key = 'Name{p+1.50|w-1|c:product_code|y:foxycart_category|dkey:display_key|ikey:image_id}';
+var variation_key = '<?php echo $variation_key; ?>';
 var variation_select_options = "";
 <?php
 foreach ($var_type_array as $var_name => $var_val) {
