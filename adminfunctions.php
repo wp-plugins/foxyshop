@@ -243,6 +243,7 @@ function foxyshop_activation() {
 		"google_product_merchant_id" => "",
 		"google_product_auth" => "",
 		"include_exception_list" => "",
+		"show_add_to_cart_link" => "",
 		"api_key" => "sp92fx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time())
 	);
 	
@@ -293,6 +294,7 @@ function foxyshop_activation() {
 		if (!array_key_exists('google_product_auth',$foxyshop_settings)) $foxyshop_settings['google_product_auth'] = ""; //3.7
 		if (!array_key_exists('include_exception_list',$foxyshop_settings)) $foxyshop_settings['include_exception_list'] = ""; //3.9
 		if (array_key_exists('ups_worldship_export',$foxyshop_settings)) unset($foxyshop_settings['ups_worldship_export']); //4.1
+		if (!array_key_exists('show_add_to_cart_link',$foxyshop_settings)) $foxyshop_settings['show_add_to_cart_link'] = ""; //4.1.1
 
 
 		//Upgrade Variations in 3.0

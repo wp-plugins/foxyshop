@@ -187,7 +187,7 @@ function foxyshop_start_form() {
 	if ($localsettings['n_sep_by_space'] == 127) $l18n_value = "$|.|,|1|0";
 
 	echo "\n";
-	echo '<form action="https://' . esc_attr($foxyshop_settings['domain']) . '/cart" method="post" accept-charset="utf-8" class="foxyshop_product" id="foxyshop_product_form_' . $product['id'] . '" rel="' . $product['id'] . '"' . apply_filters('foxyshop_form_attributes', '') . '">'."\n";
+	echo '<form action="https://' . esc_attr($foxyshop_settings['domain']) . '/cart" method="post" accept-charset="utf-8" class="foxyshop_product" id="foxyshop_product_form_' . $product['id'] . '" rel="' . $product['id'] . '"' . apply_filters('foxyshop_form_attributes', '') . '>'."\n";
 	echo '<input type="hidden" name="price' . foxyshop_get_verification('price') . '" id="fs_price_' . $product['id'] . '" value="' . $product['price'] . '" />'."\n";
 	echo '<input type="hidden" name="x:originalprice" value="' . $product['originalprice'] . '" id="originalprice_' . $product['id'] . '" />'."\n";
 	echo '<input type="hidden" name="x:l18n" value="' . apply_filters("foxyshop_form_l18n", $l18n_value) . '" id="foxyshop_l18n_' . $product['id'] . '" />'."\n";
@@ -511,9 +511,10 @@ function foxyshop_quantity($qty = 1, $beforeVariation = "", $afterVariation = '<
 	
 	$quantity_title = apply_filters("foxyshop_quantity_title", "Quantity");
 
+	$write = "";
 	if (isset($writeBeforeVariation)) $write .= $writeBeforeVariation;
 	if ($product['quantity_min'] > 0) $qty = $product['quantity_min'];
-	$write = '<label class="foxyshop_quantity" for="quantity_' . $product['id'] . '">' . $quantity_title . '</label>'."\n";
+	$write .= '<label class="foxyshop_quantity" for="quantity_' . $product['id'] . '">' . $quantity_title . '</label>'."\n";
 	if ($product['quantity_max_original'] > 0) {
 		if ($numberPrefix) {
 			$write .= '<select class="foxyshop_quantity foxyshop_addon_fields" originalname="quantity"  name="x:quantity" rel="' . $numberPrefix . '">';
@@ -830,8 +831,8 @@ function foxyshop_category_children($categoryID = 0, $showCount = false, $showDe
 	
 	$args = array('hide_empty' => 0, 'hierarchical' => 0, 'parent' => $categoryID, 'orderby' => 'name', 'order' => 'ASC');
 	$termchildren = get_terms('foxyshop_categories', apply_filters('foxyshop_category_children_query',$args));
-	
 	if ($termchildren) {
+
 		//Sort Categories
 		$termchildren = foxyshop_sort_categories($termchildren, $categoryID);
 

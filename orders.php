@@ -447,7 +447,7 @@ function foxyshop_order_management() {
 		$holder .= '</div>';
 
 		//Shipping Addresses (if entered)
-		if ($transaction->shipping_first_name != "") {
+		if ((string)$transaction->shipping_first_name != "" && !isset($transaction->shipto_addresses->shipto_address)) {
 			$holder .= '<div class="foxyshop_list_col">';
 			$holder .= '<h4>Shipping Details</h4>';
 			$holder .= '<ul>';
@@ -492,7 +492,7 @@ function foxyshop_order_management() {
 		//Custom Fields
 		foreach($transaction->custom_fields->custom_field as $custom_field) {
 			if ($custom_field->custom_field_name != 'ga') {
-				$holder .= '<li><strong>' . str_replace("_"," ",(string)$custom_field->custom_field_name) . ':</strong> ' . (string)$custom_field->custom_field_value . '</li>';
+				$holder .= '<li><strong>' . str_replace("_"," ",(string)$custom_field->custom_field_name) . ':</strong> ' . nl2br((string)$custom_field->custom_field_value) . '</li>';
 			}
 		}
 		

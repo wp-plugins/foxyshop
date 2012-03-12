@@ -392,6 +392,18 @@ function foxyshop_product_details_setup() {
 			?>
 		</select>
 	</div>
+
+	<?php
+	if ($foxyshop_settings['show_add_to_cart_link'] && isset($_REQUEST['post'])) {
+		global $product;
+		$product = foxyshop_setup_product();
+	?>
+	<div class="foxyshop_field_control">
+		<label for="add_to_cart_link"><?php _e('Add to Cart'); ?></label>
+		<input type="text" name="add_to_cart_link" id="add_to_cart_link" value="<?php echo foxyshop_product_link("", 1); ?>" onclick="this.select();" readonly="readonly" />
+	</div>
+	<?php } ?>
+	
 	<?php if ($foxyshop_settings['enable_sso'] && $foxyshop_settings['sso_account_required'] == 2) { ?>
 	<div class="foxyshop_field_control">
 		<input type="checkbox" name="_require_sso" id="_require_sso" style="float: left; margin: 5px 0 0 10px;"<?php echo checked(get_post_meta($post->ID,'_require_sso',TRUE),"on"); ?> />

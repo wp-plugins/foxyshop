@@ -38,6 +38,7 @@ function foxyshop_save_settings() {
 		"google_product_support",
 		"google_product_merchant_id",
 		"include_exception_list",
+		"show_add_to_cart_link",
 		"locale_code"
 	);
 	foreach ($fields as $field1) {
@@ -521,6 +522,12 @@ if (substr($foxyshop_settings['domain'], -13) == ".foxycart.com" || !$foxyshop_s
 					<input type="checkbox" id="foxyshop_generate_product_sitemap" name="foxyshop_generate_product_sitemap"<?php checked($foxyshop_settings['generate_product_sitemap'], "on"); ?> />
 					<label for="foxyshop_generate_product_sitemap"><?php echo sprintf(__('Generate %s Sitemap'), FOXYSHOP_PRODUCT_NAME_SINGULAR); ?></label>
 					<a href="#" class="foxyshophelp"><?php echo sprintf(__('If checked, a sitemap file with all of your %s will be created in your root folder.'), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="checkbox" id="foxyshop_show_add_to_cart_link" name="foxyshop_show_add_to_cart_link"<?php checked($foxyshop_settings['show_add_to_cart_link'], "on"); ?> />
+					<label for="foxyshop_show_add_to_cart_link"><?php echo __('Show Add to Cart Link on the Product Entry Page.'); ?></label>
 				</td>
 			</tr>
 			<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) : ?>

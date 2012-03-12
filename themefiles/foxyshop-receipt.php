@@ -144,7 +144,7 @@ foreach($xml->transactions->transaction as $transaction) {
 			if ($show_custom_fields) {
 				foreach($transaction->custom_fields->custom_field as $custom_field) {
 					if ($custom_field->custom_field_name != 'ga' && (int)$custom_field->custom_field_is_hidden == 0) {
-						echo '<tr><td><strong>' . str_replace("_"," ",$custom_field->custom_field_name) . ':</strong> ' . (string)$custom_field->custom_field_value . '</td></tr>';
+						echo '<tr><td><strong>' . str_replace("_"," ",$custom_field->custom_field_name) . ':</strong> ' . nl2br((string)$custom_field->custom_field_value) . '</td></tr>';
 					}
 				}
 			}
@@ -166,7 +166,7 @@ foreach($xml->transactions->transaction as $transaction) {
 				echo "&nbsp;</td>\n\n";
 				
 				//Show Shipping Address If Entered
-				if ((string)$transaction->shipping_address1) {
+				if ((string)$transaction->shipping_address1 && !isset($transaction->shipto_addresses->shipto_address)) {
 					echo '<td valign="top"><strong>Shipping Address:</strong><br />';
 					echo $shipping_first_name . " " . $shipping_last_name . "<br />";
 					if ((string)$transaction->shipping_company) echo $transaction->shipping_company . "<br />";

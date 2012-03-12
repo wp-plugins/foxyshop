@@ -890,7 +890,9 @@ table.widefat tr:last-child td {
 .foxyshopsetup td {
 	padding: 5px 7px 10px 7px;
 }
-
+#foxydomainsimplelabel {
+	font-weight: bold;
+}
 .foxycartdomain.advanced #foxydomainsimplelabel {
 	display: none;
 }
