@@ -17,6 +17,8 @@ function foxyshop_multi_api_edit() {
 	}
 }
 
+if (isset($_GET['foxyshop_print_invoice'])) add_action('admin_init', 'foxyshop_print_invoice');
+
 if (isset($_GET['transaction_search_type'])) {
 	$transaction_search_type = $_GET['transaction_search_type'];
 	if ($transaction_search_type == "print_recipts") {

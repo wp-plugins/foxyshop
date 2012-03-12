@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.1
 Tested up to: 3.3.1
-Stable tag: 4.1.1
+Stable tag: 4.1.2
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -61,6 +61,9 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 4.1.2 =
+* Fixed broken receipt link on order management page
 
 = 4.1.1 =
 * New option on settings page to show "Add to Cart" links on product entry page
@@ -181,4 +184,4 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 == Upgrade Notice ==
 
 = 4.1.1 =
-Maintenance Update: fixing a few minor bugs
+Maintenance Update: fixing broken receipt link on order management page
