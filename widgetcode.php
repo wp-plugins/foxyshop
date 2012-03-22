@@ -265,7 +265,7 @@ class FoxyShop_Category_List extends WP_Widget {
 		<p>
 			<label for="<?php echo $this->get_field_id('categoryID'); ?>"><?php _e('Parent Category', 'foxyshop'); ?>:</label> 
 			<select id="<?php echo $this->get_field_id('categoryID'); ?>" name="<?php echo $this->get_field_name('categoryID'); ?>" class="widefat" style="width:100%;">
-				<option value="0"><?php +e('Top Level Categories', 'foxyshop'); ?></option>
+				<option value="0"><?php _e('Top Level Categories', 'foxyshop'); ?></option>
 				<?php
 				$toplevelterms = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0');
 				$arrCategory = array();

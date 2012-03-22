@@ -98,7 +98,7 @@ function foxyshop_save_settings() {
 
 add_action('admin_menu', 'foxyshop_settings_menu');
 function foxyshop_settings_menu() {
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Settings'), __('Settings'), apply_filters('foxyshop_settings_perm', 'manage_options'), 'foxyshop_settings_page', 'foxyshop_settings_page');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Settings', 'foxyshop'), __('Settings', 'foxyshop'), apply_filters('foxyshop_settings_perm', 'manage_options'), 'foxyshop_settings_page', 'foxyshop_settings_page');
 }
 function foxyshop_settings_page() {
 	global $foxyshop_settings, $foxycart_version_array;

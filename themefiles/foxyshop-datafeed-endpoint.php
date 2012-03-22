@@ -79,22 +79,22 @@ if (isset($_POST["FoxyData"])) {
 		//Get FoxyCart Transaction Information
 		//Simply setting lots of helpful data to PHP variables so you can access it easily
 		//If you need to access more variables, you can see some sample XML here: http://wiki.foxycart.com/v/0.7.2/transaction_xml_datafeed
-		$transaction_id = (string)$transaction->id;
-		$transaction_date = (string)$transaction->transaction_date;
-		$customer_ip = (string)$transaction->customer_ip;
-		$customer_id = (string)$transaction->customer_id;
-		$customer_first_name = (string)$transaction->customer_first_name;
-		$customer_last_name = (string)$transaction->customer_last_name;
-		$customer_company = (string)$transaction->customer_company;
-		$customer_email = (string)$transaction->customer_email;
-		$customer_password = (string)$transaction->customer_password;
-		$customer_address1 = (string)$transaction->customer_address1;
-		$customer_address2 = (string)$transaction->customer_address2;
-		$customer_city = (string)$transaction->customer_city;
-		$customer_state = (string)$transaction->customer_state;
-		$customer_postal_code = (string)$transaction->customer_postal_code;
-		$customer_country = (string)$transaction->customer_country;
-		$customer_phone = (string)$transaction->customer_phone;
+		$transaction_id =		(string)$transaction->id;
+		$transaction_date =		(string)$transaction->transaction_date;
+		$customer_ip =			(string)$transaction->customer_ip;
+		$customer_id =			(string)$transaction->customer_id;
+		$customer_first_name =	(string)$transaction->customer_first_name;
+		$customer_last_name =	(string)$transaction->customer_last_name;
+		$customer_company =		(string)$transaction->customer_company;
+		$customer_email =		(string)$transaction->customer_email;
+		$customer_password =	(string)$transaction->customer_password;
+		$customer_address1 =	(string)$transaction->customer_address1;
+		$customer_address2 =	(string)$transaction->customer_address2;
+		$customer_city =		(string)$transaction->customer_city;
+		$customer_state =		(string)$transaction->customer_state;
+		$customer_postal_code =	(string)$transaction->customer_postal_code;
+		$customer_country =		(string)$transaction->customer_country;
+		$customer_phone =		(string)$transaction->customer_phone;
 		
 		
 		//This is for a multi-ship store. The shipping addresses will go in a $shipto array with the address name as the key
@@ -130,16 +130,16 @@ if (isset($_POST["FoxyData"])) {
 		
 		//This is setup for a single ship store
 		if (!$is_multiship) {
-			$shipping_first_name = (string)$transaction->shipping_first_name ? (string)$transaction->shipping_first_name : $customer_first_name;
-			$shipping_last_name = (string)$transaction->shipping_last_name ? (string)$transaction->shipping_last_name : $customer_last_name;
-			$shipping_company = (string)$transaction->shipping_company ? (string)$transaction->shipping_company : $customer_company;
-			$shipping_address1 = (string)$transaction->shipping_address1 ? (string)$transaction->shipping_address1 : $customer_address1;
-			$shipping_address2 = (string)$transaction->shipping_address2 ? (string)$transaction->shipping_address2 : $customer_address2;
-			$shipping_city = (string)$transaction->shipping_city ? (string)$transaction->shipping_city : $customer_city;
-			$shipping_state = (string)$transaction->shipping_state ? (string)$transaction->shipping_state : $customer_state;
-			$shipping_postal_code = (string)$transaction->shipping_postal_code ? (string)$transaction->shipping_postal_code : $customer_postal_code;
-			$shipping_country = (string)$transaction->shipping_country ? (string)$transaction->shipping_country : $customer_country;
-			$shipping_phone = (string)$transaction->shipping_phone ? (string)$transaction->shipping_phone : $customer_phone;
+			$shipping_first_name =	(string)$transaction->shipping_first_name ? (string)$transaction->shipping_first_name : $customer_first_name;
+			$shipping_last_name =	(string)$transaction->shipping_last_name ? (string)$transaction->shipping_last_name : $customer_last_name;
+			$shipping_company =		(string)$transaction->shipping_company ? (string)$transaction->shipping_company : $customer_company;
+			$shipping_address1 =	(string)$transaction->shipping_address1 ? (string)$transaction->shipping_address1 : $customer_address1;
+			$shipping_address2 =	(string)$transaction->shipping_address2 ? (string)$transaction->shipping_address2 : $customer_address2;
+			$shipping_city =		(string)$transaction->shipping_city ? (string)$transaction->shipping_city : $customer_city;
+			$shipping_state =		(string)$transaction->shipping_state ? (string)$transaction->shipping_state : $customer_state;
+			$shipping_postal_code =	(string)$transaction->shipping_postal_code ? (string)$transaction->shipping_postal_code : $customer_postal_code;
+			$shipping_country =		(string)$transaction->shipping_country ? (string)$transaction->shipping_country : $customer_country;
+			$shipping_phone =		(string)$transaction->shipping_phone ? (string)$transaction->shipping_phone : $customer_phone;
 			$shipto_shipping_service_description = (string)$transaction->shipto_shipping_service_description;
 		}
 

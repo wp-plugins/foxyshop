@@ -100,141 +100,142 @@ function foxyshop_customer_management() {
 	if ((string)$xml->result == "ERROR") {
 		echo '<h3>' . (string)$xml->messages->message . '</h3>';
 		return;
-	}
-	?>
+	} else {
+		?>
 
-	<form action="edit.php" method="get">
-	<input type="hidden" name="foxyshop_search" value="1" />
-	<input type="hidden" name="post_type" value="foxyshop_product" />
-	<input type="hidden" name="page" value="foxyshop_customer_management" />
-	
-	<?php
-	echo $foxyshop_hidden_input;
-	foxyshop_api_paging_nav('customers', 'top', $xml, $foxyshop_querystring);
-	?>
+		<form action="edit.php" method="get">
+		<input type="hidden" name="foxyshop_search" value="1" />
+		<input type="hidden" name="post_type" value="foxyshop_product" />
+		<input type="hidden" name="page" value="foxyshop_customer_management" />
 
-
-	<table cellpadding="0" cellspacing="0" border="0" class="wp-list-table widefat foxyshop-list-table" id="customer_table">
-		<thead>
-			<tr>
-				<th><span><?php _e('Customer ID', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
-				<th><span><?php _e('Last Name', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
-				<th><span><?php _e('First Name', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
-				<th><span><?php _e('Email', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
-				<th><span><?php _e('Orders', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
-				<?php if ($foxyshop_settings['enable_subscriptions']) echo "<th><span>" . __('Subscriptions', 'foxyshop') . "</span><span class=\"sorting-indicator\"></span></th>\n"; ?>
-			</tr>
-		</thead>
-		<tfoot>
-			<tr>
-				<th><?php _e('Customer ID', 'foxyshop'); ?></th>
-				<th><?php _e('Last Name', 'foxyshop'); ?></th>
-				<th><?php _e('First Name', 'foxyshop'); ?></th>
-				<th><?php _e('Email', 'foxyshop'); ?></th>
-				<th><?php _e('Orders', 'foxyshop'); ?></th>
-				<?php if ($foxyshop_settings['enable_subscriptions']) echo "<th>" . __('Subscriptions', 'foxyshop') . "</th>\n"; ?>
-			</tr>
-		</tfoot>
-		<tbody>
-
-	<?php
-	$holder = "";
-	foreach($xml->customers->customer as $customer) {
-		$customer_id = (string)$customer->customer_id;
-		$customer_first_name = (string)$customer->customer_first_name;
-		$customer_last_name = (string)$customer->customer_last_name;
-		$customer_email = (string)$customer->customer_email;
-		
-		$last_modified_date = (string)$customer->last_modified_date;
-		$last_modified_date = date(apply_filters("foxyshop_date_time_format", "Y-m-d H:i"), strtotime($last_modified_date));
-
-		echo '<tr rel="' . $customer_id . '">';
-		echo '<td><strong><a href="#" class="view_detail">' . (string)$customer_id . '</a></strong></td>';
-		echo '<td>' . (string)$customer_last_name . '</td>';
-		echo '<td>' . (string)$customer_first_name . '</td>';
-		echo '<td>' .(string) $customer_email . '</td>';
-		echo '<td><a href="edit.php?post_type=foxyshop_product&page=foxyshop_order_management&customer_id_filter=' . (string)$customer->customer_id . '&transaction_date_filter_begin=&transaction_date_filter_end=&hide_transaction_filter=&foxyshop_search=1">' . __('Orders', 'foxyshop') . '</a></td>';
-		if ($foxyshop_settings['enable_subscriptions']) echo '<td><a href="edit.php?post_type=foxyshop_product&page=foxyshop_subscription_management&customer_id_filter=' . (string)$customer->customer_id . '&start_date_filter_begin=&start_date_filter_end=&&foxyshop_search=1">' . __('Subscriptions', 'foxyshop') . '</a></td>';
-		echo '</tr>'."\n";
+		<?php
+		echo $foxyshop_hidden_input;
+		foxyshop_api_paging_nav('customers', 'top', $xml, $foxyshop_querystring);
+		?>
 
 
-		$holder .= '<div class="detail_holder" id="holder_' . $customer_id. '">'."\n";
+		<table cellpadding="0" cellspacing="0" border="0" class="wp-list-table widefat foxyshop-list-table" id="customer_table">
+			<thead>
+				<tr>
+					<th><span><?php _e('Customer ID', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Last Name', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('First Name', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Email', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Orders', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<?php if ($foxyshop_settings['enable_subscriptions']) echo "<th><span>" . __('Subscriptions', 'foxyshop') . "</span><span class=\"sorting-indicator\"></span></th>\n"; ?>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<th><?php _e('Customer ID', 'foxyshop'); ?></th>
+					<th><?php _e('Last Name', 'foxyshop'); ?></th>
+					<th><?php _e('First Name', 'foxyshop'); ?></th>
+					<th><?php _e('Email', 'foxyshop'); ?></th>
+					<th><?php _e('Orders', 'foxyshop'); ?></th>
+					<?php if ($foxyshop_settings['enable_subscriptions']) echo "<th>" . __('Subscriptions', 'foxyshop') . "</th>\n"; ?>
+				</tr>
+			</tfoot>
+			<tbody>
 
-		//Customer Details
-		$holder .= '<div class="foxyshop_list_col">';
-		$holder .= '<h4>' . __('Customer Details', 'foxyshop') . '</h4>';
-		$holder .= '<ul>';
-		if ((string)$customer->customer_phone != "") $holder .= '<li>' . (string)$customer->customer_phone . '</li>';
-		$holder .= '<li><a href="mailto:' . $customer->customer_email . '">' . (string)$customer->customer_email . '</a></li>';
-		if ((string)$customer->cc_number != "") $holder .= '<li>' . __('Card', 'foxyshop') . ': ' . (string)$customer->cc_number . '</li>'; // 0.7.1 and lower
-		if ((string)$customer->cc_number_masked != "") $holder .= '<li>' . __('Card', 'foxyshop') . ': ' . (string)$customer->cc_number_masked . '</li>'; //0.7.2+
-		if ((string)$customer->cc_exp_month != "") $holder .= '<li>' . __('Exp', 'foxyshop') . ': ' . (string)$customer->cc_exp_month . '-' . (string)$customer->cc_exp_year . '</li>';
-		$holder .= '<li>' . __('Last Modified', 'foxyshop') . ': ' . $last_modified_date . '</li>';
-		$holder .= '<li>&nbsp;</li>';
+		<?php
+		$holder = "";
+		foreach($xml->customers->customer as $customer) {
+			$customer_id = (string)$customer->customer_id;
+			$customer_first_name = (string)$customer->customer_first_name;
+			$customer_last_name = (string)$customer->customer_last_name;
+			$customer_email = (string)$customer->customer_email;
 
-		$holder .= '</ul>';
-		$holder .= '</div>';
+			$last_modified_date = (string)$customer->last_modified_date;
+			$last_modified_date = date(apply_filters("foxyshop_date_time_format", "Y-m-d H:i"), strtotime($last_modified_date));
 
-		//Customer Address
-		$holder .= '<div class="foxyshop_list_col">';
-		$holder .= '<h4>' . __('Customer Address', 'foxyshop') . '</h4>';
-		$holder .= '<ul>';
-		$holder .= '<li>' . (string)$customer->customer_first_name . ' ' . (string)$customer->customer_last_name . '</li>';
-		if ((string)$customer->customer_company != "") $holder .= '<li>' . (string)$customer->customer_company . '</li>';
-		if ((string)$customer->customer_address1 != "") $holder .= '<li>' . (string)$customer->customer_address1 . '</li>';
-		if ((string)$customer->customer_address2 != "") $holder .= '<li>' . (string)$customer->customer_address2 . '</li>';
-		if ((string)$customer->customer_city != "") $holder .= '<li>' . (string)$customer->customer_city . ', ' . (string)$customer->customer_state . ' ' . (string)$customer->customer_postal_code . '</li>';
-		if ((string)$customer->customer_country != "") $holder .= '<li>' . (string)$customer->customer_country . '</li>';
-		$holder .= '</ul>';
-		$holder .= '</div>';
+			echo '<tr rel="' . $customer_id . '">';
+			echo '<td><strong><a href="#" class="view_detail">' . (string)$customer_id . '</a></strong></td>';
+			echo '<td>' . (string)$customer_last_name . '</td>';
+			echo '<td>' . (string)$customer_first_name . '</td>';
+			echo '<td>' .(string) $customer_email . '</td>';
+			echo '<td><a href="edit.php?post_type=foxyshop_product&page=foxyshop_order_management&customer_id_filter=' . (string)$customer->customer_id . '&transaction_date_filter_begin=&transaction_date_filter_end=&hide_transaction_filter=&foxyshop_search=1">' . __('Orders', 'foxyshop') . '</a></td>';
+			if ($foxyshop_settings['enable_subscriptions']) echo '<td><a href="edit.php?post_type=foxyshop_product&page=foxyshop_subscription_management&customer_id_filter=' . (string)$customer->customer_id . '&start_date_filter_begin=&start_date_filter_end=&&foxyshop_search=1">' . __('Subscriptions', 'foxyshop') . '</a></td>';
+			echo '</tr>'."\n";
 
-		//Shipping Addresses (if entered)
-		if ((string)$customer->shipping_first_name != "") {
+
+			$holder .= '<div class="detail_holder" id="holder_' . $customer_id. '">'."\n";
+
+			//Customer Details
 			$holder .= '<div class="foxyshop_list_col">';
-			$holder .= '<h4>' . __('Shipping Details', 'foxyshop') . '</h4>';
+			$holder .= '<h4>' . __('Customer Details', 'foxyshop') . '</h4>';
 			$holder .= '<ul>';
-			$holder .= '<li>' . (string)$customer->shipping_first_name . ' ' . (string)$customer->shipping_last_name . '</li>';
-			if ((string)$customer->shipping_company != "") $holder .= '<li>' . (string)$customer->shipping_company . '</li>';
-			if ((string)$customer->shipping_address1 != "")$holder .= '<li>' . $customer->shipping_address1 . '</li>';
-			if ((string)$customer->shipping_address2 != "") $holder .= '<li>' . (string)$customer->shipping_address2 . '</li>';
-			if ((string)$customer->shipping_city != "")$holder .= '<li>' . (string)$customer->shipping_city . ', ' . (string)$customer->shipping_state . ' ' . (string)$customer->shipping_postal_code . '</li>';
-			if ((string)$customer->shipping_country != "")$holder .= '<li>' . (string)$customer->shipping_country . '</li>';
-			if ((string)$customer->shipping_phone != "") $holder .= '<li>' . (string)$customer->shipping_phone . '</li>';
+			if ((string)$customer->customer_phone != "") $holder .= '<li>' . (string)$customer->customer_phone . '</li>';
+			$holder .= '<li><a href="mailto:' . $customer->customer_email . '">' . (string)$customer->customer_email . '</a></li>';
+			if ((string)$customer->cc_number != "") $holder .= '<li>' . __('Card', 'foxyshop') . ': ' . (string)$customer->cc_number . '</li>'; // 0.7.1 and lower
+			if ((string)$customer->cc_number_masked != "") $holder .= '<li>' . __('Card', 'foxyshop') . ': ' . (string)$customer->cc_number_masked . '</li>'; //0.7.2+
+			if ((string)$customer->cc_exp_month != "") $holder .= '<li>' . __('Exp', 'foxyshop') . ': ' . (string)$customer->cc_exp_month . '-' . (string)$customer->cc_exp_year . '</li>';
+			$holder .= '<li>' . __('Last Modified', 'foxyshop') . ': ' . $last_modified_date . '</li>';
+			$holder .= '<li>&nbsp;</li>';
+
 			$holder .= '</ul>';
 			$holder .= '</div>';
-		}
 
-		//Multi-ship Addresses
-		foreach($customer->shipto_addresses->shipto_address as $shipto_address) {
+			//Customer Address
 			$holder .= '<div class="foxyshop_list_col">';
-			$holder .= '<h4>' . __('Shipping Details', 'foxyshop') . ': ' . $shipto_address->address_name . '</h4>';
+			$holder .= '<h4>' . __('Customer Address', 'foxyshop') . '</h4>';
 			$holder .= '<ul>';
-			$holder .= '<li>' . (string)$shipto_address->shipto_first_name . ' ' . (string)$shipto_address->shipto_last_name . '</li>';
-			if ((string)$shipto_address->shipto_company != "") $holder .= '<li>' . (string)$shipto_address->shipto_company . '</li>';
-			$holder .= '<li>' . (string)$shipto_address->shipto_address1 . '</li>';
-			if ((string)$shipto_address->shipto_address2 != "") $holder .= '<li>' . (string)$shipto_address->shipto_address2 . '</li>';
-			$holder .= '<li>' . (string)$shipto_address->shipto_city . ', ' . (string)$shipto_address->shipto_state . ' ' . (string)$shipto_address->shipto_postal_code . '</li>';
-			$holder .= '<li>' . (string)$shipto_address->shipto_country . '</li>';
-			if ((string)$shipto_address->shipto_phone != "") $holder .= '<li>' . (string)$shipto_address->shipto_phone . '</li>';
+			$holder .= '<li>' . (string)$customer->customer_first_name . ' ' . (string)$customer->customer_last_name . '</li>';
+			if ((string)$customer->customer_company != "") $holder .= '<li>' . (string)$customer->customer_company . '</li>';
+			if ((string)$customer->customer_address1 != "") $holder .= '<li>' . (string)$customer->customer_address1 . '</li>';
+			if ((string)$customer->customer_address2 != "") $holder .= '<li>' . (string)$customer->customer_address2 . '</li>';
+			if ((string)$customer->customer_city != "") $holder .= '<li>' . (string)$customer->customer_city . ', ' . (string)$customer->customer_state . ' ' . (string)$customer->customer_postal_code . '</li>';
+			if ((string)$customer->customer_country != "") $holder .= '<li>' . (string)$customer->customer_country . '</li>';
 			$holder .= '</ul>';
 			$holder .= '</div>';
+
+			//Shipping Addresses (if entered)
+			if ((string)$customer->shipping_first_name != "") {
+				$holder .= '<div class="foxyshop_list_col">';
+				$holder .= '<h4>' . __('Shipping Details', 'foxyshop') . '</h4>';
+				$holder .= '<ul>';
+				$holder .= '<li>' . (string)$customer->shipping_first_name . ' ' . (string)$customer->shipping_last_name . '</li>';
+				if ((string)$customer->shipping_company != "") $holder .= '<li>' . (string)$customer->shipping_company . '</li>';
+				if ((string)$customer->shipping_address1 != "")$holder .= '<li>' . $customer->shipping_address1 . '</li>';
+				if ((string)$customer->shipping_address2 != "") $holder .= '<li>' . (string)$customer->shipping_address2 . '</li>';
+				if ((string)$customer->shipping_city != "")$holder .= '<li>' . (string)$customer->shipping_city . ', ' . (string)$customer->shipping_state . ' ' . (string)$customer->shipping_postal_code . '</li>';
+				if ((string)$customer->shipping_country != "")$holder .= '<li>' . (string)$customer->shipping_country . '</li>';
+				if ((string)$customer->shipping_phone != "") $holder .= '<li>' . (string)$customer->shipping_phone . '</li>';
+				$holder .= '</ul>';
+				$holder .= '</div>';
+			}
+
+			//Multi-ship Addresses
+			foreach($customer->shipto_addresses->shipto_address as $shipto_address) {
+				$holder .= '<div class="foxyshop_list_col">';
+				$holder .= '<h4>' . __('Shipping Details', 'foxyshop') . ': ' . $shipto_address->address_name . '</h4>';
+				$holder .= '<ul>';
+				$holder .= '<li>' . (string)$shipto_address->shipto_first_name . ' ' . (string)$shipto_address->shipto_last_name . '</li>';
+				if ((string)$shipto_address->shipto_company != "") $holder .= '<li>' . (string)$shipto_address->shipto_company . '</li>';
+				$holder .= '<li>' . (string)$shipto_address->shipto_address1 . '</li>';
+				if ((string)$shipto_address->shipto_address2 != "") $holder .= '<li>' . (string)$shipto_address->shipto_address2 . '</li>';
+				$holder .= '<li>' . (string)$shipto_address->shipto_city . ', ' . (string)$shipto_address->shipto_state . ' ' . (string)$shipto_address->shipto_postal_code . '</li>';
+				$holder .= '<li>' . (string)$shipto_address->shipto_country . '</li>';
+				if ((string)$shipto_address->shipto_phone != "") $holder .= '<li>' . (string)$shipto_address->shipto_phone . '</li>';
+				$holder .= '</ul>';
+				$holder .= '</div>';
+			}
+
+
+			//Custom Attributes
+			$holder .= foxyshop_manage_attributes($customer->attributes, $customer_id, "customer");
+
+			$holder .= '<div style="clear: both; height: 20px;"></div>';
+			$holder .= "</div>\n";
+
+
 		}
 
-		
-		//Custom Attributes
-		$holder .= foxyshop_manage_attributes($customer->attributes, $customer_id, "customer");
+		echo '</tbody></table>';
 
-		$holder .= '<div style="clear: both; height: 20px;"></div>';
-		$holder .= "</div>\n";
-
-
-	}
-
-	echo '</tbody></table>';
-
-	foxyshop_api_paging_nav('customers', 'bottom', $xml, $foxyshop_querystring);
-	?>
-	</form>
+		foxyshop_api_paging_nav('customers', 'bottom', $xml, $foxyshop_querystring);
+		?>
+		</form>
+	<?php } ?>
 
 	<div id="details_holder"><?php echo $holder; ?></div>
 	

@@ -63,7 +63,8 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 == Changelog ==
 
 = 4.1.3 =
-* Internationalization updates.
+* Internationalization updates. Added translation for Norwegian.
+* Fixed notice appearing on some installs when no orders returned
 
 = 4.1.2 =
 * Fixed broken receipt link on order management page
