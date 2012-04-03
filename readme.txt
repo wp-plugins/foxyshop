@@ -195,5 +195,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 4.1.2 =
-Maintenance Update: fixing broken receipt link on order management page
+= 4.1.3 =
+Minor Maintenance Update
