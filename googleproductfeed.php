@@ -273,7 +273,7 @@ function foxyshop_google_products_page() {
 		<table class="widefat" style="margin-top: 14px;">
 			<thead>
 				<tr>
-					<th><img src="<?php echo $google_icon; ?>" alt="" /><?php _e("Google Authentication Required"); ?></th>
+					<th><img src="<?php echo $google_icon; ?>" alt="" /><?php _e("Google Authentication Required", 'foxyshop'); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -412,21 +412,21 @@ function foxyshop_google_products_page() {
 			<thead>
 				<tr>
 					<th id="cb" class="manage-column column-cb check-column" scope="col"><input type="checkbox"></th>
-					<th class="column-id"><span><?php _e('ID'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Name'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Image'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Expiration'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Performance'); ?></span><span class="sorting-indicator"></span></th>
+					<th class="column-id"><span><?php _e('ID', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Name', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Image', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Expiration', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Performance', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
 				</tr>
 			</thead>
 			<tfoot>
 				<tr>
 					<th class="manage-column column-cb check-column" style="" scope="col"><input type="checkbox"></th>
-					<th><?php _e('ID'); ?></th>
-					<th><?php _e('Name'); ?></th>
-					<th><?php _e('Image'); ?></th>
-					<th><?php _e('Expiration'); ?></th>
-					<th><?php _e('Performance'); ?></th>
+					<th><?php _e('ID', 'foxyshop'); ?></th>
+					<th><?php _e('Name', 'foxyshop'); ?></th>
+					<th><?php _e('Image', 'foxyshop'); ?></th>
+					<th><?php _e('Expiration', 'foxyshop'); ?></th>
+					<th><?php _e('Performance', 'foxyshop'); ?></th>
 				</tr>
 			</tfoot>
 			<tbody>
@@ -449,7 +449,7 @@ function foxyshop_google_products_page() {
 				$local_products = array_diff($local_products, array($google_product_id));
 				$unmatched_text = "";
 			} else {
-				$unmatched_text = "<br /><em>Unmatched!</em>";
+				$unmatched_text = "<br /><em>" . __('Unmatched!', 'foxyshop') . "</em>\n";
 			}
 
 			echo '<tr>'."\n";
@@ -458,14 +458,14 @@ function foxyshop_google_products_page() {
 			if ($unmatched_text == "") {
 				echo '<td><strong><a href="post.php?post=' . $google_product_id . '&action=edit">' . (string)$entry->title . '</a></strong>';
 				echo '<div class="row-actions">';
-				echo '<span><a href="edit.php?foxyshop_manage_google_feed=1&amp;editid=' . $google_product_id . $debug_querystring . '&amp;_wpnonce=' . wp_create_nonce("manage-the-google-feed-settings") . '" class="update_google_product" rel="' . $google_product_id . '">Renew/Update</a> | </span>';
-				echo '<span class="delete"><a href="edit.php?foxyshop_manage_google_feed=1&amp;deleteid=' . $google_product_id . $debug_querystring . '&amp;_wpnonce=' . wp_create_nonce("manage-the-google-feed-settings") . '" class="delete_google_product" rel="' . $google_product_id . '">Delete</a></span>';
+				echo '<span><a href="edit.php?foxyshop_manage_google_feed=1&amp;editid=' . $google_product_id . $debug_querystring . '&amp;_wpnonce=' . wp_create_nonce("manage-the-google-feed-settings") . '" class="update_google_product" rel="' . $google_product_id . '">' . __('Renew/Update', 'foxyshop') . '</a> | </span>';
+				echo '<span class="delete"><a href="edit.php?foxyshop_manage_google_feed=1&amp;deleteid=' . $google_product_id . $debug_querystring . '&amp;_wpnonce=' . wp_create_nonce("manage-the-google-feed-settings") . '" class="delete_google_product" rel="' . $google_product_id . '">' . __('Delete', 'foxyshop') . '</a></span>';
 				echo '</div>';
 				echo '</td>'."\n";
 			} else {
 				echo '<td><strong><a href="#" onclick="return false;">' . (string)$entry->title . '</a></strong>';
 				echo '<div class="row-actions">';
-				echo '<span class="delete"><a href="edit.php?foxyshop_manage_google_feed=1&amp;deleteid=' . $google_product_id . $debug_querystring . '&amp;_wpnonce=' . wp_create_nonce("manage-the-google-feed-settings") . '" class="delete_google_product" rel="' . $google_product_id . '">Delete</a></span>';
+				echo '<span class="delete"><a href="edit.php?foxyshop_manage_google_feed=1&amp;deleteid=' . $google_product_id . $debug_querystring . '&amp;_wpnonce=' . wp_create_nonce("manage-the-google-feed-settings") . '" class="delete_google_product" rel="' . $google_product_id . '">' . __('Delete', 'foxyshop') . '</a></span>';
 				echo '</div>';
 				echo '</td>'."\n";
 			}
@@ -529,22 +529,22 @@ function foxyshop_google_products_page() {
 				<tr>
 					<th id="cb" class="manage-column column-cb check-column" scope="col"><input type="checkbox"></th>
 					<th class="column-id"><span><?php _e('ID'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Name'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Code'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Image'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Price'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Date'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Name', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Code', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Image', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Price', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Date', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
 				</tr>
 			</thead>
 			<tfoot>
 				<tr>
 					<th class="manage-column column-cb check-column" style="" scope="col"><input type="checkbox"></th>
-					<th><?php _e('ID'); ?></th>
-					<th><?php _e('Name'); ?></th>
-					<th><?php _e('Code'); ?></th>
-					<th><?php _e('Image'); ?></th>
-					<th><?php _e('Price'); ?></th>
-					<th><?php _e('Data'); ?></th>
+					<th><?php _e('ID', 'foxyshop'); ?></th>
+					<th><?php _e('Name', 'foxyshop'); ?></th>
+					<th><?php _e('Code', 'foxyshop'); ?></th>
+					<th><?php _e('Image', 'foxyshop'); ?></th>
+					<th><?php _e('Price', 'foxyshop'); ?></th>
+					<th><?php _e('Data', 'foxyshop'); ?></th>
 				</tr>
 			</tfoot>
 			<tbody>
@@ -583,7 +583,7 @@ function foxyshop_google_products_page() {
 			
 			echo '<td><strong><a href="post.php?post=' . $product['id'] . '&action=edit">' . $product['name'] . '</a></strong>';
 			echo '<div class="row-actions">';
-			echo '<span><a href="edit.php?foxyshop_manage_google_feed=1&amp;addid=' . $product['id'] . $debug_querystring . '&amp;_wpnonce=' . wp_create_nonce("manage-the-google-feed-settings") . '" class="insert_google_product" rel="' . $google_product_id . '">Add To Google Products Feed</a></span>';
+			echo '<span><a href="edit.php?foxyshop_manage_google_feed=1&amp;addid=' . $product['id'] . $debug_querystring . '&amp;_wpnonce=' . wp_create_nonce("manage-the-google-feed-settings") . '" class="insert_google_product" rel="' . $google_product_id . '">' . __('Add To Google Products Feed', 'foxyshop') . '</a></span>';
 			echo '</div>';
 			echo '</td>'."\n";
 

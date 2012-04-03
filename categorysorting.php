@@ -2,7 +2,7 @@
 //Put in Sidebar
 add_action('admin_menu', 'foxyshop_category_sorting_menu');
 function foxyshop_category_sorting_menu() {    
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Category Sorting'), __('Set Category Order'), apply_filters('foxyshop_category_sort_perm', 'edit_others_pages'), 'foxyshop_category_sort', 'foxyshop_category_sort');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Category Sorting', 'foxyshop'), __('Set Category Order', 'foxyshop'), apply_filters('foxyshop_category_sort_perm', 'edit_others_pages'), 'foxyshop_category_sort', 'foxyshop_category_sort');
 }
 
 //Update Order
@@ -21,7 +21,7 @@ function foxyshop_category_update_order() {
 	$foxyshop_category_sort[$categoryID] = $returned_ids;
 	update_option('foxyshop_category_sort', $foxyshop_category_sort);
 
-	return '<div id="message" class="updated fade"><p>'. __('Category order updated successfully.').'</p></div>';
+	return '<div id="message" class="updated fade"><p>'. __('Category order updated successfully.', 'foxyshop').'</p></div>';
 }
 
 //Reset Order to Alpha
@@ -33,7 +33,7 @@ function foxyshop_category_revert_order() {
 		unset($foxyshop_category_sort[$categoryID]);
 	}
 	update_option('foxyshop_category_sort', $foxyshop_category_sort);
-	return '<div id="message" class="updated fade"><p>'. __('Category order reset to alphabetical.').'</p></div>';
+	return '<div id="message" class="updated fade"><p>'. __('Category order reset to alphabetical.', 'foxyshop').'</p></div>';
 }
 
 //The Main Function
@@ -53,7 +53,7 @@ function foxyshop_category_sort() {
 	echo '<div class="wrap">';
 	
 	echo '<div class="icon32" id="icon-tools"><br></div>';
-	echo '<h2>' . __('Set ') . FOXYSHOP_PRODUCT_NAME_SINGULAR . __(' Category Order') . '</h2>';
+	echo '<h2>' . sprintf(__('Set %s Category Order', 'foxyshop'), FOXYSHOP_PRODUCT_NAME_SINGULAR) . '</h2>';
 	if ($success) echo $success;
 
 	$categoryID = (isset($_POST['categoryID']) ? $_POST['categoryID'] : 0);
@@ -72,7 +72,7 @@ function foxyshop_category_sort() {
 			if ($categoryID > 0) echo '<option value="0">Top Level</option>'."\n";
 			echo implode("\n",$subcats);
 			echo '</select>'."\n";
-			echo '<input type="submit" name="btnSubPages" class="button" id="btnSubPages" value="' . __('Select Sub-Category') . '" /></form>';
+			echo '<input type="submit" name="btnSubPages" class="button" id="btnSubPages" value="' . __('Select Sub-Category', 'foxyshop') . '" /></form>';
 		}
 	}
 
@@ -83,7 +83,7 @@ function foxyshop_category_sort() {
 		$unwanted_children = get_term_children($categoryID, "foxyshop_categories");
 		$unwanted_post_ids = get_objects_in_term($unwanted_children, "foxyshop_categories");
 	} else {
-		$current_category_name = __("Top Level Categories");
+		$current_category_name = __("Top Level Categories", 'foxyshop');
 	}
 
 	if ($product_categories) {
@@ -92,8 +92,8 @@ function foxyshop_category_sort() {
 		$product_categories = foxyshop_sort_categories($product_categories, $categoryID);
 		
 		echo '<h3>' . $current_category_name . '</h3>'."\n";
-		echo '<p>' . __('Drag categories to the preferred order and then click the Save button at the bottom of the page.') . '</p>';
-		echo '<p><strong>' . __('Current Sorting') . ': ' . (array_key_exists($categoryID,$foxyshop_category_sort) ? __('Custom') : __('Alphabetical')) . '</strong></p>';
+		echo '<p>' . __('Drag categories to the preferred order and then click the Save button at the bottom of the page.', 'foxyshop') . '</p>';
+		echo '<p><strong>' . __('Current Sorting') . ': ' . (array_key_exists($categoryID,$foxyshop_category_sort) ? __('Custom', 'foxyshop') : __('Alphabetical', 'foxyshop')) . '</strong></p>';
 		echo '<form name="form_category_order" method="post" action="">'."\n";
 		echo '<ul id="foxyshop_category_order_list" class="foxyshop_sort_list">'."\n";
 		
@@ -111,8 +111,8 @@ function foxyshop_category_sort() {
 
 		?>
 		<div style="height: 100px;">
-			<input type="submit" name="submit_new_category_order" id="revert_category_order" class="button-primary" value="<?php _e('Save Custom Order'); ?>" onclick="javascript:orderPages(); return true;" />&nbsp;&nbsp;<strong id="updateText"></strong>
-			<input type="submit" name="revert_category_order" id="revert_category_order" class="button" style="float: right;" value="<?php _e('Reset to Alphabetical'); ?>" onclick="javascript:orderPages(); return true;" />
+			<input type="submit" name="submit_new_category_order" id="revert_category_order" class="button-primary" value="<?php _e('Save Custom Order', 'foxyshop'); ?>" onclick="javascript:orderPages(); return true;" />&nbsp;&nbsp;<strong id="updateText"></strong>
+			<input type="submit" name="revert_category_order" id="revert_category_order" class="button" style="float: right;" value="<?php _e('Reset to Alphabetical', 'foxyshop'); ?>" onclick="javascript:orderPages(); return true;" />
 		</div>
 		<input type="hidden" id="foxyshop_category_order_value" name="foxyshop_category_order_value" />
 		<input type="hidden" id="categoryID" name="categoryID" value="<?php echo $categoryID; ?>" />
@@ -121,7 +121,7 @@ function foxyshop_category_sort() {
 		<?php
 
 	} else {
-		echo '<p><em>' . __('No Sub-Categories Found.') . '</em></p>';
+		echo '<p><em>' . __('No Sub-Categories Found.', 'foxyshop') . '</em></p>';
 	}
 	?>
 	</div>
@@ -142,7 +142,7 @@ function foxyshop_custom_order_load_event(){
 };
 addLoadEvent(foxyshop_custom_order_load_event);
 function orderPages() {
-	jQuery("#updateText").html("<?php _e('Updating Category Order...') ?>");
+	jQuery("#updateText").html("<?php _e('Updating Category Order...', 'foxyshop') ?>");
 	jQuery("#foxyshop_category_order_value").val(jQuery("#foxyshop_category_order_list").sortable("toArray"));
 }
 </script>

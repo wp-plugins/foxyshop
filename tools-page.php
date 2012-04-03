@@ -156,7 +156,7 @@ function foxyshop_save_tools() {
 
 add_action('admin_menu', 'foxyshop_tools_menu');
 function foxyshop_tools_menu() {
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Tools'), __('Tools'), apply_filters('foxyshop_tools_perm', 'manage_options'), 'foxyshop_tools', 'foxyshop_tools');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Tools', 'foxyshop'), __('Tools', 'foxyshop'), apply_filters('foxyshop_tools_perm', 'manage_options'), 'foxyshop_tools', 'foxyshop_tools');
 }
 
 function foxyshop_check_plugin_status($plugin) {
@@ -183,31 +183,31 @@ function foxyshop_tools() {
 
 	<?php
 	//Confirmation Import
-	if (isset($_GET['import'])) echo '<div class="updated"><p>' . __('Your Settings Have Been Imported.') . '</p></div>';
+	if (isset($_GET['import'])) echo '<div class="updated"><p>' . __('Your Settings Have Been Imported', 'foxyshop') . '.</p></div>';
 
 	//Import Error
-	if (isset($_GET['importerror'])) echo '<div class="error"><p>' . __('There was an error with your import settings and they could not be imported. The decrypted value was invalid.') . '</p></div>';
+	if (isset($_GET['importerror'])) echo '<div class="error"><p>' . __('There was an error with your import settings and they could not be imported. The decrypted value was invalid.', 'foxyshop') . '</p></div>';
 
 	//Confirmation Key Reset
-	if (isset($_GET['key'])) echo '<div class="updated"><p>' . sprintf(__('Your API Key Has Been Reset: "%s". Please Update FoxyCart With Your New Key.'), $foxyshop_settings['api_key']) . '</p></div>';
+	if (isset($_GET['key'])) echo '<div class="updated"><p>' . sprintf(__('Your API Key Has Been Reset: "%s". Please Update FoxyCart With Your New Key.', 'foxyshop'), $foxyshop_settings['api_key']) . '</p></div>';
 
 	//Confirmation Old Vars
-	if (isset($_GET['oldvars'])) echo '<div class="updated"><p>' . __('Scan for old variations has been successfully completed.') . '</p></div>';
+	if (isset($_GET['oldvars'])) echo '<div class="updated"><p>' . __('Scan for old variations has been successfully completed.', 'foxyshop') . '</p></div>';
 
 	//Flush Rewrite Rules
-	if (isset($_GET['foxyshop_flush_rewrite_rules'])) echo '<div class="updated"><p>' . __('WordPress rewrite rules have been flushed.') . '</p></div>';
+	if (isset($_GET['foxyshop_flush_rewrite_rules'])) echo '<div class="updated"><p>' . __('WordPress rewrite rules have been flushed.', 'foxyshop') . '</p></div>';
 
 	//Process Saved Variations
-	if (isset($_GET['processedvars'])) echo '<div class="updated"><p>' . __('Saved variations have been successfully updated.') . '</p></div>';
+	if (isset($_GET['processedvars'])) echo '<div class="updated"><p>' . __('Saved variations have been successfully updated.', 'foxyshop') . '</p></div>';
 
 	//Update Template
 	if (isset($_GET['updatetemplate'])) {
 		if ($_GET['updatetemplate'] == "error") {
 			echo '<div class="updated"><p>' .  $_GET['error'] . '</p></div>';
 		} elseif ($_GET['updatetemplate'] == "clear") {
-			echo '<div class="updated"><p>Your saved URLs have been cleared.</p></div>';
+			echo '<div class="updated"><p>' . __('Your saved URLs have been cleared.', 'foxyshop') . '</p></div>';
 		} else {
-			echo '<div class="updated"><p>' . sprintf(__('The %s template has been successfully updated.'), esc_attr($_GET['updatetemplate'])) . '</p></div>';
+			echo '<div class="updated"><p>' . sprintf(__('The %s template has been successfully updated.', 'foxyshop'), esc_attr($_GET['updatetemplate'])) . '</p></div>';
 		}
 	}
 
@@ -235,7 +235,7 @@ function foxyshop_tools() {
 	<table class="widefat">
 		<thead>
 			<tr>
-				<th><img src="<?php echo $recommend_icon; ?>" alt="" /><?php _e("Recommended Companion Plugins"); ?></th>
+				<th><img src="<?php echo $recommend_icon; ?>" alt="" /><?php _e("Recommended Companion Plugins", 'foxyshop'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -311,25 +311,25 @@ function foxyshop_tools() {
 	<table class="widefat">
 		<thead>
 			<tr>
-				<th><img src="<?php echo $export_icon; ?>" alt="" /><?php _e('Import/Export FoxyShop Settings'); ?></th>
+				<th><img src="<?php echo $export_icon; ?>" alt="" /><?php _e('Import/Export FoxyShop Settings', 'foxyshop'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php if (function_exists('mcrypt_encrypt')) : ?>
 			<tr>
 				<td>
-					<label for="foxyshop_export_settings"><?php echo __('Copy String To Your Clipboard to Export FoxyShop Settings'); ?>:</label> 
+					<label for="foxyshop_export_settings"><?php echo __('Copy String To Your Clipboard to Export FoxyShop Settings', 'foxyshop'); ?>:</label> 
 					<div style="clear: both;"></div>
 					<textarea id="foxyshop_export_settings" name="foxyshop_export_settings" wrap="auto" readonly="readonly" onclick="this.select();" style="font-size: 13px; float: left; width:500px; line-height: 110%; resize: none; height: 80px; font-family: courier;"><?php echo $foxyshop_export_settings; ?></textarea>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<label for="foxyshop_import_settings"><?php echo __('Paste Settings String to Import'); ?>:</label> 
+					<label for="foxyshop_import_settings"><?php echo __('Paste Settings String to Import', 'foxyshop'); ?>:</label> 
 					<div style="clear: both;"></div>
 					<textarea id="name="foxyshop_import_settings" name="foxyshop_import_settings" wrap="auto" style="float: left; width:500px;height: 80px; font-size: 13px; font-family: courier; line-height: 110%; resize: none;"></textarea>
 					<div style="clear: both;"></div>
-					<p><input type="submit" class="button-primary" value="<?php _e('Import Settings'); ?>" /></p>
+					<p><input type="submit" class="button-primary" value="<?php _e('Import Settings', 'foxyshop'); ?>" /></p>
 				</td>
 			</tr>
 			<?php else : ?>
@@ -350,7 +350,7 @@ function foxyshop_tools() {
 	<table class="widefat">
 		<thead>
 			<tr>
-				<th><img src="<?php echo $misc_icon; ?>" alt="" /><?php _e("Misc Tools"); ?></th>
+				<th><img src="<?php echo $misc_icon; ?>" alt="" /><?php _e('Misc Tools', 'foxyshop'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -359,23 +359,23 @@ function foxyshop_tools() {
 			<tr>
 				<td>
 					<form method="post" name="foxyshop_cache_form_1" action="">
-					<h3 style="margin-top: 0;">Update FoxyCart Template <span> <a href="http://wiki.foxycart.com/v/0.7.1/templates" target="_blank">Instructions</a></span></h3>
+					<h3 style="margin-top: 0;">Update FoxyCart Template <span> <a href="http://wiki.foxycart.com/v/0.7.1/templates" target="_blank"><?php _e('Instructions', 'foxyshop'); ?></a></span></h3>
 					
 					<label for="foxycart_cart_update" style="width: 150px;">Cart Template URL</label>
 					<input type="text" name="foxycart_cart_update" id="foxycart_cart_update" style="width: 450px;" value="<?php echo htmlspecialchars($foxyshop_settings['template_url_cart']); ?>" />
-					<input type="submit" name="foxycart_cart_update_save" value="Update Cart Cache" class="button" />
+					<input type="submit" name="foxycart_cart_update_save" value="<?php _e('Update Cart Cache', 'foxyshop'); ?>" class="button" />
 
 					<div style="clear: both;"></div>
 					
 					<label for="foxycart_checkout_update" style="width: 150px;">Checkout Template URL</label>
 					<input type="text" name="foxycart_checkout_update" id="foxycart_checkout_update" style="width: 450px;" value="<?php echo htmlspecialchars($foxyshop_settings['template_url_checkout']); ?>" />
-					<input type="submit" name="foxycart_checkout_update_save" value="Update Checkout Cache" class="button" />
+					<input type="submit" name="foxycart_checkout_update_save" value="<?php _e('Update Checkout Cache', 'foxyshop'); ?>" class="button" />
 
 					<div style="clear: both;"></div>
 					
 					<label for="foxycart_receipt_update" style="width: 150px;">Receipt Template URL</label>
 					<input type="text" name="foxycart_receipt_update" id="foxycart_receipt_update" style="width: 450px;" value="<?php echo htmlspecialchars($foxyshop_settings['template_url_receipt']); ?>" />
-					<input type="submit" name="foxycart_receipt_update_save" value="Update Receipt Cache" class="button" />
+					<input type="submit" name="foxycart_receipt_update_save" value="<?php _e('Update Receipt Cache', 'foxyshop'); ?>" class="button" />
 					
 					<?php wp_nonce_field('update-foxycart-template'); ?>
 					<input type="hidden" name="foxyshop_save_tools" value="1" />
@@ -389,17 +389,17 @@ function foxyshop_tools() {
 
 			<tr>
 				<td>
-					<span>Product pages not showing up?</span> <a href="edit.php?post_type=foxyshop_product&amp;page=foxyshop_tools&amp;foxyshop_flush_rewrite_rules=1" class="button">Flush Rewrite Rules</a>
+					<span>Product pages not showing up?</span> <a href="edit.php?post_type=foxyshop_product&amp;page=foxyshop_tools&amp;foxyshop_flush_rewrite_rules=1" class="button"><?php _e('Flush Rewrite Rules', 'foxyshop'); ?></a>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<span>Recently imported products with old variation method?</span> <a href="edit.php?foxyshop_old_variations_scan=1&amp;foxyshop_save_tools=1&amp;_wpnonce=<?php echo wp_create_nonce('foxyshop_old_variations_scan'); ?>" class="button">Scan For Old Variations</a>
+					<span>Recently imported products with old variation method?</span> <a href="edit.php?foxyshop_old_variations_scan=1&amp;foxyshop_save_tools=1&amp;_wpnonce=<?php echo wp_create_nonce('foxyshop_old_variations_scan'); ?>" class="button"><?php _e('Scan For Old Variations', 'foxyshop'); ?></a>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<span>Need a new API key?</span> <a href="edit.php?foxyshop_api_key_reset=1&amp;foxyshop_save_tools=1&amp;_wpnonce=<?php echo wp_create_nonce('reset-foxyshop-api-key'); ?>" onclick="return apiresetcheck();" class="button">Reset API Key</a>
+					<span>Need a new API key?</span> <a href="edit.php?foxyshop_api_key_reset=1&amp;foxyshop_save_tools=1&amp;_wpnonce=<?php echo wp_create_nonce('reset-foxyshop-api-key'); ?>" onclick="return apiresetcheck();" class="button"><?php _e('Reset API Key', 'foxyshop'); ?></a>
 				</td>
 			</tr>
 		</tbody>
@@ -411,7 +411,7 @@ function foxyshop_tools() {
 	<table class="widefat">
 		<thead>
 			<tr>
-				<th><img src="<?php echo $vars_icon; ?>" alt="" /><?php _e('Saved Variations'); ?></th>
+				<th><img src="<?php echo $vars_icon; ?>" alt="" /><?php _e('Saved Variations', 'foxyshop'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -420,15 +420,15 @@ function foxyshop_tools() {
 
 <?php
 $var_type_array = array(
-	'dropdown' => __("Dropdown List"),
-	'radio' => __("Radio Buttons"),
-	'checkbox' => __("Checkbox"),
-	'text' => __("Single Line of Text"),
-	'textarea' => __("Multiple Lines of Text"),
-	'upload' => __("Custom File Upload"),
-	'descriptionfield' => __("Description Field")
+	'dropdown' => __("Dropdown List", 'foxyshop'),
+	'radio' => __("Radio Buttons", 'foxyshop'),
+	'checkbox' => __("Checkbox", 'foxyshop'),
+	'text' => __("Single Line of Text", 'foxyshop'),
+	'textarea' => __("Multiple Lines of Text", 'foxyshop'),
+	'upload' => __("Custom File Upload", 'foxyshop'),
+	'descriptionfield' => __("Description Field", 'foxyshop')
 );
-$variation_key = __('Name{p+1.50|w-1|c:product_code|y:foxycart_category|dkey:display_key|ikey:image_id}');
+$variation_key = __('Name{p+1.50|w-1|c:product_code|y:foxycart_category|dkey:display_key|ikey:image_id}', 'foxyshop');
 
 //Setup Variations
 $variations = get_option('foxyshop_saved_variations');
@@ -442,7 +442,7 @@ if ($max_variations == 0) $max_variations = 1;
 for ($i=1;$i<=$max_variations;$i++) {
 	$_variationRefName = '';
 	$_variationName = '';
-	$_variation_type = '';
+	$_variation_type = 'dropdown';
 	$_variationValue = '';
 	$_variationDisplayKey = '';
 	$_variationRequired = '';
@@ -468,15 +468,15 @@ for ($i=1;$i<=$max_variations;$i++) {
 		<!-- //// VARIATION HEADER //// -->
 		<div class="foxyshop_field_control">
 			<a href="#" class="button deleteVariation" rel="<?php echo $i; ?>">Delete</a>
-			<label for="_variation_ref_name_<?php echo $i; ?>"><?php _e('Reference Name'); ?></label>
+			<label for="_variation_ref_name_<?php echo $i; ?>"><?php _e('Reference Name', 'foxyshop'); ?></label>
 			<input type="text" name="_variation_ref_name_<?php echo $i; ?>" class="variation_ref_name" id="_variation_ref_name_<?php echo $i; ?>" value="<?php echo esc_attr($_variationRefName); ?>" />
-			<span>Displayed in Dropdown Menu</span>
+			<span><?php _e('Displayed in Dropdown Menu', 'foxyshop'); ?></span>
 		</div>
 		<div class="foxyshop_field_control">
-			<label for="_variation_name_<?php echo $i; ?>"><?php _e('Variation Name'); ?></label>
+			<label for="_variation_name_<?php echo $i; ?>"><?php _e('Variation Name', 'foxyshop'); ?></label>
 			<input type="text" name="_variation_name_<?php echo $i; ?>" class="variation_name" id="_variation_name_<?php echo $i; ?>" value="<?php echo esc_attr($_variationName); ?>" />
 
-			<label for="_variation_type_<?php echo $i; ?>" class="variationtypelabel"><?php _e('Variation Type'); ?></label> 
+			<label for="_variation_type_<?php echo $i; ?>" class="variationtypelabel"><?php _e('Variation Type', 'foxyshop'); ?></label> 
 			<select name="_variation_type_<?php echo $i; ?>" id="_variation_type_<?php echo $i; ?>" class="variationtype">
 			<?php
 			foreach ($var_type_array as $var_name => $var_val) {
@@ -491,7 +491,7 @@ for ($i=1;$i<=$max_variations;$i++) {
 			<?php if ($_variation_type == "dropdown") : ?>
 				<!-- Dropdown -->
 				<div class="foxyshop_field_control dropdown variationoptions">
-					<label for="_variation_value_<?php echo $i; ?>"><?php _e('Items in Dropdown'); ?></label>
+					<label for="_variation_value_<?php echo $i; ?>"><?php _e('Items in Dropdown', 'foxyshop'); ?></label>
 					<textarea name="_variation_value_<?php echo $i; ?>" id="_variation_value_<?php echo $i; ?>"><?php echo $_variationValue; ?></textarea>
 					<div class="variationkey"><?php echo $variation_key; ?></div>
 				</div>
@@ -499,7 +499,7 @@ for ($i=1;$i<=$max_variations;$i++) {
 			<?php elseif($_variation_type == "radio") : ?>
 				<!-- Radio Buttons -->
 				<div class="foxyshop_field_control radio variationoptions">
-					<label for="_variation_radio_<?php echo $i; ?>"><?php _e('Radio Button Options'); ?></label>
+					<label for="_variation_radio_<?php echo $i; ?>"><?php _e('Radio Button Options', 'foxyshop'); ?></label>
 					<textarea name="_variation_radio_<?php echo $i; ?>" id="_variation_radio_<?php echo $i; ?>"><?php echo $_variationValue; ?></textarea>
 					<div class="variationkey"><?php echo $variation_key; ?></div>
 				</div>
@@ -509,12 +509,12 @@ for ($i=1;$i<=$max_variations;$i++) {
 				<?php $arrVariationTextSize = explode("|",esc_attr($_variationValue)); ?>
 				<div class="foxyshop_field_control text variationoptions">
 					<div class="foxyshop_field_control">
-						<label for="_variation_textsize1_<?php echo $i; ?>"><?php _e('Text Box Size'); ?></label>
-						<input type="text" name="_variation_textsize1_<?php echo $i; ?>" id="_variation_textsize1_<?php echo $i; ?>" value="<?php if (isset($arrVariationTextSize)) echo $arrVariationTextSize[0]; ?>" /> <span><?php _e('characters'); ?></span>
+						<label for="_variation_textsize1_<?php echo $i; ?>"><?php _e('Text Box Size', 'foxyshop'); ?></label>
+						<input type="text" name="_variation_textsize1_<?php echo $i; ?>" id="_variation_textsize1_<?php echo $i; ?>" value="<?php if (isset($arrVariationTextSize)) echo $arrVariationTextSize[0]; ?>" /> <span><?php _e('characters', 'foxyshop'); ?></span>
 					</div>
 					<div class="foxyshop_field_control">
-						<label for="_variation_textsize2_<?php echo $i; ?>"><?php _e('Maximum Chars'); ?></label>
-						<input type="text" name="_variation_textsize2_<?php echo $i; ?>" id="_variation_textsize2_<?php echo $i; ?>" value="<?php if (isset($arrVariationTextSize)) echo $arrVariationTextSize[1]; ?>" /> <span><?php _e('characters'); ?></span>
+						<label for="_variation_textsize2_<?php echo $i; ?>"><?php _e('Maximum Chars', 'foxyshop'); ?></label>
+						<input type="text" name="_variation_textsize2_<?php echo $i; ?>" id="_variation_textsize2_<?php echo $i; ?>" value="<?php if (isset($arrVariationTextSize)) echo $arrVariationTextSize[1]; ?>" /> <span><?php _e('characters', 'foxyshop'); ?></span>
 					</div>
 					<div style="clear: both;"></div>
 				</div>
@@ -522,21 +522,21 @@ for ($i=1;$i<=$max_variations;$i++) {
 			<?php elseif($_variation_type == "textarea") : ?>
 				<!-- Textarea -->
 				<div class="foxyshop_field_control textarea variationoptions">
-					<label for="_variation_textareasize_<?php echo $i; ?>"><?php _e('Lines of Text'); ?></label>
-					<input type="text" name="_variation_textareasize_<?php echo $i; ?>" id="_variation_textareasize_<?php echo $i; ?>" value="<?php echo esc_attr($_variationValue); ?>" /> <span>(default is 3)</span>
+					<label for="_variation_textareasize_<?php echo $i; ?>"><?php _e('Lines of Text', 'foxyshop'); ?></label>
+					<input type="text" name="_variation_textareasize_<?php echo $i; ?>" id="_variation_textareasize_<?php echo $i; ?>" value="<?php echo esc_attr($_variationValue); ?>" /> <span>(<?php _e('default is', 'foxyshop'); ?> 3)</span>
 				</div>
 
 			<?php elseif($_variation_type == "descriptionfield") : ?>
 				<!-- Description Field -->
 				<div class="foxyshop_field_control descriptionfield variationoptions">
-					<label for="_variation_description_<?php echo $i; ?>"><?php _e('Descriptive Text'); ?></label>
+					<label for="_variation_description_<?php echo $i; ?>"><?php _e('Descriptive Text', 'foxyshop'); ?></label>
 					<textarea name="_variation_description_<?php echo $i; ?>" id="_variation_description_<?php echo $i; ?>"><?php echo $_variationValue; ?></textarea>
 				</div>
 
 			<?php elseif($_variation_type == "checkbox") : ?>
 				<!-- Checkbox -->
 				<div class="foxyshop_field_control checkbox variationoptions" style="background-color: transparent;">
-					<label for="_variation_checkbox_<?php echo $i; ?>"><?php _e('Value'); ?></label>
+					<label for="_variation_checkbox_<?php echo $i; ?>"><?php _e('Value', 'foxyshop'); ?></label>
 					<input type="text" name="_variation_checkbox_<?php echo $i; ?>" id="_variation_checkbox_<?php echo $i; ?>" value="<?php echo $_variationValue; ?>" class="variation_checkbox_text" />
 					<div class="variationkey"><?php echo $variation_key; ?></div>
 				</div>
@@ -544,7 +544,7 @@ for ($i=1;$i<=$max_variations;$i++) {
 			<?php elseif($_variation_type == "upload") : ?>
 				<!-- Custom File Upload -->
 				<div class="foxyshop_field_control upload variationoptions">
-					<label for="_variation_uploadinstructions_<?php echo $i; ?>"><?php _e('Instructions'); ?></label>
+					<label for="_variation_uploadinstructions_<?php echo $i; ?>"><?php _e('Instructions', 'foxyshop'); ?></label>
 					<textarea name="_variation_uploadinstructions_<?php echo $i; ?>" id="_variation_uploadinstructions_<?php echo $i; ?>"><?php echo $_variationValue; ?></textarea>
 				</div>
 
@@ -553,13 +553,13 @@ for ($i=1;$i<=$max_variations;$i++) {
 
 		<!-- //// DISPLAY KEY //// -->
 		<div class="foxyshop_field_control dkeycontainer">
-			<label class="dkeylabel" title="Enter a value here if you want your variation to be invisible until called by another variation.">Display Key</label>
+			<label class="dkeylabel" title="Enter a value here if you want your variation to be invisible until called by another variation."><?php _e('Display Key'); ?></label>
 			<input type="text" name="_variation_dkey_<?php echo $i; ?>" id="_variation_dkey_<?php echo $i; ?>" value="<?php echo esc_attr($_variationDisplayKey); ?>" class="dkeynamefield" />
 
 			<!-- Required -->
 			<div class="variation_required_container" rel="<?php echo $i; ?>"<?php echo ($_variation_type == 'dropdown' || $_variation_type == 'text' || $_variation_type == 'textarea' || $_variation_type == 'upload' ? '' : ' style="display: none;"'); ?>>
 				<input type="checkbox" name="_variation_required_<?php echo $i; ?>" id="_variation_required_<?php echo $i; ?>"<?php echo checked($_variationRequired,"on"); ?> />
-				<label for="_variation_required_<?php echo $i; ?>"><?php _e('Make Field Required'); ?></label>
+				<label for="_variation_required_<?php echo $i; ?>"><?php _e('Make Field Required', 'foxyshop'); ?></label>
 			</div>
 		</div>
 
@@ -570,7 +570,7 @@ for ($i=1;$i<=$max_variations;$i++) {
 }
 echo "</div>";	
 ?>
-<button type="button" id="AddVariation" class="button"><?php _e('Add Another Variation'); ?></button>
+<button type="button" id="AddVariation" class="button"><?php _e('Add Another Variation', 'foxyshop'); ?></button>
 <input type="hidden" name="max_variations" id="max_variations" value="<?php echo $max_variations; ?>" />
 
 
@@ -582,7 +582,7 @@ echo "</div>";
 	</table>
 
 	<div style="clear: both;"></div>
-	<p><input type="submit" class="button-primary" value="<?php _e('Save These Variations'); ?>" /></p>
+	<p><input type="submit" class="button-primary" value="<?php _e('Save These Variations', 'foxyshop'); ?>" /></p>
 	<input type="hidden" name="foxyshop_save_tools" value="1" />
 	<input type="hidden" name="foxyshop_process_saved_variations" value="1" />
 	<?php wp_nonce_field('wp-foxyshop-process-saved-variations'); ?>
@@ -595,7 +595,7 @@ echo "</div>";
 	<table class="widefat">
 		<thead>
 			<tr>
-				<th><img src="<?php echo $remove_icon; ?>" alt="" /><?php _e('Uninstall FoxyShop'); ?></th>
+				<th><img src="<?php echo $remove_icon; ?>" alt="" /><?php _e('Uninstall FoxyShop', 'foxyshop'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -728,14 +728,14 @@ jQuery(document).ready(function($){
 		new_content += '<!-- //// VARIATION HEADER //// -->';
 		new_content += '<div class="foxyshop_field_control">';
 		new_content += '<a href="#" class="button deleteVariation" rel="' + this_id + '">Delete</a>';
-		new_content += '<label for="_variation_ref_name_' + this_id + '"><?php _e('Reference Name'); ?></label>';
+		new_content += '<label for="_variation_ref_name_' + this_id + '"><?php _e('Reference Name', 'foxyshop'); ?></label>';
 		new_content += '<input type="text" name="_variation_ref_name_' + this_id + '" class="variation_ref_name" id="_variation_ref_name_' + this_id + '" value="" />';
 		new_content += '<span>Displayed in Dropdown Menu</span>';
 		new_content += '</div>';
 		new_content += '<div class="foxyshop_field_control">';
-		new_content += '<label for="_variation_name_' + this_id + '"><?php _e('Variation Name'); ?></label>';
+		new_content += '<label for="_variation_name_' + this_id + '"><?php _e('Variation Name', 'foxyshop'); ?></label>';
 		new_content += '<input type="text" name="_variation_name_' + this_id + '" class="variation_name" id="_variation_name_' + this_id + '" value="" />';
-		new_content += '<label for="_variation_type_' + this_id + '" class="variationtypelabel"><?php _e('Variation Type'); ?></label> ';
+		new_content += '<label for="_variation_type_' + this_id + '" class="variationtypelabel"><?php _e('Variation Type', 'foxyshop'); ?></label> ';
 		new_content += '<select name="_variation_type_' + this_id + '" id="_variation_type_' + this_id + '" class="variationtype">';
 		<?php
 		foreach ($var_type_array as $var_name => $var_val) {
@@ -746,12 +746,12 @@ jQuery(document).ready(function($){
 		new_content += '<div class="variation_holder" id="variation_holder_' + this_id + '"></div>';
 		new_content += '<!-- //// DISPLAY KEY //// -->';
 		new_content += '<div class="foxyshop_field_control dkeycontainer">';
-		new_content += '<label class="dkeylabel" title="Enter a value here if you want your variation to be invisible until called by another variation.">Display Key</label>';
+		new_content += '<label class="dkeylabel" title="Enter a value here if you want your variation to be invisible until called by another variation."><?php _e('Display Key', 'foxyshop'); ?></label>';
 		new_content += '<input type="text" name="_variation_dkey_' + this_id + '" id="_variation_dkey_' + this_id + '" value="" class="dkeynamefield" />';
 		new_content += '<!-- Required -->';
 		new_content += '<div class="variation_required_container" rel="' + this_id + '">';
 		new_content += '<input type="checkbox" name="_variation_required_' + this_id + '" id="_variation_required_' + this_id + '" />';
-		new_content += '<label for="_variation_required_' + this_id + '"><?php _e('Make Field Required'); ?></label>';
+		new_content += '<label for="_variation_required_' + this_id + '"><?php _e('Make Field Required', 'foxyshop'); ?></label>';
 		new_content += '</div>';
 		new_content += '</div>';
 		new_content += '<div class="variationsortnum">' + this_id + '</div>';
@@ -777,7 +777,7 @@ jQuery(document).ready(function($){
 		//Dropdown
 		if (new_type == "dropdown") {
 			new_contents = '<div class="foxyshop_field_control dropdown variationoptions">';
-			new_contents += '<label id="_variation_value_' + this_id + '"><?php _e('Items in Dropdown'); ?></label>';
+			new_contents += '<label id="_variation_value_' + this_id + '"><?php _e('Items in Dropdown', 'foxyshop'); ?></label>';
 			new_contents += '<textarea name="_variation_value_' + this_id + '" id="_variation_value_' + this_id + '">' + $("#dropdownradio_value_"+this_id).val() + '</textarea>';
 			new_contents += variationkeyhtml;
 			new_contents += '</div>';
@@ -785,7 +785,7 @@ jQuery(document).ready(function($){
 		//Radio Buttons
 		} else if (new_type == "radio") {
 			new_contents = '<div class="foxyshop_field_control radio variationoptions">';
-			new_contents += '<label for="_variation_radio_' + this_id + '"><?php _e('Radio Button Options'); ?></label>';
+			new_contents += '<label for="_variation_radio_' + this_id + '"><?php _e('Radio Button Options', 'foxyshop'); ?></label>';
 			new_contents += '<textarea name="_variation_radio_' + this_id + '" id="_variation_radio_' + this_id + '">' + $("#dropdownradio_value_"+this_id).val() + '</textarea>';
 			new_contents += variationkeyhtml;
 			new_contents += '</div>';
@@ -794,11 +794,11 @@ jQuery(document).ready(function($){
 		} else if (new_type == "text") {
 			new_contents = '<div class="foxyshop_field_control text variationoptions">';
 			new_contents += '<div class="foxyshop_field_control">';
-			new_contents += '<label for="_variation_textsize1_' + this_id + '"><?php _e('Text Box Size'); ?></label>';
+			new_contents += '<label for="_variation_textsize1_' + this_id + '"><?php _e('Text Box Size', 'foxyshop'); ?></label>';
 			new_contents += '<input type="text" name="_variation_textsize1_' + this_id + '" id="_variation_textsize1_' + this_id + '" value="' + $("#text1_value_"+this_id).val() + '" /> <span><?php _e('characters'); ?></span>';
 			new_contents += '</div>';
 			new_contents += '<div class="foxyshop_field_control">';
-			new_contents += '<label for="_variation_textsize2_' + this_id + '"><?php _e('Maximum Chars'); ?></label>';
+			new_contents += '<label for="_variation_textsize2_' + this_id + '"><?php _e('Maximum Chars', 'foxyshop'); ?></label>';
 			new_contents += '<input type="text" name="_variation_textsize2_' + this_id + '" id="_variation_textsize2_' + this_id + '" value="' + $("#text2_value_"+this_id).val() + '" /> <span><?php _e('characters'); ?></span>';
 			new_contents += '</div>';
 			new_contents += '<div style="clear: both;"></div>';
@@ -807,22 +807,22 @@ jQuery(document).ready(function($){
 		//Textarea
 		} else if (new_type == "textarea") {
 			new_contents = '<div class="foxyshop_field_control textarea variationoptions">';
-			new_contents += '<label for="_variation_textareasize_' + this_id + '"><?php _e('Lines of Text'); ?></label>';
-			new_contents += '<input type="text" name="_variation_textareasize_' + this_id + '" id="_variation_textareasize_' + this_id + '" value="' + $("#textarea_value_"+this_id).val() + '" /> <span>(default is 3)</span>';
+			new_contents += '<label for="_variation_textareasize_' + this_id + '"><?php _e('Lines of Text', 'foxyshop'); ?></label>';
+			new_contents += '<input type="text" name="_variation_textareasize_' + this_id + '" id="_variation_textareasize_' + this_id + '" value="' + $("#textarea_value_"+this_id).val() + '" /> <span>(<?php _e('default is', 'foxyshop'); ?> 3)</span>';
 			new_contents += '</div>';
 
 
 		//Description
 		} else if (new_type == "descriptionfield") {
 			new_contents = '<div class="foxyshop_field_control descriptionfield variationoptions">';
-			new_contents += '<label for="_variation_description_' + this_id + '"><?php _e('Descriptive Text'); ?></label>';
+			new_contents += '<label for="_variation_description_' + this_id + '"><?php _e('Descriptive Text', 'foxyshop'); ?></label>';
 			new_contents += '<textarea name="_variation_description_' + this_id + '" id="_variation_description_' + this_id + '">' + $("#descriptionfield_value_"+this_id).val() + '</textarea>';
 			new_contents += '</div>';
 
 		//Checkbox
 		} else if (new_type == "checkbox") {
 			new_contents = '<div class="foxyshop_field_control checkbox variationoptions">';
-			new_contents += '<label for="_variation_description_' + this_id + '"><?php _e('Value'); ?></label>';
+			new_contents += '<label for="_variation_description_' + this_id + '"><?php _e('Value', 'foxyshop'); ?></label>';
 			new_contents += '<input type="text" name="_variation_checkbox_' + this_id + '" id="_variation_checkbox_' + this_id + '" value="' + $("#checkbox_value_"+this_id).val() + '" class="variation_checkbox_text" />';
 			new_contents += variationkeyhtml;
 			new_contents += '</div>';
@@ -830,7 +830,7 @@ jQuery(document).ready(function($){
 		//Custom File Upload
 		} else if (new_type == "upload") {
 			new_contents = '<div class="foxyshop_field_control upload variationoptions">';
-			new_contents += '<label for="_variation_uploadinstructions_' + this_id + '"><?php _e('Instructions'); ?></label>';
+			new_contents += '<label for="_variation_uploadinstructions_' + this_id + '"><?php _e('Instructions', 'foxyshop'); ?></label>';
 			new_contents += '<textarea name="_variation_uploadinstructions_' + this_id + '" id="_variation_uploadinstructions_' + this_id + '">' + $("#upload_value_"+this_id).val() + '</textarea>';
 			new_contents += '</div>';
 		}

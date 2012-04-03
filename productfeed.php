@@ -254,7 +254,7 @@ function foxyshop_google_products_act() {
 
 
 function foxyshop_google_product_menu() {
-	add_submenu_page('edit.php?post_type=foxyshop_product', __('Google Products'), __('Google Products'), apply_filters('foxyshop_google_product_perm', 'manage_options'), 'foxyshop_google_products_page', 'foxyshop_google_products_page');
+	add_submenu_page('edit.php?post_type=foxyshop_product', __('Google Products', 'foxyshop'), __('Google Products', 'foxyshop'), apply_filters('foxyshop_google_product_perm', 'manage_options'), 'foxyshop_google_products_page', 'foxyshop_google_products_page');
 }
 function foxyshop_google_products_page() {
 	global $foxyshop_settings, $product;
@@ -273,7 +273,7 @@ function foxyshop_google_products_page() {
 		<table class="widefat" style="margin-top: 14px;">
 			<thead>
 				<tr>
-					<th><img src="<?php echo $google_icon; ?>" alt="" /><?php _e("Google Authentication Required"); ?></th>
+					<th><img src="<?php echo $google_icon; ?>" alt="" /><?php _e("Google Authentication Required", 'foxyshop'); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -284,18 +284,18 @@ function foxyshop_google_products_page() {
 						<form onsubmit="return false;" autocomplete="off" style="display: block; margin-bottom: 10px;">
 
 						<div class="foxyshop_field_control">
-							<label for="Email"><?php echo __('Email'); ?></label>
+							<label for="Email"><?php _e('Email', 'foxyshop'); ?></label>
 							<input type="text" id="Email" name="Email" value="" />
 						</div>
 
 						<div class="foxyshop_field_control">
-							<label for="Passwd"><?php echo __('Password'); ?></label>
+							<label for="Passwd"><?php _e('Password', 'foxyshop'); ?></label>
 							<input type="password" id="Passwd" name="Passwd" value="" />
 						</div>
 
 						<div style="clear: both; height: 4px;"></div>
 
-						<button class="button-primary" id="authnow">Authenticate Now</button>
+						<button class="button-primary" id="authnow"><?php _e('Authenticate Now', 'foxyshop'); ?></button>
 						</form>
 
 						<div id="error" style="color: red; margin-top: 10px; font-weight: bold; display: none;"></div>
@@ -354,7 +354,7 @@ function foxyshop_google_products_page() {
 			}
 			echo '</ul></p></div>';
 		} elseif (isset($_GET['success'])) {
-			echo '<div class="updated"><p>' . __('Operation completed successfully.') . '</p></div>';
+			echo '<div class="updated"><p>' . __('Operation completed successfully.', 'foxyshop') . '</p></div>';
 		}
 
 
@@ -399,8 +399,8 @@ function foxyshop_google_products_page() {
 			update_option("foxyshop_settings", $foxyshop_settings);
 			$local_products = array();
 			
-			echo '<div class="updated"><p>' . __('Authentication Failed. It appears that your authentication has expired. This happens every two weeks. Please login again.') . '</p></div>';
-			echo '<p><a href="edit.php?post_type=foxyshop_product&amp;page=foxyshop_google_products_page" class="button">Login Now</a></p>';
+			echo '<div class="updated"><p>' . __('Authentication Failed. It appears that your authentication has expired. This happens every two weeks. Please login again.', 'foxyshop') . '</p></div>';
+			echo '<p><a href="edit.php?post_type=foxyshop_product&amp;page=foxyshop_google_products_page" class="button">' . __('Login Now', 'foxyshop') . '</a></p>';
 			
 			
 		} else {
@@ -412,21 +412,21 @@ function foxyshop_google_products_page() {
 			<thead>
 				<tr>
 					<th id="cb" class="manage-column column-cb check-column" scope="col"><input type="checkbox"></th>
-					<th class="column-id"><span><?php _e('ID'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Name'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Image'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Expiration'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Performance'); ?></span><span class="sorting-indicator"></span></th>
+					<th class="column-id"><span><?php _e('ID', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Name', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Image', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Expiration', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Performance', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
 				</tr>
 			</thead>
 			<tfoot>
 				<tr>
 					<th class="manage-column column-cb check-column" style="" scope="col"><input type="checkbox"></th>
-					<th><?php _e('ID'); ?></th>
-					<th><?php _e('Name'); ?></th>
-					<th><?php _e('Image'); ?></th>
-					<th><?php _e('Expiration'); ?></th>
-					<th><?php _e('Performance'); ?></th>
+					<th><?php _e('ID', 'foxyshop'); ?></th>
+					<th><?php _e('Name', 'foxyshop'); ?></th>
+					<th><?php _e('Image', 'foxyshop'); ?></th>
+					<th><?php _e('Expiration', 'foxyshop'); ?></th>
+					<th><?php _e('Performance', 'foxyshop'); ?></th>
 				</tr>
 			</tfoot>
 			<tbody>
@@ -449,7 +449,7 @@ function foxyshop_google_products_page() {
 				$local_products = array_diff($local_products, array($google_product_id));
 				$unmatched_text = "";
 			} else {
-				$unmatched_text = "<br /><em>Unmatched!</em>";
+				$unmatched_text = "<br /><em>" . __('Unmatched!', 'foxyshop') . "</em>";
 			}
 
 			echo '<tr>'."\n";
@@ -528,23 +528,23 @@ function foxyshop_google_products_page() {
 			<thead>
 				<tr>
 					<th id="cb" class="manage-column column-cb check-column" scope="col"><input type="checkbox"></th>
-					<th class="column-id"><span><?php _e('ID'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Name'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Code'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Image'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Price'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Date'); ?></span><span class="sorting-indicator"></span></th>
+					<th class="column-id"><span><?php _e('ID', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Name', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Code', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Image', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Price', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					<th><span><?php _e('Date', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
 				</tr>
 			</thead>
 			<tfoot>
 				<tr>
 					<th class="manage-column column-cb check-column" style="" scope="col"><input type="checkbox"></th>
-					<th><?php _e('ID'); ?></th>
-					<th><?php _e('Name'); ?></th>
-					<th><?php _e('Code'); ?></th>
-					<th><?php _e('Image'); ?></th>
-					<th><?php _e('Price'); ?></th>
-					<th><?php _e('Data'); ?></th>
+					<th><?php _e('ID', 'foxyshop'); ?></th>
+					<th><?php _e('Name', 'foxyshop'); ?></th>
+					<th><?php _e('Code', 'foxyshop'); ?></th>
+					<th><?php _e('Image', 'foxyshop'); ?></th>
+					<th><?php _e('Price', 'foxyshop'); ?></th>
+					<th><?php _e('Data', 'foxyshop'); ?></th>
 				</tr>
 			</tfoot>
 			<tbody>
@@ -621,7 +621,7 @@ function foxyshop_google_products_page() {
 	<table class="widefat">
 		<thead>
 			<tr>
-				<th><img src="<?php echo $google_icon; ?>" alt="" /><?php _e("Create Manual Export File"); ?></th>
+				<th><img src="<?php echo $google_icon; ?>" alt="" /><?php _e("Create Manual Export File", 'foxyshop'); ?></th>
 			</tr>
 		</thead>
 		<tbody>

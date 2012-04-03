@@ -15,6 +15,7 @@ if (empty($_FILES)) die('1');
 //Setup Vars
 $upload_dir = wp_upload_dir();
 
+$unsupported_file_type_text = __('unsupported file type', 'foxyshop');
 
 //Allowed Extensions
 $allowed_extensions = array("jpg","gif","jpeg","png","doc","docx","odt","xmls","xlsx","txt","tif","psd","pdf","mp3");
@@ -43,7 +44,7 @@ if (isset($_POST['foxyshop_image_uploader'])) {
 
 	$ext = strtolower(substr($filename, strrpos($filename, '.') + 1));
 	if (!in_array($ext, $allowed_extensions)) {
-		die('unsupported file type');
+		die($unsupported_file_type_text);
 	}
 
 	$i = 0;
@@ -92,7 +93,7 @@ if (isset($_POST['foxyshop_image_uploader'])) {
 	$targetPath = $upload_dir['basedir'] . '/customuploads/';
 
 	$ext = strtolower(substr($_FILES['Filedata']['name'], strrpos($_FILES['Filedata']['name'], '.') + 1));
-	if (!in_array($ext, $allowed_extensions)) die('unsupported file type');
+	if (!in_array($ext, $allowed_extensions)) die($unsupported_file_type_text);
 	
 	$newfilename = str_replace(array('.','/','\\',' '),'',$_POST['newfilename']).'.'.$ext;
 	$targetFile =  $targetPath . $newfilename;
@@ -102,7 +103,7 @@ if (isset($_POST['foxyshop_image_uploader'])) {
 
 //Nothing Requested
 } else {
-	echo 'invalid request';
+	echo __('invalid request', 'foxyshop');
 }
 
 

@@ -12,21 +12,21 @@ class FoxyShop_Category extends WP_Widget {
 
 	//Widget Setup
 	function FoxyShop_Category() {
-		$widget_ops = array( 'classname' => 'foxyshop_category', 'description' => __('Show the contents of a FoxyShop ') . strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR) . __(' category.') );
-		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'foxyshop-category-widget' );
-		$this->WP_Widget( 'foxyshop-category-widget', __('FoxyShop Category'), $widget_ops, $control_ops );
+		$widget_ops = array('classname' => 'foxyshop_category', 'description' => sprintf(__('Show the contents of a FoxyShop %s category.', 'foxyshop'), strtolower(FOXYSHOP_PRODUCT_NAME_SINGULAR)));
+		$control_ops = array('width' => 300, 'height' => 350, 'id_base' => 'foxyshop-category-widget');
+		$this->WP_Widget('foxyshop-category-widget', __('FoxyShop Category', 'foxyshop'), $widget_ops, $control_ops);
 	}
 
 	//Widget Display
-	function widget( $args, $instance ) {
-		extract( $args );
+	function widget($args, $instance) {
+		extract($args);
 
 		//Our variables from the widget settings
-		$title = apply_filters('widget_title', $instance['title'] );
+		$title = apply_filters('widget_title', $instance['title']);
 		$categoryName = $instance['categoryName'];
-		$showMoreDetails = isset( $instance['showMoreDetails'] ) ? $instance['showMoreDetails'] : false;
-		$showAddToCart = isset( $instance['showAddToCart'] ) ? $instance['showAddToCart'] : false;
-		$showMax = ($instance['showMax'] > 0 ) ? $instance['showMax'] : -1;
+		$showMoreDetails = isset($instance['showMoreDetails']) ? $instance['showMoreDetails'] : false;
+		$showAddToCart = isset($instance['showAddToCart']) ? $instance['showAddToCart'] : false;
+		$showMax = $instance['showMax'] > 0 ? $instance['showMax'] : -1;
 
 		echo $before_widget;
 		if ($title) echo $before_title . $title . $after_title;
@@ -44,13 +44,13 @@ class FoxyShop_Category extends WP_Widget {
 	}
 
 	//Update Widget Settings
-	function update( $new_instance, $old_instance ) {
+	function update($new_instance, $old_instance) {
 		$instance = $old_instance;
 
 		/* Strip tags for title and name to remove HTML (important for text inputs). */
-		$instance['title'] = strip_tags( $new_instance['title'] );
-		$instance['categoryName'] = strip_tags( $new_instance['categoryName'] );
-		$instance['showMax'] = (int)strip_tags( $new_instance['showMax'] );
+		$instance['title'] = strip_tags($new_instance['title']);
+		$instance['categoryName'] = strip_tags($new_instance['categoryName']);
+		$instance['showMax'] = (int)strip_tags($new_instance['showMax']);
 
 		/* No need to strip tags */
 		$instance['simpleView'] = $new_instance['simpleView'];
@@ -61,7 +61,7 @@ class FoxyShop_Category extends WP_Widget {
 	}
 
 	//Widget Control Panel
-	function form( $instance ) {
+	function form($instance) {
 
 		//Defaults
 		$defaults = array(
@@ -72,19 +72,20 @@ class FoxyShop_Category extends WP_Widget {
 			'simpleView' => "",
 			'showMax' => -1
 		);
-		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
+		$instance = wp_parse_args((array)$instance, $defaults);
+		?>
 
 		<!-- Widget Title: Text Input -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e('Title:'); ?></label>
-			<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:260px;" />
+			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title', 'foxyshop'); ?>:</label>
+			<input id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo $instance['title']; ?>" style="width:260px;" />
 		</p>
 
 		<!-- Select Category -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'categoryName' ); ?>"><?php _e('Category:'); ?></label> 
-			<select id="<?php echo $this->get_field_id( 'categoryName' ); ?>" name="<?php echo $this->get_field_name( 'categoryName' ); ?>" class="widefat" style="width:100%;">
-				<option value="">- - Select Category - -</option>
+			<label for="<?php echo $this->get_field_id('categoryName'); ?>"><?php _e('Category', 'foxyshop'); ?>:</label> 
+			<select id="<?php echo $this->get_field_id('categoryName'); ?>" name="<?php echo $this->get_field_name('categoryName'); ?>" class="widefat" style="width:100%;">
+				<option value="">- - <?php _e('Select Category', 'foxyshop'); ?> - -</option>
 				<?php
 				$toplevelterms = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0');
 				$arrCategory = array();
@@ -99,24 +100,24 @@ class FoxyShop_Category extends WP_Widget {
 
 		<!-- Max Entries -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'showMax' ); ?>"><?php _e('Max ') . FOXYSHOP_PRODUCT_NAME_PLURAL . __(' to Show:'); ?></label>
-			<input id="<?php echo $this->get_field_id( 'showMax' ); ?>" name="<?php echo $this->get_field_name( 'showMax' ); ?>" value="<?php echo ($instance['showMax'] != 0 ? $instance['showMax'] : ''); ?>" style="width:50px;" /> <span class="small">(optional)</span>
+			<label for="<?php echo $this->get_field_id('showMax'); ?>"><?php echo sprintf(__('Max %s to Show', 'foxyshop'), FOXYSHOP_PRODUCT_NAME_PLURAL); ?>:</label>
+			<input id="<?php echo $this->get_field_id('showMax'); ?>" name="<?php echo $this->get_field_name('showMax'); ?>" value="<?php echo ($instance['showMax'] != 0 ? $instance['showMax'] : ''); ?>" style="width:50px;" /> <span class="small">(<?php _e('optional', 'foxyshop'); ?>)</span>
 		</p>
 
 
 		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $instance['simpleView'], 'on' ); ?> id="<?php echo $this->get_field_id( 'simpleView' ); ?>" name="<?php echo $this->get_field_name( 'simpleView' ); ?>" /> 
-			<label for="<?php echo $this->get_field_id( 'simpleView' ); ?>"><?php _e('Show Simple View'); ?></label>
+			<input class="checkbox" type="checkbox" <?php checked($instance['simpleView'], 'on'); ?> id="<?php echo $this->get_field_id('simpleView'); ?>" name="<?php echo $this->get_field_name('simpleView'); ?>" /> 
+			<label for="<?php echo $this->get_field_id('simpleView'); ?>"><?php _e('Show Simple View', 'foxyshop'); ?></label>
 		</p>
 
 		<!-- Show Checkboxes for Button Selection -->
 		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $instance['showAddToCart'], 'on' ); ?> id="<?php echo $this->get_field_id( 'showAddToCart' ); ?>" name="<?php echo $this->get_field_name( 'showAddToCart' ); ?>" /> 
-			<label for="<?php echo $this->get_field_id( 'showAddToCart' ); ?>"><?php _e('Show Add To Cart Button'); ?></label>
+			<input class="checkbox" type="checkbox" <?php checked($instance['showAddToCart'], 'on'); ?> id="<?php echo $this->get_field_id('showAddToCart'); ?>" name="<?php echo $this->get_field_name('showAddToCart'); ?>" /> 
+			<label for="<?php echo $this->get_field_id('showAddToCart'); ?>"><?php _e('Show Add To Cart Button', 'foxyshop'); ?></label>
 		</p>
 		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $instance['showMoreDetails'], 'on' ); ?> id="<?php echo $this->get_field_id( 'showMoreDetails' ); ?>" name="<?php echo $this->get_field_name( 'showMoreDetails' ); ?>" /> 
-			<label for="<?php echo $this->get_field_id( 'showMoreDetails' ); ?>"><?php _e('Show More Details Button'); ?></label>
+			<input class="checkbox" type="checkbox" <?php checked($instance['showMoreDetails'], 'on'); ?> id="<?php echo $this->get_field_id('showMoreDetails'); ?>" name="<?php echo $this->get_field_name('showMoreDetails'); ?>" /> 
+			<label for="<?php echo $this->get_field_id('showMoreDetails'); ?>"><?php _e('Show More Details Button', 'foxyshop'); ?></label>
 		</p>
 
 
@@ -131,19 +132,19 @@ class FoxyShop_Cart_Link extends WP_Widget {
 
 	//Widget Setup
 	function FoxyShop_Cart_Link() {
-		$widget_ops = array( 'classname' => 'foxyshop_cart_link', 'description' => __('Show a link to view shopping cart.') );
-		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'foxyshop-cart-link-widget' );
-		$this->WP_Widget( 'foxyshop-cart-link-widget', __('FoxyShop Cart Link'), $widget_ops, $control_ops );
+		$widget_ops = array('classname' => 'foxyshop_cart_link', 'description' => __('Show a link to view shopping cart.', 'foxyshop'));
+		$control_ops = array('width' => 300, 'height' => 350, 'id_base' => 'foxyshop-cart-link-widget');
+		$this->WP_Widget('foxyshop-cart-link-widget', __('FoxyShop Cart Link', 'foxyshop'), $widget_ops, $control_ops);
 	}
 
 	//Widget Display
-	function widget( $args, $instance ) {
-		extract( $args );
+	function widget($args, $instance) {
+		extract($args);
 
 		/* Our variables from the widget settings. */
-		$title = apply_filters('widget_title', $instance['title'] );
+		$title = apply_filters('widget_title', $instance['title']);
 		$linkText = $instance['linkText'];
-		$hideEmpty = isset( $instance['hideEmpty'] ) ? $instance['hideEmpty'] : false;
+		$hideEmpty = isset($instance['hideEmpty']) ? $instance['hideEmpty'] : false;
 
 		echo $before_widget;
 		if ($title) echo $before_title . $title . $after_title;
@@ -155,11 +156,11 @@ class FoxyShop_Cart_Link extends WP_Widget {
 	}
 
 	//Update Widget Settings
-	function update( $new_instance, $old_instance ) {
+	function update($new_instance, $old_instance) {
 		$instance = $old_instance;
 
 		/* Strip tags for title and name to remove HTML (important for text inputs). */
-		$instance['title'] = strip_tags( $new_instance['title'] );
+		$instance['title'] = strip_tags($new_instance['title']);
 
 		/* No need to strip tags */
 		$instance['linkText'] = $new_instance['linkText'];
@@ -169,32 +170,32 @@ class FoxyShop_Cart_Link extends WP_Widget {
 	}
 
 	//Widget Control Panel
-	function form( $instance ) {
+	function form($instance) {
 
 		//Defaults
 		$defaults = array(
-			'title' => "Your Shopping Cart",
-			'linkText' => "View Cart",
+			'title' => __('Your Shopping Cart', 'foxyshop'),
+			'linkText' => __('View Cart', 'foxyshop'),
 			'hideEmpty' => ""
 		);
 		$instance = wp_parse_args((array)$instance, $defaults); ?>
 
 		<!-- Widget Title: Text Input -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e('Title:'); ?></label>
-			<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:260px;" />
+			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title', 'foxyshop'); ?>:</label>
+			<input id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo $instance['title']; ?>" style="width:260px;" />
 		</p>
 
 		<!-- Max Entries -->
 		<p>
 			<div><?php _e('Link Text:'); ?></div>
-			<textarea id="<?php echo $this->get_field_id( 'linkText' ); ?>" name="<?php echo $this->get_field_name( 'linkText' ); ?>" style="width: 100%;"><?php echo $instance['linkText']; ?></textarea>
-			<span class="small">Example: View Cart (%q Items) ($%p)</span>
+			<textarea id="<?php echo $this->get_field_id('linkText'); ?>" name="<?php echo $this->get_field_name('linkText'); ?>" style="width: 100%;"><?php echo $instance['linkText']; ?></textarea>
+			<span class="small"><?php _e('Example', 'foxyshop'); ?>: View Cart (%q Items) ($%p)</span>
 		</p>
 
 		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $instance['hideEmpty'], 'on' ); ?> id="<?php echo $this->get_field_id( 'hideEmpty' ); ?>" name="<?php echo $this->get_field_name( 'hideEmpty' ); ?>" /> 
-			<label for="<?php echo $this->get_field_id( 'hideEmpty' ); ?>"><?php _e('Hide Link if Cart is Empty'); ?></label>
+			<input class="checkbox" type="checkbox" <?php checked($instance['hideEmpty'], 'on'); ?> id="<?php echo $this->get_field_id('hideEmpty'); ?>" name="<?php echo $this->get_field_name('hideEmpty'); ?>" /> 
+			<label for="<?php echo $this->get_field_id('hideEmpty'); ?>"><?php _e('Hide Link if Cart is Empty', 'foxyshop'); ?></label>
 		</p>
 
 	<?php
@@ -208,15 +209,15 @@ class FoxyShop_Category_List extends WP_Widget {
 
 	//Widget setup.
 	function FoxyShop_Category_List() {
-		$widget_ops = array( 'classname' => 'foxyshop_category_list', 'description' => __('Show the FoxyShop category list.') );
-		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'foxyshop-category-list-widget' );
-		$this->WP_Widget( 'foxyshop-category-list-widget', __('FoxyShop Category List'), $widget_ops, $control_ops );
+		$widget_ops = array('classname' => 'foxyshop_category_list', 'description' => __('Show the FoxyShop category list.', 'foxyshop'));
+		$control_ops = array('width' => 300, 'height' => 350, 'id_base' => 'foxyshop-category-list-widget');
+		$this->WP_Widget('foxyshop-category-list-widget', __('FoxyShop Category List', 'foxyshop'), $widget_ops, $control_ops);
 	}
 
 	//Widget Display
-	function widget( $args, $instance ) {
-		extract( $args );
-		$title = apply_filters('widget_title', $instance['title'] );
+	function widget($args, $instance) {
+		extract($args);
+		$title = apply_filters('widget_title', $instance['title']);
 		$categoryID = $instance['categoryID'];
 		$depth = $instance['depth'];
 		if ($depth == "") $depth = 1;
@@ -232,19 +233,19 @@ class FoxyShop_Category_List extends WP_Widget {
 	}
 
 	//Update Widget Settings
-	function update( $new_instance, $old_instance ) {
+	function update($new_instance, $old_instance) {
 		$instance = $old_instance;
 
 		// Strip tags for title and name to remove HTML (important for text inputs)
 		$instance['title'] = strip_tags($new_instance['title']);
-		$instance['categoryID'] = (int)strip_tags( $new_instance['categoryID']);
-		$instance['depth'] = strip_tags( $new_instance['depth'] );
+		$instance['categoryID'] = (int)strip_tags($new_instance['categoryID']);
+		$instance['depth'] = strip_tags($new_instance['depth']);
 
 		return $instance;
 	}
 
 	//Widget Control Panel
-	function form( $instance ) {
+	function form($instance) {
 
 		//Defaults
 		$defaults = array(
@@ -252,19 +253,19 @@ class FoxyShop_Category_List extends WP_Widget {
 			'categoryID' => 0,
 			'depth' => 1
 		);
-		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
+		$instance = wp_parse_args((array)$instance, $defaults); ?>
 
 		<!-- Widget Title: Text Input -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e('Title:'); ?></label>
-			<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:260px;" />
+			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title', 'foxyshop'); ?>:</label>
+			<input id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo $instance['title']; ?>" style="width:260px;" />
 		</p>
 
 		<!-- Select Category -->
 		<p>
-			<label for="<?php echo $this->get_field_id('categoryID'); ?>"><?php _e('Parent Category:'); ?></label> 
+			<label for="<?php echo $this->get_field_id('categoryID'); ?>"><?php _e('Parent Category', 'foxyshop'); ?>:</label> 
 			<select id="<?php echo $this->get_field_id('categoryID'); ?>" name="<?php echo $this->get_field_name('categoryID'); ?>" class="widefat" style="width:100%;">
-				<option value="0">Top Level Categories</option>
+				<option value="0"><?php _e('Top Level Categories', 'foxyshop'); ?></option>
 				<?php
 				$toplevelterms = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0');
 				$arrCategory = array();
@@ -279,8 +280,8 @@ class FoxyShop_Category_List extends WP_Widget {
 		
 		<!-- Depth -->
 		<p>
-			<label for="<?php echo $this->get_field_id( 'depth' ); ?>"><?php _e('Depth:'); ?></label>
-			<input id="<?php echo $this->get_field_id( 'depth' ); ?>" name="<?php echo $this->get_field_name( 'depth' ); ?>" value="<?php echo $instance['depth']; ?>" style="width:50px;" /> <span class="small">(default: 1)</span>
+			<label for="<?php echo $this->get_field_id('depth'); ?>"><?php _e('Depth', 'foxyshop'); ?>:</label>
+			<input id="<?php echo $this->get_field_id('depth'); ?>" name="<?php echo $this->get_field_name('depth'); ?>" value="<?php echo $instance['depth']; ?>" style="width:50px;" /> <span class="small"><?php _e('(default: 1)', 'foxyshop'); ?></span>
 		</p>
 
 	<?php
@@ -292,14 +293,14 @@ class FoxyShop_Category_List extends WP_Widget {
 //Dashboard Stats
 if (is_array($foxyshop_settings)) {
 	if ($foxyshop_settings['enable_dashboard_stats']) {
-		add_action('wp_dashboard_setup', 'add_foxyshop_dashboard_stats' );
+		add_action('wp_dashboard_setup', 'add_foxyshop_dashboard_stats');
 		add_action('wp_ajax_foxyshop_order_history_dashboard_action', 'foxyshop_order_history_dashboard_ajax');
 	}
 }
 
 function add_foxyshop_dashboard_stats() {
 	if (!current_user_can(apply_filters('foxyshop_dashboard_stats_perm', 'manage_options'))) return;
-	wp_add_dashboard_widget('foxyshop_dashboard_widget', 'FoxyShop Statistics', 'foxyshop_dashboard_stats');	
+	wp_add_dashboard_widget('foxyshop_dashboard_widget', __('FoxyShop Statistics', 'foxyshop'), 'foxyshop_dashboard_stats');	
 	
 	//Move Widget to Right Column
 	global $wp_meta_boxes;
@@ -315,18 +316,18 @@ function foxyshop_dashboard_stats() {
 	
 	echo '<div id="foxyshop_statsleft">'."\n";
 
-	echo '<h4>' . __('Order History') . '</h4>'."\n";
+	echo '<h4>' . __('Order History', 'foxyshop') . '</h4>'."\n";
 	echo '<ul id="foxyshop_dashboard_order_history">'."\n";
-	echo '<li>Loading...</li>';
+	echo '<li>' . __('Loading', 'foxyshop') . '...</li>';
 	echo '</ul>'."\n";
 
 	$count_posts = wp_count_posts('foxyshop_product');
 	$tax = get_terms('foxyshop_categories', array("hide_empty" => 0));
 
-	echo '<h4 style="margin-top: 24px;">' . FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Summary') . '</h4>';
+	echo '<h4 style="margin-top: 24px;">' . FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Summary', 'foxyshop') . '</h4>';
 	echo '<ul>';
 	echo '<li><a href="edit.php?post_type=foxyshop_product">' . $count_posts->publish . ' ' . ($count_posts->publish == 1 ? FOXYSHOP_PRODUCT_NAME_SINGULAR : FOXYSHOP_PRODUCT_NAME_PLURAL) . '</a></li>';
-	echo '<li><a href="edit-tags.php?taxonomy=foxyshop_categories&post_type=foxyshop_product">' . count($tax) . ' ' . FOXYSHOP_PRODUCT_NAME_SINGULAR . ' Categor' . (count($tax) == 1 ? 'y' : 'ies') . '</a></li>';
+	echo '<li><a href="edit-tags.php?taxonomy=foxyshop_categories&post_type=foxyshop_product">' . count($tax) . ' ' . FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . _n('Category', 'Categories', count($tax), 'foxyshop') . '</a></li>';
 	echo '</ul>';
 	
 	echo '</div>'."\n";	
@@ -379,9 +380,9 @@ function foxyshop_order_history_dashboard_ajax() {
 			$orderstats[30][1] += $transaction_total;
 		}
 	}
-	echo '<li>One Day: <a href="edit.php?foxyshop_search=1&amp;is_test_filter=&amp;post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;transaction_date_filter_begin=' . date("Y-m-d", strtotime("-1 day")) . '&amp;transaction_date_filter_end='.date("Y-m-d") . '">' . $orderstats[1][0] . ' order' . ($orderstats[1][0] != 1 ? 's' : '') . ', ' . foxyshop_currency($orderstats[1][1]) . '</a></li>'."\n";
-	echo '<li>Seven Days: <a href="edit.php?foxyshop_search=1&amp;is_test_filter=&amp;post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;transaction_date_filter_begin=' . date("Y-m-d", strtotime("-7 days")) . '&amp;transaction_date_filter_end='.date("Y-m-d") . '">' . $orderstats[7][0] . ' order' . ($orderstats[7][0] != 1 ? 's' : '') . ', ' . foxyshop_currency($orderstats[7][1]) . '</a></li>'."\n";
-	echo '<li>30 Days: <a href="edit.php?foxyshop_search=1&amp;is_test_filter=&amp;post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;transaction_date_filter_begin=' . date("Y-m-d", strtotime("-30 days")) . '&amp;transaction_date_filter_end='.date("Y-m-d") . '">' . $orderstats[30][0] . ' order' . ($orderstats[30][0] != 1 ? 's' : '') . ', ' . foxyshop_currency($orderstats[30][1]) . '</a></li>'."\n";
+	echo '<li>' . __('One Day', 'foxyshop') . ': <a href="edit.php?foxyshop_search=1&amp;is_test_filter=&amp;post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;transaction_date_filter_begin=' . date("Y-m-d", strtotime("-1 day")) . '&amp;transaction_date_filter_end='.date("Y-m-d") . '">' . $orderstats[1][0] . ' ' . _n('order', 'orders', $orderstats[1][0], 'foxyshop') . ', ' . foxyshop_currency($orderstats[1][1]) . '</a></li>'."\n";
+	echo '<li>' . __('Seven Days', 'foxyshop') . ': <a href="edit.php?foxyshop_search=1&amp;is_test_filter=&amp;post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;transaction_date_filter_begin=' . date("Y-m-d", strtotime("-7 days")) . '&amp;transaction_date_filter_end='.date("Y-m-d") . '">' . $orderstats[7][0] . ' ' . _n('order', 'orders', $orderstats[7][0], 'foxyshop') . ', ' . foxyshop_currency($orderstats[7][1]) . '</a></li>'."\n";
+	echo '<li>' . __('30 Days', 'foxyshop') . ': <a href="edit.php?foxyshop_search=1&amp;is_test_filter=&amp;post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;transaction_date_filter_begin=' . date("Y-m-d", strtotime("-30 days")) . '&amp;transaction_date_filter_end='.date("Y-m-d") . '">' . $orderstats[30][0] . ' ' . _n('order', 'orders', $orderstats[30][0], 'foxyshop') . ', ' . foxyshop_currency($orderstats[30][1]) . '</a></li>'."\n";
 	die;
 }
 ?>

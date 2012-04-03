@@ -13,7 +13,7 @@ add_action('admin_menu', 'foxyshop_setup_menu');
 add_action('admin_init', 'save_foxyshop_setup');
 
 function foxyshop_setup_menu() {
-	add_submenu_page(NULL, __('FoxyShop Setup Wizard'), NULL, 'manage_options', 'foxyshop_setup', 'foxyshop_setup');
+	add_submenu_page(NULL, __('FoxyShop Setup Wizard', 'foxyshop'), NULL, 'manage_options', 'foxyshop_setup', 'foxyshop_setup');
 }
 
 function save_foxyshop_setup() {
@@ -45,14 +45,14 @@ function foxyshop_setup() {
 ?>
 <div class="wrap">
 <div class="icon32" id="icon-options-general"><br></div>
-<h2>FoxyShop Setup Wizard</h2>
+<h2><?php _e('FoxyShop Setup Wizard', 'foxyshop'); ?></h2>
 
 <a href="http://www.foxy-shop.com/?utm_source=plugin&utm_medium=app&utm_campaign=pluginlink_<?php echo FOXYSHOP_VERSION ?>" target="_blank"><img src="<?php echo FOXYSHOP_DIR; ?>/images/logo.png" alt="FoxyShop" style="float: right; margin-left: 20px;" /></a>
 <h3>Cool! You've got your new FoxyShop store installed and you are ready to get started.</h3>
 
 <p>The first thing you'll need to do is open up your FoxyCart account in another window so we can copy some information over there. If you don't have a FoxyCart account yet, that's no problem. Here's a short video overview that may help.</p>
 
-<iframe width="640" height="390" src="http://www.youtube.com/embed/TaW1yLbURfc" frameborder="0" allowfullscreen></iframe>
+<iframe width="640" height="390" src="http://www.youtube.com/embed/TaW1yLbURfc?rel=0" frameborder="0" allowfullscreen></iframe>
 
 <table width="640" style="margin:10px 0 15px 0;">
 <tr>
@@ -74,7 +74,7 @@ function foxyshop_setup() {
 <table class="widefat foxyshopsetup">
 	<thead>
 		<tr>
-			<th colspan="2"><h2 style="margin: 0; padding: 0;";><?php _e('Step 1: Click on Store / Settings'); ?></h2></th>
+			<th colspan="2"><h2 style="margin: 0; padding: 0;";><?php _e('Step 1: Click on Store / Settings', 'foxyshop'); ?></h2></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -118,7 +118,7 @@ function foxyshop_setup() {
 <table class="widefat foxyshopsetup infoonly">
 	<thead>
 		<tr>
-			<th colspan="2"><h2 style="margin: 0; padding: 0;";><?php _e('Step 2: Click on Store / Advanced'); ?></h2></th>
+			<th colspan="2"><h2 style="margin: 0; padding: 0;";><?php _e('Step 2: Click on Store / Advanced', 'foxyshop'); ?></h2></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -148,7 +148,7 @@ function foxyshop_setup() {
 
 
 
-<p><input type="submit" class="button-primary" value="<?php _e('Save and Get Started!'); ?>" /></p>
+<p><input type="submit" class="button-primary" value="<?php _e('Save and Get Started!', 'foxyshop'); ?>" /></p>
 
 <?php wp_nonce_field('save-foxyshop-setup'); ?>
 </form>

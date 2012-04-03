@@ -7,11 +7,6 @@ This will allow you to upgrade FoxyShop without breaking your customizations. Mo
 
 <?php get_header(); ?>
 
-<?php
-//Hide page content if plugin is disabled
-if (function_exists('foxyshop_insert_foxycart_files')) {
-?>
-
 <?php foxyshop_include('header'); ?>
 <div id="foxyshop_container">
 <?php
@@ -101,7 +96,7 @@ endwhile;
 
 	<div class="clr"></div>
 </div>
+
 <?php foxyshop_include('footer'); ?>
-<?php } ?>
 
 <?php get_footer(); ?>

@@ -498,7 +498,7 @@ function foxyshop_get_foxycart_data($foxyData, $silent_fail = true) {
 	$response = trim(curl_exec($ch));
 	if (!$response) {
 		if ($silent_fail) {
-			$response = "<?xml version='1.0' encoding='UTF-8'?><foxydata><result>ERROR</result><messages><message>" . __('Connection Error') . ": " . curl_error($ch) . "</message></messages></foxydata>";
+			$response = "<?xml version='1.0' encoding='UTF-8'?><foxydata><result>ERROR</result><messages><message>" . __('Connection Error', 'foxyshop') . ": " . curl_error($ch) . "</message></messages></foxydata>";
 		} else {
 			die("Connection Error: " . curl_error($ch));
 		}
@@ -618,11 +618,11 @@ function foxyshop_manage_attributes($xml, $id, $att_type) {
 		
 		$holder .= '<tr class="viewing">';
 		$holder .= '<td class="col1">' . htmlspecialchars($attribute_name) . '</td>';
-		$holder .= '<td class="col2"><div>' . str_replace("\n", "<br />\n", $attribute_value) . '</div><a href="#" class="foxyshop_attribute_delete" attname="' . htmlspecialchars($attribute_name) . '" rel="' . $id . '" title="Delete">Delete</a><a href="#" class="foxyshop_attribute_edit" rel="' . $id . '" title="Edit">Edit</a></td>'."\n";
+		$holder .= '<td class="col2"><div>' . str_replace("\n", "<br />\n", $attribute_value) . '</div><a href="#" class="foxyshop_attribute_delete" attname="' . htmlspecialchars($attribute_name) . '" rel="' . $id . '" title="Delete">' . __('Delete', 'foxyshop') . '</a><a href="#" class="foxyshop_attribute_edit" rel="' . $id . '" title="Edit">' . __('Edit', 'foxyshop') . '</a></td>'."\n";
 		$holder .= '</tr>';
 	}
 	$holder .= "</tbody></table>\n";
-	$holder .= '<input type="button" value="Add Attribute" class="button foxyshop_add_attribute" rel="' . $id . '" />'."\n";
+	$holder .= '<input type="button" value="' . __('Add Attribute', 'foxyshop') . '" class="button foxyshop_add_attribute" rel="' . $id . '" />'."\n";
 	return $holder;
 }
 

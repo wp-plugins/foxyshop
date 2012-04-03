@@ -89,7 +89,7 @@ function foxyshop_login_head() { ?>
 	</style><?php
 }
 function foxyshop_login_message() {
-	$message = '<p class="custom-message">Please login before checking out. <a href="' . get_bloginfo("wpurl") . '/wp-login.php?action=register">Click here to register.</a></p><br />';
+	$message = '<p class="custom-message">' . __('Please login before checking out.', 'foxyshop') . ' <a href="' . get_bloginfo("wpurl") . '/wp-login.php?action=register">' . __('Click here to register.', 'foxyshop') . '</a></p><br />';
 	return $message;
 }
 
@@ -110,8 +110,8 @@ function action_show_user_profile($user) {
 	<h3><?php _e('FoxyCart User Data') ?></h3>
 	<table class="form-table">
 	<tr>
-	<th><label for="foxycart_customer_id"><?php _e('FoxyCart Customer ID'); ?></label></th>
-	<td><input type="text" name="foxycart_customer_id" id="foxycart_customer_id" value="<?php echo esc_attr(get_user_meta($user->ID, 'foxycart_customer_id', 1) ); ?>" /> <span class="description">Editing is not recommended</span></td>
+	<th><label for="foxycart_customer_id"><?php _e('FoxyCart Customer ID', 'foxyshop'); ?></label></th>
+	<td><input type="text" name="foxycart_customer_id" id="foxycart_customer_id" value="<?php echo esc_attr(get_user_meta($user->ID, 'foxycart_customer_id', 1) ); ?>" /> <span class="description"><?php _e('Editing is not recommended', 'foxyshop'); ?></span></td>
 	</tr>
 	<?php
 	//Custom Hook To Allow Customization of the Content that Goes Here (add your own fields). Passes in one argument: the current user ID
@@ -128,14 +128,14 @@ function action_show_user_profile($user) {
 	
 	if (count($foxyshop_subscription) > 0) {
 	?>
-<h3><?php _e('FoxyCart Subscriptions') ?></h3>
+<h3><?php _e('FoxyCart Subscriptions', 'foxyshop') ?></h3>
 <table class="widefat" cellspacing="0">
     <thead>
     <tr>
         <tr>
-            <th class="manage-column column-columnname" scope="col"><?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?> Code</th>
-            <th class="manage-column column-columnname" scope="col">Active</th>
-            <th class="manage-column column-columnname" scope="col">Actions</th>
+            <th class="manage-column column-columnname" scope="col"><?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Code', 'foxyshop'); ?></th>
+            <th class="manage-column column-columnname" scope="col"><?php _e('Active', 'foxyshop'); ?></th>
+            <th class="manage-column column-columnname" scope="col"><?php _e('Actions', 'foxyshop'); ?></th>
         </tr>
     </tr>
     </thead>
@@ -146,8 +146,8 @@ function action_show_user_profile($user) {
 	?>
         <tr class="alternate">
             <td class="column-columnname"><?php echo $key; ?></td>
-            <td class="column-columnname"><?php echo ($val['is_active'] == 1 ? "Yes" : "No"); ?></td>
-            <td class="column-columnname"><a href="<?php echo $val['sub_token_url']; ?>&amp;cart=checkout" target="_blank">Update Info</a> | <a href="<?php echo $val['sub_token_url']; ?>&amp;sub_cancel=true&amp;cart=checkout" target="_blank">Cancel</a></td>
+            <td class="column-columnname"><?php echo ($val['is_active'] == 1 ? __('Yes', 'foxyshop') : __('No', 'foxyshop')); ?></td>
+            <td class="column-columnname"><a href="<?php echo $val['sub_token_url']; ?>&amp;cart=checkout" target="_blank"><?php _e('Update Info', 'foxyshop');?></a> | <a href="<?php echo $val['sub_token_url']; ?>&amp;sub_cancel=true&amp;cart=checkout" target="_blank"><?php _e('Cancel', 'foxyshop');?></a></td>
         </tr>
      <?php
      }
