@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.1
 Tested up to: 3.3.1
-Stable tag: 4.1.2
+Stable tag: 4.1.3
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -63,8 +63,16 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 == Changelog ==
 
 = 4.1.3 =
-* Internationalization updates. Added translation for Norwegian.
+* Updated jQuery to version 1.7.2
+* Internationalization updates. Added Norwegian translation thanks to Kenneth from KKtrend.
+* Added 'foxyshop_breadcrumbs_base_link' filter
+* Upgraded template redirect function to check for post names as well as page names
+* Removed unneeded "is foxyshop installed" checks from template files
+* Added settings page sniffers for Thesis and Headway users
+* Fixed bug where subsequent cloud zoom displays were "large" not "full" size images
+* Fixed potential warning in templateredirect.php for foxyshop_body_class() with missing array
 * Fixed notice appearing on some installs when no orders returned
+* Fixed missing default dropdown on first unsaved variation (tools page)
 
 = 4.1.2 =
 * Fixed broken receipt link on order management page

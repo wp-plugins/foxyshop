@@ -7,14 +7,10 @@ This will allow you to upgrade FoxyShop without breaking your customizations. Mo
 
 <?php get_header(); ?>
 
-<?php
-//Hide page content if plugin is disabled
-if (function_exists('foxyshop_insert_foxycart_files')) {
-global $product;
-?>
 <?php foxyshop_include('header'); ?>
 <div id="foxyshop_container">
 	<?php
+	global $product;
 	
 	//Write Breadcrumbs
 	foxyshop_breadcrumbs(" &raquo; ");
@@ -58,7 +54,6 @@ global $product;
 	?>
 </div>
 <?php foxyshop_include('footer'); ?>
-<?php } ?>
 
 <script type="text/javascript">
 jQuery(document).ready(function($){

@@ -345,7 +345,7 @@ function foxyshop_product_details_setup() {
 		<input type="text" name="_price" id="_price" value="<?php echo $_price; ?>" onblur="foxyshop_check_number(this);" style="width: 90px; float: left;" />
 		<span style="float: left; margin: 9px 0 0 5px;">0.00</span>
 	</div>
-	<div class="foxyshop_field_control">
+	<div class="foxyshop_field_control" id="foxyshop_item_code">
 		<label for="_code"><?php _e('Item Code', 'foxyshop'); ?></label>
 		<input type="text" name="_code" id="_code" value="<?php echo $_code; ?>" />
 	</div>

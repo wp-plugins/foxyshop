@@ -4,19 +4,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FoxyShop 4.1.2\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/foxyshop\n"
-"POT-Creation-Date: 2012-03-13 05:59:17+00:00\n"
+"POT-Creation-Date: 2012-03-22 17:19:33+00:00\n"
+"PO-Revision-Date: 2012-04-03 09:27+0100\n"
+"Last-Translator: Kenneth <post@kktrend.no>\n"
+"Language-Team: NORWEGIAN <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2012-03-22 10:59-0700\n"
-"Last-Translator: \n"
-"Language-Team: NORWEGIAN <LL@li.org>\n"
-
-msgid "Product"
-msgstr "Produkt"
-
-msgid "Products"
-msgstr "Produkter"
 
 #: adminfunctions.php:501
 msgid "Connection Error"
@@ -50,7 +44,7 @@ msgstr "Vær Uforandret"
 
 #: bulkeditor.php:16
 msgid "Set Values For Checked FoxyShop %s"
-msgstr "Sett Verdiene for Avkrysset FoxyShop %s"
+msgstr "Sett Verdiene for Avkrysset FoxyShop produkter"
 
 #: bulkeditor.php:23
 msgid "FoxyCart Category"
@@ -150,15 +144,15 @@ msgstr "Rabatt Pris %"
 
 #: bulkeditor.php:215
 msgid "Sub. Frequency"
-msgstr ""
+msgstr "Sub. Frekvens"
 
 #: bulkeditor.php:227
 msgid "Sub. Start Date"
-msgstr ""
+msgstr "Sub. Start Dato"
 
 #: bulkeditor.php:239
 msgid "Sub. End Date"
-msgstr ""
+msgstr "Sub. Slutt Dato"
 
 #: bulkeditor.php:286
 msgid "Related Products"
@@ -178,7 +172,7 @@ msgstr "Sortering Kategori"
 
 #: categorysorting.php:5
 msgid "Set Category Order"
-msgstr "Kategori Rekkefølge"
+msgstr "Sett Kategori Rekkefølge"
 
 #: categorysorting.php:24
 msgid "Category order updated successfully."
@@ -197,6 +191,7 @@ msgid "Select Sub-Category"
 msgstr "Velg Underkategori"
 
 #: categorysorting.php:86
+#: widgetcode.php:268
 msgid "Top Level Categories"
 msgstr "Topp Kategorier"
 
@@ -341,18 +336,18 @@ msgid "Subscriptions"
 msgstr "Abbonement"
 
 #: customers.php:165
-#: orders.php:487
+#: orders.php:488
 msgid "Customer Details"
 msgstr "Detaljer Kunde"
 
 #: customers.php:169
 #: customers.php:170
-#: orders.php:411
+#: orders.php:412
 msgid "Card"
 msgstr "Kort"
 
 #: customers.php:171
-#: orders.php:412
+#: orders.php:413
 msgid "Exp"
 msgstr "Utløp"
 
@@ -361,14 +356,14 @@ msgid "Last Modified"
 msgstr "Sist Redigert"
 
 #: customers.php:180
-#: orders.php:440
+#: orders.php:441
 msgid "Customer Address"
 msgstr "Kundens Adresse"
 
 #: customers.php:194
 #: customers.php:210
-#: orders.php:454
-#: orders.php:470
+#: orders.php:455
+#: orders.php:471
 msgid "Shipping Details"
 msgstr "Frakt Detaljer"
 
@@ -509,7 +504,7 @@ msgstr "Bilde"
 #: inventory.php:80
 #: inventory.php:91
 #: orders.php:218
-#: orders.php:535
+#: orders.php:536
 #: productfeed.php:533
 #: productfeed.php:544
 #: sso.php:136
@@ -520,7 +515,7 @@ msgstr "Kode"
 #: customposttype.php:111
 #: googleproductfeed.php:1056
 #: googleproductfeed.php:1078
-#: orders.php:536
+#: orders.php:537
 #: productfeed.php:535
 #: productfeed.php:546
 msgid "Price"
@@ -736,7 +731,7 @@ msgstr "Sett Lager Nivåer"
 
 #: customposttype.php:570
 msgid "Count"
-msgstr "Ant Lager"
+msgstr "Telle"
 
 #: customposttype.php:571
 msgid "If not set, default value will be used (%s)"
@@ -829,7 +824,7 @@ msgstr "Navn{p+20|c:produkt_kode|y:foxycart_kategori|dkey:visnings_nøkkel|ikey:
 #: tools-page.php:476
 #: tools-page.php:738
 msgid "Variation Name"
-msgstr "Variasjons Navn"
+msgstr "Variansjons Navn"
 
 #: customposttype.php:831
 #: tools-page.php:479
@@ -930,7 +925,7 @@ msgstr "Tilpasset %s Sortering"
 
 #: customsorting.php:5
 msgid "Set %s Order"
-msgstr "%s Rekkefølge"
+msgstr "Sett %s rekkefølge"
 
 #: customsorting.php:22
 msgid "order updated successfully"
@@ -946,11 +941,11 @@ msgstr "ordren er satt tilbake til origialen"
 
 #: customsorting.php:57
 msgid "Custom %s Order"
-msgstr "Tilpasset %s Rekkefølge"
+msgstr "Tilpasset %s rekkefølge"
 
 #: customsorting.php:63
 msgid "Select a category from the drop down to order the %s in that category."
-msgstr "Velg en kategori fra nedtrekkslisten for å sette rekkefølgen på %s i den kategorien"
+msgstr "Velg en kategori fra nedtrekkslisten for å bestille produkt i den kategorien"
 
 #: customsorting.php:71
 #: widgetcode.php:88
@@ -971,7 +966,15 @@ msgstr "Ingen %s ble funnet i denne Kategorien."
 
 #: customsorting.php:152
 msgid "Updating %s Order..."
-msgstr "Oppdaterer %s Ordre..."
+msgstr "Oppdaterer %s Rekkefølge..."
+
+#: foxyshop.php:46
+msgid "Product"
+msgstr "Produkt"
+
+#: foxyshop.php:47
+msgid "Products"
+msgstr "Produkter"
 
 #: googleproductfeed.php:505
 #: productfeed.php:257
@@ -1037,7 +1040,7 @@ msgid "Renew/Update"
 msgstr "Forny/Oppdater"
 
 #: googleproductfeed.php:1058
-#: orders.php:409
+#: orders.php:410
 #: productfeed.php:536
 msgid "Date"
 msgstr "Dato"
@@ -1078,7 +1081,7 @@ msgstr "Dine Nye Lager Nivåer er Lagret."
 
 #: inventory.php:70
 msgid "Import completed: %s records updated."
-msgstr "Importering Komplett: Produkt filer oppdatert."
+msgstr "Importering Komplett: %s filer oppdatert."
 
 #: inventory.php:81
 #: inventory.php:92
@@ -1155,12 +1158,12 @@ msgid "Test"
 msgstr ""
 
 #: orders.php:206
-#: orders.php:408
+#: orders.php:409
 msgid "Order ID"
 msgstr "Ordre ID"
 
 #: orders.php:210
-#: orders.php:434
+#: orders.php:435
 msgid "Order Total"
 msgstr "Ordre Total"
 
@@ -1225,98 +1228,98 @@ msgstr "Nullstill"
 msgid "ERROR"
 msgstr "FEIL"
 
-#: orders.php:336
-#: orders.php:346
+#: orders.php:337
+#: orders.php:347
 msgid "Transaction ID"
 msgstr "Transaksjons ID"
 
-#: orders.php:337
+#: orders.php:338
 msgid "Order Date"
 msgstr "Ordre Dato"
 
-#: orders.php:338
-#: orders.php:348
+#: orders.php:339
+#: orders.php:349
 #: subscriptions.php:208
 #: subscriptions.php:219
 #: subscriptions.php:275
 msgid "Customer"
 msgstr "Kunde"
 
-#: orders.php:339
-#: orders.php:349
+#: orders.php:340
+#: orders.php:350
 msgid "Total"
 msgstr "Total"
 
-#: orders.php:347
+#: orders.php:348
 msgid "OrderDate"
 msgstr "Ordre Dato"
 
-#: orders.php:377
+#: orders.php:378
 msgid "FoxyCart Receipt"
 msgstr "FoxyCart Kvittering"
 
-#: orders.php:380
+#: orders.php:381
 msgid "View Order"
 msgstr "Se Ordrer"
 
-#: orders.php:381
+#: orders.php:382
 msgid "Printable Receipt"
 msgstr "Utskriftsbare Kvitteringer"
 
-#: orders.php:381
+#: orders.php:382
 msgid "Receipt"
 msgstr "Kvittering"
 
-#: orders.php:389
+#: orders.php:390
 msgid "Un-Archive"
 msgstr "Ikke Arkiver"
 
-#: orders.php:391
+#: orders.php:392
 msgid "Archive"
 msgstr "Arkiver"
 
-#: orders.php:406
+#: orders.php:407
 msgid "Transaction Details"
 msgstr "Transaksjons Detaljer"
 
-#: orders.php:413
+#: orders.php:414
 msgid "MinFraud Score"
 msgstr "Svindel Resultat"
 
-#: orders.php:414
+#: orders.php:415
 msgid "Shipping Type"
 msgstr "Frakt Metode"
 
-#: orders.php:419
+#: orders.php:420
 msgid "Order Details"
 msgstr "Ordre Detaljer"
 
-#: orders.php:421
+#: orders.php:422
 msgid "Subtotal"
 msgstr "Delsum"
 
-#: orders.php:433
-#: orders.php:480
+#: orders.php:434
+#: orders.php:481
 msgid "Shipping"
 msgstr "Frakt"
 
-#: orders.php:479
+#: orders.php:480
 msgid "Method"
 msgstr "Metode"
 
-#: orders.php:538
+#: orders.php:539
 msgid "Qty"
 msgstr "Ant"
 
-#: orders.php:545
+#: orders.php:546
 msgid "Subscription Frequency"
 msgstr "Abbonement Frekvens"
 
-#: orders.php:546
+#: orders.php:547
 msgid "Subscription Start Date"
 msgstr "Start Abbonement"
 
-#: orders.php:547
+#: orders.php:548
 msgid "Subscription Next Date"
 msgstr "Stopp Abbonement"
 
@@ -1346,11 +1349,11 @@ msgstr "<strong>Gratulerer!</strong> Alt er klart. Du kan nå se over innstillin
 
 #: settings-page.php:128
 msgid "<strong>Warning:</strong> You are using PHP version %s. FoxyShop requires PHP version 5.1.2 or higher to utilize the required hmac_has() functions. Without upgrading you will experience problems adding items to the cart and completing other tasks. After upgrading, make sure that you reset your API key (on the FoxyShop Tools page) to ensure that you have a fully secure key."
-msgstr ""
+msgstr "<strong>Advarsel:</strong> Du bruker PHP versjon %s. FoxyShop krever at du bruker PHP versjon 5.1.2 eller høyere for å utnytte hmac_has() funksjonene. Uten oppgradering vil du oppleve problemer når varer blir lagt til handlekurven og andre oppgaver. Etter oppdatering er det viktig at du nullstiller API nøkkelen (på FoxyShop verktøy siden) for å være sikker på at du har en fullverdig sikkerhetsnøkkel."
 
 #: settings-page.php:131
 msgid "<strong>Warning:</strong> Your theme does not appear to be using header.php or footer.php. Without these files FoxyShop pages will show up unstyled. This error can often show up if you are using a WordPress framework that is bypassing the get_header() and get_footer() functions."
-msgstr ""
+msgstr "<strong>Advarsel:</strong> Det ser ikke ut som temaet ditt ikke bruker header.php eller footer.php. Uten disse filene vil FoxyShop sidene være udesignet. Denne feilen vil ofte vises hvis du bruker Wordpress rammeverk som hopper over get_header() og get_footer() funksjonene."
 
 #: settings-page.php:167
 msgid "FoxyShop Documentation"
@@ -1565,11 +1568,11 @@ msgstr "Hvis du ønsker annet enn $ for myntenhet, skriv inn den lokale koden he
 
 #: settings-page.php:481
 msgid "Attention: you are using Windows which does not support internationalization. You will be limited to $ (en_US) or &pound; (en_GB)."
-msgstr ""
+msgstr "Vær oppmerksom: du bruker Windows som ikke støtter oversettelse. Du vil kun få $(en_US) eller &pound;(en_GB)."
 
 #: settings-page.php:487
 msgid "Hide Child %s From Parent Categories (recommended)"
-msgstr "Skjul under %s fra hoved kategori (anbefalt)"
+msgstr "Skjul under-%s fra hoved kategori (anbefalt)"
 
 #: settings-page.php:488
 msgid "By default, WordPress treats children a little differently than you would expect in that products in child categories also show up in parent categories. FoxyShop removes these products, but if you would like to have all %s from sub-categories show up in parent categories, uncheck this box."
@@ -1613,11 +1616,11 @@ msgstr "Vis Statestikk på hovedsiden av Admin området"
 
 #: settings-page.php:524
 msgid "Generate %s Sitemap"
-msgstr "Generer Sidekart for %s"
+msgstr "Generer Sidekart for %s "
 
 #: settings-page.php:525
 msgid "If checked, a sitemap file with all of your %s will be created in your root folder."
-msgstr "Hvis avkrysset, et sidekart-fil med alle produktene vil bli laget i din root-mappe."
+msgstr "Hvis avkrysset, et sidekart-fil med alle %s vil bli laget i din root-mappe."
 
 #: settings-page.php:531
 msgid "Show Add to Cart Link on the Product Entry Page."
@@ -1828,55 +1831,55 @@ msgstr "Dine Lagrede URL'er har blitt fjernet."
 
 #: tools-page.php:210
 msgid "The %s template has been successfully updated."
-msgstr "%s Malen har blitt oppdatert."
+msgstr "Produkt Malen har blitt oppdatert."
 
 #: tools-page.php:238
 msgid "Recommended Companion Plugins"
-msgstr ""
+msgstr "Anbefalte Innstikk"
 
 #: tools-page.php:314
 msgid "Import/Export FoxyShop Settings"
-msgstr ""
+msgstr "Import/Eksport Innstillinger"
 
 #: tools-page.php:321
 msgid "Copy String To Your Clipboard to Export FoxyShop Settings"
-msgstr ""
+msgstr "Kopier setningen til copytavlen for eksportering av FoxyShop Innstillingene"
 
 #: tools-page.php:328
 msgid "Paste Settings String to Import"
-msgstr ""
+msgstr "Lim Inn Innstillingene for Importering"
 
 #: tools-page.php:332
 msgid "Import Settings"
-msgstr ""
+msgstr "Importer Innstillinger"
 
 #: tools-page.php:353
 msgid "Misc Tools"
-msgstr ""
+msgstr "Tilleggs Verktøy"
 
 #: tools-page.php:366
 msgid "Update Cart Cache"
-msgstr ""
+msgstr "Oppdater Handlekurv Minne"
 
 #: tools-page.php:372
 msgid "Update Checkout Cache"
-msgstr ""
+msgstr "Oppdater Utsjekkings Minne"
 
 #: tools-page.php:378
 msgid "Update Receipt Cache"
-msgstr ""
+msgstr "Oppdater Kvitterings Minne"
 
 #: tools-page.php:392
 msgid "Flush Rewrite Rules"
-msgstr ""
+msgstr "Tøm Omskrivningsregler"
 
 #: tools-page.php:397
 msgid "Scan For Old Variations"
-msgstr ""
+msgstr "Søk etter gamle variasjoner"
 
 #: tools-page.php:402
 msgid "Reset API Key"
-msgstr ""
+msgstr "Nullstill API Nøkkel"
 
 #: tools-page.php:471
 #: tools-page.php:733
@@ -2003,10 +2006,6 @@ msgstr "En Dag"
 #: widgetcode.php:383
 #: widgetcode.php:384
 #: widgetcode.php:385
-msgid "order"
-msgstr "ordre"
-
-#: widgetcode.php:384
 msgid "Seven Days"
 msgstr "7 Dager"
 
@@ -2018,16 +2017,16 @@ msgstr "30 Dager"
 msgid "FoxyShop"
 msgstr "KKshop"
 
-#. #-#-#-#-#  plugin.pot (FoxyShop 4.1.2)  #-#-#-#-#
+#. #-#-#-#-#  plugin.pot (FoxyShop 4.1.3)  #-#-#-#-#
 #. Plugin URI of the plugin/theme
-#. #-#-#-#-#  plugin.pot (FoxyShop 4.1.2)  #-#-#-#-#
+#. #-#-#-#-#  plugin.pot (FoxyShop 4.1.3)  #-#-#-#-#
 #. Author URI of the plugin/theme
 msgid "http://www.foxy-shop.com/"
 msgstr ""
 
 #. Description of the plugin/theme
 msgid "FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool."
-msgstr ""
+msgstr "FoxyShop er en helintergrasjon  mellom Foxycart og Wordpress, noe som gir deg en solid nettbutikk og vare redigerings verktøy."
 
 #. Author of the plugin/theme
 msgid "SparkWeb Interactive, Inc."

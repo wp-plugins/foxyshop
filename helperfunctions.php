@@ -789,7 +789,7 @@ function foxyshop_image_slideshow($size = "thumbnail", $includeFeatured = true, 
 	}
 	if ($useikey) $includeFeatured = true;
 	
-	$largesize = $linkclass == "cloud-zooom" ? "full" : "large";
+	$largesize = $linkclass == "cloud-zoom-gallery" ? "full" : "large";
 	foreach ($product['images'] as $imageArray) {
 		if ($useikey) {
 			$ikey .= "ikey.push(['" . $imageArray['id'] . "'";
@@ -950,7 +950,7 @@ function foxyshop_breadcrumbs($sep = " &raquo; ", $product_fallback = "&laquo; B
 		$breadcrumbarray = array_merge($breadcrumbarray,get_ancestors($tempterm->term_id, 'foxyshop_categories'));
 		$breadcrumbarray = array_reverse($breadcrumbarray);
 
-		$write1 = '<li class="foxyshop_breadcrumb_base"><a href="' . get_bloginfo('url') . FOXYSHOP_URL_BASE . '/' . FOXYSHOP_PRODUCT_CATEGORY_SLUG . '/">'. $base_name . '</a></li>';
+		$write1 = '<li class="foxyshop_breadcrumb_base"><a href="' . apply_filters('foxyshop_breadcrumbs_base_link', get_bloginfo('url') . FOXYSHOP_URL_BASE . '/' . FOXYSHOP_PRODUCT_CATEGORY_SLUG . '/') . '">'. $base_name . '</a></li>';
 		foreach($breadcrumbarray as $termid) {
 			$write1 .= '<li class="foxyshop_category_separator">' . $sep .'</li>';
 			$terminfo = get_term_by('id',$termid,"foxyshop_categories");

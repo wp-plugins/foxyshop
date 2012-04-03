@@ -442,7 +442,7 @@ if ($max_variations == 0) $max_variations = 1;
 for ($i=1;$i<=$max_variations;$i++) {
 	$_variationRefName = '';
 	$_variationName = '';
-	$_variation_type = '';
+	$_variation_type = 'dropdown';
 	$_variationValue = '';
 	$_variationDisplayKey = '';
 	$_variationRequired = '';

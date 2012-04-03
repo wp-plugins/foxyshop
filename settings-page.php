@@ -112,6 +112,21 @@ function foxyshop_settings_page() {
 	
 
 	<?php
+	//Headway Sniffer
+	if (class_exists("Headway")) {
+		if (is_plugin_active("foxyshop-headway/foxyshop-block.php")) echo '<div class="updated"><p><strong>Hello Headway User!</strong> Be sure to install the <a href="http://www.foxy-shop.com/2012/04/installing-foxyshop-on-headway/" target="_blank">FoxyShop Headway plugin</a> for full Headway compatability.</p></div>';
+	
+	//Thesis Sniffer
+	} elseif (defined("THESIS_ADMIN")) {
+		if (!defined('FOXYSHOP_TEMPLATE_PATH')) define('FOXYSHOP_TEMPLATE_PATH',STYLESHEETPATH);
+		if (!file_exists(FOXYSHOP_TEMPLATE_PATH . '/foxyshop-single-product.php') && !file_exists(TEMPLATEPATH . '/foxyshop-single-product.php')) {
+			echo '<div class="updated"><p><strong>Hello Thesis User!</strong> Please be sure to install <a href="http://www.foxy-shop.com/wp-content/uploads/2012/04/foxyshop-template-files-for-thesis.zip">these files</a> in your theme folder (or preferably your child theme folder) for Thesis compatibility.</p></div>';
+		} else {
+			$skip_header_warning = 1;
+		}
+	}
+
+
 	//Confirmation Saved
 	if (isset($_GET['saved'])) echo '<div class="updated"><p>' . __('Your Settings Have Been Saved.', 'foxyshop') . '</p></div>';
 
@@ -128,7 +143,7 @@ function foxyshop_settings_page() {
 	if (version_compare(PHP_VERSION, '5.1.2', "<")) echo '<div class="error"><p>' . sprintf(__('<strong>Warning:</strong> You are using PHP version %s. FoxyShop requires PHP version 5.1.2 or higher to utilize the required hmac_has() functions. Without upgrading you will experience problems adding items to the cart and completing other tasks. After upgrading, make sure that you reset your API key (on the FoxyShop Tools page) to ensure that you have a fully secure key.', 'foxyshop'), PHP_VERSION) . '</p></div>';
 
 	//Warning Header/Footer Missing
-	if (!file_exists(TEMPLATEPATH.'/header.php') || !file_exists(TEMPLATEPATH.'/footer.php')) echo '<div class="error"><p>' . __('<strong>Warning:</strong> Your theme does not appear to be using header.php or footer.php. Without these files FoxyShop pages will show up unstyled. This error can often show up if you are using a WordPress framework that is bypassing the get_header() and get_footer() functions.', 'foxyshop') . '</p></div>';
+	if ((!file_exists(TEMPLATEPATH.'/header.php') || !file_exists(TEMPLATEPATH.'/footer.php')) && !isset($skip_header_warning)) echo '<div class="error"><p>' . __('<strong>Warning:</strong> Your theme does not appear to be using header.php or footer.php. Without these files FoxyShop pages will show up unstyled. This error can often show up if you are using a WordPress framework that is bypassing the get_header() and get_footer() functions.', 'foxyshop') . '</p></div>';
 	
 	//Warning Upload Folders
 	$upload_dir = wp_upload_dir();
