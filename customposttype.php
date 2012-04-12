@@ -490,8 +490,8 @@ function foxyshop_product_pricing_setup() {
 	$discount_types = array(
 		"allunits" => __("All Units", 'foxyshop'),
 		"incremental" => __("Incremental", 'foxyshop'),
-		"repeat" => _x("Repeat", "Recurring", 'foxyshop'),
-		"single" => _x("Single", "One-time", 'foxyshop')
+		"repeat" => __("Repeat", 'foxyshop'),
+		"single" => __("Single", 'foxyshop')
 	);
 	$current_discount_method = "none";
 	$computed_discount = "";
@@ -504,7 +504,7 @@ function foxyshop_product_pricing_setup() {
 	}
 
 	?>
-	<h4><?php echo _x('Sale', 'Noun, Special Offer', 'foxyshop'); ?></h4>
+	<h4><?php _e('Sale'); ?></h4>
 	<div class="foxyshop_field_control">
 		<label for="_saleprice"><?php _e('Sale Price', 'foxyshop'); ?></label>
 		<input type="text" name="_saleprice" id="_saleprice" value="<?php echo $_saleprice; ?>" style="width: 87px; float: left;" />
@@ -523,7 +523,7 @@ function foxyshop_product_pricing_setup() {
 	<div style="clear: both;"></div>
 	
 
-	<h4><?php echo _x('Discounts', 'Discounted Prices Applied to Products', 'foxyshop'); ?> <a href="http://wiki.foxycart.com/v/<?php echo $foxyshop_settings['version']; ?>/coupons_and_discounts" target="_blank">(<?php _e('reference', 'foxyshop'); ?>)</a></h4>
+	<h4><?php _e('Discounts'); ?> <a href="http://wiki.foxycart.com/v/<?php echo $foxyshop_settings['version']; ?>/coupons_and_discounts" target="_blank">(<?php _e('reference', 'foxyshop'); ?>)</a></h4>
 	<div class="foxyshop_field_control">
 		<select name="discount_method" id="discount_method">
 		<?php
@@ -539,7 +539,7 @@ function foxyshop_product_pricing_setup() {
 	<div id="discount_container">
 
 		<div class="foxyshop_field_control">
-			<label for="discount_type"><?php echo _x('Disc. Type', 'Type of Discount', 'foxyshop'); ?></label>
+			<label for="discount_type"><?php _e('Disc. Type', 'foxyshop'); ?></label>
 			<select name="discount_type" id="discount_type">
 			<?php
 			foreach ($discount_types as $key => $val) {
@@ -552,7 +552,7 @@ function foxyshop_product_pricing_setup() {
 		</div>
 
 		<div class="foxyshop_field_control">
-			<label for="discount_name"><?php echo _x('Disc. Name', 'Name of Discount', 'foxyshop'); ?></label>
+			<label for="discount_name"><?php _e('Disc. Name', 'foxyshop'); ?></label>
 			<input type="text" id="discount_name" name="discount_name" value="" />
 		</div>
 
@@ -597,7 +597,7 @@ function foxyshop_product_pricing_setup() {
 	<span style="color: #999999; display: block; line-height: 15px; margin-bottom: 5px;"><?php _e('You may also enter a', 'foxyshop'); ?> <a href="http://php.net/manual/en/function.strtotime.php" target="_blank" title="PHP Docs" style="color: #999">strtotime</a> <?php _e('argument for start or end (like +3 months)', 'foxyshop'); ?></span>
 	<div id="foxyshop_subscription_attributes">
 		<div class="foxyshop_field_control">
-			<label for="_sub_frequency"><?php echo _x('Frequency', 'Frequency of Subscription Charge', 'foxyshop'); ?></label>
+			<label for="_sub_frequency"><?php _e('Frequency', 'foxyshop'); ?></label>
 			<input type="text" name="_sub_frequency" id="_sub_frequency" value="<?php echo $_sub_frequency; ?>" />
 			<span>60d, 2w, 1m, 1y, .5m</span>
 		</div>
