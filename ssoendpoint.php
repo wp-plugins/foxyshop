@@ -3,6 +3,9 @@
 if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 	global $foxyshop_settings;
 	global $current_user;
+
+	//Run an action here in case you want to to intercept
+	do_action("foxyshop_sso_endpoint");
 	
 	$login_url = get_bloginfo('wpurl') . '/wp-login.php';
 	

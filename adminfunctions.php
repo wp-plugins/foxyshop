@@ -223,6 +223,7 @@ function foxyshop_activation() {
 		"generate_product_sitemap" => "on",
 		"sort_key" => "menu_order",
 		"enable_sso" => "",
+		"orderdesk_url" => "",
 		"sso_account_required" => "0",
 		"ga" => "",
 		"ga_advanced" => "",
@@ -244,7 +245,7 @@ function foxyshop_activation() {
 		"google_product_auth" => "",
 		"include_exception_list" => "",
 		"show_add_to_cart_link" => "",
-		"api_key" => "sp92fx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time())
+		"api_key" => "spfx".hash_hmac('sha256',rand(2165,64898),"dkw81".time())
 	);
 	
 	//Set For the First Time
@@ -295,6 +296,7 @@ function foxyshop_activation() {
 		if (!array_key_exists('include_exception_list',$foxyshop_settings)) $foxyshop_settings['include_exception_list'] = ""; //3.9
 		if (array_key_exists('ups_worldship_export',$foxyshop_settings)) unset($foxyshop_settings['ups_worldship_export']); //4.1
 		if (!array_key_exists('show_add_to_cart_link',$foxyshop_settings)) $foxyshop_settings['show_add_to_cart_link'] = ""; //4.1.1
+		if (!array_key_exists('orderdesk_url',$foxyshop_settings)) $foxyshop_settings['orderdesk_url'] = ""; //4.1.4
 
 
 		//Upgrade Variations in 3.0
@@ -311,7 +313,7 @@ function foxyshop_activation() {
 					$_variationRequired = get_post_meta($product->ID, '_variation_required_'.$i, 1);
 					if ($_variationName) {
 						$variations[$i] = array(
-							"name" => $_variationName,
+							"name" => str_replace(array('"', '&', '.'), array('', 'and', ''), $_variationName),
 							"type" => $_variationType,
 							"value" => $_variationValue,
 							"displayKey" => $_variationDisplayKey,
@@ -414,7 +416,8 @@ function foxyshop_inventory_count_update($code, $new_count, $product_id = 0, $fo
 	
 	//If No Product ID provided
 	} elseif ($product_id == 0) {
-		$meta_list = $wpdb->get_row("SELECT `post_id`, `meta_id`, `meta_value`, `meta_key` FROM $wpdb->postmeta WHERE `meta_key` = '_inventory_levels' AND `meta_value` LIKE '%:\"" . mysql_real_escape_string($code) . "\";%'");
+		$str_meta_value = strlen(preg_replace("/[^0-9]/","", $code)) == strlen($code) ? ":" . mysql_real_escape_string($code) . ";" : '"' . mysql_real_escape_string($code) . '";';
+		$meta_list = $wpdb->get_row("SELECT `post_id`, `meta_id`, `meta_value`, `meta_key` FROM $wpdb->postmeta WHERE `meta_key` = '_inventory_levels' AND `meta_value` LIKE '%" . $str_meta_value . "%'");
 		if (!$meta_list && $force) $meta_list = $wpdb->get_row("SELECT `post_id`, `meta_id`, `meta_value`, `meta_key` FROM $wpdb->postmeta WHERE `meta_key` = '_variations' AND `meta_value` LIKE '%" . mysql_real_escape_string($code) . "%'");
 		if (!$meta_list && $force) $meta_list = $wpdb->get_row("SELECT `post_id`, `meta_id`, `meta_value`, `meta_key` FROM $wpdb->postmeta WHERE `meta_key` = '_code' AND `meta_value` = '" . mysql_real_escape_string($code) . "'");
 		if ($meta_list) {

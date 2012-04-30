@@ -138,7 +138,8 @@ function foxyshop_setup_product($thepost = false, $shortcut = false) {
 			$new_product['images'][$imageNumber] = array(
 				"id" => $attachment->ID,
 				"title" => $imageTitle,
-				"featured" => ($featuredImageID == $attachment->ID || ($featuredImageID == 0 && $imageNumber == 0) ? 1 : 0)
+				"featured" => ($featuredImageID == $attachment->ID || ($featuredImageID == 0 && $imageNumber == 0) ? 1 : 0),
+				"hide_from_slideshow" => (get_post_meta($attachment->ID, "_foxyshop_hide_image", 1) ? 1 : 0)
 			);
 			foreach($sizes as $size) {
 				$sizearray = wp_get_attachment_image_src($attachment->ID, $size);
@@ -788,7 +789,6 @@ function foxyshop_image_slideshow($size = "thumbnail", $includeFeatured = true, 
 		if (strrpos($product_variation['value'],"ikey:") > 0) $useikey = 1;
 	}
 	if ($useikey) $includeFeatured = true;
-	
 	$largesize = $linkclass == "cloud-zoom-gallery" ? "full" : "large";
 	foreach ($product['images'] as $imageArray) {
 		if ($useikey) {
@@ -800,7 +800,7 @@ function foxyshop_image_slideshow($size = "thumbnail", $includeFeatured = true, 
 			$ikey .= ",'" . foxyshop_get_verification('image',$imageArray['thumbnail']) . "'";
 			$ikey .= "]);\n";
 		}
-		if (!$imageArray['featured'] || $includeFeatured) {
+		if ((!$imageArray['featured'] || $includeFeatured) && !$imageArray['hide_from_slideshow']) {
 			$current_rel = $rel;
 			$current_rel = str_replace("%small", $imageArray['thumbnail'], $current_rel);
 			$current_rel = str_replace("%medium", $imageArray['medium'], $current_rel);
@@ -1497,4 +1497,8 @@ function foxyshop_currency($input, $currencysymbol = true) {
 	}
 	return apply_filters("foxyshop_currency", $currency);
 }
-?>
+
+function is_foxyshop() {
+	global $wp_query;
+	return $wp_query->is_foxyshop;
+}

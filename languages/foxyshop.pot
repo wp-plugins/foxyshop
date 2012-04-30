@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the FoxyShop package.
 msgid ""
 msgstr ""
-"Project-Id-Version: FoxyShop 4.1.3\n"
+"Project-Id-Version: FoxyShop 4.1.4\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/foxyshop\n"
-"POT-Creation-Date: 2012-03-22 17:19:33+00:00\n"
+"POT-Creation-Date: 2012-04-12 18:33:54+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,20 +12,20 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: adminfunctions.php:501
+#: adminfunctions.php:502
 msgid "Connection Error"
 msgstr ""
 
-#: adminfunctions.php:621 googleproductfeed.php:910 googleproductfeed.php:922
+#: adminfunctions.php:622 googleproductfeed.php:910 googleproductfeed.php:922
 msgid "Delete"
 msgstr ""
 
-#: adminfunctions.php:621 customposttype.php:15 customposttype.php:37
+#: adminfunctions.php:622 customposttype.php:15 customposttype.php:37
 #: customposttype.php:58 subscriptions.php:274
 msgid "Edit"
 msgstr ""
 
-#: adminfunctions.php:625
+#: adminfunctions.php:626
 msgid "Add Attribute"
 msgstr ""
 
@@ -51,10 +51,6 @@ msgstr ""
 
 #: bulkeditor.php:58 customposttype.php:509
 msgid "Sale Price"
-msgstr ""
-
-#: bulkeditor.php:60
-msgid "Leave Unchanged, 'foxyshop'"
 msgstr ""
 
 #: bulkeditor.php:70
@@ -327,7 +323,7 @@ msgid "Parent Category"
 msgstr ""
 
 #: customposttype.php:14 customposttype.php:36 customsorting.php:66
-#: customsorting.php:87 settings-page.php:345
+#: customsorting.php:87 settings-page.php:360
 msgid "All"
 msgstr ""
 
@@ -566,14 +562,17 @@ msgid "Incremental"
 msgstr ""
 
 #: customposttype.php:493
+msgctxt "Recurring"
 msgid "Repeat"
 msgstr ""
 
-#: customposttype.php:494 settings-page.php:351
+#: customposttype.php:494
+msgctxt "One-time"
 msgid "Single"
 msgstr ""
 
 #: customposttype.php:507
+msgctxt "Noun, Special Offer"
 msgid "Sale"
 msgstr ""
 
@@ -588,6 +587,7 @@ msgid "End Date"
 msgstr ""
 
 #: customposttype.php:526
+msgctxt "Discounted Prices Applied to Products"
 msgid "Discounts"
 msgstr ""
 
@@ -596,10 +596,12 @@ msgid "reference"
 msgstr ""
 
 #: customposttype.php:542
+msgctxt "Type of Discount"
 msgid "Disc. Type"
 msgstr ""
 
 #: customposttype.php:555
+msgctxt "Name of Discount"
 msgid "Disc. Name"
 msgstr ""
 
@@ -635,8 +637,8 @@ msgstr ""
 msgid "argument for start or end (like +3 months)"
 msgstr ""
 
-#: customposttype.php:600 subscriptions.php:106 subscriptions.php:214
-#: subscriptions.php:225 subscriptions.php:309
+#: customposttype.php:600
+msgctxt "Frequency of Subscription Charge"
 msgid "Frequency"
 msgstr ""
 
@@ -1133,23 +1135,23 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: settings-page.php:116
+#: settings-page.php:131
 msgid "Your Settings Have Been Saved."
 msgstr ""
 
-#: settings-page.php:121
+#: settings-page.php:136
 msgid ""
 "The setup prompt has been hidden. You can always use the setup wizard by "
 "clicking the link above or just configure the settings on this page."
 msgstr ""
 
-#: settings-page.php:125
+#: settings-page.php:140
 msgid ""
 "<strong>Congratulations!</strong> You are all set up and ready to go. You "
 "may now review all the settings on this page and start entering products."
 msgstr ""
 
-#: settings-page.php:128
+#: settings-page.php:143
 msgid ""
 "<strong>Warning:</strong> You are using PHP version %s. FoxyShop requires "
 "PHP version 5.1.2 or higher to utilize the required hmac_has() functions. "
@@ -1158,7 +1160,7 @@ msgid ""
 "key (on the FoxyShop Tools page) to ensure that you have a fully secure key."
 msgstr ""
 
-#: settings-page.php:131
+#: settings-page.php:146
 msgid ""
 "<strong>Warning:</strong> Your theme does not appear to be using header.php "
 "or footer.php. Without these files FoxyShop pages will show up unstyled. "
@@ -1166,229 +1168,233 @@ msgid ""
 "bypassing the get_header() and get_footer() functions."
 msgstr ""
 
-#: settings-page.php:167
+#: settings-page.php:182
 msgid "FoxyShop Documentation"
 msgstr ""
 
-#: settings-page.php:168
+#: settings-page.php:183
 msgid "FoxyCart Information"
 msgstr ""
 
-#: settings-page.php:169
+#: settings-page.php:184
 msgid "FoxyCart Wiki"
 msgstr ""
 
-#: settings-page.php:170
+#: settings-page.php:185
 msgid "FoxyCart Admin Panel"
 msgstr ""
 
-#: settings-page.php:184
+#: settings-page.php:199
 msgid "Setup Information"
 msgstr ""
 
-#: settings-page.php:190
+#: settings-page.php:205
 msgid "API Key"
 msgstr ""
 
-#: settings-page.php:197
+#: settings-page.php:212
 msgid "Datafeed URL"
 msgstr ""
 
-#: settings-page.php:204
+#: settings-page.php:219
 msgid "SSO Endpoint"
 msgstr ""
 
-#: settings-page.php:210
+#: settings-page.php:225
 msgid "Template Path"
 msgstr ""
 
-#: settings-page.php:216
+#: settings-page.php:231
 msgid "Sitemap"
 msgstr ""
 
-#: settings-page.php:234
+#: settings-page.php:249
 msgid "FoxyCart Settings"
 msgstr ""
 
-#: settings-page.php:249
+#: settings-page.php:264
 msgid "Your FoxyCart Domain"
 msgstr ""
 
-#: settings-page.php:258
+#: settings-page.php:273
 msgid "FoxyCart Version"
 msgstr ""
 
-#: settings-page.php:271
+#: settings-page.php:286
 msgid "Skip FoxyCart Includes on These Pages"
 msgstr ""
 
-#: settings-page.php:279
+#: settings-page.php:294
 msgid "Automatically Insert jQuery %s from Google CDN"
 msgstr ""
 
-#: settings-page.php:285 settings-page.php:332 settings-page.php:359
-#: settings-page.php:548
+#: settings-page.php:300 settings-page.php:347 settings-page.php:374
+#: settings-page.php:563
 msgid "Save All Settings"
 msgstr ""
 
-#: settings-page.php:293
+#: settings-page.php:308
 msgid "Display Settings"
 msgstr ""
 
-#: settings-page.php:299
+#: settings-page.php:314
 msgid "Sorting"
 msgstr ""
 
-#: settings-page.php:311
+#: settings-page.php:326
 msgid "Per Page"
 msgstr ""
 
-#: settings-page.php:317
+#: settings-page.php:332
 msgid "What To Show if No Image Is Loaded"
 msgstr ""
 
-#: settings-page.php:319
+#: settings-page.php:334
 msgid "Default Image"
 msgstr ""
 
-#: settings-page.php:321
+#: settings-page.php:336
 msgid "Custom Image"
 msgstr ""
 
-#: settings-page.php:323
+#: settings-page.php:338
 msgid "Don't Show a Default Image"
 msgstr ""
 
-#: settings-page.php:339
+#: settings-page.php:354
 msgid "Browser Title Bar Settings"
 msgstr ""
 
-#: settings-page.php:347
+#: settings-page.php:362
 msgid "All Categories"
 msgstr ""
 
-#: settings-page.php:349
+#: settings-page.php:364
 msgid "Single Category"
 msgstr ""
 
-#: settings-page.php:353
+#: settings-page.php:366
+msgid "Single"
+msgstr ""
+
+#: settings-page.php:368
 msgid "Search Results"
 msgstr ""
 
-#: settings-page.php:366
+#: settings-page.php:381
 msgid "Advanced Settings"
 msgstr ""
 
-#: settings-page.php:373
+#: settings-page.php:388
 msgid "FoxyCart Categories"
 msgstr ""
 
-#: settings-page.php:384
+#: settings-page.php:399
 msgid "Enable Multi-Ship"
 msgstr ""
 
-#: settings-page.php:390
+#: settings-page.php:405
 msgid "Relation"
 msgstr ""
 
-#: settings-page.php:392
+#: settings-page.php:407
 msgid "Enable Related %s (Custom)"
 msgstr ""
 
-#: settings-page.php:397
+#: settings-page.php:412
 msgid "Enable Related %s (Tags)"
 msgstr ""
 
-#: settings-page.php:403
+#: settings-page.php:418
 msgid "Enable Bundled"
 msgstr ""
 
-#: settings-page.php:408
+#: settings-page.php:423
 msgid "Enable Add-On"
 msgstr ""
 
-#: settings-page.php:416
+#: settings-page.php:431
 msgid "Enable Subscriptions"
 msgstr ""
 
-#: settings-page.php:423
+#: settings-page.php:438
 msgid "Enable WordPress Single-Sign-On"
 msgstr ""
 
-#: settings-page.php:427
+#: settings-page.php:442
 msgid "SSO Type"
 msgstr ""
 
-#: settings-page.php:430
+#: settings-page.php:445
 msgid "WordPress account optional"
 msgstr ""
 
-#: settings-page.php:430
+#: settings-page.php:445
 msgid "Require WordPress account to check out"
 msgstr ""
 
-#: settings-page.php:430
+#: settings-page.php:445
 msgid "Account required on product-by-product basis"
 msgstr ""
 
-#: settings-page.php:437
+#: settings-page.php:452
 msgid "Create/Update WordPress User After Checkout"
 msgstr ""
 
-#: settings-page.php:438
+#: settings-page.php:453
 msgid ""
 "The datafeed must be enabled at FoxyCart for this feature to work properly."
 msgstr ""
 
-#: settings-page.php:447
+#: settings-page.php:462
 msgid "Manage Inventory Levels"
 msgstr ""
 
-#: settings-page.php:450
+#: settings-page.php:465
 msgid "Default Inventory Alert Level"
 msgstr ""
 
-#: settings-page.php:451
+#: settings-page.php:466
 msgid "Send Email to Admin When Alert Level Reached"
 msgstr ""
 
-#: settings-page.php:457
+#: settings-page.php:472
 msgid "Default Weight Type"
 msgstr ""
 
-#: settings-page.php:459
+#: settings-page.php:474
 msgid "English"
 msgstr ""
 
-#: settings-page.php:461
+#: settings-page.php:476
 msgid "Metric"
 msgstr ""
 
-#: settings-page.php:466
+#: settings-page.php:481
 msgid "Default Weight"
 msgstr ""
 
-#: settings-page.php:478
+#: settings-page.php:493
 msgid "Currency Locale Code"
 msgstr ""
 
-#: settings-page.php:479
+#: settings-page.php:494
 msgid ""
 "If you would like to use something other than $ for your currency, enter "
 "your locale code here. For the British Pound, enter \"en_GB\"."
 msgstr ""
 
-#: settings-page.php:481
+#: settings-page.php:496
 msgid ""
 "Attention: you are using Windows which does not support "
 "internationalization. You will be limited to $ (en_US) or &pound; (en_GB)."
 msgstr ""
 
-#: settings-page.php:487
+#: settings-page.php:502
 msgid "Hide Child %s From Parent Categories (recommended)"
 msgstr ""
 
-#: settings-page.php:488
+#: settings-page.php:503
 msgid ""
 "By default, WordPress treats children a little differently than you would "
 "expect in that products in child categories also show up in parent "
@@ -1396,70 +1402,70 @@ msgid ""
 "all %s from sub-categories show up in parent categories, uncheck this box."
 msgstr ""
 
-#: settings-page.php:493
+#: settings-page.php:508
 msgid "Google Analytics Code"
 msgstr ""
 
-#: settings-page.php:494
+#: settings-page.php:509
 msgid ""
 "Enter your UA code here and Google Analytics tracking will be installed in "
 "the footer. Tracking will only be initiated if the visitor is not a logged-"
 "in WordPress user so that admin usage won't be tracked."
 msgstr ""
 
-#: settings-page.php:497
+#: settings-page.php:512
 msgid "Advanced Google Analytics Code"
 msgstr ""
 
-#: settings-page.php:498
+#: settings-page.php:513
 msgid ""
 "Check this box if you are using the advanced FoxyCart Google Analytics Sync. "
 "We will put the appropriate code in your footer (but you'll still have to "
 "setup Google Analytics and your template)."
 msgstr ""
 
-#: settings-page.php:506
+#: settings-page.php:521
 msgid "Enable Google Product Feed Connection"
 msgstr ""
 
-#: settings-page.php:507
+#: settings-page.php:522
 msgid ""
 "If checked, you will be able to create a feed suitable for submitting to "
 "Google Product Search."
 msgstr ""
 
-#: settings-page.php:509
+#: settings-page.php:524
 msgid "Google Merchant Account ID"
 msgstr ""
 
-#: settings-page.php:511
+#: settings-page.php:526
 msgid ""
 "Enter your Google Merchant Account ID found in the Google Merchant Center."
 msgstr ""
 
-#: settings-page.php:518
+#: settings-page.php:533
 msgid "Show FoxyShop Stats on Dashboard"
 msgstr ""
 
-#: settings-page.php:524
+#: settings-page.php:539
 msgid "Generate %s Sitemap"
 msgstr ""
 
-#: settings-page.php:525
+#: settings-page.php:540
 msgid ""
 "If checked, a sitemap file with all of your %s will be created in your root "
 "folder."
 msgstr ""
 
-#: settings-page.php:531
+#: settings-page.php:546
 msgid "Show Add to Cart Link on the Product Entry Page."
 msgstr ""
 
-#: settings-page.php:538
+#: settings-page.php:553
 msgid "Enable FoxyCart Downloadables Sync"
 msgstr ""
 
-#: settings-page.php:539
+#: settings-page.php:554
 msgid ""
 "If checked, you will be able to select from a list of the downloadables "
 "loaded at FoxyCart to help set up your new downloadable %s."
@@ -1561,6 +1567,11 @@ msgstr ""
 msgid "Show Past Due Only"
 msgstr ""
 
+#: subscriptions.php:106 subscriptions.php:214 subscriptions.php:225
+#: subscriptions.php:309
+msgid "Frequency"
+msgstr ""
+
 #: subscriptions.php:109
 msgid "Third Party ID"
 msgstr ""
@@ -1613,11 +1624,11 @@ msgstr ""
 msgid "Invalid File Type"
 msgstr ""
 
-#: themefiles/foxyshop-custom-upload.php:48
+#: themefiles/foxyshop-custom-upload.php:54
 msgid "File Uploaded Successfuly."
 msgstr ""
 
-#: themefiles/foxyshop-custom-upload.php:48
+#: themefiles/foxyshop-custom-upload.php:54
 msgid "Click here to view."
 msgstr ""
 
@@ -1831,9 +1842,11 @@ msgstr ""
 
 #: widgetcode.php:383 widgetcode.php:384 widgetcode.php:385
 msgid "order"
-msgid_plural "orders"
-msgstr[0] ""
-msgstr[1] ""
+msgstr ""
+
+#: widgetcode.php:383 widgetcode.php:384 widgetcode.php:385
+msgid "orders"
+msgstr ""
 
 #: widgetcode.php:384
 msgid "Seven Days"
@@ -1847,9 +1860,9 @@ msgstr ""
 msgid "FoxyShop"
 msgstr ""
 
-#. #-#-#-#-#  plugin.pot (FoxyShop 4.1.3)  #-#-#-#-#
+#. #-#-#-#-#  plugin.pot (FoxyShop 4.1.4)  #-#-#-#-#
 #. Plugin URI of the plugin/theme
-#. #-#-#-#-#  plugin.pot (FoxyShop 4.1.3)  #-#-#-#-#
+#. #-#-#-#-#  plugin.pot (FoxyShop 4.1.4)  #-#-#-#-#
 #. Author URI of the plugin/theme
 msgid "http://www.foxy-shop.com/"
 msgstr ""

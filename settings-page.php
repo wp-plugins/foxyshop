@@ -64,6 +64,14 @@ function foxyshop_save_settings() {
 	} else {
 		$foxyshop_settings["default_image"] = "";
 	}
+	
+	//Order Desk URL
+	if (isset($_POST['foxyshop_set_orderdesk_url']) && !empty($_POST['foxyshop_orderdesk_url'])) {
+		$foxyshop_settings["orderdesk_url"] = $_POST['foxyshop_orderdesk_url'];
+	} else {
+		$foxyshop_settings["orderdesk_url"] = "";
+	}
+
 
 	//Set FoxyCart Domain Name
 	$domain = $_POST['foxyshop_domain'];
@@ -528,6 +536,17 @@ if (substr($foxyshop_settings['domain'], -13) == ".foxycart.com" || !$foxyshop_s
 			</tr>
 			<tr>
 				<td>
+					<input type="checkbox" id="foxyshop_set_orderdesk_url" name="foxyshop_set_orderdesk_url"<?php if ($foxyshop_settings['orderdesk_url']) echo ' checked="checked"'; ?> />
+					<label for="foxyshop_set_orderdesk_url"><?php _e('Use FoxyTools Order Desk', 'foxyshop'); ?></label>
+					<small>(<a href="https://foxytools.com/orderdesk/" target="_blank"><?php _e("more info", "foxyshop"); ?></a>)</small>
+					<div id="orderdesk_url_holder"<?php if (!$foxyshop_settings['orderdesk_url']) echo ' style="display:none;"'; ?>>
+						<label for="foxyshop_orderdesk_url"><?php echo __('Your Order Desk Datafeed URL', 'foxyshop'); ?>:</label>
+						<input type="text" id="foxyshop_orderdesk_url" name="foxyshop_orderdesk_url" value="<?php echo esc_attr($foxyshop_settings['orderdesk_url']); ?>" style="width: 400px;" />
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
 					<input type="checkbox" id="foxyshop_enable_dashboard_stats" name="foxyshop_enable_dashboard_stats"<?php checked($foxyshop_settings['enable_dashboard_stats'], "on"); ?> />
 					<label for="foxyshop_enable_dashboard_stats"><?php echo __('Show FoxyShop Stats on Dashboard', 'foxyshop'); ?></label>
 				</td>
@@ -596,7 +615,15 @@ jQuery(document).ready(function($){
 			$("#google_merchant_id_holder").hide();
 		}
 	});
-
+	$("#foxyshop_set_orderdesk_url").click(function() {
+		if ($(this).is(":checked")) {
+			$("#orderdesk_url_holder").show();
+			$("#foxyshop_orderdesk_url").select();
+		} else {
+			$("#orderdesk_url_holder").hide();
+		}
+	});
+ 
 	//Tooltip
 	xOffset = -10;
 	yOffset = 10;		

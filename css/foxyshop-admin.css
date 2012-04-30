@@ -437,7 +437,7 @@ body label.variationtypelabel {
 	margin-left: 10px;
 	width: 50%;
 }
-#google_merchant_id_holder {
+#google_merchant_id_holder, #orderdesk_url_holder {
 	clear: both;
 	padding-top: 5px;
 }
@@ -584,6 +584,9 @@ body label.variationtypelabel {
 	border: 1px solid #DFDFDF;
 	position: relative;
 }
+#foxyshop_product_image_list li.foxyshop_hide_from_slideshow {
+	background-color: #000;
+}
 #foxyshop_product_image_list li a {
 	text-indent: -99999px;
 	float: left;
@@ -599,6 +602,9 @@ body label.variationtypelabel {
 }
 .foxyshop_image_featured {
 	background: url(../images/featured.png) no-repeat;
+}
+.foxyshop_visible {
+	background: url(../images/visible.png) no-repeat;
 }
 #foxyshop_product_image_list li.foxyshop_featured_image {
 	background-color: #FBEEB2;

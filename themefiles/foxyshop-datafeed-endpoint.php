@@ -162,7 +162,7 @@ if (isset($_POST["FoxyData"])) {
 			$product_code = (string)$transaction_detail->product_code;
 			$product_quantity = (int)$transaction_detail->product_quantity;
 			$product_price = (double)$transaction_detail->product_price;
-			$product_shipto = (double)$transaction_detail->shipto;
+			$product_shipto = (string)$transaction_detail->shipto;
 			$category_code = (string)$transaction_detail->category_code;
 			$product_delivery_type = (string)$transaction_detail->product_delivery_type;
 			$sub_token_url = (string)$transaction_detail->sub_token_url;

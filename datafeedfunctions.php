@@ -9,6 +9,9 @@ function foxyshop_decrypt($src) {
 //Push Feed to External Datafeeds
 function foxyshop_run_external_datafeeds($external_datafeeds) {
     	global $foxyshop_settings;
+    	if ($foxyshop_settings["orderdesk_url"]) {
+    		$external_datafeeds[] = $foxyshop_settings["orderdesk_url"];
+    	}
 	foreach($external_datafeeds as $feedurl) {
 		if ($feedurl) {
 			$ch = curl_init();
@@ -153,7 +156,7 @@ function foxyshop_datafeed_user_update($xml) {
 		if ($customer_id != '0') {
 			
 			//Check To See if WordPress User Already Exists
-			$current_user = get_user_by_email($customer_email);
+			$current_user = get_user_by("email", $customer_email);
 			
 			//No Return, Add New User, Username will be email address
 			if (!$current_user) {

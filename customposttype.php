@@ -298,6 +298,7 @@ function foxyshop_product_details_setup() {
 			}
 		} else {
 			$_weight[0] = (int)$_weight[0];
+			if (!isset($_weight[1])) $_weight[1] = 0;
 			$_weight[1] = number_format($_weight[1],1);
 		}
 	}
@@ -340,16 +341,16 @@ function foxyshop_product_details_setup() {
 		<div style="clear:both"></div>
 	</div>
 	<?php } ?>
-	<div class="foxyshop_field_control">
+	<div id="foxyshop_price" class="foxyshop_field_control">
 		<label for="_price"><?php _e('Base Price', 'foxyshop'); ?></label>
 		<input type="text" name="_price" id="_price" value="<?php echo $_price; ?>" onblur="foxyshop_check_number(this);" style="width: 90px; float: left;" />
 		<span style="float: left; margin: 9px 0 0 5px;">0.00</span>
 	</div>
-	<div class="foxyshop_field_control" id="foxyshop_item_code">
+	<div id="foxyshop_item_code" class="foxyshop_field_control">
 		<label for="_code"><?php _e('Item Code', 'foxyshop'); ?></label>
 		<input type="text" name="_code" id="_code" value="<?php echo $_code; ?>" />
 	</div>
-	<div class="foxyshop_field_control">
+	<div id="foxyshop_weight" class="foxyshop_field_control">
 		<label for="_weight1"><?php _e('Weight', 'foxyshop'); ?></label>
 		<input type="text" name="_weight1" id="_weight1" value="<?php echo $_weight[0]; ?>"<?php if ($disable_weight_checked) echo ' disabled="disabled"'; ?> />
 		<span style="float: left; margin: 9px 0 0 5px; width: 21px;"><?php echo ($foxyshop_settings['weight_type'] == "metric" ? 'kg' : 'lbs'); ?></span>
@@ -358,7 +359,7 @@ function foxyshop_product_details_setup() {
 		<input type="checkbox" name="weight_disable" id="weight_disable" title="<?php _e('Disable Weight', 'foxyshop'); ?>" style="float: left; margin-top: 7px;"<?php echo $disable_weight_checked; ?> />
 		<label id="weight_disable_label" for="weight_disable" style="float: left; margin: 6px 0 0 2px; width: 16px;" title="<?php _e('Disable Weight', 'foxyshop'); ?>" class="iconsprite <?php echo $disable_weight_checked ? "hide_color" : "hide_gray"; ?>"></label>
 	</div>
-	<div class="foxyshop_field_control">
+	<div id="foxyshop_quantity" class="foxyshop_field_control">
 		<label for="_quantity_min"><?php _e('Qty Settings', 'foxyshop'); ?></label>
 		<input type="text" name="_quantity_min" id="_quantity_min" value="<?php echo $_quantity_min; ?>" title="<?php _e('Minimum Quantity', 'foxyshop'); ?>" style="width: 33px; float: left;" onblur="foxyshop_check_number_single(this);"<?php if ($_quantity_hide) echo ' disabled="disabled"'; ?> />
 		<span id="quantity_min_label" style="float: left; margin: 6px 0 0 1px; width: 26px;" class="iconsprite <?php echo $_quantity_min ? "down_color" : "down_gray"; ?>"></span>
@@ -368,7 +369,7 @@ function foxyshop_product_details_setup() {
 		<label id="quantity_hide_label" for="_quantity_hide" style="float: left; margin: 6px 0 0 2px; width: 16px;" title="<?php _e('Hide Quantity Box', 'foxyshop'); ?>" class="iconsprite <?php echo $_quantity_hide ? "hide_color" : "hide_gray"; ?>"></label>
 		<div style="clear:both"></div>
 	</div>
-	<div class="foxyshop_field_control">
+	<div id="foxyshop_category" class="foxyshop_field_control">
 		<label for="_category" style="width:76px; margin-right: 4px;"><?php _e('FoxyCart Cat'); ?></label>
 		<select name="_category" id="_category">
 			<?php
@@ -398,19 +399,19 @@ function foxyshop_product_details_setup() {
 		global $product;
 		$product = foxyshop_setup_product();
 	?>
-	<div class="foxyshop_field_control">
+	<div id="foxyshop_add_to_cart_link" class="foxyshop_field_control">
 		<label for="add_to_cart_link"><?php _e('Add to Cart', 'foxyshop'); ?></label>
 		<input type="text" name="add_to_cart_link" id="add_to_cart_link" value="<?php echo foxyshop_product_link("", 1); ?>" onclick="this.select();" readonly="readonly" />
 	</div>
 	<?php } ?>
 	
 	<?php if ($foxyshop_settings['enable_sso'] && $foxyshop_settings['sso_account_required'] == 2) { ?>
-	<div class="foxyshop_field_control">
+	<div id="foxyshop_require_sso" class="foxyshop_field_control">
 		<input type="checkbox" name="_require_sso" id="_require_sso" style="float: left; margin: 5px 0 0 10px;"<?php echo checked(get_post_meta($post->ID,'_require_sso',TRUE),"on"); ?> />
 		<label style="width: 210px;" for="_require_sso"><?php _e('Require Account For Checkout', 'foxyshop'); ?></label>
 	</div>
 	<?php } ?>
-	<div class="foxyshop_field_control">
+	<div id="foxyshop_hide_product" class="foxyshop_field_control">
 		<input type="checkbox" name="_hide_product" id="_hide_product"<?php echo checked($_hide_product,"on"); ?> />
 		<label style="width: 210px;" for="_hide_product"><?php echo sprintf(__('Hide This %s From List View', 'foxyshop'), FOXYSHOP_PRODUCT_NAME_SINGULAR); ?></label>
 	</div>
@@ -490,8 +491,8 @@ function foxyshop_product_pricing_setup() {
 	$discount_types = array(
 		"allunits" => __("All Units", 'foxyshop'),
 		"incremental" => __("Incremental", 'foxyshop'),
-		"repeat" => __("Repeat", 'foxyshop'),
-		"single" => __("Single", 'foxyshop')
+		"repeat" => _x("Repeat", "Recurring", 'foxyshop'),
+		"single" => _x("Single", "One-time", 'foxyshop')
 	);
 	$current_discount_method = "none";
 	$computed_discount = "";
@@ -504,7 +505,7 @@ function foxyshop_product_pricing_setup() {
 	}
 
 	?>
-	<h4><?php _e('Sale'); ?></h4>
+	<h4><?php echo _x('Sale', 'Noun, Special Offer', 'foxyshop'); ?></h4>
 	<div class="foxyshop_field_control">
 		<label for="_saleprice"><?php _e('Sale Price', 'foxyshop'); ?></label>
 		<input type="text" name="_saleprice" id="_saleprice" value="<?php echo $_saleprice; ?>" style="width: 87px; float: left;" />
@@ -523,7 +524,7 @@ function foxyshop_product_pricing_setup() {
 	<div style="clear: both;"></div>
 	
 
-	<h4><?php _e('Discounts'); ?> <a href="http://wiki.foxycart.com/v/<?php echo $foxyshop_settings['version']; ?>/coupons_and_discounts" target="_blank">(<?php _e('reference', 'foxyshop'); ?>)</a></h4>
+	<h4><?php echo _x('Discounts', 'Discounted Prices Applied to Products', 'foxyshop'); ?> <a href="http://wiki.foxycart.com/v/<?php echo $foxyshop_settings['version']; ?>/coupons_and_discounts" target="_blank">(<?php _e('reference', 'foxyshop'); ?>)</a></h4>
 	<div class="foxyshop_field_control">
 		<select name="discount_method" id="discount_method">
 		<?php
@@ -539,7 +540,7 @@ function foxyshop_product_pricing_setup() {
 	<div id="discount_container">
 
 		<div class="foxyshop_field_control">
-			<label for="discount_type"><?php _e('Disc. Type', 'foxyshop'); ?></label>
+			<label for="discount_type"><?php echo _x('Disc. Type', 'Type of Discount', 'foxyshop'); ?></label>
 			<select name="discount_type" id="discount_type">
 			<?php
 			foreach ($discount_types as $key => $val) {
@@ -552,7 +553,7 @@ function foxyshop_product_pricing_setup() {
 		</div>
 
 		<div class="foxyshop_field_control">
-			<label for="discount_name"><?php _e('Disc. Name', 'foxyshop'); ?></label>
+			<label for="discount_name"><?php echo _x('Disc. Name', 'Name of Discount', 'foxyshop'); ?></label>
 			<input type="text" id="discount_name" name="discount_name" value="" />
 		</div>
 
@@ -597,7 +598,7 @@ function foxyshop_product_pricing_setup() {
 	<span style="color: #999999; display: block; line-height: 15px; margin-bottom: 5px;"><?php _e('You may also enter a', 'foxyshop'); ?> <a href="http://php.net/manual/en/function.strtotime.php" target="_blank" title="PHP Docs" style="color: #999">strtotime</a> <?php _e('argument for start or end (like +3 months)', 'foxyshop'); ?></span>
 	<div id="foxyshop_subscription_attributes">
 		<div class="foxyshop_field_control">
-			<label for="_sub_frequency"><?php _e('Frequency', 'foxyshop'); ?></label>
+			<label for="_sub_frequency"><?php echo _x('Frequency', 'Frequency of Subscription Charge', 'foxyshop'); ?></label>
 			<input type="text" name="_sub_frequency" id="_sub_frequency" value="<?php echo $_sub_frequency; ?>" />
 			<span>60d, 2w, 1m, 1y, .5m</span>
 		</div>
