@@ -223,6 +223,7 @@ function foxyshop_activation() {
 		"generate_product_sitemap" => "on",
 		"sort_key" => "menu_order",
 		"enable_sso" => "",
+		"orderdesk_url" => "",
 		"sso_account_required" => "0",
 		"ga" => "",
 		"ga_advanced" => "",
@@ -295,6 +296,7 @@ function foxyshop_activation() {
 		if (!array_key_exists('include_exception_list',$foxyshop_settings)) $foxyshop_settings['include_exception_list'] = ""; //3.9
 		if (array_key_exists('ups_worldship_export',$foxyshop_settings)) unset($foxyshop_settings['ups_worldship_export']); //4.1
 		if (!array_key_exists('show_add_to_cart_link',$foxyshop_settings)) $foxyshop_settings['show_add_to_cart_link'] = ""; //4.1.1
+		if (!array_key_exists('orderdesk_url',$foxyshop_settings)) $foxyshop_settings['orderdesk_url'] = ""; //4.1.4
 
 
 		//Upgrade Variations in 3.0
@@ -311,7 +313,7 @@ function foxyshop_activation() {
 					$_variationRequired = get_post_meta($product->ID, '_variation_required_'.$i, 1);
 					if ($_variationName) {
 						$variations[$i] = array(
-							"name" => $_variationName,
+							"name" => str_replace(array('"', '&', '.'), array('', 'and', ''), $_variationName),
 							"type" => $_variationType,
 							"value" => $_variationValue,
 							"displayKey" => $_variationDisplayKey,

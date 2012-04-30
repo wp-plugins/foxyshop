@@ -472,6 +472,22 @@ jQuery(document).ready(function($){
 		return false;
 	});
 
+	$("#foxyshop_product_image_list .foxyshop_visible").live("click", function() {
+		var data = {
+			action: 'foxyshop_product_ajax_action',
+			security: nonce_images,
+			foxyshop_action: 'toggle_visible',
+			foxyshop_image_id: $(this).attr("rel"),
+			foxyshop_product_id: post_id
+		};
+		$("#foxyshop_image_waiter").show();
+		$.post(ajaxurl, data, function(response) {
+			$("#foxyshop_product_image_list").html(response);
+			$("#foxyshop_image_waiter").hide();
+		});
+		return false;
+	});
+
 	$('#foxyshop_new_product_image').show().each(function() {
 		var variationID = $(this).attr("rel");
 		$(this).uploadify({

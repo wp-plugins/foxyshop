@@ -5,6 +5,8 @@ Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subsc
 Requires at least: 3.1
 Tested up to: 3.4
 Stable tag: 4.1.4
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
@@ -66,8 +68,15 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 == Changelog ==
 
 = 4.1.4 =
-* Tested with WordPress 3.4 (beta-2) and found no issues
+* Added setting for automatic FoxyTools Order Desk integration
+* Added feature to add ikey images that don't show up in slideshow
+* Introduced is_foxyshop() function as a conditional tag which returns true for all FoxyShop pages
+* Tested with WordPress 3.4 and found no issues
 * Added action to SSO endpoint to allow interception
+* Upgraded to prettyPhoto 3.1.4
+* Licence changed to GPLv2 or later as recommended by WordPress
+* Changed to get_user_by in datafeed functions because of deprecated function in WordPress 3.3
+* Filter variation names for invalid characters on CSV import upgrade
 * Fixed incorrect query match in the inventory update function when all numbers are used for code
 
 = 4.1.3 =
@@ -203,5 +212,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 4.1.3 =
-Minor Maintenance Update
+= 4.1.4 =
+Adding a few features plus a few minor fixes
