@@ -1499,6 +1499,5 @@ function foxyshop_currency($input, $currencysymbol = true) {
 }
 
 function is_foxyshop() {
-	global $wp_query;
-	return $wp_query->is_foxyshop;
+	return defined("IS_FOXYSHOP");
 }
