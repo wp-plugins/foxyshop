@@ -68,14 +68,14 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 == Changelog ==
 
 = 4.1.5 =
-* Added FoxyShop version 1.0.0 support
+* Added FoxyShop version 1.0 support
 * Added 'foxyshop-current-category class' to the category list function
 * Added '$foxyshop_skip_cart_image' variable so the cart image can be easily skipped (globally set this in functions.php)
 * Allow subscription post data to be passed through to external datafeeds
 * Added setting to enable email reminders to expiring credit card customers
 * Improved is_foxyshop()
 * Fixed the "required file upload" feature to trigger an error if no file is uploaded
-* Fixed Google Analytics script so that it won't be inserted on a skipped template pages (Checkout, Receipt)
+* Fixed Google Analytics script so that it won't be inserted on skipped template pages (Checkout, Receipt)
 
 = 4.1.4 =
 * Added setting for automatic FoxyTools Order Desk integration
