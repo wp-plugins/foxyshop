@@ -76,6 +76,7 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 * Improved is_foxyshop()
 * Fixed the "required file upload" feature to trigger an error if no file is uploaded
 * Fixed Google Analytics script so that it won't be inserted on skipped template pages (Checkout, Receipt)
+* See [Release Notes](http://www.foxy-shop.com/2012/06/version-4-1-5-catching-up-on-updates/) for more details
 
 = 4.1.4 =
 * Added setting for automatic FoxyTools Order Desk integration
@@ -222,5 +223,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 4.1.4 =
-Adding a few features plus a few minor fixes
+= 4.1.5 =
+A couple new features/fixes and FoxyCart 1.0 support
