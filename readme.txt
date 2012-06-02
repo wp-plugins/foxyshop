@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.1
 Tested up to: 3.4
-Stable tag: 4.1.4
+Stable tag: 4.1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
@@ -42,7 +42,7 @@ Visit [foxy-shop.com](http://www.foxy-shop.com/) for full documentation and inst
 
 == Installation ==
 
-Copy the folder to your WordPress 
+Copy the folder to your WordPress
 '*/wp-content/plugins/*' folder.
 
 1. Activate the '*FoxyShop*' plugin in your WordPress admin '*Plugins*'
@@ -67,6 +67,16 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Changelog ==
 
+= 4.1.5 =
+* Added FoxyShop version 1.0.0 support
+* Added 'foxyshop-current-category class' to the category list function
+* Added '$foxyshop_skip_cart_image' variable so the cart image can be easily skipped (globally set this in functions.php)
+* Allow subscription post data to be passed through to external datafeeds
+* Added setting to enable email reminders to expiring credit card customers
+* Improved is_foxyshop()
+* Fixed the "required file upload" feature to trigger an error if no file is uploaded
+* Fixed Google Analytics script so that it won't be inserted on a skipped template pages (Checkout, Receipt)
+
 = 4.1.4 =
 * Added setting for automatic FoxyTools Order Desk integration
 * Added feature to add ikey images that don't show up in slideshow
@@ -74,7 +84,7 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 * Tested with WordPress 3.4 and found no issues
 * Added action to SSO endpoint to allow interception
 * Upgraded to prettyPhoto 3.1.4
-* Licence changed to GPLv2 or later as recommended by WordPress
+* License changed to GPLv2 or later as recommended by WordPress
 * Changed to get_user_by in datafeed functions because of deprecated function in WordPress 3.3
 * Filter variation names for invalid characters on CSV import upgrade
 * Fixed incorrect query match in the inventory update function when all numbers are used for code

@@ -11,23 +11,36 @@ global $wpdb, $foxyshop_settings;
 require(FOXYSHOP_PATH.'/datafeedfunctions.php');
 
 
+
+//EXTERNAL DATAFEEDS
+//-----------------------------------------------------
+//If you need to use more than one datafeed with FoxyCart, you can enter as many as you like in the $external_datafeeds array
+//If you are using more than one integration and one of them fails, the entire process will fail and that failure will be sent to FoxyCart.
+//If you have more than one additional datafeed and one is more unreliable than another, put the most unreliable one first so that any failures will result in a full retry from FoxyCart.
+//This function will send the WordPress admin (this is filterable) an email if any datafeeds fail.
+//There are reports that this won't work on GoDaddy's hosting, which begs the question: why are you hosting on GoDaddy?
+$external_datafeeds = array();
+foxyshop_run_external_datafeeds($external_datafeeds);
+
+
+
 //-----------------------------------------------------
 // TRANSACTION DATAFEED
 //-----------------------------------------------------
 if (isset($_POST["FoxyData"])) {
 
-	
+
 	//DECRYPT (required)
 	//-----------------------------------------------------
 	$FoxyData_decrypted = foxyshop_decrypt($_POST["FoxyData"]);
 	$xml = simplexml_load_string($FoxyData_decrypted, NULL, LIBXML_NOCDATA);
 
-	
+
 	//TROUBLESHOOTING
 	//-----------------------------------------------------
 	//For testing, write datafeed to file in theme folder
 	//$file = STYLESHEETPATH.'/datafeed.xml';
-	//$fh = fopen($file, 'a') or die("Couldn't open $file for writing!"); 
+	//$fh = fopen($file, 'a') or die("Couldn't open $file for writing!");
 	//fwrite($fh, $FoxyData_decrypted);
 	//fclose($fh);
 
@@ -36,19 +49,6 @@ if (isset($_POST["FoxyData"])) {
 	//ini_set('display_errors','On');
 
 
-
-	//EXTERNAL DATAFEEDS
-	//-----------------------------------------------------
-	//If you need to use more than one datafeed with FoxyCart, you can enter as many as you like in the $external_datafeeds array
-	//If you are using more than one integration and one of them fails, the entire process will fail and that failure will be sent to FoxyCart.
-	//If you have more than one additional datafeed and one is more unreliable than another, put the most unreliable one first so that any failures will result in a full retry from FoxyCart.
-	//This function will send the WordPress admin (this is filterable) an email if any datafeeds fail.
-	//There are reports that this won't work on GoDaddy's hosting, which begs the question: why are you hosting on GoDaddy?
-	$external_datafeeds = array();
-	foxyshop_run_external_datafeeds($external_datafeeds);
-
-	
-	
 	//BUILT-IN FEATURES
 	//-----------------------------------------------------
 
@@ -69,10 +69,10 @@ if (isset($_POST["FoxyData"])) {
 
 	//MANUAL PROCESSES GO HERE
 	//-----------------------------------------------------
-	
+
 	//For Each Transaction
 	foreach($xml->transactions->transaction as $transaction) {
-	
+
 		//This variable will tell us whether this is a multi-ship store or not
 		$is_multiship = 0;
 
@@ -95,8 +95,8 @@ if (isset($_POST["FoxyData"])) {
 		$customer_postal_code =	(string)$transaction->customer_postal_code;
 		$customer_country =		(string)$transaction->customer_country;
 		$customer_phone =		(string)$transaction->customer_phone;
-		
-		
+
+
 		//This is for a multi-ship store. The shipping addresses will go in a $shipto array with the address name as the key
 		$shipto = array();
 		foreach($transaction->shipto_addresses->shipto_address as $shipto_address) {
@@ -119,7 +119,7 @@ if (isset($_POST["FoxyData"])) {
 				'total' => (string)$shipto_address->shipto_,
 				'custom_fields' => array()
 			);
-			
+
 			//Putting the Custom Fields in an array if they are there
 			if (!empty($shipto_address->custom_fields)) {
 				foreach($shipto_address->custom_fields->custom_field as $custom_field) {
@@ -127,7 +127,7 @@ if (isset($_POST["FoxyData"])) {
 				}
 			}
 		}
-		
+
 		//This is setup for a single ship store
 		if (!$is_multiship) {
 			$shipping_first_name =	(string)$transaction->shipping_first_name ? (string)$transaction->shipping_first_name : $customer_first_name;
@@ -150,9 +150,9 @@ if (isset($_POST["FoxyData"])) {
 				$custom_fields[(string)$custom_field->custom_field_name] = (string)$custom_field->custom_field_value;
 			}
 		}
-		
 
-		
+
+
 
 
 
@@ -170,7 +170,7 @@ if (isset($_POST["FoxyData"])) {
 			$subscription_startdate = (string)$transaction_detail->subscription_startdate;
 			$subscription_nextdate = (string)$transaction_detail->subscription_nextdate;
 			$subscription_enddate = (string)$transaction_detail->subscription_enddate;
-			
+
 			//These are the options for the product
 			$transaction_detail_options = array();
 			foreach($transaction_detail->transaction_detail_options->transaction_detail_option as $transaction_detail_option) {
@@ -178,7 +178,7 @@ if (isset($_POST["FoxyData"])) {
 				$product_option_value = (string)$transaction_detail_option->product_option_value;
 				$price_mod = (double)$transaction_detail_option->price_mod;
 				$weight_mod = (double)$transaction_detail_option->weight_mod;
-				
+
 
 
 
@@ -205,7 +205,7 @@ if (isset($_POST["FoxyData"])) {
 			do_action('foxyshop_datafeed_transaction_detail', $transaction, $transaction_detail);
 
 		}
-		
+
 		//If you have custom code to run for each order, put it here:
 
 
@@ -220,7 +220,7 @@ if (isset($_POST["FoxyData"])) {
 		//Runs a WordPress action at the end if you prefer to customize that way
 		do_action('foxyshop_datafeed_order', $transaction);
 	}
-	
+
 	//All Done!
 	die("foxy");
 
@@ -245,8 +245,8 @@ if (isset($_POST["FoxyData"])) {
 	//Decrypt
 	$FoxyData_decrypted = foxyshop_decrypt($_POST["FoxySubscriptionData"]);
 	$xml = simplexml_load_string($FoxyData_decrypted, NULL, LIBXML_NOCDATA);
-	
-	
+
+
 	//For Each Subscription
 	foreach($xml->subscriptions->subscription AS $subscription) {
 
@@ -267,7 +267,7 @@ if (isset($_POST["FoxyData"])) {
 
 		$canceled = 0;
 		$sendReminder = 0;
-		
+
 		//This Entry Was Canceled Today
 		if (date("Y-m-d",strtotime("now")) == date("Y-m-d", strtotime($end_date))) {
 			$canceled = 1;
@@ -302,13 +302,13 @@ if (isset($_POST["FoxyData"])) {
 
 				//Write Serialized Array Back to DB
 				update_user_meta($user_id, 'foxyshop_subscription', $foxyshop_subscription);
-			}		
+			}
 
 
 		}
 
 		//Send reminder email
-		if ($sendReminder) {
+		if ($sendReminder && $foxyshop_settings['expiring_cards_reminder']) {
 			$subject_line = "Please Update Payment Information";
 			$to_email = $customer_email;
 			$message = "Dear $customer_first_name,\n\n";
@@ -319,10 +319,10 @@ if (isset($_POST["FoxyData"])) {
 			wp_mail($to_email, $subject_line, $message, $headers);
 		}
 	}
-	
+
 	// send emails to customers with soon to expire credit cards. Ignore already expired cards, since they should have already been
 	// sent an email when their payment failed.
-	if (in_array(date("j"),$update_payment_method_reminder_days_of_month)) {
+	if (in_array(date("j"),$update_payment_method_reminder_days_of_month) && $foxyshop_settings['expiring_cards_reminder']) {
 		foreach($xml->payment_methods_soon_to_expire->customer AS $customer) {
 
 			$customer_id = (string)$customer->customer_id;
@@ -333,7 +333,7 @@ if (isset($_POST["FoxyData"])) {
 			if (strtolower($customer_first_name) === $customer_first_name) $customer_first_name = ucwords($customer_first_name);
 			if (strtolower($customer_last_name) === $customer_last_name) $customer_last_name = ucwords($customer_last_name);
 
-			
+
 			if (mktime(0,0,0,$cc_exp_month+1, 1, $cc_exp_year) > strtotime("now")) {
 				$subject_line = "Reminder to Update Your Credit Card";
 				$to_email = $customer_email;

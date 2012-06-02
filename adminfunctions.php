@@ -15,15 +15,15 @@ function foxyshop_remove_jquery() {
 //Loading in Admin Scripts
 function foxyshop_load_admin_scripts($hook) {
 	global $foxyshop_settings;
-	
+
 	$page = (isset($_REQUEST['page']) ? $_REQUEST['page'] : '');
-	
+
 	//Style - Always Do This
 	wp_enqueue_style('foxyshop_admin_css', FOXYSHOP_DIR . '/css/foxyshop-admin.css');
-	
+
 	//Date Picker
 	if ($page == "foxyshop_order_management" || $page == "foxyshop_subscription_management") foxyshop_date_picker();
-	
+
 	//Custom Sorter
 	if ($page == "foxyshop_custom_sort" || $page == "foxyshop_category_sort" ||  $page == "foxyshop_tools") {
 		wp_enqueue_script('jquery-ui-core');
@@ -61,7 +61,10 @@ function foxyshop_check_include_status() {
 	if ($skip) {
 		remove_action('wp_head', 'foxyshop_insert_foxycart_files');
 		remove_action('init', 'foxyshop_insert_jquery');
-		if ($foxyshop_settings['include_exception_list'] != "*") add_action('wp_enqueue_scripts', 'foxyshop_remove_jquery', 99);
+		if ($foxyshop_settings['include_exception_list'] != "*") {
+			add_action('wp_enqueue_scripts', 'foxyshop_remove_jquery', 99);
+			remove_action('wp_footer', 'foxyshop_insert_google_analytics', 100);
+		}
 	}
 }
 
@@ -85,7 +88,7 @@ function foxyshop_check_permalinks() {
 //Insert Google Analytics
 function foxyshop_insert_google_analytics() {
 	global $foxyshop_settings;
-	
+
 	//Advanced
 	if ($foxyshop_settings['ga_advanced']) {
 		?><script type="text/javascript" charset="utf-8">
@@ -137,7 +140,7 @@ _gaq.push(['_trackPageview']);
 }
 
 //Product Category Comparison
-function foxyshop_comparison($a, $b) { 
+function foxyshop_comparison($a, $b) {
 	if ($a->sort_key == $b->sort_key) { return 0; }
 	return ($a->sort_key < $b->sort_key) ? -1 : 1;
 }
@@ -193,11 +196,11 @@ function foxyshop_dblquotes($str) {
 //Plugin Activation Function
 function foxyshop_activation() {
 	global $wpdb, $google_product_field_names;
-	
+
 	//Get Locale
 	$current_locale = get_locale();
 	if (!$current_locale) $current_locale = "en_US";
-	
+
 	//Defaults For Settings
 	$default_foxyshop_settings = array(
 		"domain" => "",
@@ -206,6 +209,7 @@ function foxyshop_activation() {
 		"ship_categories" => "",
 		"enable_ship_to" => "",
 		"enable_subscriptions" => "",
+		"expiring_cards_reminder" => "",
 		"enable_bundled_products" => "",
 		"enable_addon_products" => "",
 		"enable_dashboard_stats" => "",
@@ -247,16 +251,16 @@ function foxyshop_activation() {
 		"show_add_to_cart_link" => "",
 		"api_key" => "spfx".hash_hmac('sha256',rand(2165,64898),"dkw81".time())
 	);
-	
+
 	//Set For the First Time
 	if (!get_option("foxyshop_settings")) {
 		update_option("foxyshop_settings", $default_foxyshop_settings);
 		add_option("foxyshop_setup_required", 1);
 		return $default_foxyshop_settings;
-	
+
 	//Upgrade Tasks
 	} else {
-		
+
 		$foxyshop_settings = maybe_unserialize(get_option("foxyshop_settings")); //Double Serialization Repair 3.6
 
 		//Double Serialization Repair 3.6
@@ -268,7 +272,7 @@ function foxyshop_activation() {
 		if (is_serialized($foxyshop_saved_variations)) {
 			update_option('foxyshop_saved_variations', unserialize($foxyshop_saved_variations));
 		}
-		
+
 		//Run Some Upgrades
 		if (!array_key_exists('version',$foxyshop_settings)) $foxyshop_settings['version'] = "0";
 		if ($foxyshop_settings['version'] == "0.70") $foxyshop_settings['version'] = "0.7.0";
@@ -297,6 +301,7 @@ function foxyshop_activation() {
 		if (array_key_exists('ups_worldship_export',$foxyshop_settings)) unset($foxyshop_settings['ups_worldship_export']); //4.1
 		if (!array_key_exists('show_add_to_cart_link',$foxyshop_settings)) $foxyshop_settings['show_add_to_cart_link'] = ""; //4.1.1
 		if (!array_key_exists('orderdesk_url',$foxyshop_settings)) $foxyshop_settings['orderdesk_url'] = ""; //4.1.4
+		if (!array_key_exists('expiring_cards_reminder',$foxyshop_settings)) $foxyshop_settings['expiring_cards_reminder'] = $foxyshop_settings['enable_subscriptions']; //4.1.5
 
 
 		//Upgrade Variations in 3.0
@@ -335,10 +340,10 @@ function foxyshop_activation() {
 			}
 			if (array_key_exists('max_variations', $foxyshop_settings)) unset($foxyshop_settings['max_variations']);
 		}
-		
+
 		//Remove Double Serialization in 3.6
 		if (version_compare($foxyshop_settings['foxyshop_version'], '3.6', "<")) {
-			
+
 			//Product Variations and Inventory Levels
 			$products = get_posts(array('post_type' => 'foxyshop_product', 'numberposts' => -1, 'post_status' => null));
 			foreach ($products as $product) {
@@ -356,7 +361,7 @@ function foxyshop_activation() {
 				if (is_serialized($meta_value)) update_user_meta($user->user_id, 'foxyshop_subscription', unserialize($meta_value));
 			}
 		}
-		
+
 		//Upgrade Google Product Fields in 3.7
 		if (version_compare($foxyshop_settings['foxyshop_version'], '3.7', "<")) {
 			$products = get_posts(array('post_type' => 'foxyshop_product', 'numberposts' => -1, 'post_status' => null));
@@ -402,7 +407,7 @@ function foxyshop_check_rewrite_rules() {
 //Inventory Update Helper
 function foxyshop_inventory_count_update($code, $new_count, $product_id = 0, $force = true) {
 	global $wpdb;
-	
+
 	//If Product ID is provided
 	if ((int)$product_id > 0) {
 		$inventory = get_post_meta($product_id, "_inventory_levels", 1);
@@ -413,7 +418,7 @@ function foxyshop_inventory_count_update($code, $new_count, $product_id = 0, $fo
 				update_post_meta($product_id, '_inventory_levels', $inventory);
 			}
 		}
-	
+
 	//If No Product ID provided
 	} elseif ($product_id == 0) {
 		$str_meta_value = strlen(preg_replace("/[^0-9]/","", $code)) == strlen($code) ? ":" . mysql_real_escape_string($code) . ";" : '"' . mysql_real_escape_string($code) . '";';
@@ -424,21 +429,21 @@ function foxyshop_inventory_count_update($code, $new_count, $product_id = 0, $fo
 			$product_id = $meta_list->post_id;
 			$meta_key = $meta_list->meta_key;
 			$meta_value = $meta_list->meta_value;
-			
+
 			//No Inventory Already, Create Inventory Record
 			if (($meta_key == "_code" || $meta_key == "_variations") && $force) {
 				$inventory = get_post_meta($product_id, "_inventory_levels", 1);
 				if (!is_array($inventory)) $inventory = array();
 				$inventory[$code]['count'] = $new_count;
 				$inventory[$code]['alert'] = "";
-				update_post_meta($product_id, '_inventory_levels', $inventory);	
-			
-			
+				update_post_meta($product_id, '_inventory_levels', $inventory);
+
+
 			//Inventory Already Exists
 			} elseif ($meta_key == "_inventory_levels") {
 				$inventory = maybe_unserialize($meta_value);
 				$inventory[$code]['count'] = $new_count;
-				update_post_meta($product_id, '_inventory_levels', $inventory);	
+				update_post_meta($product_id, '_inventory_levels', $inventory);
 			}
 		}
 	}
@@ -515,7 +520,7 @@ function foxyshop_get_foxycart_data($foxyData, $silent_fail = true) {
 //Paging for Orders, Customers, Subscriptions
 function foxyshop_api_paging_nav($type, $position, $xml, $querystring) {
 	global $foxyshop_settings, $wp_version;
-	
+
 	//Pagination
 	$p = (int)(version_compare($foxyshop_settings['version'], '0.7.1', "<") ? 50 : FOXYSHOP_API_ENTRIES_PER_PAGE);
 	$start_offset = (int)(version_compare($foxyshop_settings['version'], '0.7.1', "<=") ? -1 : 0);
@@ -526,7 +531,7 @@ function foxyshop_api_paging_nav($type, $position, $xml, $querystring) {
 	$total_pages = $filtered_total > 0 ? ceil($filtered_total / $p) : 0;
 
 	echo '<div class="tablenav ' . $position . '">';
-	
+
 	//All Transaction
 	if ($type == "transactions") {
 		echo '<div class="alignleft actions">'."\n";
@@ -535,7 +540,7 @@ function foxyshop_api_paging_nav($type, $position, $xml, $querystring) {
 		echo '<option value="archive">Archive</option>';
 		echo '<option value="unarchive">Unarchive</option>';
 		echo '</select>'."\n";
-		echo '<input type="submit" value="Apply" class="button-secondary action" id="doaction" name="">'."\n";		
+		echo '<input type="submit" value="Apply" class="button-secondary action" id="doaction" name="">'."\n";
 		echo '</div>'."\n";
 	}
 
@@ -560,7 +565,7 @@ function foxyshop_api_paging_nav($type, $position, $xml, $querystring) {
 	}
 
 	echo '</div>'."\n";
-	
+
 	echo '</div>'."\n";
 }
 
@@ -568,7 +573,7 @@ function foxyshop_api_paging_nav($type, $position, $xml, $querystring) {
 //Save Meta Data
 function foxyshop_save_meta_data($fieldname,$input) {
 	global $post_id;
-	$current_data = get_post_meta($post_id, $fieldname, TRUE);	
+	$current_data = get_post_meta($post_id, $fieldname, TRUE);
 	$new_data = $input;
 	if (!$new_data) $new_data = NULL;
 	if ($current_data != "" && is_null($new_data)) delete_post_meta($post_id,$fieldname);
@@ -618,7 +623,7 @@ function foxyshop_manage_attributes($xml, $id, $att_type) {
 	foreach($xml->attribute as $attribute) {
 		$attribute_name = (string)$attribute->name;
 		$attribute_value = (string)$attribute->value;
-		
+
 		$holder .= '<tr class="viewing">';
 		$holder .= '<td class="col1">' . htmlspecialchars($attribute_name) . '</td>';
 		$holder .= '<td class="col2"><div>' . str_replace("\n", "<br />\n", $attribute_value) . '</div><a href="#" class="foxyshop_attribute_delete" attname="' . htmlspecialchars($attribute_name) . '" rel="' . $id . '" title="Delete">' . __('Delete', 'foxyshop') . '</a><a href="#" class="foxyshop_attribute_edit" rel="' . $id . '" title="Edit">' . __('Edit', 'foxyshop') . '</a></td>'."\n";
@@ -712,7 +717,7 @@ function foxyshop_manage_attributes_jquery($att_type) {
 
 		parent_tr.removeClass("viewing");
 		parent_tr.find(".col2 div").html('<textarea placeholder="Value" class="edit_attribute_value" name="new_attribute_value" rel="' + id + '">' + att_value + '</textarea> <input type="button" value="Save Changes" class="button-primary foxyshop_save_attribute" rel="' + id + '" /> <br /> <input type="button" value="Cancel" class="button foxyshop_cancel_save_attribute" rel="' + id + '" original_text="' + att_value + '" />');
-		
+
 		e.preventDefault();
 		return false;
 	});
@@ -722,11 +727,11 @@ function foxyshop_manage_attributes_jquery($att_type) {
 		var id = $(this).attr("rel");
 		var att_name = $(this).attr("attname");
 		var parent_tr = $(this).parents(".foxyshop_attribute_list tr");
-		
+
 		$.post(ajaxurl, {action: "foxyshop_attribute_manage", foxyshop_action: "delete_attribute", security: "<?php echo wp_create_nonce("foxyshop-save-attribute"); ?>", att_type: "<?php echo $att_type; ?>", id: id, att_name: att_name }, function(response) {
 			parent_tr.remove();
 		});
-		
+
 		e.preventDefault();
 		return false;
 	});

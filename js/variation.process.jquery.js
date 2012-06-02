@@ -244,9 +244,8 @@ foxycart_required_fields_check = function(e, arr) {
 	var current_product_id = jQuery(e).attr("rel");
 	var strFailed = false;
 	if (current_product_id) {
-		jQuery("#foxyshop_product_form_" + current_product_id + " .foxyshop_required").filter(":visible").each(function() {
-
-			if (jQuery(this).is('select') && jQuery('option:selected', this).index() == 0) {
+		jQuery("#foxyshop_product_form_" + current_product_id + " .foxyshop_required").each(function() {
+			if (jQuery(this).is('select') && jQuery(this).is(':visible') && jQuery('option:selected', this).index() == 0) {
 					strFailed = true;
 					alert("Error: You must select an option from the dropdown.");
 					jQuery(this).focus();
@@ -254,7 +253,7 @@ foxycart_required_fields_check = function(e, arr) {
 				if (jQuery(this).hasClass('hiddenimageholder') && jQuery(this).parents('.foxyshop_custom_upload_container').is(':visible')) {
 					strFailed = true;
 					alert('Error: You must upload a file before adding to cart.');
-				} else {
+				} else if (jQuery(this).is(':visible')) {
 					strFailed = true;
 					alert("Error: You have not completed a required field.");
 					jQuery(this).focus();

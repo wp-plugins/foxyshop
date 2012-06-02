@@ -146,12 +146,16 @@ function foxyshop_order_management() {
 	
 	$transaction_search_type = isset($_GET['transaction_search_type']) ? $_GET['transaction_search_type'] : '';
 
-
+	if ($foxyshop_settings["orderdesk_url"]) {
+		$orderdesk_link = ' <a class="' . (version_compare(get_bloginfo('version'), '3.2', "<") ? "button " : '') . 'add-new-h2" href="https://foxytools.com/app/orderdesk/" target="_blank">' . __('Launch Order Desk', 'foxyshop') . '</a>';
+	} else {
+		$orderdesk_link = "";
+	}
 	?>	
 	
 	<div class="wrap">
 		<div class="icon32 icon32-posts-page" id="icon-edit-pages"><br></div>
-		<h2><?php _e('Manage Orders', 'foxyshop'); ?></h2>
+		<h2><?php _e('Manage Orders', 'foxyshop'); echo $orderdesk_link; ?></h2>
 
 
 		<form action="edit.php" method="get" id="foxyshop_searchform" name="foxyshop_searchform" style="display: block; margin: 14px 0 20px 0;">

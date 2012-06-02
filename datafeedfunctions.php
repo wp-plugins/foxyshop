@@ -8,15 +8,23 @@ function foxyshop_decrypt($src) {
 
 //Push Feed to External Datafeeds
 function foxyshop_run_external_datafeeds($external_datafeeds) {
-    	global $foxyshop_settings;
-    	if ($foxyshop_settings["orderdesk_url"]) {
-    		$external_datafeeds[] = $foxyshop_settings["orderdesk_url"];
-    	}
+	global $foxyshop_settings;
+	if ($foxyshop_settings["orderdesk_url"]) {
+		$external_datafeeds[] = $foxyshop_settings["orderdesk_url"];
+	}
+	if (!defined('FOXYSHOP_CURL_CONNECTTIMEOUT')) define('FOXYSHOP_CURL_CONNECTTIMEOUT', 10); //10
+	if (!defined('FOXYSHOP_CURL_TIMEOUT')) define('FOXYSHOP_CURL_TIMEOUT', 15); //15
+	if (!isset($_POST["FoxyData"]) && !isset($_POST["FoxySubscriptionData"])) return;
+
 	foreach($external_datafeeds as $feedurl) {
 		if ($feedurl) {
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $feedurl);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, array("FoxyData" => $_POST["FoxyData"]));
+			if (isset($_POST["FoxyData"])) {
+				curl_setopt($ch, CURLOPT_POSTFIELDS, array("FoxyData" => $_POST["FoxyData"]));
+			} elseif (isset($_POST["FoxySubscriptionData"])) {
+				curl_setopt($ch, CURLOPT_POSTFIELDS, array("FoxySubscriptionData" => $_POST["FoxySubscriptionData"]));
+			}
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, FOXYSHOP_CURL_CONNECTTIMEOUT);
 			curl_setopt($ch, CURLOPT_TIMEOUT, FOXYSHOP_CURL_TIMEOUT);
@@ -24,15 +32,15 @@ function foxyshop_run_external_datafeeds($external_datafeeds) {
 			$response = trim(curl_exec($ch));
 
 			//If Error, Send Email and Kill Process
-			if ($response != 'foxy') {
+			if ($response != 'foxy' && $response != 'foxysub') {
 				$error_msg = ($response == false ? "Datafeed Processing Error: " . curl_error($ch) : $response);
 				$to_email = get_bloginfo('admin_email');
 				$message = "A FoxyCart datafeed error was encountered at " . date("F j, Y, g:i a") . ".\n\n";
-				$message .= "The feed that failed was $feedurl.\n\n";
+				$message .= "The feed that failed was $feedurl\n\n";
 				$message .= "The error is listed below:\n\n";
 				$message .= $error_msg;
 				$headers = 'From: ' . get_bloginfo('name') . ' Server Admin <' . $to_email . '>' . "\r\n";
-				wp_mail($to_email, 'Data Feed Error on ' . get_bloginfo('name'), $message, $headers);
+				mail($to_email, 'Data Feed Error on ' . get_bloginfo('name'), $message, $headers);
 				curl_close($ch);
 				die($error_msg);
 			} else {

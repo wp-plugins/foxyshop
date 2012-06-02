@@ -147,7 +147,7 @@ function foxyshop_save_tools() {
 	//Reset API Key
 	} elseif (isset($_GET['foxyshop_api_key_reset'])) {
 		if (!check_admin_referer('reset-foxyshop-api-key')) return;
-		$foxyshop_settings['api_key'] = "spfx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time());
+		$foxyshop_settings['api_key'] = "sp92fx".hash_hmac('sha256',rand(21654,6489798),"dkjw82j1".time());
 		update_option("foxyshop_settings", $foxyshop_settings);
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&key=1');
 		die;
