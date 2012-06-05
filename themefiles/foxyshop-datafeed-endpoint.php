@@ -328,6 +328,7 @@ if (isset($_POST["FoxyData"])) {
 			$customer_id = (string)$customer->customer_id;
 			$customer_first_name = (string)$customer->customer_first_name;
 			$customer_last_name = (string)$customer->customer_last_name;
+			$customer_email = (string)$customer->customer_email;
 			$cc_exp_month = (int)$customer->cc_exp_month;
 			$cc_exp_year = (int)$customer->cc_exp_year;
 			if (strtolower($customer_first_name) === $customer_first_name) $customer_first_name = ucwords($customer_first_name);
