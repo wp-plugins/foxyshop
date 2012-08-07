@@ -243,6 +243,4 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Upgrade Notice ==
-
-= 4.2 =
 Variation Updates, lots of improvements and some bugfixes
