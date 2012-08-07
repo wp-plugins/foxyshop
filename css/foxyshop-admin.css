@@ -342,7 +342,7 @@ body label.variationtypelabel {
 .chzn-container-multi .chzn-choices {
 	min-height: 58px;
 }
-.chzn-container {
+.inside .chzn-container, .cfbe_foxyshop_table .chzn-container {
     width: 100% !important;
 }
 
@@ -442,8 +442,8 @@ body label.variationtypelabel {
 	padding-top: 5px;
 }
 #foxyshop_product_order_list {
-	width: 90%; 
-	border:1px solid #B2B2B2; 
+	width: 90%;
+	border:1px solid #B2B2B2;
 	margin:10px 10px 10px 0px;
 	padding:5px 10px 5px 10px;
 	list-style:none;
@@ -480,29 +480,29 @@ body label.variationtypelabel {
 	margin: 0;
 }
 
-.foxyshop_sort_list .sortable-placeholder { 
+.foxyshop_sort_list .sortable-placeholder {
 	border:1px dashed #B2B2B2;
 	margin-top:5px;
-	margin-bottom:5px; 
+	margin-bottom:5px;
 	padding: 5px;
 	height:50px
 }
-.sortable-variation-placeholder { 
+.sortable-variation-placeholder {
 	border:1px dashed #B2B2B2;
 	margin-top:5px;
-	margin-bottom:10px; 
+	margin-bottom:10px;
 	padding: 7px 9px;
 	height: 150px;
 	border-radius: 3px;
 }
-.foxyshop_sort_list .sortable-placeholder-category { 
+.foxyshop_sort_list .sortable-placeholder-category {
 	border:1px dashed #B2B2B2;
 	margin-top:5px;
-	margin-bottom:5px; 
+	margin-bottom:5px;
 	padding: 5px;
 	height:25px
 }
-.foxyshop_sort_list .counter { 
+.foxyshop_sort_list .counter {
 	font-size: 40px;
 	position: absolute;
 	right: 10px;
@@ -627,7 +627,7 @@ body label.variationtypelabel {
 	left: 5px;
 }
 
-#foxyshop_product_image_list .sortable-placeholder { 
+#foxyshop_product_image_list .sortable-placeholder {
 	border: 1px dashed #B2B2B2;
 	width: 100px;
 	height:122px
@@ -926,12 +926,12 @@ table.widefat tr:last-child td {
 
 /* Icons Sprite */
 .iconsprite { background-image: url("../images/iconsprite.png"); background-repeat: no-repeat; text-indent: -99999px; }
-.down_color { background-position: 0 0; width: 16px; height: 16px; } 
-.up_color { background-position: 0 -66px; width: 16px; height: 16px; } 
-.hide_color { background-position: 0 -132px; width: 16px; height: 16px; } 
-.hide_gray { background-position: 0 -198px; width: 16px; height: 16px; } 
-.down_gray{ background-position: 0 -264px; width: 16px; height: 16px; } 
-.up_gray{ background-position: 0 -330px; width: 16px; height: 16px; } 
+.down_color { background-position: 0 0; width: 16px; height: 16px; }
+.up_color { background-position: 0 -66px; width: 16px; height: 16px; }
+.hide_color { background-position: 0 -132px; width: 16px; height: 16px; }
+.hide_gray { background-position: 0 -198px; width: 16px; height: 16px; }
+.down_gray{ background-position: 0 -264px; width: 16px; height: 16px; }
+.up_gray{ background-position: 0 -330px; width: 16px; height: 16px; }
 
 
 
@@ -953,7 +953,7 @@ table.cfbe_foxyshop_table .chzn-container {
 
 /* Responsive Variations */
 @media all and (max-width: 1150px) {
-	
+
 	body label.variationtypelabel {
 		clear: left;
 		margin: 7px 6px 0!important;
@@ -991,8 +991,8 @@ table.cfbe_foxyshop_table .chzn-container {
 	.foxyshop_field_control input.variation_checkbox_text {
 		width: 300px !important;
 	}
-	
-	
+
+
 	/* Some Settings Page Tweaks */
 	#foxycart_cart_update, #foxycart_checkout_update {
 		width: 370px !important;

@@ -4,7 +4,7 @@ add_action('template_redirect', 'foxyshop_theme_redirect', 1);
 
 function foxyshop_theme_redirect() {
 	global $wp, $wp_query, $foxyshop_settings, $foxyshop_body_class_name, $currentPageName;
-	
+
 	$currentName = (isset($wp->query_vars["name"]) ? $wp->query_vars["name"] : "");
 	$currentPageName = (isset($wp->query_vars["pagename"]) ? $wp->query_vars["pagename"] : "");
 	$currentPostType = (isset($wp->query_vars["post_type"]) ? $wp->query_vars["post_type"] : "");
@@ -18,7 +18,7 @@ function foxyshop_theme_redirect() {
 		echo "<h1>\$wp Results</h1><pre>";print_r($wp);echo "</pre>";
 		echo "<h1>\$wp_query Results</h1><pre>";print_r($wp_query);echo "</pre>";
 	}
-	
+
 	//Backup Parsing If Not Month/Day or Month/Name
 	$permalink_structure = get_option('permalink_structure');
 	if ($permalink_structure != "/%year%/%monthnum%/%postname%/" && $permalink_structure != "/%year%/%monthnum%/%day%/%postname%/") {
@@ -90,7 +90,7 @@ function foxyshop_theme_redirect() {
 		global $post, $foxyshop_title_filter_term;
 		$foxyshop_title_filter_term = get_term_by('slug', get_query_var('term'), get_query_var('taxonomy'));
 		if ($foxyshop_title_filter_term) {
-			
+
 			$foxyshop_body_class_name = "foxyshop-single-category";
 			$foxyshop_single_category_name = $currentCategory;
 			if ($foxyshop_settings['browser_title_3']) add_filter('wp_title', 'title_filter_single_categories', 9, 3);
@@ -102,8 +102,8 @@ function foxyshop_theme_redirect() {
 			$wp_query->is_404 = true;
 			if (!defined("IS_FOXYSHOP")) define("IS_FOXYSHOP", 1);
 		}
-		
-	
+
+
 
 	//All Products Page
 	} elseif ($currentPageName == FOXYSHOP_PRODUCTS_SLUG || $currentName == FOXYSHOP_PRODUCTS_SLUG || $currentPostType == 'foxyshop_product') {
@@ -114,7 +114,7 @@ function foxyshop_theme_redirect() {
 		if (!defined("IS_FOXYSHOP")) define("IS_FOXYSHOP", 1);
 		$wp_query->is_404 = false;
 		add_filter('template_include', 'foxyshop_template_include');
-	
+
 	//Search Product Page
 	} elseif ($currentPageName == 'product-search' || $currentName == 'product-search') {
 		$foxyshop_body_class_name = "foxyshop-search";

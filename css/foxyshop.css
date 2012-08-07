@@ -1,7 +1,7 @@
 /*
 ------------ ATTENTION ------------
 DO NOT EDIT!
-If you need to edit any styles in this file, do not edit the version in the plugin directory. Overwrite the styles in your theme's CSS file or place a copy 
+If you need to edit any styles in this file, do not edit the version in the plugin directory. Overwrite the styles in your theme's CSS file or place a copy
 of this file in your template folder and edit it there. This will allow you to upgrade FoxyShop without breaking your customizations. More details here:
 http://www.foxy-shop.com/documentation/theme-customization/
 -----------------------------------
@@ -346,7 +346,7 @@ label.foxyshop_no_width {
 
 /* ---------- Featured Product ------------ */
 .foxyshop_featured_product_list .foxyshop_product_box {
-	margin-bottom: 15px; 
+	margin-bottom: 15px;
 	padding: 5px;
 }
 .foxyshop_featured_product_list .foxyshop_product_image {
@@ -386,10 +386,10 @@ label.foxyshop_no_width {
 	list-style: none;
 }
 .foxyshop_related_product_list .foxyshop_product_box {
-	margin-bottom: 0; 
+	margin-bottom: 0;
 	padding: 5px;
 }
-.foxyshop_related_product_list .foxyshop_product_image {
+.foxyshop_product .foxyshop_related_product_list .foxyshop_product_image {
 	float: left;
 	width: 50px;
 	margin-right: 10px;

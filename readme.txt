@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
 Requires at least: 3.1
 Tested up to: 3.4.1
-Stable tag: 4.1.6
+Stable tag: 4.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
@@ -66,6 +66,24 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 4.2 =
+* Updated variation processor to allow multiple levels of dkeys
+* Updated variation processor to add x: to hidden text inputs and textarea elements
+* Updated prettyPhoto gallery to have product ID in rel so multiple galleries on category page won't overlap
+* Updated out of stock messages to be js arrays for multiple values on one page
+* Updated Google Product Feed feature to add CDATA to content field and allow for customizable target country and currency via filters
+* Allow saved variations to have custom names
+* Added settings option for disabling cart validation
+* Added a filter for the post type registration argument array
+* Added filter for disabling auto-login when new user account created
+* Updated hidden ikey images to be written out but hidden so cloudzoom will work properly.
+* Improved inventory update matching to only update published products, not those in trash
+* Fix for double UTF8 encoding on foxyshop_currency()
+* Fix for error in customer email variable in subscription datafeed
+* Fix to accept custom field criteria in CSV export feature
+* Fix for CSV export not showing proper amount for quantities greater than one
+* Fix for the FOXYSHOP_PRODUCT_TAGS feature
 
 = 4.1.6 =
 * Correction for subscription datafeed processing. Emails could be sent to wrong customer.
@@ -226,5 +244,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 4.1.6 =
-Correction for subscription datafeed processing. Emails could be sent to wrong customer.
+= 4.2 =
+Variation Updates, lots of improvements and some bugfixes

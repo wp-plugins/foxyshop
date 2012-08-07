@@ -13,7 +13,7 @@ add_action('admin_menu', 'foxyshop_setup_menu');
 add_action('admin_init', 'save_foxyshop_setup');
 
 function foxyshop_setup_menu() {
-	add_submenu_page(NULL, __('FoxyShop Setup Wizard', 'foxyshop'), NULL, 'manage_options', 'foxyshop_setup', 'foxyshop_setup');
+	add_submenu_page(NULL, __('FoxyShop Setup Wizard', 'foxyshop'), NULL, 'manage_options', 'foxyshop_setup', 'foxyshop_setup_legacy');
 }
 
 function save_foxyshop_setup() {
@@ -29,7 +29,7 @@ function save_foxyshop_setup() {
 	$foxyshop_settings["domain"] = trim(stripslashes(str_replace("http://","",$domain)));
 
 	$foxyshop_settings['version'] = $_POST['foxyshop_version'];
-	
+
 	//Get Category List if >= 0.7.2
 	if ($cached_shipping_categories = foxyshop_get_category_list()) $foxyshop_settings['ship_categories'] = $cached_shipping_categories;
 
@@ -39,8 +39,7 @@ function save_foxyshop_setup() {
 	die;
 }
 
-
-function foxyshop_setup() {
+function foxyshop_setup_legacy() {
 	global $foxyshop_settings, $foxycart_version_array;
 ?>
 <div class="wrap">
@@ -100,7 +99,7 @@ function foxyshop_setup() {
 		<tr>
 			<td><h3>1B</h3></td>
 			<td>
-				<label for="foxyshop_version">What FoxyCart version are you using?</label> 
+				<label for="foxyshop_version">What FoxyCart version are you using?</label>
 				<select name="foxyshop_version" id="foxyshop_version" style="min-width: 100px;">
 				<?php
 				foreach ($foxycart_version_array as $key => $val) {

@@ -55,10 +55,10 @@ function foxyshop_run_external_datafeeds($external_datafeeds) {
 //Update the FoxyShop Inventory
 function foxyshop_datafeed_inventory_update($xml) {
 	global $wpdb, $foxyshop_settings;
-	
+
 	//For Each Transaction
 	foreach($xml->transactions->transaction as $transaction) {
-		
+
 		//For Each Transaction Detail
 		foreach($transaction->transaction_details->transaction_detail as $transactiondetails) {
 			$product_name = (string)$transactiondetails->product_name;
@@ -77,7 +77,7 @@ function foxyshop_datafeed_inventory_update($xml) {
 						$new_count = $original_count - $product_quantity;
 						$alert_level = ($iv['alert'] == '' ? $foxyshop_settings['inventory_alert_level'] : $iv['alert']);
 						$val[$ivcode]['count'] = $new_count;
-						
+
 						//Send Email Alert Email
 						if ($foxyshop_settings['inventory_alert_email'] && $new_count <= $alert_level) {
 							$subject_line = "Inventory Alert: " . $product_name;
@@ -91,7 +91,7 @@ function foxyshop_datafeed_inventory_update($xml) {
 							$headers = 'From: ' . get_bloginfo('name') . ' <' . $to_email . '>' . "\r\n";
 							wp_mail($to_email, $subject_line, $message, $headers);
 						}
-						
+
 					}
 				}
 				//Run the Update
@@ -105,7 +105,7 @@ function foxyshop_datafeed_inventory_update($xml) {
 //Update the WordPress Customer's Subscription List
 function foxyshop_datafeed_sso_update($xml) {
 	global $wpdb;
-	
+
 	//For Each Transaction
 	foreach($xml->transactions->transaction as $transaction) {
 
@@ -138,7 +138,7 @@ function foxyshop_datafeed_sso_update($xml) {
 
 					//Write Array Back to DB
 					update_user_meta($user_id, 'foxyshop_subscription', $foxyshop_subscription);
-				}		
+				}
 
 
 			}
@@ -159,13 +159,13 @@ function foxyshop_datafeed_user_update($xml) {
 		$customer_last_name = (string)$transaction->customer_last_name;
 		$customer_email = (string)$transaction->customer_email;
 		$customer_password = (string)$transaction->customer_password;
-		
+
 		//Add or Update WordPress User If Not Guest Checkout
 		if ($customer_id != '0') {
-			
+
 			//Check To See if WordPress User Already Exists
 			$current_user = get_user_by("email", $customer_email);
-			
+
 			//No Return, Add New User, Username will be email address
 			if (!$current_user) {
 				$new_user_id = wp_insert_user(array(
@@ -181,13 +181,13 @@ function foxyshop_datafeed_user_update($xml) {
 					'role' => 'subscriber'
 				));
 				add_user_meta($new_user_id, 'foxycart_customer_id', $customer_id, true);
-				
+
 				//Set Password
 				$wpdb->query("UPDATE $wpdb->users SET user_pass = '$customer_password' WHERE ID = $new_user_id");
-				
+
 				//Run Your Custom Actions Here with add_action()
 				do_action("foxyshop_datafeed_add_wp_user", $xml, $user_id);
-			
+
 			//Update User
 			} else {
 
@@ -200,7 +200,7 @@ function foxyshop_datafeed_user_update($xml) {
 
 				//Add FoxyCart User ID if not added before
 				add_user_meta($current_user->ID, 'foxycart_customer_id', $customer_id, true);
-				
+
 				//Run Your Custom Actions Here with add_action()
 				do_action("foxyshop_datafeed_update_wp_user", $xml, $current_user->ID);
 			}
@@ -220,11 +220,11 @@ function foxyshop_consolibyte_inventory_process() {
 
 	//For Each Item
 	foreach($xml->foxyinventory->item as $item) {
-		
+
 		//Set Variables
 		$product_code = (string)$item->product_code;
 		$quantity_on_hand = (int)$item->quantity_on_hand;
-		
+
 		//Update Inventory
 		foxyshop_inventory_count_update($product_code, $quantity_on_hand, 0);
 	}

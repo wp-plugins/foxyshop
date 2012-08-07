@@ -31,7 +31,7 @@ if (!$writeUploadInclude) {
 				script    : '<?php echo get_bloginfo("url") . FOXYSHOP_URL_BASE; ?>/upload-<?php echo $foxyshop_settings['datafeed_url_key']; ?>/',
 				cancelImg : '<?php echo FOXYSHOP_DIR; ?>/js/uploadify/cancel.png',
 				auto      : true,
-				width     : '130',
+				width     : '120',
 				height    : '29',
 				sizeLimit : '<?php echo $foxyshop_max_upload; ?>',
 				scriptData: { 'newfilename': '<?php echo $imagefilename; ?>_' + $(this).attr("rel") },
@@ -44,12 +44,12 @@ if (!$writeUploadInclude) {
 							} else if (response.indexOf("jpg") >= 0 || response.indexOf("gif") >= 0 || response.indexOf("png") >= 0 || response.indexOf("jpeg") >= 0) {
 								$("#uploadedFile_" + variationID).html('<img src="<?php echo $upload_dir['baseurl']; ?>/customuploads/' + response + '?rand=' + Math.floor(Math.random()*1000) + '" alt="" />').show();
 								$("#FileNameHolder_"+variationID).val(response);
-								
+
 								//Use this instead if you want to use timthumb to set the result as the product image in the cart
 								//new_filename = "<?php bloginfo("url") ?>/timthumb.php?src=<?php echo $upload_dir['baseurl']; ?>/customuploads/" + response + "&w=290";
 								//$("#foxyshop_main_product_image").attr("src", new_filename + '&rand=' + Math.floor(Math.random()*1000));
 								//$("#foxyshop_cart_product_image_<?php echo $product['id']; ?>").attr("name", "image<?php echo foxyshop_get_verification("image", "--OPEN--"); ?>").val(new_filename);
-								
+
 							} else {
 								$("#uploadedFile_" + variationID).html('<?php _e('File Uploaded Successfuly.'); ?> <a href="<?php echo $upload_dir['baseurl']; ?>/customuploads/' + response + '"><?php _e('Click here to view.'); ?></a>').show();
 								$("#FileNameHolder_"+variationID).val(response);
@@ -58,7 +58,7 @@ if (!$writeUploadInclude) {
 					}
 			});
 		});
-	});	
+	});
 	</script>
 	<?php
 }

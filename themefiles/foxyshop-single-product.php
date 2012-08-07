@@ -11,7 +11,7 @@ This will allow you to upgrade FoxyShop without breaking your customizations. Mo
 <div id="foxyshop_container">
 <?php
 while (have_posts()) : the_post();
-	
+
 	//Initialize Product
 	global $product;
 	$product = foxyshop_setup_product();
@@ -19,13 +19,13 @@ while (have_posts()) : the_post();
 
 	//This is for testing to see what is included in the $product array
 	//print_r($product);
-	
+
 	//Initialize Form
 	foxyshop_start_form();
-	
+
 	//Write Breadcrumbs
 	foxyshop_breadcrumbs(" &raquo; ", "&laquo; Back to Products");
-	
+
 
 	//Shows Main Image and Optional Slideshow
 	//Available Built-in Options: prettyPhoto (lightbox), cloud-zoom (inline zooming), or colorbox (native FoxyCart lightbox)
@@ -36,18 +36,18 @@ while (have_posts()) : the_post();
 	//foxyshop_build_image_slideshow("cloud-zoom", true);
 	//foxyshop_build_image_slideshow("colorbox", true); //only recommended for 0.7.2+
 
-				
+
 	//Main Product Information Area
 	echo '<div class="foxyshop_product_info">';
 	//edit_post_link('<img src="' . FOXYSHOP_DIR . '/images/editicon.png" alt="Edit Product" width="16" height="16" />','<span class="foxyshop_edit_product">','</span>');
 	echo '<h2>' . apply_filters('the_title', $product['name']) . '</h2>';
-	
+
 	//Show a sale tag if the product is on sale
 	//if (foxyshop_is_on_sale()) echo '<p class="sale-product">SALE!</p>';
 
 	//Product Is New Tag (number of days since added)
 	//if (foxyshop_is_product_new(14)) echo '<p class="new-product">NEW!</p>';
-	
+
 	//Main Product Description
 	echo $product['description'];
 
@@ -55,7 +55,7 @@ while (have_posts()) : the_post();
 	//Show Variations (showQuantity: 0 = Do Not Show Qty, 1 = Show Before Variations, 2 = Show Below Variations)
 	//If Qty is turned off on product, Qty box will not be shown at all
 	foxyshop_product_variations(2);
-	
+
 	//(style) clear floats before the submit button
 	echo '<div class="clr"></div>';
 
@@ -64,7 +64,7 @@ while (have_posts()) : the_post();
 
 	//Add On Products ($qty [1 or 0], $before_entry, $after_entry)
 	foxyshop_addon_products();
-	
+
 	//Add To Cart Button
 	echo '<button type="submit" name="x:productsubmit" id="productsubmit" class="foxyshop_button">Add To Cart</button>';
 
@@ -76,7 +76,7 @@ while (have_posts()) : the_post();
 	//Shows any related products
 	foxyshop_related_products("Related Products");
 
-	
+
 	//Custom Code Can Go Here
 
 

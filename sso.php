@@ -5,13 +5,13 @@ add_action('user_register', 'foxyshop_profile_add', 5);
 
 //Runs When WP Profile is Updated
 function foxyshop_profile_update($user_id) {
-	
+
 	//Get User Info
 	$foxycart_customer_id = get_user_meta($user_id, 'foxycart_customer_id', true);
 
 	//Get User Data
 	$wp_user = get_userdata($user_id);
-	
+
 	//Send Updated Info to FoxyCart
 	$foxy_data = array("api_action" => "customer_save");
 	if ($foxycart_customer_id) $foxy_data["customer_id"] = $foxycart_customer_id;
@@ -19,14 +19,14 @@ function foxyshop_profile_update($user_id) {
 	$foxy_data["customer_password_hash"] = $wp_user->user_pass;
 	if ($wp_user->user_firstname) $foxy_data["customer_first_name"] = $wp_user->user_firstname;
 	if ($wp_user->user_lastname) $foxy_data["customer_last_name"] = $wp_user->user_lastname;
-	
+
 	//Hook To Add Your Own Function to Update the $foxy_data array with your own data
 	if (has_filter('foxyshop_save_sso_to_foxycart')) $foxy_data = apply_filters('foxyshop_save_sso_to_foxycart', $foxy_data, $user_id, "update");
-	
+
 	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
 	$foxycart_customer_id = (string)$xml->result != "ERROR" ? (string)$xml->customer_id : "";
-	
+
 	//If FoxyCart Customer ID Returned, Add FoxyCart Customer ID To User Meta
 	if ($foxycart_customer_id) {
 		add_user_meta($user_id, 'foxycart_customer_id', $foxycart_customer_id, true);
@@ -39,17 +39,17 @@ function foxyshop_profile_add($user_id) {
 
 	//Get User Data
 	$wp_user = get_userdata($user_id);
-	
+
 	//Set Foxy Data
 	$foxy_data = array("api_action" => "customer_save");
 	$foxy_data["customer_email"] = $wp_user->user_email;
 	$foxy_data["customer_password_hash"] = $wp_user->user_pass;
 	if ($wp_user->user_firstname) $foxy_data["customer_first_name"] = $wp_user->user_firstname;
 	if ($wp_user->user_lastname) $foxy_data["customer_last_name"] = $wp_user->user_lastname;
-		
+
 	//Hook To Add Your Own Function to Update the $foxy_data array with your own data
 	if (has_filter('foxyshop_save_sso_to_foxycart')) $foxy_data = apply_filters('foxyshop_save_sso_to_foxycart', $foxy_data, $user_id, "add");
-	
+
 	//Send To FoxyCart
 	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
@@ -59,11 +59,11 @@ function foxyshop_profile_add($user_id) {
 	if ($foxycart_customer_id) {
 		add_user_meta($user_id, 'foxycart_customer_id', $foxycart_customer_id, true);
 	}
-	
+
 	//Auto-login if user wasn't logged in before
 	//Note that if you don't have the querystring "redirect_to" set on the registration page the page will not redirect anywhere and won't appear logged in at first
-	if (!is_user_logged_in()) wp_set_auth_cookie($user_id, false, is_ssl());
-	
+	$auto_login = apply_filters("foxyshop_new_user_auto_login", true);
+	if (!is_user_logged_in() && $auto_login) wp_set_auth_cookie($user_id, false, is_ssl());
 }
 
 
@@ -119,13 +119,13 @@ function action_show_user_profile($user) {
 	do_action("foxyshop_show_user_profile_data", $user->ID);
 	?>
 	</table>
-	
-	
-	<?php	
+
+
+	<?php
 	//Get User's Subscription Array
 	$foxyshop_subscription = get_user_meta($user->ID, 'foxyshop_subscription', true);
 	if (!is_array($foxyshop_subscription)) $foxyshop_subscription = array();
-	
+
 	if (count($foxyshop_subscription) > 0) {
 	?>
 <h3><?php _e('FoxyCart Subscriptions', 'foxyshop') ?></h3>

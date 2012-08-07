@@ -83,16 +83,16 @@ if (isset($_POST["FoxyData"])) {
 		$transaction_date =		(string)$transaction->transaction_date;
 		$customer_ip =			(string)$transaction->customer_ip;
 		$customer_id =			(string)$transaction->customer_id;
-		$customer_first_name =	(string)$transaction->customer_first_name;
-		$customer_last_name =	(string)$transaction->customer_last_name;
+		$customer_first_name =		(string)$transaction->customer_first_name;
+		$customer_last_name =		(string)$transaction->customer_last_name;
 		$customer_company =		(string)$transaction->customer_company;
 		$customer_email =		(string)$transaction->customer_email;
-		$customer_password =	(string)$transaction->customer_password;
-		$customer_address1 =	(string)$transaction->customer_address1;
-		$customer_address2 =	(string)$transaction->customer_address2;
+		$customer_password =		(string)$transaction->customer_password;
+		$customer_address1 =		(string)$transaction->customer_address1;
+		$customer_address2 =		(string)$transaction->customer_address2;
 		$customer_city =		(string)$transaction->customer_city;
 		$customer_state =		(string)$transaction->customer_state;
-		$customer_postal_code =	(string)$transaction->customer_postal_code;
+		$customer_postal_code =		(string)$transaction->customer_postal_code;
 		$customer_country =		(string)$transaction->customer_country;
 		$customer_phone =		(string)$transaction->customer_phone;
 
@@ -132,14 +132,14 @@ if (isset($_POST["FoxyData"])) {
 		if (!$is_multiship) {
 			$shipping_first_name =	(string)$transaction->shipping_first_name ? (string)$transaction->shipping_first_name : $customer_first_name;
 			$shipping_last_name =	(string)$transaction->shipping_last_name ? (string)$transaction->shipping_last_name : $customer_last_name;
-			$shipping_company =		(string)$transaction->shipping_company ? (string)$transaction->shipping_company : $customer_company;
+			$shipping_company =	(string)$transaction->shipping_company ? (string)$transaction->shipping_company : $customer_company;
 			$shipping_address1 =	(string)$transaction->shipping_address1 ? (string)$transaction->shipping_address1 : $customer_address1;
-			$shipping_address2 =	(string)$transaction->shipping_address2 ? (string)$transaction->shipping_address2 : $customer_address2;
-			$shipping_city =		(string)$transaction->shipping_city ? (string)$transaction->shipping_city : $customer_city;
-			$shipping_state =		(string)$transaction->shipping_state ? (string)$transaction->shipping_state : $customer_state;
+			$shipping_address2 =	(string)$transaction->shipping_address1 ? (string)$transaction->shipping_address2 : $customer_address2; //shipping_address1 is intended here
+			$shipping_city =	(string)$transaction->shipping_city ? (string)$transaction->shipping_city : $customer_city;
+			$shipping_state =	(string)$transaction->shipping_state ? (string)$transaction->shipping_state : $customer_state;
 			$shipping_postal_code =	(string)$transaction->shipping_postal_code ? (string)$transaction->shipping_postal_code : $customer_postal_code;
-			$shipping_country =		(string)$transaction->shipping_country ? (string)$transaction->shipping_country : $customer_country;
-			$shipping_phone =		(string)$transaction->shipping_phone ? (string)$transaction->shipping_phone : $customer_phone;
+			$shipping_country =	(string)$transaction->shipping_country ? (string)$transaction->shipping_country : $customer_country;
+			$shipping_phone =	(string)$transaction->shipping_phone ? (string)$transaction->shipping_phone : $customer_phone;
 			$shipto_shipping_service_description = (string)$transaction->shipto_shipping_service_description;
 		}
 
@@ -316,6 +316,7 @@ if (isset($_POST["FoxyData"])) {
 			$message .= $sub_token_url . "&empty=true&cart=checkout\n\n";
 			$message .= "";
 			$headers = 'From: ' . get_bloginfo('name') . ' <' . get_bloginfo('admin_email') . '>' . "\r\n";
+			//$headers .= 'Bcc: ' . get_bloginfo('admin_email') . "\r\n";
 			wp_mail($to_email, $subject_line, $message, $headers);
 		}
 	}
@@ -343,6 +344,7 @@ if (isset($_POST["FoxyData"])) {
 				$message .= "https://" . $foxyshop_settings['domain'] . "/cart?empty=true&cart=updateinfo&customer_email=" . urlencode($customer_email) . "\n\n";
 				$message .= "";
 				$headers = 'From: ' . get_bloginfo('name') . ' <' . get_bloginfo('admin_email') . '>' . "\r\n";
+				//$headers .= 'Bcc: ' . get_bloginfo('admin_email') . "\r\n";
 				wp_mail($to_email, $subject_line, $message, $headers);
 			}
 		}

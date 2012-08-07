@@ -2,7 +2,7 @@
 add_action('admin_init', 'foxyshop_inventory_update');
 
 function foxyshop_inventory_update() {
-	
+
 	//Saving Values From Page
 	if (isset($_POST['variationact'])) {
 		if (!check_admin_referer('update-foxyshop-inventory')) return;
@@ -18,29 +18,29 @@ function foxyshop_inventory_update() {
 
 			$inventory = get_post_meta($productid, "_inventory_levels", 1);
 			if (!is_array($inventory)) $inventory = array();
-			
+
 			$db_count = $inventory[$code]['count'];
 			$inventory[$code]['count'] = $db_count + $count_change;
-			update_post_meta($productid, '_inventory_levels', $inventory);	
+			update_post_meta($productid, '_inventory_levels', $inventory);
 		}
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_inventory_management_page&saved=1');
 		die;
-	
+
 	//Saving Values From Uploaded Data
 	} elseif (isset($_POST['foxyshop_inventory_updates'])) {
 		if (!check_admin_referer('import-foxyshop-inventory-updates')) return;
-		
+
 		$lines = preg_split("/(\r\n|\n|\r)/", $_POST['foxyshop_inventory_updates']);
 		$save_count = 0;
 		foreach ($lines as $line) {
 			$line = explode("\t", $line);
 			if (count($line) < 5) continue;
 			if ($line[0] == "ID") continue;
-			
+
 			$productid = (int)$line[0];
 			$productcode = $line[2];
 			$newcount = (int)$line[4];
-			
+
 			foxyshop_inventory_count_update($productcode, $newcount, $productid);
 			$save_count++;
 		}
@@ -69,7 +69,7 @@ function foxyshop_inventory_management_page() {
 		//Import Completed
 		if (isset($_GET['importcompleted'])) echo '<div class="updated"><p>' . sprintf(__('Import completed: %s records updated.'), (int)$_GET['importcompleted']) . '</p></div>';
 		?>
-		
+
 		<form action="edit.php" method="post">
 
 		<table cellpadding="0" cellspacing="0" border="0" class="wp-list-table widefat foxyshop-list-table" id="inventory_level" style="margin-top: 14px;">
@@ -107,11 +107,11 @@ function foxyshop_inventory_management_page() {
 				$inventory_levels = get_post_meta($single_product->ID,'_inventory_levels',TRUE);
 				if (!is_array($inventory_levels)) $inventory_levels = array();
 				foreach ($inventory_levels as $ivcode => $iv) {
-					
+
 					$i++;
 					$inventory_alert = (int)($iv['alert'] == '' ? $foxyshop_settings['inventory_alert_level'] : $iv['alert']);
 					$inventory_count = $iv['count'];
-					
+
 					$variation = "&nbsp;";
 					foreach ($product['variations'] as $product_variation) {
 						$product_variation1 = preg_split("/(\r\n|\n)/", $product_variation['value']);
@@ -119,14 +119,14 @@ function foxyshop_inventory_management_page() {
 							if (strpos($product_variation2, "c:" . $ivcode) !== false) $variation = str_replace("*", "", substr($product_variation2,0,strpos($product_variation2,"{")));
 						}
 					}
-					
+
 					$exported .= "\n";
 					$exported .= $product['id'] . "\t";
 					$exported .= str_replace("\t", "", $product['name']) . "\t";
 					$exported .= str_replace("\t", "", $ivcode) . "\t";
 					$exported .= str_replace("\t", "", $variation) . "\t";
 					$exported .= $inventory_count;
-					
+
 					$grade = "A";
 					if ($inventory_count <= $inventory_alert) $grade = "X";
 					if ($inventory_count <= 0) $grade = "U";
@@ -170,7 +170,7 @@ function foxyshop_inventory_management_page() {
 						<p>
 							Copy and paste these values into Excel. Make your changes, then copy and paste back in and click update.<br />
 							You can also add new inventory levels by using the template to add new rows with code and inventory fields.
-						</p> 
+						</p>
 						<textarea id="name="foxyshop_inventory_updates" name="foxyshop_inventory_updates" wrap="auto" style="float: left; width:650px;height: 200px;"><?php echo $exported; ?></textarea>
 						<div style="clear: both;"></div>
 						<p><input type="submit" class="button-primary" value="<?php _e('Update Inventory Values'); ?>" /></p>

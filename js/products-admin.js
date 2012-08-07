@@ -25,7 +25,7 @@ jQuery(document).ready(function($){
 			}
 		}
 	});
-	
+
 	//Do the Show Downloadable List
 	if (show_downloadables) {
 		$("#ajax_get_downloadable_list").click(function() {
@@ -69,7 +69,7 @@ jQuery(document).ready(function($){
 		});
 
 	}
-	
+
 	//When Weight is Disabled
 	$("#weight_disable").click(function() {
 		if ($(this).is(":checked")) {
@@ -82,7 +82,7 @@ jQuery(document).ready(function($){
 			$("#_weight2").prop("disabled", false).val(defaultweight2);
 		}
 	});
-	
+
 	//When the bluring Weight 1
 	$("#_weight1").blur(function() {
 		var weight = $(this).val();
@@ -95,7 +95,7 @@ jQuery(document).ready(function($){
 		}
 		foxyshop_check_number_single(this);
 	});
-	
+
 	//When the bluring Weight 2
 	$("#_weight2").blur(function() {
 		var weight = parseFloat($(this).val()).toFixed(1);
@@ -107,8 +107,8 @@ jQuery(document).ready(function($){
 			$(this).val(weight);
 		}
 	});
-	
-	
+
+
 	//Quantity Min/Max
 	$("#_quantity_min, #_quantity_max").blur(function() {
 		tempval = foxyshop_format_number_single($(this).val());
@@ -191,7 +191,7 @@ jQuery(document).ready(function($){
 
 	//DISCOUNT STUFF
 	//--------------------------------
-	
+
 	//On Load
 	write_discount_type();
 	rebuild_discount();
@@ -393,7 +393,7 @@ jQuery(document).ready(function($){
 			}
 		}
 	}
-	
+
 
 	//IMAGES
 	//--------------------------------
@@ -520,8 +520,8 @@ jQuery(document).ready(function($){
 		});
 	});
 
-	$("#foxyshop_product_image_list").sortable({ 
-		placeholder: "sortable-placeholder", 
+	$("#foxyshop_product_image_list").sortable({
+		placeholder: "sortable-placeholder",
 		revert: false,
 		tolerance: "pointer",
 		update: function() {
@@ -541,11 +541,11 @@ jQuery(document).ready(function($){
 		}
 	});
 
-	
-	
+
+
 	//VARIATIONS
 	//--------------------------------
-	
+
 	$("#product_variations_meta").before('<a name="product_variations_meta"></a>');
 	$("#VariationMinimizeAll").click(function() {
 		$("#product_variations_meta").addClass("variation_minimized");
@@ -559,7 +559,7 @@ jQuery(document).ready(function($){
 		$("#VariationMinimizeAll").show();
 		$(this).hide();
 	});
-	
+
 	$('.deleteVariation').live("click", function() {
 		variationID = $(this).attr("rel");
 		$("#variation" + variationID).slideUp(function() {
@@ -576,8 +576,8 @@ jQuery(document).ready(function($){
 
 
 	function foxyshop_variation_order_load_event() {
-		$("#variation_sortable").sortable({ 
-			placeholder: "sortable-variation-placeholder", 
+		$("#variation_sortable").sortable({
+			placeholder: "sortable-variation-placeholder",
 			revert: false,
 			items: "div.product_variation",
 			tolerance: "pointer",
@@ -593,7 +593,7 @@ jQuery(document).ready(function($){
 		});
 	};
 	addLoadEvent(foxyshop_variation_order_load_event);
-	
+
 	//Check For Illegal Titles
 	$("input.variation_name").live("blur", function() {
 		var thisval = $(this).val().toLowerCase();
@@ -615,7 +615,7 @@ jQuery(document).ready(function($){
 	$(".variationtype").live("change", function() {
 		new_type = $(this).val();
 		this_id = $(this).parents(".product_variation").attr("rel");
-		
+
 		//Set Temp Values
 		temp_dropdown = $("#_variation_value_"+this_id).val();
 		temp_radio = $("#_variation_radio_"+this_id).val();
@@ -644,16 +644,16 @@ jQuery(document).ready(function($){
 			$(this).parents(".product_variation").find(".variation_required_container").hide();
 			$(this).parents(".product_variation").find(".variation_required_container").find('input[type="checkbox"]').not(':checked');
 		}
-		
-		
+
+
 	});
 
 
 	//New Variation
 	$("#AddVariation").click(function() {
 		var this_id = parseInt($("#max_variations").val()) + 1;
-		
-		
+
+
 		new_content = '<div class="product_variation" rel="' + this_id + '" id="variation' + this_id + '">';
 		new_content += '<input type="hidden" name="sort' + this_id + '" id="sort' + this_id + '" value="' + this_id + '" class="variationsort" />';
 		new_content += '<input type="hidden" name="dropdownradio_value_' + this_id + '" id="dropdownradio_value_' + this_id + '" value="" />';
@@ -670,7 +670,7 @@ jQuery(document).ready(function($){
 		new_content += '<input type="text" name="_variation_name_' + this_id + '" class="variation_name" id="_variation_name_' + this_id + '" value="" />';
 		new_content += '<label for="_variation_type_' + this_id + '" class="variationtypelabel">Variation Type</label> ';
 		new_content += '<select name="_variation_type_' + this_id + '" id="_variation_type_' + this_id + '" class="variationtype">';
-		new_content += variation_select_options;		
+		new_content += variation_select_options;
 		new_content += '</select>';
 		new_content += '</div>';
 		new_content += '<div class="variation_holder" id="variation_holder_' + this_id + '"></div>';
@@ -687,14 +687,14 @@ jQuery(document).ready(function($){
 		new_content += '<div class="variationsortnum">' + this_id + '</div>';
 		new_content += '<div style="clear: both;"></div>';
 		new_content += '</div>';
-		
+
 		$("#variation_sortable").append(new_content);
 		$("#variation_holder_"+this_id).html(getVariationContents("dropdown", this_id));
-		
+
 		$("#max_variations").val(this_id);
 		$("#variation_sortable").sortable("refresh");
 		return false;
-	});	
+	});
 
 
 
@@ -704,7 +704,7 @@ jQuery(document).ready(function($){
 		new_contents = "";
 		variationkeyhtml = '<div class="variationkey">' + variation_key + '</div>';
 		$(".product_variation[rel='" + this_id + "'] .dkeycontainer").show();
-		
+
 		//Dropdown
 		if (new_type == "dropdown") {
 			new_contents = '<div class="foxyshop_field_control dropdown variationoptions">';
@@ -712,7 +712,7 @@ jQuery(document).ready(function($){
 			new_contents += '<textarea name="_variation_value_' + this_id + '" id="_variation_value_' + this_id + '">' + $("#dropdownradio_value_"+this_id).val() + '</textarea>';
 			new_contents += variationkeyhtml;
 			new_contents += '</div>';
-		
+
 		//Radio Buttons
 		} else if (new_type == "radio") {
 			new_contents = '<div class="foxyshop_field_control radio variationoptions">';
@@ -720,7 +720,7 @@ jQuery(document).ready(function($){
 			new_contents += '<textarea name="_variation_radio_' + this_id + '" id="_variation_radio_' + this_id + '">' + $("#dropdownradio_value_"+this_id).val() + '</textarea>';
 			new_contents += variationkeyhtml;
 			new_contents += '</div>';
-		
+
 		//Text
 		} else if (new_type == "text") {
 			new_contents = '<div class="foxyshop_field_control text variationoptions">';
@@ -768,11 +768,11 @@ jQuery(document).ready(function($){
 		//Saved Variation
 		} else {
 			new_contents = '<p class="foxyshop_saved_variation"><em>This varation will use saved settings.</em></p>';
-			$("#_variation_name_" + this_id).val($('#_variation_type_' + this_id + ' option:selected').attr("rel"));
+			if (!$("#_variation_name_" + this_id).val()) $("#_variation_name_" + this_id).val($('#_variation_type_' + this_id + ' option:selected').attr("rel"));
 			$(".product_variation[rel='" + this_id + "'] .dkeycontainer").hide();
 		}
-		
-		
+
+
 		return new_contents;
 	}
 

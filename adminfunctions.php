@@ -31,7 +31,7 @@ function foxyshop_load_admin_scripts($hook) {
 	}
 
 	//Product
-	if ($hook != 'post.php' && $hook != 'post-new.php' && $page != 'cfbe_editor-foxyshop_product') return;
+	if ($hook != 'post.php' && $hook != 'post-new.php' && $page != 'cfbe_editor-foxyshop_product' && $page != 'foxyshop_setup') return;
 	wp_enqueue_script('swfobject');
 	if ($foxyshop_settings['related_products_custom'] || $foxyshop_settings['related_products_tags'] || $foxyshop_settings['enable_addon_products']) {
 		wp_enqueue_script('chosenScript', FOXYSHOP_DIR . '/js/chosen.jquery.min.js', array('jquery'));
@@ -171,6 +171,7 @@ function foxyshop_products_per_page() {
 function foxyshop_hide_children_array($currentCategoryID) {
 	global $foxyshop_settings;
 	if ($foxyshop_settings['hide_subcat_children']) {
+		$temp = get_objects_in_term($currentCategoryID, "foxyshop_categories");
 		return array("post__not_in" => get_objects_in_term(get_term_children($currentCategoryID, "foxyshop_categories"), "foxyshop_categories"));
 	} else {
 		return array();
@@ -208,6 +209,7 @@ function foxyshop_activation() {
 		"foxyshop_version" => FOXYSHOP_VERSION,
 		"ship_categories" => "",
 		"enable_ship_to" => "",
+		"use_cart_validation" => "1",
 		"enable_subscriptions" => "",
 		"expiring_cards_reminder" => "",
 		"enable_bundled_products" => "",
@@ -249,7 +251,7 @@ function foxyshop_activation() {
 		"google_product_auth" => "",
 		"include_exception_list" => "",
 		"show_add_to_cart_link" => "",
-		"api_key" => "spfx".hash_hmac('sha256',rand(2165,64898),"dkw81".time())
+		"api_key" => "spfx".hash_hmac('sha256',rand(2165,64898),"dkw81".time()),
 	);
 
 	//Set For the First Time
@@ -284,7 +286,7 @@ function foxyshop_activation() {
 		if (!array_key_exists('enable_dashboard_stats',$foxyshop_settings)) $foxyshop_settings['enable_dashboard_stats'] = ""; //3.0
 		if (!array_key_exists('checkout_customer_create',$foxyshop_settings)) $foxyshop_settings['checkout_customer_create'] = ""; //3.2?
 		if ($foxyshop_settings['default_image'] == WP_PLUGIN_URL."/foxyshop/images/no-photo.png") $foxyshop_settings['default_image'] = ""; //3.3
-		if (!$foxyshop_settings['domain'] && version_compare($foxyshop_settings['version'], '3.3', "<")) add_option("foxyshop_setup_required", 1); //3.3
+		if (!$foxyshop_settings['domain']) add_option("foxyshop_setup_required", 1); //3.3
 		if (!array_key_exists('foxycart_include_cache',$foxyshop_settings)) $foxyshop_settings['foxycart_include_cache'] = ""; //3.3
 		if (!array_key_exists('related_products_custom',$foxyshop_settings)) $foxyshop_settings['related_products_custom'] = "on"; //3.3
 		if (!array_key_exists('related_products_tags',$foxyshop_settings)) $foxyshop_settings['related_products_tags'] = ""; //3.3
@@ -302,6 +304,7 @@ function foxyshop_activation() {
 		if (!array_key_exists('show_add_to_cart_link',$foxyshop_settings)) $foxyshop_settings['show_add_to_cart_link'] = ""; //4.1.1
 		if (!array_key_exists('orderdesk_url',$foxyshop_settings)) $foxyshop_settings['orderdesk_url'] = ""; //4.1.4
 		if (!array_key_exists('expiring_cards_reminder',$foxyshop_settings)) $foxyshop_settings['expiring_cards_reminder'] = $foxyshop_settings['enable_subscriptions']; //4.1.5
+		if (!array_key_exists('use_cart_validation',$foxyshop_settings)) $foxyshop_settings['use_cart_validation'] = (defined('FOXYSHOP_SKIP_VERIFICATION') ? 0 : 1); //4.2
 
 
 		//Upgrade Variations in 3.0
@@ -421,10 +424,9 @@ function foxyshop_inventory_count_update($code, $new_count, $product_id = 0, $fo
 
 	//If No Product ID provided
 	} elseif ($product_id == 0) {
-		$str_meta_value = strlen(preg_replace("/[^0-9]/","", $code)) == strlen($code) ? ":" . mysql_real_escape_string($code) . ";" : '"' . mysql_real_escape_string($code) . '";';
-		$meta_list = $wpdb->get_row("SELECT `post_id`, `meta_id`, `meta_value`, `meta_key` FROM $wpdb->postmeta WHERE `meta_key` = '_inventory_levels' AND `meta_value` LIKE '%" . $str_meta_value . "%'");
-		if (!$meta_list && $force) $meta_list = $wpdb->get_row("SELECT `post_id`, `meta_id`, `meta_value`, `meta_key` FROM $wpdb->postmeta WHERE `meta_key` = '_variations' AND `meta_value` LIKE '%" . mysql_real_escape_string($code) . "%'");
-		if (!$meta_list && $force) $meta_list = $wpdb->get_row("SELECT `post_id`, `meta_id`, `meta_value`, `meta_key` FROM $wpdb->postmeta WHERE `meta_key` = '_code' AND `meta_value` = '" . mysql_real_escape_string($code) . "'");
+		$meta_list = $wpdb->get_row("SELECT $wpdb->postmeta.`post_id`, $wpdb->postmeta.`meta_id`,  $wpdb->postmeta.`meta_value`,  $wpdb->postmeta.`meta_key` FROM  $wpdb->posts INNER JOIN $wpdb->postmeta ON  $wpdb->posts.`ID` =  $wpdb->postmeta.`post_id` WHERE $wpdb->posts.`post_status` = 'publish' AND $wpdb->postmeta.`meta_key` = '_inventory_levels' AND ($wpdb->postmeta.`meta_value` LIKE '%\"" . mysql_real_escape_string($code) . "\";%' OR $wpdb->postmeta.`meta_value` LIKE '%:" . mysql_real_escape_string($code) . ";%')");
+		if (!$meta_list && $force) $meta_list = $wpdb->get_row("SELECT $wpdb->postmeta.`post_id`,  $wpdb->postmeta.`meta_id`,  $wpdb->postmeta.`meta_value`,  $wpdb->postmeta.`meta_key` FROM  $wpdb->posts INNER JOIN $wpdb->postmeta ON  $wpdb->posts.`ID` =  $wpdb->postmeta.`post_id` WHERE $wpdb->posts.`post_status` = 'publish' AND $wpdb->postmeta.`meta_key` = '_variations' AND $wpdb->postmeta.`meta_value` LIKE '%c:" . mysql_real_escape_string($code) . "%'");
+		if (!$meta_list && $force) $meta_list = $wpdb->get_row("SELECT $wpdb->postmeta.`post_id`,  $wpdb->postmeta.`meta_id`,  $wpdb->postmeta.`meta_value`,  $wpdb->postmeta.`meta_key` FROM  $wpdb->posts INNER JOIN $wpdb->postmeta ON  $wpdb->posts.`ID` =  $wpdb->postmeta.`post_id` WHERE $wpdb->posts.`post_status` = 'publish' AND $wpdb->postmeta.`meta_key` = '_code' AND $wpdb->postmeta.`meta_value` = '" . mysql_real_escape_string($code) . "'");
 		if ($meta_list) {
 			$product_id = $meta_list->post_id;
 			$meta_key = $meta_list->meta_key;

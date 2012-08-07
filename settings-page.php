@@ -1,4 +1,6 @@
 <?php
+
+//Save Settings
 add_action('admin_init', 'foxyshop_save_settings');
 function foxyshop_save_settings() {
 	if (!isset($_POST['foxyshop_settings_update'])) return;
@@ -40,6 +42,7 @@ function foxyshop_save_settings() {
 		"google_product_merchant_id",
 		"include_exception_list",
 		"show_add_to_cart_link",
+		"use_cart_validation",
 		"locale_code"
 	);
 	foreach ($fields as $field1) {
@@ -76,9 +79,12 @@ function foxyshop_save_settings() {
 
 	//Set FoxyCart Domain Name
 	$domain = $_POST['foxyshop_domain'];
-	if ($domain) delete_option("foxyshop_setup_required"); //Delete the setup prompt if domain entered
+	if ($domain && get_option("foxyshop_setup_required")) delete_option("foxyshop_setup_required"); //Delete the setup prompt if domain entered
 	if ($domain && strpos($domain, ".") === false) $domain .= ".foxycart.com";
 	$foxyshop_settings["domain"] = trim(stripslashes(str_replace("http://","",$domain)));
+
+	//Set Setup Prompt If FoxyCart API Version Available
+	if ($domain && version_compare($foxyshop_settings['version'], '1.1', ">=") && !$foxyshop_settings['api']['store_access_token']) add_option("foxyshop_setup_required", 1);
 
 	//Other Settings Treadted Specially
 	$foxyshop_settings["default_weight"] = (int)$_POST['foxyshop_default_weight1'] . ' ' . (double)$_POST['foxyshop_default_weight2'];
@@ -259,15 +265,15 @@ function foxyshop_settings_page() {
 		</thead>
 		<tbody>
 			<tr>
-<?php
-if (substr($foxyshop_settings['domain'], -13) == ".foxycart.com" || !$foxyshop_settings['domain']) {
-	$foxycart_domain_class = "simple";
-	$foxycart_domain = str_replace(".foxycart.com", "", $foxyshop_settings['domain']);
-} else {
-	$foxycart_domain_class = "advanced";
-	$foxycart_domain = $foxyshop_settings['domain'];
-}
-?>
+				<?php
+				if (substr($foxyshop_settings['domain'], -13) == ".foxycart.com" || !$foxyshop_settings['domain']) {
+					$foxycart_domain_class = "simple";
+					$foxycart_domain = str_replace(".foxycart.com", "", $foxyshop_settings['domain']);
+				} else {
+					$foxycart_domain_class = "advanced";
+					$foxycart_domain = $foxyshop_settings['domain'];
+				}
+				?>
 				<td class="foxycartdomain <?php echo $foxycart_domain_class; ?>">
 					<label for="foxyshop_domain"><?php _e('Your FoxyCart Domain', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_domain" id="foxyshop_domain" value="<?php echo htmlspecialchars($foxycart_domain); ?>" size="50" />
 					<label id="foxydomainsimplelabel">.foxycart.com</label>
@@ -285,7 +291,7 @@ if (substr($foxyshop_settings['domain'], -13) == ".foxycart.com" || !$foxyshop_s
 						echo '<option value="' . $key . '"' . ($foxyshop_settings['version'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
 					} ?>
 					</select>
-					<a href="#" class="foxyshophelp">Version 0.7.0 was a big step up from 0.6.0 and used the new ColorBox overlay. Version 0.7.1 added images to the cart checkout. Version 0.7.2 added new API options and more new gateways.<br /><br />If you are upgrading to 0.7.2, change your version at FoxyCart and save, then update here.</a>
+					<a href="#" class="foxyshophelp">Version 0.7.0 was a big step up from 0.6.0 and used the new ColorBox overlay. Version 0.7.1 added images to the cart checkout. Version 0.7.2 added new API options and more new gateways.<br /><br />If you are upgrading to 0.7.2 or higher, change your version at FoxyCart and save, then update here.</a>
 				</td>
 			</tr>
 			<tr>
@@ -402,6 +408,12 @@ if (substr($foxyshop_settings['domain'], -13) == ".foxycart.com" || !$foxyshop_s
 			</tr>
 			<tr>
 				<td>
+					<input type="checkbox" id="foxyshop_use_cart_validation" value="1" name="foxyshop_use_cart_validation"<?php checked($foxyshop_settings['use_cart_validation']); ?> />
+					<label for="foxyshop_use_cart_validation"><?php _e('Use Cart Validation (strongly recommended)', 'foxyshop'); ?></label>
+					<a href="#" class="foxyshophelp">Encrypts your forms and add-to-cart links to prevent tampering</a>
+
+					<div style="clear: both;"></div>
+
 					<input type="checkbox" id="foxyshop_ship_to" name="foxyshop_enable_ship_to"<?php checked($foxyshop_settings['enable_ship_to'], "on"); ?> />
 					<label for="foxyshop_ship_to"><?php _e('Enable Multi-Ship', 'foxyshop'); ?></label>
 					<a href="#" class="foxyshophelp">Remember that FoxyCart charges an extra fee for this service. You must enable it on your FoxyCart account or it will not work. NOTE: At this time, this feature is not available for multi-ship stores.</a>
@@ -674,8 +686,6 @@ jQuery(document).ready(function($){
 
 	});
 	<?php } ?>
-
-
 
 });
 function foxyshop_check_settings_form() {
