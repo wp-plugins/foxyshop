@@ -316,7 +316,7 @@ function foxyshop_transaction_export() {
 			foreach($transaction->discounts->discount as $discount) {
 				if ($discounts) $discounts .= " - ";
 				$discounts .= (string)$discount->code . ":" . (string)$discount->amount;
-				$discount_total += (double)$discount->discount_total;
+				$discount_total += (double)$discount->amount;
 			}
 		}
 

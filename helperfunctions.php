@@ -22,7 +22,7 @@ function foxyshop_insert_foxycart_files() {
 		echo '<link rel="stylesheet" href="http://static.foxycart.com/scripts/colorbox/1.3.16/style1_fc/colorbox.css" type="text/css" media="screen" charset="utf-8" />'."\n";
 		echo '<script src="http://cdn.foxycart.com/' . str_replace('.foxycart.com','',$foxyshop_settings['domain']) . '/foxycart.complete.3.js" type="text/javascript" charset="utf-8"></script>'."\n";
 		echo "<!-- END FOXYCART FILES -->\n";
-	} else {
+	} else { // 0.7.0
 		echo "<!-- BEGIN FOXYCART FILES -->\n";
 		echo '<link rel="stylesheet" href="http://static.foxycart.com/scripts/colorbox/1.3.16/style1_fc/colorbox.css" type="text/css" media="screen" charset="utf-8" />'."\n";
 		echo '<script src="http://cdn.foxycart.com/' . str_replace('.foxycart.com','',$foxyshop_settings['domain']) . '/foxycart.complete.2.js" type="text/javascript" charset="utf-8"></script>'."\n";
@@ -461,6 +461,8 @@ function foxyshop_run_variations($variationValue, $variationName, $showPriceVari
 
 
 		//Write the Line
+		$write1 .= apply_filters('foxyshop_before_variation_' . $variationType, '');
+		$after_code = '';
 		if ($variationType == "dropdown") {
 			$write1 .= '<option value="' . esc_attr($val) . foxyshop_get_verification(foxyshop_add_spaces($variationName),$val) . '"' . $option_attributes;
 			$write1 .= '>' . $variation_display_name . $option_show_price_change . '</option>'."\n";
@@ -471,8 +473,9 @@ function foxyshop_run_variations($variationValue, $variationName, $showPriceVari
 		} elseif ($variationType == "radio") {
 			$write1 .= '<div class="foxyshop_short_element_holder"><input type="radio" name="' . esc_attr(foxyshop_add_spaces($variationName)) . '" value="' . esc_attr($val) . foxyshop_get_verification(foxyshop_add_spaces($variationName),$val) . '" id="' . esc_attr($product['code']) . '_' . $i . '_' . $k . '" class="' . $className . $dkeyclass . '"' . $dkey . $option_attributes . '></div>'."\n";
 			$write1 .= '<label for="' . esc_attr($product['code']) . '_' . $i . '_' . $k . '" class="' . $className . $dkeyclass . ' foxyshop_no_width"'. $dkey . '>' . $variation_display_name . $option_show_price_change . '</label>'."\n";
-			$write1 .= '<div class="clr"></div>';
+			$after_code = '<div class="clr"></div>';
 		}
+		$write1 .= apply_filters('foxyshop_after_variation_' . $variationType, $after_code);
 		$k++;
 	}
 	return $write1;
@@ -992,7 +995,7 @@ function foxyshop_breadcrumbs($sep = " &raquo; ", $product_fallback = "&laquo; B
 
 	//Product Fallback
 	} elseif ($post->ID && $product_fallback != "") {
-		echo '<ul id="foxyshop_breadcrumbs"><li><a href="' . get_bloginfo('url') . FOXYSHOP_URL_BASE . '/' . FOXYSHOP_PRODUCTS_SLUG . '/">'. $product_fallback . '</a></li>' . apply_filters('foxyshop_breadcrumb_nofloat', '<li style="float: none; text-indent: -99999px; width: 1px; margin: 0;">-</li>') . '</ul>';
+		echo '<ul id="foxyshop_breadcrumbs"><li><a href="' . get_bloginfo('url') . FOXYSHOP_URL_BASE . '/' . apply_filters('foxyshop_template_redirect_product_slug', FOXYSHOP_PRODUCTS_SLUG) . '/">'. $product_fallback . '</a></li>' . apply_filters('foxyshop_breadcrumb_nofloat', '<li style="float: none; text-indent: -99999px; width: 1px; margin: 0;">-</li>') . '</ul>';
 	}
 
 }

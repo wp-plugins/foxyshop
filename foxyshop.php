@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 4.2
+Version: 4.2.1
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -35,7 +35,7 @@ the most out of FoxyShop.
 **************************************************************************/
 
 //Setup Plugin Variables
-define('FOXYSHOP_VERSION', "4.2");
+define('FOXYSHOP_VERSION', "4.2.1");
 define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 $foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
@@ -48,7 +48,7 @@ if (!defined('FOXYSHOP_PRODUCT_NAME_PLURAL')) define('FOXYSHOP_PRODUCT_NAME_PLUR
 if (!defined('FOXYSHOP_URL_BASE')) define('FOXYSHOP_URL_BASE', '');
 if (!defined('FOXYSHOP_PRODUCT_SITEMAP_SLUG')) define('FOXYSHOP_PRODUCT_SITEMAP_SLUG', 'product-sitemap');
 if (!defined('FOXYSHOP_API_ENTRIES_PER_PAGE')) define('FOXYSHOP_API_ENTRIES_PER_PAGE', 50);
-if (!defined('FOXYSHOP_JQUERY_VERSION')) define('FOXYSHOP_JQUERY_VERSION', '1.7.2');
+if (!defined('FOXYSHOP_JQUERY_VERSION')) define('FOXYSHOP_JQUERY_VERSION', '1.8');
 load_plugin_textdomain('foxyshop', 0, dirname(plugin_basename(__FILE__)).'/languages/');
 $foxycart_version_array = array('1.0' => '1.0', '0.7.2' => '0.7.2', '0.7.1' => '0.7.1', '0.7.0' => '0.7.0');
 $google_product_field_names = array('google_product_category', 'mpn', 'gtin', 'brand', 'condition', 'age_group', 'gender', 'color', 'size', 'material', 'pattern');

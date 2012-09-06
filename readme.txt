@@ -67,6 +67,17 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Changelog ==
 
+= 4.2.1 =
+* Added support for multiple dkeys split by a comma: {dkey:key1,key2}
+* Bugfix for radio/checkbox elements whose values were hidden after being hidden by dkey
+* Updated variations for better multiship support on repeat purchases
+* Updated to jQuery 1.8
+* Updated to jQuery UI 1.8.23
+* Added security option if you'd like to disable user uploading: define('FOXYSHOP_DISABLE_USER_UPLOAD', 1);
+* Order snapshot on admin dashboard now shows up to 300 orders instead of 50 (more accurate numbers)
+* Added a few more product variation container filters
+* Fixed missing discounts in order_total for CSV export
+
 = 4.2 =
 * Updated variation processor to allow multiple levels of dkeys
 * Updated variation processor to add x: to hidden text inputs and textarea elements
@@ -243,4 +254,6 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Upgrade Notice ==
-Variation Updates, lots of improvements and some bugfixes
+
+= 4.2.1 =
+Multiple dkeys, jQuery update, and dkey bugfix for hidden radio buttons

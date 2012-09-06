@@ -106,7 +106,7 @@ function foxyshop_theme_redirect() {
 
 
 	//All Products Page
-	} elseif ($currentPageName == FOXYSHOP_PRODUCTS_SLUG || $currentName == FOXYSHOP_PRODUCTS_SLUG || $currentPostType == 'foxyshop_product') {
+	} elseif ($currentPageName == apply_filters('foxyshop_template_redirect_product_slug', FOXYSHOP_PRODUCTS_SLUG) || $currentName == apply_filters('foxyshop_template_redirect_product_slug', FOXYSHOP_PRODUCTS_SLUG) || $currentPostType == 'foxyshop_product') {
 		$foxyshop_body_class_name = "foxyshop-all-products";
 		if ($foxyshop_settings['browser_title_1']) add_filter('wp_title', 'title_filter_all_products', 9, 3);
 		add_filter('body_class', 'foxyshop_body_class', 10, 2 );

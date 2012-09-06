@@ -40,16 +40,18 @@ jQuery(document).ready(function($){
 
 			thisdisplaykey = thisEl.attr("displaykey");
 			if (!thisdisplaykey) return;
-			$('#foxyshop_product_form_' + current_product_id + ' .dkey[dkey="' + thisdisplaykey + '"]').show();
-
+			dkeyarray = thisdisplaykey.split(',');
+			for (var i = 0; i < dkeyarray.length; i++) {
+				$('#foxyshop_product_form_' + current_product_id + ' .dkey[dkey="' + dkeyarray[i] + '"]').show();
+			}
 		});
 
 		//Set Hidden Dkeys to a value of "" or index of -1
 		$("#foxyshop_product_form_" + current_product_id + " .dkey:hidden").each(function() {
 			var thisEl = $(this);
-			if (thisEl.is('input') || $(this).is('textarea')) {
+			if (thisEl.is(':text') || thisEl.is('textarea')) {
 				thisEl.val("");
-			} else if ($(this).is('select')) {
+			} else if (thisEl.is('select')) {
 				thisEl.attr('selectedIndex', '-1');
 			}
 
@@ -62,7 +64,7 @@ jQuery(document).ready(function($){
 				if ($(this).attr("name") != "x:shipto_name_select") {
 					if ($(this).is(":visible")) {
 						foxyshop_set_field_visible($(this));
-					} else {
+					} else if ($(this).attr("name").indexOf("shipto") == -1) {
 						foxyshop_set_field_hidden($(this));
 					}
 				}

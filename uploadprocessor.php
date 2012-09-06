@@ -1,11 +1,8 @@
 <?php
 /*
 This is the uploadify uploader. It is being processed through WordPress so has access to all the WordPress security functions.
-
 To add an allowed upload extension, put this in your wp-config.php file with new extensions separated by a comma:
-
 define('FOXYSHOP_ALLOWED_EXTENSIONS',"newext1,newext2");
-
 */
 
 //If Empty, Die!
@@ -23,7 +20,7 @@ if (defined('FOXYSHOP_ALLOWED_EXTENSIONS')) $allowed_extensions = array_merge($a
 
 //Admin Upload
 if (isset($_POST['foxyshop_image_uploader'])) {
-	
+
 	$product_id = (isset($_POST['foxyshop_product_id']) ? $_POST['foxyshop_product_id'] : 0);
 
 	$images = get_children(array('post_parent' => $product_id, 'post_type' => 'attachment', "post_mime_type" => "image"));
@@ -32,14 +29,14 @@ if (isset($_POST['foxyshop_image_uploader'])) {
 	} else {
 		$product_count = count($images);
 	}
-	
+
 	$tempFile = $_FILES['Filedata']['tmp_name'];
 	$targetPath = $upload_dir['path'];
-	
+
 	$filename = urldecode($_FILES['Filedata']['name']);
 	$filename = str_replace(array('[1]','[2]','[3]','[4]','[5]','[6]','[7]','[8]','[9]','[10]'),'',$filename);
 	$filename = sanitize_file_name($filename);
-	
+
 	$targetFile =  $targetPath . '/' . $filename;
 
 	$ext = strtolower(substr($filename, strrpos($filename, '.') + 1));
@@ -87,14 +84,14 @@ if (isset($_POST['foxyshop_image_uploader'])) {
 
 
 //User Upload
-} elseif (isset($_POST['newfilename'])) {
+} elseif (isset($_POST['newfilename']) && !defined('FOXYSHOP_DISABLE_USER_UPLOAD')) {
 
 	$tempFile = $_FILES['Filedata']['tmp_name'];
 	$targetPath = $upload_dir['basedir'] . '/customuploads/';
 
 	$ext = strtolower(substr($_FILES['Filedata']['name'], strrpos($_FILES['Filedata']['name'], '.') + 1));
 	if (!in_array($ext, $allowed_extensions)) die($unsupported_file_type_text);
-	
+
 	$newfilename = str_replace(array('.','/','\\',' '),'',$_POST['newfilename']).'.'.$ext;
 	$targetFile =  $targetPath . $newfilename;
 	move_uploaded_file($tempFile,$targetFile);
