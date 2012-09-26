@@ -1,7 +1,7 @@
 === FoxyShop ===
 Contributors: sparkweb
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2AHG2QMABF8SG
-Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription
+Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription, foxy
 Requires at least: 3.1
 Tested up to: 3.4.2
 Stable tag: 4.2.1
