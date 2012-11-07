@@ -68,13 +68,13 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 == Changelog ==
 
 = 4.3 =
-* Added native support for cart, checkout, and coupon settings at the product level
+* Added native support for cart, empty, and coupon settings at the product level
 * Added support for hidden field product variations
 * Set FoxyCart version 1.0 as default
 * Updated to jQuery 1.8.2
-* Updated to jQuery UI 1.9
+* Updated to jQuery UI 1.9.1
 * Reverted jQuery UI theme to Smoothness (from Lightness in FoxyShop 4.2.1)
-* Fixed double-encoding in foreign currency in javascript context
+* Fixed double-encoding in foreign currency in JavaScript context
 * Fix for apostrophes in saved variation titles
 * Include and require functions now use absolute paths
 * Security: added checks to make sure that any FoxyShop php pages can't be run directly
@@ -271,5 +271,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 4.2.1 =
-Multiple dkeys, jQuery update, and dkey bugfix for hidden radio buttons
+= 4.3 =
+New default FC, hidden product fields, native support for direct checkout options
