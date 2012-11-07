@@ -1,7 +1,10 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 //Put in Sidebar
 add_action('admin_menu', 'foxyshop_category_sorting_menu');
-function foxyshop_category_sorting_menu() {    
+function foxyshop_category_sorting_menu() {
 	add_submenu_page('edit.php?post_type=foxyshop_product', __('Category Sorting', 'foxyshop'), __('Set Category Order', 'foxyshop'), apply_filters('foxyshop_category_sort_perm', 'edit_others_pages'), 'foxyshop_category_sort', 'foxyshop_category_sort');
 }
 
@@ -11,12 +14,12 @@ function foxyshop_category_update_order() {
 
 	$categoryID = $_POST['categoryID'];
 	$returned_ids = explode(",", $_POST['foxyshop_category_order_value']);
-	
+
 	//Clean Sort Fields
 	foreach ($foxyshop_category_sort as $key=>$val) {
 		if (!get_term((int)$key, "foxyshop_category_sort")) unset($foxyshop_category_sort[$key]);
 	}
-	
+
 	//Add or Replace With New Fields
 	$foxyshop_category_sort[$categoryID] = $returned_ids;
 	update_option('foxyshop_category_sort', $foxyshop_category_sort);
@@ -48,10 +51,10 @@ function foxyshop_category_sort() {
 	} elseif (isset($_POST['revert_category_order'])) {
 		if (check_admin_referer('update-foxyshop-sorting-options')) $success = foxyshop_category_revert_order();
 	}
-	
-	
+
+
 	echo '<div class="wrap">';
-	
+
 	echo '<div class="icon32" id="icon-tools"><br></div>';
 	echo '<h2>' . sprintf(__('Set %s Category Order', 'foxyshop'), FOXYSHOP_PRODUCT_NAME_SINGULAR) . '</h2>';
 	if ($success) echo $success;
@@ -65,7 +68,7 @@ function foxyshop_category_sort() {
 			$subcat = get_term_children($cat->term_id, 'foxyshop_categories');
 			if (count($subcat) > 0) $subcats[] = '<option value="' . $cat->term_id . '">' . $cat->name . '</option>'."\n";
 		}
-		
+
 		if (count($subcats) > 0 || $categoryID > 0) {
 			echo '<form name="form_product_category_order" method="post" action="">';
 			echo '<select name="categoryID" id="categoryID">'."\n";
@@ -87,16 +90,16 @@ function foxyshop_category_sort() {
 	}
 
 	if ($product_categories) {
-		
+
 		//Sort Categories
 		$product_categories = foxyshop_sort_categories($product_categories, $categoryID);
-		
+
 		echo '<h3>' . $current_category_name . '</h3>'."\n";
 		echo '<p>' . __('Drag categories to the preferred order and then click the Save button at the bottom of the page.', 'foxyshop') . '</p>';
 		echo '<p><strong>' . __('Current Sorting') . ': ' . (array_key_exists($categoryID,$foxyshop_category_sort) ? __('Custom', 'foxyshop') : __('Alphabetical', 'foxyshop')) . '</strong></p>';
 		echo '<form name="form_category_order" method="post" action="">'."\n";
 		echo '<ul id="foxyshop_category_order_list" class="foxyshop_sort_list">'."\n";
-		
+
 		$counter = 1;
 		foreach($product_categories as $cat) {
 			if (substr($cat->name,0,1) == "_") continue;
@@ -127,8 +130,8 @@ function foxyshop_category_sort() {
 	</div>
 <script type="text/javascript">
 function foxyshop_custom_order_load_event(){
-	jQuery("#foxyshop_category_order_list").sortable({ 
-		placeholder: "sortable-placeholder-category", 
+	jQuery("#foxyshop_category_order_list").sortable({
+		placeholder: "sortable-placeholder-category",
 		revert: false,
 		tolerance: "pointer",
 		update: function() {

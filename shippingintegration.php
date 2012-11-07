@@ -1,4 +1,7 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 //UPS WorldShip XML Integration
 function foxyshop_ups_export() {
 	global $foxyshop_settings;

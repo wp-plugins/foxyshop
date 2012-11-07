@@ -1,4 +1,8 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
+
 /*
 This file is setup to provide you with the ability to create a product feed that can be sent out to various aggregators. This is designed specifically for Google.
 */

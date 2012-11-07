@@ -1,8 +1,11 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 if (isset($_REQUEST['foxyshop_save_tools'])) add_action('admin_init', 'foxyshop_save_tools');
 function foxyshop_save_tools() {
 	global $foxyshop_settings;
-	
+
 	//Import Settings
 	if (isset($_POST['foxyshop_import_settings'])) {
 		if (!check_admin_referer('import-foxyshop-settings')) return;
@@ -21,7 +24,7 @@ function foxyshop_save_tools() {
 			header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&import=1');
 			die;
 		}
-	
+
 	//Scan For Old Variations
 	} elseif (isset($_GET['foxyshop_old_variations_scan'])) {
 		if (!check_admin_referer('foxyshop_old_variations_scan')) return;
@@ -37,16 +40,16 @@ function foxyshop_save_tools() {
 		$foxyshop_settings['template_url_checkout'] = $_POST['foxycart_checkout_update'];
 		$foxyshop_settings['template_url_receipt'] = $_POST['foxycart_receipt_update'];
 		update_option("foxyshop_settings", $foxyshop_settings);
-		
+
 		//If just clearing the urls, return now
 		if (empty($_POST['foxycart_cart_update']) && empty($_POST['foxycart_checkout_update'])) {
 			header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&updatetemplate=clear');
 			die;
 		}
-		
+
 		//Cart
 		if (isset($_POST['foxycart_cart_update_save'])) {
-			
+
 			$foxy_data = array("api_action" => "store_template_cache", "template_type" => "cart", "template_url" => $_POST['foxycart_cart_update']);
 			$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 			$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
@@ -57,7 +60,7 @@ function foxyshop_save_tools() {
 			}
 			die;
 
-		
+
 		//Checkout
 		} elseif (isset($_POST['foxycart_checkout_update_save'])) {
 			$foxy_data = array("api_action" => "store_template_cache", "template_type" => "checkout", "template_url" => $_POST['foxycart_checkout_update']);
@@ -69,7 +72,7 @@ function foxyshop_save_tools() {
 				header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&updatetemplate=error&error='.urlencode((string)$xml->messages->message));
 			}
 			die;
-		
+
 		//Receipt
 		} elseif (isset($_POST['foxycart_receipt_update_save'])) {
 			$foxy_data = array("api_action" => "store_template_cache", "template_type" => "receipt", "template_url" => $_POST['foxycart_receipt_update']);
@@ -121,6 +124,8 @@ function foxyshop_save_tools() {
 				$_variationValue = $_POST['_variation_value_'.$target_id];
 			} elseif ($_variationType == 'checkbox') {
 				$_variationValue = $_POST['_variation_checkbox_'.$target_id];
+			} elseif ($_variationType == 'hiddenfield') {
+				$_variationValue = $_POST['_variation_hiddenfield_'.$target_id];
 			} elseif ($_variationType == 'radio') {
 				$_variationValue = $_POST['_variation_radio_'.$target_id];
 			}
@@ -143,7 +148,7 @@ function foxyshop_save_tools() {
 
 		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_tools&processedvars=1');
 		die;
-	
+
 	//Reset API Key
 	} elseif (isset($_GET['foxyshop_api_key_reset'])) {
 		if (!check_admin_referer('reset-foxyshop-api-key')) return;
@@ -169,7 +174,7 @@ function foxyshop_check_plugin_status($plugin) {
 		echo '<a href="plugins.php?action=activate&amp;plugin=' . $plugin_path_short . '&amp;plugin_status=all&amp;paged=1&amp;s&amp;_wpnonce=' . wp_create_nonce("activate-plugin_".$plugin_path_short) . '" style="color: #21759B;" class="button">Activate Now</a>';
 	} else {
 		echo '<a href="#" class="button" disabled="disabled" onclick="return false;">Installed &amp; Activated</a>';
-	} 
+	}
 }
 
 function foxyshop_tools() {
@@ -179,7 +184,7 @@ function foxyshop_tools() {
 
 	<div class="icon32" id="icon-tools"><br></div>
 	<h2>FoxyShop Tools</h2>
-	
+
 
 	<?php
 	//Confirmation Import
@@ -221,7 +226,7 @@ function foxyshop_tools() {
 		$foxyshop_export_settings = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($encrypt_key), $foxyshop_export_settings, MCRYPT_MODE_CBC, md5(md5($encrypt_key))));
 		$foxyshop_export_settings = wordwrap($foxyshop_export_settings, 58, "\n", true);
 	}
-	
+
 	$recommend_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAApRJREFUeNqEU01IVFEUPu9n3nszvjuvGadGBpswLZIJzR8mslXQIiiICJxKpVwULiKI2oWb0iBo06YgKWih6KJFbUrDwlxYDISRkQtNKcbNkGY6+pr37rud+3xOo/Rz4Hvv3HvP951z7o8Am+z2EQlqokLxVIPDIEUZiNRhA+in1xeO99ogt+0T3QGntNSs+YwVyGF0U4eu3utYys4tjT64rrAiAW5ya63okkX8CAgJYdqF9dbyhsP1jArEH4wItg2S44nr6lqVMvzdLkmanqg4cCzJB9Pp4YmfFMa5QFQXQPWY8r/ITRe6TwsgE9sylyfHhifzlA3uDIsbAv8k0EGCpLK+vfuUICpk8cvEx2d9D6eIkLMMTejE9e9e3AvEULFADHFC1Eh13bmuNsakIKMUSnc3Js7ebEpszvKy64y0LtDIdxpLJtHqZOX25NH91AYCsLaTq4uLUBIKQW5hoUD+MTeVsR2gbgsWZS0NzVea9bKKWN40YSVnAsXtppjdQaiaBhoh7lz/rcuP10XwDJ66AjYFUrI1HsthJtuywMrnN4AYBoRw3q/r0H6j5+TyfHZ5tOfao6U8jLoCeQd8FAMcDsziAjMzx3FvFPf5+uynDwuDfXfTXvZCJSK2oPAAm5ddRGZI5neG+1w8XrUnlLrYeXCbLmT8ivAqoHgXybSAZb9OfwtGYqU2D/ZQqAD/PMHI8yeZ929HMkjrn8GDnME9Pc8FchbrGRy4r5fFd5UbkWhQUQOqviWi+9SAH0TRJ6LxtvbWJUs/j79+d+cNG5r5fSDuM5Bqy6DCUCHhk6BqhwHhqA4hTYawJIKBATJCx3ZWR2ahd2gaxpCTRcxjm9R9Rwg/IoDwwf/NQqzwK4ICzi8BBgBdLjNedsdOVgAAAABJRU5ErkJggg==";
 	$export_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACH0lEQVR4nKWSTUhUYRSGnzv33snRdEY0M0dJaSDTzRBkiZhZkNCiTZC1CIQQahFEq9q3aBFRqzZFkUQRuayFEKlZhv0ZGsUw6VD4N5rj5KjT3O9+p4VphCVKZ3PO5nl4Obzwn2M0tLSdBE6vk7vedfvETQDjQOs9qT1Suy66t72XEn8y2Hb51KglIiwk59YlEJHl29paMMPEm4/4sn2rQspOkAi2Exg9TGizQ372/ByAVZSX5tihbYTD4X/C8fkxWp80URZSjA1/JnesGiZ2LSZYS+Svs0MEcjZSWDTNpiKDl11vSXmmioHkqoKekQ4exe4ykorxLT1Dmcpg2x727PXR3Rn90PigouSvAldcLjxrITbXjzdvGl+xy3Y/OMrGMAy8tkFDY8Ds6ZqN/iEQEdJqnrOdzUwuRCktzKK8oA7LtDFNzZDqxDAMDMNDqRlGpC/LAtBa47ouIsKtwatMJL+wu6Se0fQkjwfekevNI60WCFULhqEoZAcPu185rnZLPUsCpRRKKSKJQcr9lbye6qcpeJz7+19wo66D6vydJGc8+N0Kevri5KS21Dw9Ohy3AJRSOI6D1hqfmY3X3sD58DVMLLQStHZIOd+pyjrIwKcogalKiuM1w9DNCsG5qkuICNrVKFForRERzoQucid2hXBuPbOJIBmc3z2IRCJkMhlEZBH+BS1Vdmnvoxl+wHMdWX78omA8SWT8/Vo6tWJ+AquVAo19QSjUAAAAAElFTkSuQmCC";
 	$key_icon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAhtJREFUeNqEUktrE1EU/iaZtDVILRMSpw9FRUipdKGWVNSFCr6gBBHERxFK2oX4D7oUpA9dunFTQVcWkaILXQhiXVlRi1JtSgO1vttUS6FmJp2Zezx3Uoc8JnrgY7j3nu9xOKMQEf7WxGAdyqqZcZWRZGiMX4wxRj8jKxtUVK8TihK8u3lvalMk3oWw3o7c4gft5/SD3oXXt5JEzjnueaoUJyhKojP5ffzMHS3cYEDkXkHk5xGo2YJAuAPGygak7/VkWWRXtQSDekevVlf7EvZy2r34MTWLxenHiLU+QePuI2js7Il+ezFyJeBDrpHxIzu3QZhM5oREAkuz89hzaRRLmU9wjAwammQbkn4Caww9GDBAwnEBRmRHM97cPAttexPIsaFYM7I3Wm2ELIl8VBKlu0wRa92KWLzFPUsBx867fb4CoY161I0u7IKAoHUh4QkaKzIoHlaM8PzaQWo7dRn57CPIDUk3ElZBTEK6Wza+Ts6scvt1tZycOJ+E+X0UtVqLeyfWeI2WyUQLgpMYyzl8mcyskqDT/DznCTwb2k/7urs8shpJIT024InnFt6625SxGUOd/eac/HNdgfFhdr5wksn3PbJaf5hfBtCemlDWNeS34q9TxocPUOJiH8zPN3ydiwT8SlERCoKsj97Mav2hcueSBTGsojOpihqCEj7KzsdZ6Dembh/7h2EJuRDh3UiiZK7/RK6oPwIMANlx/pat4bMTAAAAAElFTkSuQmCC";
@@ -231,7 +236,7 @@ function foxyshop_tools() {
 	?>
 
 	<div style="clear: both; margin-top: 14px;"></div>
-	
+
 	<table class="widefat">
 		<thead>
 			<tr>
@@ -242,56 +247,56 @@ function foxyshop_tools() {
 			<tr>
 				<td>
 					<ul id="foxyshoprecommendedplugins">
-						<li><h3><a href="plugin-install.php?tab=search&type=term&s=taxonomy+images">Taxonomy Images</a></h3> 
+						<li><h3><a href="plugin-install.php?tab=search&type=term&s=taxonomy+images">Taxonomy Images</a></h3>
 						(set category images)
 						<?php
 						foxyshop_check_plugin_status("taxonomy-images");
 						?>
 						</li>
 
-						<li><h3><a href="plugin-install.php?tab=search&type=term&s=custom+field+bulk+editor">Custom Field Bulk Editor</a></h3> 
+						<li><h3><a href="plugin-install.php?tab=search&type=term&s=custom+field+bulk+editor">Custom Field Bulk Editor</a></h3>
 						(change products in bulk)
 						<?php
 						foxyshop_check_plugin_status("custom-field-bulk-editor");
 						?>
 						</li>
 
-						<li><h3><a href="plugin-install.php?tab=search&type=term&s=duplicate+post">Duplicate Post</a></h3> 
+						<li><h3><a href="plugin-install.php?tab=search&type=term&s=duplicate+post">Duplicate Post</a></h3>
 						(quickly copy products)
 						<?php
 						foxyshop_check_plugin_status("duplicate-post");
 						?>
 						</li>
 
-						<li><h3><a href="plugin-install.php?tab=search&type=term&s=csv+importer">CSV Importer</a></h3> 
+						<li><h3><a href="plugin-install.php?tab=search&type=term&s=csv+importer">CSV Importer</a></h3>
 						(import products - <a href="http://www.foxy-shop.com/2011/03/importing-products/" target="_blank">guide here</a>)
 						<?php
 						foxyshop_check_plugin_status("csv-importer");
 						?>
 						</li>
 
-						<li><h3><a href="plugin-install.php?tab=search&type=term&s=cimy+user+extra+fields">Cimy User Extra Fields</a></h3> 
+						<li><h3><a href="plugin-install.php?tab=search&type=term&s=cimy+user+extra+fields">Cimy User Extra Fields</a></h3>
 						(manage registration form)
 						<?php
 						foxyshop_check_plugin_status("cimy-user-extra-fields");
 						?>
 						</li>
 
-						<li><h3><a href="plugin-install.php?tab=search&type=term&s=capsman">Capability Manager</a></h3> 
+						<li><h3><a href="plugin-install.php?tab=search&type=term&s=capsman">Capability Manager</a></h3>
 						(change roles and user abilities)
 						<?php
 						foxyshop_check_plugin_status("capsman");
 						?>
 						</li>
 
-						<li><h3><a href="plugin-install.php?tab=search&type=term&s=sidebar+login">Sidebar Login</a></h3> 
+						<li><h3><a href="plugin-install.php?tab=search&type=term&s=sidebar+login">Sidebar Login</a></h3>
 						(adds a login widget to your sidebar)
 						<?php
 						foxyshop_check_plugin_status("sidebar-login");
 						?>
 						</li>
 
-						<li><h3><a href="plugin-install.php?tab=search&type=term&s=login-logo">Login Logo</a></h3> 
+						<li><h3><a href="plugin-install.php?tab=search&type=term&s=login-logo">Login Logo</a></h3>
 						(easily add logo to your login pages)
 						<?php
 						foxyshop_check_plugin_status("login-logo");
@@ -304,7 +309,7 @@ function foxyshop_tools() {
 			</tr>
 		</tbody>
 	</table>
-	
+
 	<br /><br />
 
 	<form method="post" name="foxyshop_tools_form" action="">
@@ -318,14 +323,14 @@ function foxyshop_tools() {
 			<?php if (function_exists('mcrypt_encrypt')) : ?>
 			<tr>
 				<td>
-					<label for="foxyshop_export_settings"><?php echo __('Copy String To Your Clipboard to Export FoxyShop Settings', 'foxyshop'); ?>:</label> 
+					<label for="foxyshop_export_settings"><?php echo __('Copy String To Your Clipboard to Export FoxyShop Settings', 'foxyshop'); ?>:</label>
 					<div style="clear: both;"></div>
 					<textarea id="foxyshop_export_settings" name="foxyshop_export_settings" wrap="auto" readonly="readonly" onclick="this.select();" style="font-size: 13px; float: left; width:500px; line-height: 110%; resize: none; height: 80px; font-family: courier;"><?php echo $foxyshop_export_settings; ?></textarea>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<label for="foxyshop_import_settings"><?php echo __('Paste Settings String to Import', 'foxyshop'); ?>:</label> 
+					<label for="foxyshop_import_settings"><?php echo __('Paste Settings String to Import', 'foxyshop'); ?>:</label>
 					<div style="clear: both;"></div>
 					<textarea id="name="foxyshop_import_settings" name="foxyshop_import_settings" wrap="auto" style="float: left; width:500px;height: 80px; font-size: 13px; font-family: courier; line-height: 110%; resize: none;"></textarea>
 					<div style="clear: both;"></div>
@@ -344,7 +349,7 @@ function foxyshop_tools() {
 	<input type="hidden" name="foxyshop_save_tools" value="1" />
 	<?php wp_nonce_field('import-foxyshop-settings'); ?>
 	</form>
-	
+
 	<br /><br />
 
 	<table class="widefat">
@@ -355,36 +360,36 @@ function foxyshop_tools() {
 		</thead>
 		<tbody>
 			<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) : ?>
-			
+
 			<tr>
 				<td>
 					<form method="post" name="foxyshop_cache_form_1" action="">
 					<h3 style="margin-top: 0;">Update FoxyCart Template <span> <a href="http://wiki.foxycart.com/v/0.7.1/templates" target="_blank"><?php _e('Instructions', 'foxyshop'); ?></a></span></h3>
-					
+
 					<label for="foxycart_cart_update" style="width: 150px;">Cart Template URL</label>
 					<input type="text" name="foxycart_cart_update" id="foxycart_cart_update" style="width: 450px;" value="<?php echo htmlspecialchars($foxyshop_settings['template_url_cart']); ?>" />
 					<input type="submit" name="foxycart_cart_update_save" value="<?php _e('Update Cart Cache', 'foxyshop'); ?>" class="button" />
 
 					<div style="clear: both;"></div>
-					
+
 					<label for="foxycart_checkout_update" style="width: 150px;">Checkout Template URL</label>
 					<input type="text" name="foxycart_checkout_update" id="foxycart_checkout_update" style="width: 450px;" value="<?php echo htmlspecialchars($foxyshop_settings['template_url_checkout']); ?>" />
 					<input type="submit" name="foxycart_checkout_update_save" value="<?php _e('Update Checkout Cache', 'foxyshop'); ?>" class="button" />
 
 					<div style="clear: both;"></div>
-					
+
 					<label for="foxycart_receipt_update" style="width: 150px;">Receipt Template URL</label>
 					<input type="text" name="foxycart_receipt_update" id="foxycart_receipt_update" style="width: 450px;" value="<?php echo htmlspecialchars($foxyshop_settings['template_url_receipt']); ?>" />
 					<input type="submit" name="foxycart_receipt_update_save" value="<?php _e('Update Receipt Cache', 'foxyshop'); ?>" class="button" />
-					
+
 					<?php wp_nonce_field('update-foxycart-template'); ?>
 					<input type="hidden" name="foxyshop_save_tools" value="1" />
 					</form>
 				</td>
 			</tr>
-			
-			
-			
+
+
+
 			<?php endif; ?>
 
 			<tr>
@@ -404,7 +409,7 @@ function foxyshop_tools() {
 			</tr>
 		</tbody>
 	</table>
-	
+
 	<br /><br />
 
 	<form method="post" name="foxyshop_saved_vars_form" action="">
@@ -426,6 +431,7 @@ $var_type_array = array(
 	'text' => __("Single Line of Text", 'foxyshop'),
 	'textarea' => __("Multiple Lines of Text", 'foxyshop'),
 	'upload' => __("Custom File Upload", 'foxyshop'),
+	'hiddenfield' => __("Hidden Field", 'foxyshop'),
 	'descriptionfield' => __("Description Field", 'foxyshop')
 );
 $variation_key = __('Name{p+1.50|w-1|c:product_code|y:foxycart_category|dkey:display_key|ikey:image_id}', 'foxyshop');
@@ -440,6 +446,7 @@ echo '<div id="variation_sortable">'."\n";
 $max_variations = count($variations);
 if ($max_variations == 0) $max_variations = 1;
 for ($i=1;$i<=$max_variations;$i++) {
+	$dkeyhide = "";
 	$_variationRefName = '';
 	$_variationName = '';
 	$_variation_type = 'dropdown';
@@ -464,6 +471,7 @@ for ($i=1;$i<=$max_variations;$i++) {
 		<input type="hidden" name="descriptionfield_value_<?php echo $i; ?>" id="descriptionfield_value_<?php echo $i; ?>" value="" />
 		<input type="hidden" name="checkbox_value_<?php echo $i; ?>" id="checkbox_value_<?php echo $i; ?>" value="" />
 		<input type="hidden" name="upload_value_<?php echo $i; ?>" id="upload_value_<?php echo $i; ?>" value="" />
+		<input type="hidden" name="hiddenfield_value_<?php echo $i; ?>" id="hiddenfield_value_<?php echo $i; ?>" value="" />
 
 		<!-- //// VARIATION HEADER //// -->
 		<div class="foxyshop_field_control">
@@ -476,7 +484,7 @@ for ($i=1;$i<=$max_variations;$i++) {
 			<label for="_variation_name_<?php echo $i; ?>"><?php _e('Variation Name', 'foxyshop'); ?></label>
 			<input type="text" name="_variation_name_<?php echo $i; ?>" class="variation_name" id="_variation_name_<?php echo $i; ?>" value="<?php echo esc_attr($_variationName); ?>" />
 
-			<label for="_variation_type_<?php echo $i; ?>" class="variationtypelabel"><?php _e('Variation Type', 'foxyshop'); ?></label> 
+			<label for="_variation_type_<?php echo $i; ?>" class="variationtypelabel"><?php _e('Variation Type', 'foxyshop'); ?></label>
 			<select name="_variation_type_<?php echo $i; ?>" id="_variation_type_<?php echo $i; ?>" class="variationtype">
 			<?php
 			foreach ($var_type_array as $var_name => $var_val) {
@@ -533,6 +541,16 @@ for ($i=1;$i<=$max_variations;$i++) {
 					<textarea name="_variation_description_<?php echo $i; ?>" id="_variation_description_<?php echo $i; ?>"><?php echo $_variationValue; ?></textarea>
 				</div>
 
+			<?php elseif($_variation_type == "hiddenfield") : ?>
+				<!-- Hidden Field -->
+				<div class="foxyshop_field_control hiddenfield variationoptions">
+					<div class="foxyshop_field_control">
+						<label for="_variation_hiddenfield_<?php echo $i; ?>"><?php _e('Value', 'foxyshop'); ?></label>
+						<input type="text" name="_variation_hiddenfield_<?php echo $i; ?>" id="_variation_hiddenfield_<?php echo $i; ?>" value="<?php echo $_variationValue; ?>" />
+					</div>
+				</div>
+				<?php $dkeyhide = ' style="display: none;"'; ?>
+
 			<?php elseif($_variation_type == "checkbox") : ?>
 				<!-- Checkbox -->
 				<div class="foxyshop_field_control checkbox variationoptions" style="background-color: transparent;">
@@ -552,7 +570,7 @@ for ($i=1;$i<=$max_variations;$i++) {
 		</div>
 
 		<!-- //// DISPLAY KEY //// -->
-		<div class="foxyshop_field_control dkeycontainer">
+		<div class="foxyshop_field_control dkeycontainer"<?php echo $dkeyhide; ?>>
 			<label class="dkeylabel" title="Enter a value here if you want your variation to be invisible until called by another variation."><?php _e('Display Key'); ?></label>
 			<input type="text" name="_variation_dkey_<?php echo $i; ?>" id="_variation_dkey_<?php echo $i; ?>" value="<?php echo esc_attr($_variationDisplayKey); ?>" class="dkeynamefield" />
 
@@ -568,7 +586,7 @@ for ($i=1;$i<=$max_variations;$i++) {
 	</div>
 	<?php
 }
-echo "</div>";	
+echo "</div>";
 ?>
 <button type="button" id="AddVariation" class="button"><?php _e('Add Another Variation', 'foxyshop'); ?></button>
 <input type="hidden" name="max_variations" id="max_variations" value="<?php echo $max_variations; ?>" />
@@ -587,8 +605,8 @@ echo "</div>";
 	<input type="hidden" name="foxyshop_process_saved_variations" value="1" />
 	<?php wp_nonce_field('wp-foxyshop-process-saved-variations'); ?>
 	</form>
-	
-	
+
+
 	<br /><br />
 
 	<form name="foxyshop_uninstall_form" action="" onsubmit="return false;">
@@ -608,9 +626,9 @@ echo "</div>";
 	</table>
 	</form>
 
-	
 
-	
+
+
 
 <script type="text/javascript">
 function apiresetcheck() {
@@ -638,8 +656,8 @@ jQuery(document).ready(function($){
 
 
 	function foxyshop_variation_order_load_event() {
-		$("#variation_sortable").sortable({ 
-			placeholder: "sortable-variation-placeholder", 
+		$("#variation_sortable").sortable({
+			placeholder: "sortable-variation-placeholder",
 			revert: false,
 			items: "div.product_variation",
 			tolerance: "pointer",
@@ -655,7 +673,7 @@ jQuery(document).ready(function($){
 		});
 	};
 	addLoadEvent(foxyshop_variation_order_load_event);
-	
+
 	//Check For Illegal Titles
 	$("input.variation_name").live("blur", function() {
 		var thisval = $(this).val().toLowerCase();
@@ -677,7 +695,7 @@ jQuery(document).ready(function($){
 	$(".variationtype").live("change", function() {
 		new_type = $(this).val();
 		this_id = $(this).parents(".product_variation").attr("rel");
-		
+
 		//Set Temp Values
 		temp_dropdown = $("#_variation_value_"+this_id).val();
 		temp_radio = $("#_variation_radio_"+this_id).val();
@@ -687,6 +705,7 @@ jQuery(document).ready(function($){
 		temp_descriptionfield = $("#_variation_description_"+this_id).val();
 		temp_checkbox = $("#_variation_checkbox_"+this_id).val();
 		temp_upload = $("#_variation_uploadinstructions_"+this_id).val();
+		temp_hiddenfield = $("#_variation_hiddenfield_"+this_id).val();
 		if (temp_dropdown) $("#dropdownradio_value_"+this_id).val(temp_dropdown);
 		if (temp_radio) $("#dropdownradio_value_"+this_id).val(temp_radio);
 		if (temp_text1) $("#text1_value_"+this_id).val(temp_text1);
@@ -695,6 +714,7 @@ jQuery(document).ready(function($){
 		if (temp_descriptionfield) $("#descriptionfield_value_"+this_id).val(temp_descriptionfield);
 		if (temp_checkbox) $("#checkbox_value_"+this_id).val(temp_checkbox);
 		if (temp_upload) $("#upload_value_"+this_id).val(temp_upload);
+		if (temp_hiddenfield) $("#hiddenfield_value_"+this_id).val(temp_upload);
 
 		//Set Contents in Container
 		$("#variation_holder_"+this_id).html(getVariationContents(new_type, this_id));
@@ -706,16 +726,16 @@ jQuery(document).ready(function($){
 			$(this).parents(".product_variation").find(".variation_required_container").hide();
 			$(this).parents(".product_variation").find(".variation_required_container").find('input[type="checkbox"]').not(':checked');
 		}
-		
-		
+
+
 	});
 
 
 	//New Variation
 	$("#AddVariation").click(function() {
 		var this_id = parseInt($("#max_variations").val()) + 1;
-		
-		
+
+
 		new_content = '<div class="product_variation" rel="' + this_id + '" id="variation' + this_id + '">';
 		new_content += '<input type="hidden" name="sort' + this_id + '" id="sort' + this_id + '" value="' + this_id + '" class="variationsort" />';
 		new_content += '<input type="hidden" name="dropdownradio_value_' + this_id + '" id="dropdownradio_value_' + this_id + '" value="" />';
@@ -725,6 +745,7 @@ jQuery(document).ready(function($){
 		new_content += '<input type="hidden" name="descriptionfield_value_' + this_id + '" id="descriptionfield_value_' + this_id + '" value="" />';
 		new_content += '<input type="hidden" name="checkbox_value_' + this_id + '" id="checkbox_value_' + this_id + '" value="" />';
 		new_content += '<input type="hidden" name="upload_value_' + this_id + '" id="upload_value_' + this_id + '" value="" />';
+		new_content += '<input type="hidden" name="hiddenfield_value_' + this_id + '" id="hiddenfield_value_' + this_id + '" value="" />';
 		new_content += '<!-- //// VARIATION HEADER //// -->';
 		new_content += '<div class="foxyshop_field_control">';
 		new_content += '<a href="#" class="button deleteVariation" rel="' + this_id + '">Delete</a>';
@@ -757,14 +778,14 @@ jQuery(document).ready(function($){
 		new_content += '<div class="variationsortnum">' + this_id + '</div>';
 		new_content += '<div style="clear: both;"></div>';
 		new_content += '</div>';
-		
+
 		$("#variation_sortable").append(new_content);
 		$("#variation_holder_"+this_id).html(getVariationContents("dropdown", this_id));
-		
+
 		$("#max_variations").val(this_id);
 		$("#variation_sortable").sortable("refresh");
 		return false;
-	});	
+	});
 
 
 
@@ -773,7 +794,7 @@ jQuery(document).ready(function($){
 	function getVariationContents(new_type, this_id) {
 		new_contents = "";
 		variationkeyhtml = '<div class="variationkey"><?php echo $variation_key; ?></div>';
-		
+
 		//Dropdown
 		if (new_type == "dropdown") {
 			new_contents = '<div class="foxyshop_field_control dropdown variationoptions">';
@@ -781,7 +802,7 @@ jQuery(document).ready(function($){
 			new_contents += '<textarea name="_variation_value_' + this_id + '" id="_variation_value_' + this_id + '">' + $("#dropdownradio_value_"+this_id).val() + '</textarea>';
 			new_contents += variationkeyhtml;
 			new_contents += '</div>';
-		
+
 		//Radio Buttons
 		} else if (new_type == "radio") {
 			new_contents = '<div class="foxyshop_field_control radio variationoptions">';
@@ -789,7 +810,7 @@ jQuery(document).ready(function($){
 			new_contents += '<textarea name="_variation_radio_' + this_id + '" id="_variation_radio_' + this_id + '">' + $("#dropdownradio_value_"+this_id).val() + '</textarea>';
 			new_contents += variationkeyhtml;
 			new_contents += '</div>';
-		
+
 		//Text
 		} else if (new_type == "text") {
 			new_contents = '<div class="foxyshop_field_control text variationoptions">';
@@ -827,6 +848,13 @@ jQuery(document).ready(function($){
 			new_contents += variationkeyhtml;
 			new_contents += '</div>';
 
+		//Hidden Field
+		} else if (new_type == "hiddenfield") {
+			new_contents = '<div class="foxyshop_field_control hiddenfield variationoptions">';
+			new_contents += '<label for="_variation_hiddenfield_' + this_id + '">Value</label>';
+			new_contents += '<input type="text" name="_variation_hiddenfield_' + this_id + '" id="_variation_hiddenfield_' + this_id + '" value="' + $("#hiddenfield_value_"+this_id).val() + '" />';
+			new_contents += '</div>';
+
 		//Custom File Upload
 		} else if (new_type == "upload") {
 			new_contents = '<div class="foxyshop_field_control upload variationoptions">';
@@ -834,7 +862,7 @@ jQuery(document).ready(function($){
 			new_contents += '<textarea name="_variation_uploadinstructions_' + this_id + '" id="_variation_uploadinstructions_' + this_id + '">' + $("#upload_value_"+this_id).val() + '</textarea>';
 			new_contents += '</div>';
 		}
-		
+
 		return new_contents;
 	}
 });

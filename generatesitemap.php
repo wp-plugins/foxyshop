@@ -1,4 +1,7 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 $args = array(
 	'post_type' => array('foxyshop_product'),
 	'post_status' => 'publish',

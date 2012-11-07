@@ -1,4 +1,7 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 //Decrypt Data From Source
 function foxyshop_decrypt($src) {
     	global $foxyshop_settings;
@@ -64,6 +67,9 @@ function foxyshop_datafeed_inventory_update($xml) {
 			$product_name = (string)$transactiondetails->product_name;
 			$product_code = (string)$transactiondetails->product_code;
 			$product_quantity = (int)$transactiondetails->product_quantity;
+
+			//Skip if there's no product code
+			if (!$product_code) continue;
 
 			//Get List of Target ID's for Inventory Update
 			$meta_list = $wpdb->get_results("SELECT post_id, meta_id, meta_value FROM $wpdb->postmeta WHERE meta_key = '_inventory_levels' AND meta_value LIKE '%" . mysql_real_escape_string($product_code) . "%'");

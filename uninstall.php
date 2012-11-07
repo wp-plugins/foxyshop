@@ -52,4 +52,3 @@ unset($wp_taxonomies['foxyshop_tags']);
 
 //Flush Rewrute Rules
 flush_rewrite_rules();
-?>

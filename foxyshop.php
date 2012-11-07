@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 4.2.1
+Version: 4.3
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -34,12 +34,15 @@ the most out of FoxyShop.
 
 **************************************************************************/
 
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 //Setup Plugin Variables
-define('FOXYSHOP_VERSION', "4.2.1");
-define('FOXYSHOP_DIR',WP_PLUGIN_URL."/foxyshop");
+define('FOXYSHOP_VERSION', "4.3");
+define('FOXYSHOP_DIR', WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 $foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
-if ($foxyshop_document_root == "" || $foxyshop_document_root == "/") $foxyshop_document_root = str_replace("/wp-content/plugins/foxyshop","",FOXYSHOP_PATH);
+if ($foxyshop_document_root == "" || $foxyshop_document_root == "/") $foxyshop_document_root = str_replace("/wp-content/plugins/foxyshop", "", FOXYSHOP_PATH);
 if (!defined('FOXYSHOP_DOCUMENT_ROOT')) define('FOXYSHOP_DOCUMENT_ROOT', $foxyshop_document_root);
 if (!defined('FOXYSHOP_PRODUCTS_SLUG')) define('FOXYSHOP_PRODUCTS_SLUG', 'products');
 if (!defined('FOXYSHOP_PRODUCT_CATEGORY_SLUG')) define('FOXYSHOP_PRODUCT_CATEGORY_SLUG', 'product-cat');
@@ -48,14 +51,14 @@ if (!defined('FOXYSHOP_PRODUCT_NAME_PLURAL')) define('FOXYSHOP_PRODUCT_NAME_PLUR
 if (!defined('FOXYSHOP_URL_BASE')) define('FOXYSHOP_URL_BASE', '');
 if (!defined('FOXYSHOP_PRODUCT_SITEMAP_SLUG')) define('FOXYSHOP_PRODUCT_SITEMAP_SLUG', 'product-sitemap');
 if (!defined('FOXYSHOP_API_ENTRIES_PER_PAGE')) define('FOXYSHOP_API_ENTRIES_PER_PAGE', 50);
-if (!defined('FOXYSHOP_JQUERY_VERSION')) define('FOXYSHOP_JQUERY_VERSION', '1.8');
+if (!defined('FOXYSHOP_JQUERY_VERSION')) define('FOXYSHOP_JQUERY_VERSION', '1.8.2');
 load_plugin_textdomain('foxyshop', 0, dirname(plugin_basename(__FILE__)).'/languages/');
 $foxycart_version_array = array('1.0' => '1.0', '0.7.2' => '0.7.2', '0.7.1' => '0.7.1', '0.7.0' => '0.7.0');
 $google_product_field_names = array('google_product_category', 'mpn', 'gtin', 'brand', 'condition', 'age_group', 'gender', 'color', 'size', 'material', 'pattern');
 
 //Setup Admin Functions
-require_once('adminfunctions.php');
-require_once('adminajax.php');
+require(FOXYSHOP_PATH . '/adminfunctions.php');
+require(FOXYSHOP_PATH . '/adminajax.php');
 
 //Set FoxyShop Settings Array
 $foxyshop_settings = get_option("foxyshop_settings");
@@ -76,8 +79,8 @@ if ($foxyshop_localsettings['int_curr_symbol'] == "") setlocale(LC_MONETARY, 'en
 add_action('init', 'foxyshop_check_rewrite_rules', 99);
 
 //Widgets and Shortcodes support
-include_once('widgetcode.php');
-include_once('shortcodesettings.php');
+include(FOXYSHOP_PATH . '/widgetcode.php');
+include(FOXYSHOP_PATH . '/shortcodesettings.php');
 
 //Load Admin Scripts and Styles
 if (is_admin()) {
@@ -93,64 +96,64 @@ if (is_admin()) {
 }
 
 //Setup Wizard
-include_once('setup-page.php');
+include(FOXYSHOP_PATH . '/setup-page.php');
 
 //Custom Post Type and Taxonomy
-include_once('customposttype.php');
+include(FOXYSHOP_PATH . '/customposttype.php');
 
 //Custom Field Bulk Editor Plugin Support
-include_once('bulkeditor.php');
+include(FOXYSHOP_PATH . '/bulkeditor.php');
 
 //Custom Product Sorting
-include_once('customsorting.php');
+include(FOXYSHOP_PATH . '/customsorting.php');
 
 //Custom Category Sorting
-include_once('categorysorting.php');
+include(FOXYSHOP_PATH . '/categorysorting.php');
 
 //FoxyCart API Feeds
 if ($foxyshop_settings['domain']) {
 
 	//Orders
-	include_once('orders.php');
+	include(FOXYSHOP_PATH . '/orders.php');
 
 	//Customers
-	include_once('customers.php');
+	include(FOXYSHOP_PATH . '/customers.php');
 
 	//Subscriptions
 	if ($foxyshop_settings['enable_subscriptions']) {
-		include_once('subscriptions.php');
+		include(FOXYSHOP_PATH . '/subscriptions.php');
 	}
 }
 
 //Inventory Management
 if ($foxyshop_settings['manage_inventory_levels']) {
-	include_once('inventory.php');
+	include(FOXYSHOP_PATH . '/inventory.php');
 }
 
 //Generate Product Feed
 if ($foxyshop_settings['google_product_support']) {
-	include_once('googleproductfeed.php');
+	include(FOXYSHOP_PATH . '/googleproductfeed.php');
 }
 
 //Tools Page
-include_once('tools-page.php');
+include(FOXYSHOP_PATH . '/tools-page.php');
 
 //Settings Page
-include_once('settings-page.php');
+include(FOXYSHOP_PATH . '/settings-page.php');
 
 //Single Sign On
 if ($foxyshop_settings['enable_sso']) {
-	include_once('sso.php');
+	include(FOXYSHOP_PATH . '/sso.php');
 }
 
 //Display Settings Link on Plugin Screen
 add_filter('plugin_action_links', 'foxyshop_plugin_action_links', 10, 2);
 
 //Frontend Helper Functions
-include_once('helperfunctions.php');
+include(FOXYSHOP_PATH . '/helperfunctions.php');
 
 //Template Redirect (reference files are in /plugins/foxyshop/themefiles)
-include_once('templateredirect.php');
+include(FOXYSHOP_PATH . '/templateredirect.php');
 
 //Plugin Activation Functions
 register_activation_hook(__FILE__, 'foxyshop_activation');

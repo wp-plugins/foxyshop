@@ -1,4 +1,7 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 //----------------------------------------------------------------------
 //Custom Post Type Initialization (Initialisation for you British Types)
 //----------------------------------------------------------------------
@@ -472,6 +475,10 @@ function foxyshop_product_pricing_setup() {
 	$_salestartdate = get_post_meta($post->ID, '_salestartdate', 1);
 	$_saleenddate = get_post_meta($post->ID, '_saleenddate', 1);
 
+	$_coupon = get_post_meta($post->ID, '_coupon', 1);
+	$_cart = get_post_meta($post->ID, '_cart', 1) == 'checkout' ? ' checked="checked"' : '';
+	$_empty = get_post_meta($post->ID, '_empty', 1) == 'true' ? ' checked="checked"' : '';
+
 	//Format Sale Date
 	if ($_salestartdate == '999999999999999999') $_salestartdate = "";
 	if ($_salestartdate) $_salestartdate = date('n/j/Y', $_salestartdate);
@@ -617,6 +624,27 @@ function foxyshop_product_pricing_setup() {
 	</div>
 	<?php
 	}
+	?>
+
+	<h4 style="margin-bottom: 3px;"><?php _e('Other Product Features', 'foxyshop'); ?></h4>
+	<div class="foxyshop_field_control">
+		<input type="checkbox" style="float: left; margin: 5px 0 0 10px;" id="_cart" name="_cart" value="checkout"<?php echo $_cart; ?>>
+		<label for="_cart" style="width: 210px;"><?php _e('Force Immediate Checkout', 'foxyshop'); ?></label>
+	</div>
+	<div class="foxyshop_field_control">
+		<input type="checkbox" style="float: left; margin: 5px 0 0 10px;" id="_empty" name="_empty" value="true"<?php echo $_empty; ?>>
+		<label for="_empty" style="width: 210px;"><?php _e('Empty Cart Before Adding Product', 'foxyshop'); ?></label>
+	</div>
+	<div class="foxyshop_field_control">
+		<input type="checkbox" style="float: left; margin: 5px 0 0 10px;" id="do_coupon" name="do_coupon"<?php if ($_coupon) echo ' checked="checked"'; ?>>
+		<label for="do_coupon" style="width: 210px;"><?php _e('Add a Coupon', 'foxyshop'); ?></label>
+	</div>
+	<div class="foxyshop_field_control" id="product_coupon_entry_field"<?php if (!$_coupon) echo ' style="display: none;"'; ?>>
+		<label for="_coupon"><?php _e('Code', 'foxyshop'); ?></label>
+		<input type="text" name="_coupon" id="_coupon" value="<?php echo $_coupon; ?>" />
+	</div>
+	<div style="clear: both;"></div>
+	<?php
 }
 
 
@@ -775,7 +803,7 @@ function foxyshop_product_variations_setup() {
 	//-------------------------------------------------------------------------------------------
 	//Note: if making any changes, mirror these changes in foxyshoptools.php for saved variations
 	//-------------------------------------------------------------------------------------------
-	$var_type_array = array('dropdown' => __("Dropdown List", 'foxyshop'), 'radio' => __("Radio Buttons", 'foxyshop'), 'checkbox' => __("Checkbox", 'foxyshop'), 'text' => __("Single Line of Text", 'foxyshop'), 'textarea' => __("Multiple Lines of Text", 'foxyshop'), 'upload' => __("Custom File Upload", 'foxyshop'), 'descriptionfield' => __("Description Field", 'foxyshop'));
+	$var_type_array = array('dropdown' => __("Dropdown List", 'foxyshop'), 'radio' => __("Radio Buttons", 'foxyshop'), 'checkbox' => __("Checkbox", 'foxyshop'), 'text' => __("Single Line of Text", 'foxyshop'), 'textarea' => __("Multiple Lines of Text", 'foxyshop'), 'upload' => __("Custom File Upload", 'foxyshop'), 'hiddenfield' => __("Hidden Field", 'foxyshop'), 'descriptionfield' => __("Description Field", 'foxyshop'));
 	$variation_key = __("Name{p+1.50|w-1|c:product_code|y:foxycart_category|dkey:display_key|ikey:image_id}", 'foxyshop');
 
 	//Setup Variations
@@ -823,6 +851,7 @@ function foxyshop_product_variations_setup() {
 			<input type="hidden" name="descriptionfield_value_<?php echo $i; ?>" id="descriptionfield_value_<?php echo $i; ?>" value="" />
 			<input type="hidden" name="checkbox_value_<?php echo $i; ?>" id="checkbox_value_<?php echo $i; ?>" value="" />
 			<input type="hidden" name="upload_value_<?php echo $i; ?>" id="upload_value_<?php echo $i; ?>" value="" />
+			<input type="hidden" name="hiddenfield_value_<?php echo $i; ?>" id="hiddenfield_value_<?php echo $i; ?>" value="" />
 
 			<!-- //// VARIATION HEADER //// -->
 			<div class="foxyshop_field_control">
@@ -911,6 +940,16 @@ function foxyshop_product_variations_setup() {
 						<textarea name="_variation_uploadinstructions_<?php echo $i; ?>" id="_variation_uploadinstructions_<?php echo $i; ?>"><?php echo $_variationValue; ?></textarea>
 					</div>
 
+				<?php elseif($_variation_type == "hiddenfield") : ?>
+					<!-- Hidden Field -->
+					<div class="foxyshop_field_control hiddenfield variationoptions">
+						<div class="foxyshop_field_control">
+							<label for="_variation_hiddenfield_<?php echo $i; ?>"><?php _e('Value', 'foxyshop'); ?></label>
+							<input type="text" name="_variation_hiddenfield_<?php echo $i; ?>" id="_variation_hiddenfield_<?php echo $i; ?>" value="<?php echo $_variationValue; ?>" />
+						</div>
+					</div>
+					<?php $dkeyhide = ' style="display: none;"'; ?>
+
 				<?php else : ?>
 					<!-- Saved Variation -->
 					<p class="foxyshop_saved_variation"><em><?php _e('This varation will use saved settings.', 'foxyshop'); ?></em></p>
@@ -953,7 +992,7 @@ if (is_array($saved_variations)) {
 	echo "\t\tvariation_select_options += '<optgroup label=\"" . __('Saved Variations', 'foxyshop') . "\">';\n";
 	foreach($saved_variations as $saved_var) {
 		$saved_ref = $saved_var['refname'];
-		echo "\t\tvariation_select_options += '<option value=\"" . sanitize_title($saved_ref) . "\" rel=\"" . esc_attr($saved_var['name']) . "\">" . $saved_ref . "  </option>';\n";
+		echo "\t\tvariation_select_options += '<option value=\"" . sanitize_title($saved_ref) . "\" rel=\"" . esc_attr($saved_var['name']) . "\">" . esc_attr($saved_var['name']) . "  </option>';\n";
 	}
 	echo "\t\tvariation_select_options += '</optgroup>';\n";
 }
@@ -1044,6 +1083,27 @@ function foxyshop_product_meta_save($post_id) {
 		}
 	}
 
+	//Extra Options
+	if (isset($_POST['do_coupon'])) {
+		foxyshop_save_meta_data('_coupon', $_POST['_coupon']);
+	} else {
+		foxyshop_save_meta_data('_coupon', '');
+	}
+	if (isset($_POST['_empty'])) {
+		foxyshop_save_meta_data('_empty', $_POST['_empty']);
+	} else {
+		foxyshop_save_meta_data('_empty', '');
+	}
+
+	if (isset($_POST['_cart'])) {
+		foxyshop_save_meta_data('_cart', $_POST['_cart']);
+	} else {
+		foxyshop_save_meta_data('_cart', '');
+	}
+
+
+
+
 	//Save Related Product Data
 	if (isset($_POST['_related_products_list'])) {
 		foxyshop_save_meta_data('_related_products', implode(",",$_POST['_related_products_list']));
@@ -1118,6 +1178,8 @@ function foxyshop_product_meta_save($post_id) {
 			$_variationValue = $_POST['_variation_checkbox_'.$target_id];
 		} elseif ($_variationType == 'radio') {
 			$_variationValue = $_POST['_variation_radio_'.$target_id];
+		} elseif ($_variationType == 'hiddenfield') {
+			$_variationValue = $_POST['_variation_hiddenfield_'.$target_id];
 		}
 
 		$variations[$currentID] = array(

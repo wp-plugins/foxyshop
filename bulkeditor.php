@@ -1,14 +1,17 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 //-------------------------------------------
 //Custom Field Bulk Editor Actions
 //-------------------------------------------
 function foxyshop_cfbe_metabox($post_type) {
 	if ($post_type != 'foxyshop_product') return;
 	global $foxyshop_settings, $wp_version, $google_product_field_names;
-	
+
 	$change_to_text = __("Change To", 'foxyshop');
 	$leave_unchanged_text = __("Leave Unchanged", 'foxyshop');
-	
+
 	?>
 	<table class="widefat cfbe_table cfbe_foxyshop_table">
 		<thead>
@@ -113,8 +116,8 @@ function foxyshop_cfbe_metabox($post_type) {
 					<div style="clear: both;"></div>
 				</td>
 			</tr>
-			
-			
+
+
 			<tr>
 				<td>
 					<label for="_quantity_min" class="cfbe_special_label"><?php _e('Minimum Qty', 'foxyshop'); ?></label>
@@ -270,7 +273,7 @@ function foxyshop_cfbe_metabox($post_type) {
 						</td>
 					</tr>
 					<?php
-				}			
+				}
 			endif;
 			?>
 			<tr>
@@ -350,7 +353,7 @@ add_action('cfbe_before_metabox', 'foxyshop_cfbe_metabox');
 function foxyshop_cfbe_save($post_type, $post_id) {
 	if ($post_type != "foxyshop_product") return;
 	global $foxyshop_settings, $google_product_field_names;
-	
+
 	//Generic Fields Needing No Special Treatment
 	$fields = array("category", "weight", "discount_quantity_amount", "discount_quantity_percentage", "discount_price_amount", "discount_price_percentage", "sub_frequency", "sub_startdate", "sub_enddate");
 	foreach ($fields as $field) {
@@ -362,26 +365,26 @@ function foxyshop_cfbe_save($post_type, $post_id) {
 	$fields = array("price", "saleprice");
 	foreach ($fields as $field) {
 		if ($_POST['_' . $field . '_status'] == 1 && $_POST['_' . $field] != "") {
-			
+
 			$new_price = (string)$_POST['_' . $field];
 			$modifier = (string)substr($new_price, 0, 1);
-			
+
 			//Price modifier in play
 			if ($modifier == "+" || $modifier == "-") {
-				
+
 				//Get original price
 				$original_price = (double)get_post_meta($post_id,'_' . $field, true);
-				
+
 				//Percentage
 				if ((string)substr($new_price, -1) == "%") {
 					$new_price = (double)substr($new_price, 1, -1);
-					
+
 					if ($modifier == "-") {
 						$new_price = $original_price - ($original_price * ($new_price / 100));
 					} else {
 						$new_price = $original_price + ($original_price * ($new_price / 100));
 					}
-				
+
 				//Addition or Subtraction
 				} else {
 					$new_price = (double)substr($new_price, 1);
@@ -392,18 +395,18 @@ function foxyshop_cfbe_save($post_type, $post_id) {
 						$new_price = $original_price + $new_price;
 					}
 				}
-				
-				
+
+
 			}
-			
+
 			if ($new_price < 0) $new_price = 0;
 			$new_price = number_format($new_price, 2);
-			
+
 			//Do the save
 			cfbe_save_meta_data('_'.$field, $new_price);
 		}
 	}
-	
+
 	//All Other Fields
 	if ($_POST['_quantity_min_status'] == 1) {
 		cfbe_save_meta_data('_quantity_min', (int)$_POST['_quantity_min']);

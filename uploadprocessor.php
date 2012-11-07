@@ -1,4 +1,8 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
+
 /*
 This is the uploadify uploader. It is being processed through WordPress so has access to all the WordPress security functions.
 To add an allowed upload extension, put this in your wp-config.php file with new extensions separated by a comma:

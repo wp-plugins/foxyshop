@@ -1,4 +1,8 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
+
 /*
 Examples:
 
@@ -47,7 +51,7 @@ function foxyshop_showproduct_shortcode($atts, $content = null) {
 
 	$prod = foxyshop_get_product_by_name($name);
 	if (!$prod || !$name) return "";
-	
+
 	ob_start();
 	foxyshop_include('single-product-shortcode');
 	$write = ob_get_contents();
@@ -87,7 +91,7 @@ function foxyshop_productlink_shortcode($atts, $content = null) {
 		"name" => '',
 		"variations" => ''
 	), $atts));
-	
+
 	$prod = foxyshop_get_product_by_name($name);
 	if (!$prod || !$name) return "";
 	$product = foxyshop_setup_product($prod);
@@ -104,6 +108,3 @@ function foxyshop_get_product_by_name($post_name, $output = OBJECT) {
     if ($post) return get_post($post, $output);
     return null;
 }
-
-
-?>

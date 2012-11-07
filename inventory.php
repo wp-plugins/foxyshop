@@ -1,4 +1,7 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 add_action('admin_init', 'foxyshop_inventory_update');
 
 function foxyshop_inventory_update() {
@@ -23,7 +26,7 @@ function foxyshop_inventory_update() {
 			$inventory[$code]['count'] = $db_count + $count_change;
 			update_post_meta($productid, '_inventory_levels', $inventory);
 		}
-		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_inventory_management_page&saved=1');
+		header('Location: edit.php?post_type=foxyshop_product&page=foxyshop_inventory_management_page&saved=1');
 		die;
 
 	//Saving Values From Uploaded Data
@@ -44,7 +47,7 @@ function foxyshop_inventory_update() {
 			foxyshop_inventory_count_update($productcode, $newcount, $productid);
 			$save_count++;
 		}
-		header('location: edit.php?post_type=foxyshop_product&page=foxyshop_inventory_management_page&importcompleted='.$save_count);
+		header('Location: edit.php?post_type=foxyshop_product&page=foxyshop_inventory_management_page&importcompleted='.$save_count);
 		die;
 	}
 }
@@ -109,6 +112,7 @@ function foxyshop_inventory_management_page() {
 				foreach ($inventory_levels as $ivcode => $iv) {
 
 					$i++;
+					if (!isset($iv['alert'])) $iv['alert'] = $foxyshop_settings['inventory_alert_level'];
 					$inventory_alert = (int)($iv['alert'] == '' ? $foxyshop_settings['inventory_alert_level'] : $iv['alert']);
 					$inventory_count = $iv['count'];
 

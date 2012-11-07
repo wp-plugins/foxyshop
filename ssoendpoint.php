@@ -1,4 +1,7 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 //SSO ENDPOINT TEMPLATE
 if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 	global $foxyshop_settings;
@@ -6,14 +9,14 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 
 	//Run an action here in case you want to to intercept
 	do_action("foxyshop_sso_endpoint");
-	
+
 	$login_url = get_bloginfo('wpurl') . '/wp-login.php';
-	
+
 	//If you don't want to redirect to the wp-login screen for your login/create account page, define this constant in your wp-config.php file.
 	if (defined('FOXYSHOP_SSO_REDIRECT_URL')) $login_url = FOXYSHOP_SSO_REDIRECT_URL;
 
 	if(!is_user_logged_in()) {
-		
+
 		//Force a Straight Redirect
 		if ($foxyshop_settings['sso_account_required'] == 1) {
 			$redirect_to = get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key'] . '/?timestamp=' . $_GET['timestamp'] . '&fcsid=' . $_GET['fcsid'];
@@ -63,37 +66,37 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 					}
 				}
 			}
-			
+
 			//Do the Signup Redirect
 			if ($sso_required) {
 				$redirect_to = get_bloginfo('url') . '/foxycart-sso-' . $foxyshop_settings['datafeed_url_key'] . '/?timestamp=' . $_GET['timestamp'] . '&fcsid=' . $_GET['fcsid'];
 				header('Location: ' . $login_url . '?redirect_to=' . urlencode($redirect_to) . '&foxycart_checkout=1&reauth=1');
 				die;
-			
+
 			//No Redirect Required
 			} else {
 				$customer_id = 0;
 			}
-		
+
 		//No Redirect Required
 		} else {
 			$customer_id = 0;
 		}
-	
+
 	//Already Logged In, Get Account Info.
 	} else {
 		get_currentuserinfo();
 		$customer_id = get_user_meta($current_user->ID, "foxycart_customer_id", TRUE);
 		$customer_email = $current_user->user_email;
-		
+
 		//Get FoxyCart Customer ID
 		if (!$customer_id) $customer_id = foxyshop_check_for_customer_id($customer_email);
-		
+
 		//Customer ID Doesn't Exist, Create New FoxyCart Customer
 		if (!$customer_id) $customer_id = foxyshop_add_new_customer_id($customer_email, $current_user->user_pass, $current_user->user_firstname, $current_user->user_lastname);
 	}
-	
-	
+
+
 	$fcsid = $_GET['fcsid'];
 	$timestamp = $_GET['timestamp'];
 	$newtimestamp = strtotime("+60 minutes", $timestamp);
@@ -131,4 +134,3 @@ function foxyshop_add_new_customer_id($email, $pass, $first_name, $last_name) {
 	if ($foxycart_customer_id) add_user_meta($current_user->ID, 'foxycart_customer_id', $foxycart_customer_id, true);
 	return $foxycart_customer_id;
 }
-?>

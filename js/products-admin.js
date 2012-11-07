@@ -186,6 +186,14 @@ jQuery(document).ready(function($){
 	}
 
 
+	$("#do_coupon").click(function() {
+		if ($(this).is(":checked")) {
+			$("#product_coupon_entry_field").show();
+		} else {
+			$("#product_coupon_entry_field").hide();
+		}
+	});
+
 
 
 
@@ -625,6 +633,7 @@ jQuery(document).ready(function($){
 		temp_descriptionfield = $("#_variation_description_"+this_id).val();
 		temp_checkbox = $("#_variation_checkbox_"+this_id).val();
 		temp_upload = $("#_variation_uploadinstructions_"+this_id).val();
+		temp_hidden = $("#_variation_hiddenfield_"+this_id).val();
 		if (temp_dropdown) $("#dropdownradio_value_"+this_id).val(temp_dropdown);
 		if (temp_radio) $("#dropdownradio_value_"+this_id).val(temp_radio);
 		if (temp_text1) $("#text1_value_"+this_id).val(temp_text1);
@@ -633,6 +642,7 @@ jQuery(document).ready(function($){
 		if (temp_descriptionfield) $("#descriptionfield_value_"+this_id).val(temp_descriptionfield);
 		if (temp_checkbox) $("#checkbox_value_"+this_id).val(temp_checkbox);
 		if (temp_upload) $("#upload_value_"+this_id).val(temp_upload);
+		if (temp_hidden) $("#hiddenfield_value_"+this_id).val(temp_upload);
 
 		//Set Contents in Container
 		$("#variation_holder_"+this_id).html(getVariationContents(new_type, this_id));
@@ -663,6 +673,7 @@ jQuery(document).ready(function($){
 		new_content += '<input type="hidden" name="descriptionfield_value_' + this_id + '" id="descriptionfield_value_' + this_id + '" value="" />';
 		new_content += '<input type="hidden" name="checkbox_value_' + this_id + '" id="checkbox_value_' + this_id + '" value="" />';
 		new_content += '<input type="hidden" name="upload_value_' + this_id + '" id="upload_value_' + this_id + '" value="" />';
+		new_content += '<input type="hidden" name="hiddenfield_value_' + this_id + '" id="hiddenfield_value_' + this_id + '" value="" />';
 		new_content += '<!-- //// VARIATION HEADER //// -->';
 		new_content += '<div class="foxyshop_field_control">';
 		new_content += '<a href="#" class="button deleteVariation" rel="' + this_id + '">Delete</a>';
@@ -763,6 +774,13 @@ jQuery(document).ready(function($){
 			new_contents = '<div class="foxyshop_field_control upload variationoptions">';
 			new_contents += '<label for="_variation_uploadinstructions_' + this_id + '">Instructions</label>';
 			new_contents += '<textarea name="_variation_uploadinstructions_' + this_id + '" id="_variation_uploadinstructions_' + this_id + '">' + $("#upload_value_"+this_id).val() + '</textarea>';
+			new_contents += '</div>';
+
+		//Hidden Field
+		} else if (new_type == "hiddenfield") {
+			new_contents = '<div class="foxyshop_field_control hiddenfield variationoptions">';
+			new_contents += '<label for="_variation_hiddenfield_' + this_id + '">Value</label>';
+			new_contents += '<input type="text" name="_variation_hiddenfield_' + this_id + '" id="_variation_hiddenfield_' + this_id + '" value="' + $("#hiddenfield_value_"+this_id).val() + '" />';
 			new_contents += '</div>';
 
 		//Saved Variation

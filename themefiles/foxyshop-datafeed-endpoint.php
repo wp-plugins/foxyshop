@@ -236,6 +236,8 @@ if (isset($_POST["FoxyData"])) {
 //-----------------------------------------------------
 } elseif (isset($_POST["FoxySubscriptionData"])) {
 
+	//If you don't want to use any of the subscription datafeed reminder features, uncomment the next line
+	//die("Not In Use");
 
 	//Setup Defaults
 	$failed_days_before_cancel = 7;

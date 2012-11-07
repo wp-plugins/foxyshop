@@ -1,4 +1,7 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 //Import For The Header
 function foxyshop_insert_foxycart_files() {
 	global $foxyshop_settings;
@@ -172,9 +175,11 @@ function foxyshop_setup_product($thepost = false, $shortcut = false) {
 	}
 
 	//Extra Cart Parameters
-	$fields = array('cart','empty','coupon','redirect','output');
+	$fields = array('cart','empty','coupon','redirect','output','_cart','_empty','_coupon');
 	foreach ($fields as $fieldname) {
-		if (get_post_meta($thepost->ID,$fieldname, true)) $new_product[$fieldname] = get_post_meta($thepost->ID,$fieldname, true);
+		if (get_post_meta($thepost->ID,$fieldname, true)) {
+			$new_product[str_replace("_", "", $fieldname)] = get_post_meta($thepost->ID,$fieldname, true);
+		}
 	}
 
 	//Hook To Add Your Own Function to Update the $new_product array with your own data
@@ -189,7 +194,8 @@ function foxyshop_setup_product($thepost = false, $shortcut = false) {
 function foxyshop_start_form() {
 	global $product, $foxyshop_settings, $foxyshop_skip_url_link, $foxyshop_skip_cart_image;
 	$localsettings = localeconv();
-	$l18n_value = utf8_encode($localsettings['currency_symbol'] . '|' . $localsettings['mon_decimal_point'] . '|' . $localsettings['mon_thousands_sep'] . '|' . $localsettings['p_cs_precedes'] . '|' . $localsettings['n_sep_by_space']);
+	$currency_symbol = strpos($foxyshop_settings['locale_code'], "utf8") !== false ? $localsettings['currency_symbol'] : utf8_encode($localsettings['currency_symbol']);
+	$l18n_value = $currency_symbol . '|' . $localsettings['mon_decimal_point'] . '|' . $localsettings['mon_thousands_sep'] . '|' . $localsettings['p_cs_precedes'] . '|' . $localsettings['n_sep_by_space'];
 	if ($localsettings['n_sep_by_space'] == 127) $l18n_value = "$|.|,|1|0";
 
 	echo "\n";
@@ -207,7 +213,7 @@ function foxyshop_start_form() {
 	echo '<input type="hidden" name="x:quantity_max" value="' . $product['quantity_max_original'] . '" rel="' . foxyshop_get_verification('quantity_max') . '" id="original_quantity_max_' . $product['id'] . '" />'."\n";
 
 	$fields = array('name','code','category','weight','discount_quantity_amount','discount_quantity_percentage','discount_price_amount','discount_price_percentage','sub_frequency','sub_startdate','sub_enddate');
-	$non_verification_fields = array('cart','empty','coupon','redirect','output');
+	$non_verification_fields = array('cart','empty','coupon','redirect');
 	foreach ($fields as $fieldname) {
 		if (array_key_exists($fieldname, $product)) {
 			if ($product[$fieldname]) echo '<input type="hidden" name="' . $fieldname . foxyshop_get_verification($fieldname) . '" id="fs_' . esc_attr($fieldname) . '_' . $product['id'] . '" value="' . esc_attr($product[$fieldname]) . '" />'."\n";
@@ -252,7 +258,7 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 	global $post, $product, $foxyshop_settings, $foxyshop_write_variation_include;
 	$writeUploadInclude = 0;
 	$write = "";
-	$var_type_array = array('dropdown' => __("Dropdown List"), 'radio' => __("Radio Buttons"), 'checkbox' => __("Checkbox"), 'text' => __("Single Line of Text"), 'textarea' => __("Multiple Lines of Text"), 'upload' => __("Custom File Upload"), 'descriptionfield' => __("Description Field"));
+	$var_type_array = array('dropdown' => __("Dropdown List"), 'radio' => __("Radio Buttons"), 'checkbox' => __("Checkbox"), 'text' => __("Single Line of Text"), 'textarea' => __("Multiple Lines of Text"), 'upload' => __("Custom File Upload"), 'hiddenfield' => __("Hidden Field", 'foxyshop'), 'descriptionfield' => __("Description Field"));
 
 	//Show Quantity Before Variations
 	if ($product['quantity_hide']) $showQuantity = 0;
@@ -339,6 +345,10 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 			$write .= apply_filters('foxyshop_descriptionfield_variation', $description_field, $product['code'], $i, $className, $dkeyclass, $dkey, $variationValue);
 			$write .= $writeAfterVariation;
 
+		//Hidden Field
+		} elseif ($variationType == "hiddenfield") {
+			$write .= '<input type="hidden" name="' . esc_attr(foxyshop_add_spaces($variationName)) . foxyshop_get_verification(foxyshop_add_spaces($variationName),$variationValue) . '" id="' . esc_attr($product['code']) . '_' . $i . '" value="' . htmlspecialchars($variationValue) . '" class="' . $className . $dkeyclass . '" />' . "\n";
+
 		//Select, Checkbox, Radio
 		} elseif ($variationType == "dropdown" || $variationType == "checkbox" || $variationType == "radio") {
 
@@ -380,7 +390,7 @@ function foxyshop_product_variations($showQuantity = 0, $showPriceVariations = t
 		$foxyshop_write_variation_include = 1;
 	}
 	if ($write) {
-		echo '<div class="foxyshop_variations">' . $write . "</div>\n\n";
+		echo '<div class="foxyshop_variations">' . "\n" . $write . "</div>\n\n";
 	}
 }
 
@@ -555,7 +565,7 @@ function foxyshop_product_link($AddText = "Add To Cart", $linkOnly = false, $var
 	$url = 'price' . foxyshop_get_verification('price') . '=' . urlencode($product['price']);
 	if (foxyshop_get_main_image() && version_compare($foxyshop_settings['version'], '0.7.0', ">")) $url .= '&amp;image' . foxyshop_get_verification('image',foxyshop_get_main_image()) . '=' . urlencode(foxyshop_get_main_image());
 	if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) $url .= '&amp;url' . foxyshop_get_verification('url') . '=' . urlencode($product['url']);
-	$fields = array('name','code','category','weight','discount_quantity_amount','discount_quantity_percentage','discount_price_amount','discount_price_percentage','sub_frequency','sub_startdate','sub_enddate');
+	$fields = array('name','code','category','weight','quantity_min','quantity_max','discount_quantity_amount','discount_quantity_percentage','discount_price_amount','discount_price_percentage','sub_frequency','sub_startdate','sub_enddate');
 	$non_verification_fields = array('cart','empty','coupon','redirect','output');
 	foreach ($fields as $fieldname) {
 		if (array_key_exists($fieldname, $product)) {
@@ -811,6 +821,7 @@ function foxyshop_image_slideshow($size = "thumbnail", $includeFeatured = true, 
 		}
 		if ((!$imageArray['featured'] || $includeFeatured)) {
 			$current_rel = $rel;
+			$current_rel = str_replace("%thumbnail", $imageArray['thumbnail'], $current_rel);
 			$current_rel = str_replace("%small", $imageArray['thumbnail'], $current_rel);
 			$current_rel = str_replace("%medium", $imageArray['medium'], $current_rel);
 			$current_rel = str_replace("%large", $imageArray[$largesize], $current_rel);
@@ -881,7 +892,14 @@ function foxyshop_simple_category_children($category_id = 0, $depth = 1) {
 function foxyshop_category_writer($category_id, $depth) {
 	global $foxyshop_category_write;
 	global $foxyshop_category_depth;
-	$termchildren = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&parent='.$category_id.'&orderby=name&order=ASC');
+	$args = array(
+		'hide_empty' => 0,
+		'hierarchical' => 0,
+		'parent' => $category_id,
+		'orderby' => 'name',
+		'order' => "ASC",
+	);
+	$termchildren = get_terms('foxyshop_categories', $args);
 	if ($termchildren) {
 
 
@@ -902,7 +920,7 @@ function foxyshop_category_writer($category_id, $depth) {
 		if ($depth > 1) $foxyshop_category_write .= '<ul class="children">';
 		foreach ($termchildren as $child) {
 			$term = get_term_by('id', $child->term_id, "foxyshop_categories");
-			if (substr($term->name,0,1) == "_") continue;
+			if (substr($term->name,0,1) == "_" || apply_filters('foxyshop_category_writer_skip', 0, $term)) continue;
 			$url = get_term_link($term, "foxyshop_categories");
 			$foxyshop_category_write .= '<li class="cat-item cat-item-' . $term->term_id . (in_array($term->term_id, $current_term_id) ? ' foxyshop-active-category' : '') . '">';
 			$foxyshop_category_write .= '<a href="' . $url . '">' . $term->name . '</a>';
@@ -1334,7 +1352,7 @@ function foxyshop_sort_dropdown($title = "Sort Products") {
 
 //Includes Header and Footer Files
 function foxyshop_include($filename = "header") {
-	include(foxyshop_get_template_file('/foxyshop-' . $filename . '.php'));
+	include foxyshop_get_template_file('/foxyshop-' . $filename . '.php');
 }
 
 
@@ -1520,7 +1538,7 @@ function foxyshop_currency($input, $currencysymbol = true) {
 		$currency = money_format("%" . ($currencysymbol ? "" : "!") . ".2n", (double)$input);
 	} else {
 		//Windows: no internationalisation support
-		$currency_code = ($foxyshop_settings['locale_code'] == "en_GB" ? "£" : "$");
+		$currency_code = ($foxyshop_settings['locale_code'] == "en_GB" ? "&pound;" : "$");
 		$currency = $currency_code.number_format((double)$input,2,".",",");
 	}
 	if (strpos($foxyshop_settings['locale_code'], "utf8") === false) $currency = utf8_encode($currency);

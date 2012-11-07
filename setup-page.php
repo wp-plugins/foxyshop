@@ -1,4 +1,7 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 if (get_option("foxyshop_setup_required")) {
 	add_action('admin_notices', 'foxyshop_show_setup_prompt');
 }
@@ -106,7 +109,7 @@ function foxyshop_setup_legacy() {
 					echo '<option value="' . $key . '"' . ($foxyshop_settings['version'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
 				} ?>
 				</select>
-				<small>Version 0.7.2 is recommended.</small>
+				<small>Version 1.0 is recommended.</small>
 			</td>
 		</tr>
 	</tbody>
@@ -169,5 +172,4 @@ function foxyshop_check_settings_form() {
 </script>
 
 </div>
-<?php }
-?>
+<?php } ?>

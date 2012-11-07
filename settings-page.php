@@ -1,4 +1,6 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
 
 //Save Settings
 add_action('admin_init', 'foxyshop_save_settings');
@@ -291,7 +293,7 @@ function foxyshop_settings_page() {
 						echo '<option value="' . $key . '"' . ($foxyshop_settings['version'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
 					} ?>
 					</select>
-					<a href="#" class="foxyshophelp">Version 0.7.0 was a big step up from 0.6.0 and used the new ColorBox overlay. Version 0.7.1 added images to the cart checkout. Version 0.7.2 added new API options and more new gateways.<br /><br />If you are upgrading to 0.7.2 or higher, change your version at FoxyCart and save, then update here.</a>
+					<a href="#" class="foxyshophelp">Version 0.7.0 was a big step up from 0.6.0 and used the new ColorBox overlay. Version 0.7.1 added images to the cart checkout. Version 0.7.2 added new API options. Version 1.0 added live tax rates and a new country selector.<br /><br />If you are upgrading to 0.7.2 or higher, change your version at FoxyCart and save, then update here.</a>
 				</td>
 			</tr>
 			<tr>

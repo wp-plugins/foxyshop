@@ -1,4 +1,7 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 //Get Correct Template File
 add_action('template_redirect', 'foxyshop_theme_redirect', 1);
 

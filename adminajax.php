@@ -1,4 +1,6 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
 
 //Display List AJAX Functions
 add_action('wp_ajax_foxyshop_display_list_ajax_action', 'foxyshop_display_ajax');
@@ -8,7 +10,7 @@ function foxyshop_display_ajax() {
 	if (!isset($_POST['foxyshop_action'])) die;
 	$id = isset($_POST['id']) ? $_POST['id'] : 0;
 	$transaction_template_id = isset($_POST['transaction_template_id']) ? (int)$_POST['transaction_template_id'] : 0;
-	
+
 	//Change Subscription
 	if ($_POST['foxyshop_action'] == 'subscription_modify') {
 		$foxy_data = array(
@@ -27,7 +29,7 @@ function foxyshop_display_ajax() {
 		do_action("foxyshop_after_subscription_modify", $xml);
 		echo (string)$xml->result . ": " . (string)$xml->messages->message;
 		die;
-	
+
 	//Hide/Unhide Transaction
 	} elseif ($_POST['foxyshop_action'] == 'hide_transaction') {
 		$foxy_data = array("api_action" => "transaction_modify", "transaction_id" => $id, "hide_transaction" => (int)$_POST['hide_transaction']);
@@ -49,7 +51,7 @@ function foxyshop_manage_attribute_ajax() {
 	if (!isset($_POST['foxyshop_action'])) die;
 	if (!isset($_POST['att_type'])) die;
 	if (!isset($_POST['id'])) die;
-	
+
 	$id = $_POST['id'];
 	$att_type = $_POST['att_type'];
 	$att_name = $_POST['att_name'];
@@ -59,7 +61,7 @@ function foxyshop_manage_attribute_ajax() {
 		$att_value = str_replace('\"', '"', $_POST['att_value']);
 		echo foxyshop_save_attribute($att_type, $id, $att_name, $att_value);
 		die;
-	
+
 	//Delete
 	} elseif ($_POST['foxyshop_action'] == 'delete_attribute') {
 		echo foxyshop_delete_attribute($att_type, $id, $att_name);
@@ -129,15 +131,15 @@ function foxyshop_ajax_set_google_auth() {
 add_action('wp_ajax_foxyshop_product_ajax_action', 'foxyshop_product_ajax');
 function foxyshop_product_ajax() {
 	global $wpdb;
-	$productID = (isset($_POST['foxyshop_product_id']) ? $_POST['foxyshop_product_id'] : 0);
-	$imageID = (isset($_POST['foxyshop_image_id']) ? $_POST['foxyshop_image_id'] : 0);
+	$productID = (isset($_POST['foxyshop_product_id']) ? (int)$_POST['foxyshop_product_id'] : 0);
+	$imageID = (isset($_POST['foxyshop_image_id']) ? (int)$_POST['foxyshop_image_id'] : 0);
 	check_ajax_referer('foxyshop-product-image-functions-'.$productID, 'security');
 	if (!isset($_POST['foxyshop_action'])) die;
-	
+
 	if ($_POST['foxyshop_action'] == "add_new_image") {
 
 		echo foxyshop_redraw_images($productID);
-		
+
 	} elseif ($_POST['foxyshop_action'] == "delete_image") {
 		wp_delete_attachment($imageID);
 		echo foxyshop_redraw_images($productID);
@@ -160,7 +162,7 @@ function foxyshop_product_ajax() {
 		$update_post['ID'] = $imageID;
 		$update_post['post_title'] = $_POST['foxyshop_new_name'];
 		wp_update_post($update_post);
-	
+
 	} elseif ($_POST['foxyshop_action'] == "update_image_order") {
 
 		$foxyshop_order_array = $_POST['foxyshop_order_array'];
@@ -172,9 +174,9 @@ function foxyshop_product_ajax() {
 			$update_post['menu_order'] = $i+1;
 			wp_update_post($update_post);
 		}
-	
+
 		echo foxyshop_redraw_images($productID);
-	
+
 	} elseif ($_POST['foxyshop_action'] == "refresh_images") {
 		echo foxyshop_redraw_images($productID);
 	}
@@ -191,12 +193,12 @@ function foxyshop_redraw_images($id) {
 		$i = 0;
 		foreach ($attachments as $attachment) {
 			if (wp_attachment_is_image($attachment->ID)) {
-				
+
 				$thumbnailSRC = wp_get_attachment_image_src($attachment->ID, "thumbnail");
 				$hide_from_slideshow = get_post_meta($attachment->ID, "_foxyshop_hide_image", 1);
 				$featured_class = $featuredImageID == $attachment->ID || ($featuredImageID == 0 && $i == 0) ? 'foxyshop_featured_image ' : '';
 				$hide_from_slideshow_class = $hide_from_slideshow ? 'foxyshop_hide_from_slideshow ' : '';
-				
+
 				$write .= '<li id="att_' . $attachment->ID . '" class="'. $featured_class . $hide_from_slideshow_class . '">';
 				$write .= '<div class="foxyshop_image_holder"><img src="' . $thumbnailSRC[0] . '" alt="' . esc_attr($attachment->post_title) . ' (' . $attachment->ID . ')" title="' . esc_attr($attachment->post_title) . ' (' . $attachment->ID . ')" /></div>';
 				$write .= '<div style="clear: both;"></div>';
@@ -216,4 +218,3 @@ function foxyshop_redraw_images($id) {
 	}
 	return $write;
 }
-?>

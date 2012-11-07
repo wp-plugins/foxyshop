@@ -13,8 +13,8 @@ global $product, $foxyshop_category_slug, $post;
 	//-------------------------------------------------------------------------------------------------
 	// Remember that the products on these category pages link to the generated page links (permalinks)
 	//-------------------------------------------------------------------------------------------------
-	
-	
+
+
 	//Write Breadcrumbs (Probably can't use these from widget very effectively - better to build your own)
 	//foxyshop_breadcrumbs(" &raquo; ");
 
@@ -31,18 +31,18 @@ global $product, $foxyshop_category_slug, $post;
 	//If there's a category description, write it here
 	if ($currentCategoryDescription) echo '<p>' . $currentCategoryDescription . '</p>'."\n";
 
-	
+
 	//Run the query for all products in this category
 	//Note that the widget displays ALL products since pagination isn't possible
-	
+
 	$args = array('post_type' => 'foxyshop_product', "foxyshop_categories" => $currentCategorySlug, 'post_status' => 'publish', 'posts_per_page' => -1);
 	$args = array_merge($args,foxyshop_sort_order_array());
 	$args = array_merge($args,foxyshop_hide_children_array($currentCategoryID));
 	$category_contents = get_posts($args);
 	echo '<ul class="foxyshop_product_list">';
-	foreach($category_contents AS $post) {
+	foreach($category_contents as $post) {
 		setup_postdata($post);
-		
+
 		//Product Display
 		foxyshop_include('product-loop');
 

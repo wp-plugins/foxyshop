@@ -1,4 +1,7 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 add_action('widgets_init', 'foxyshop_load_widgets');
 
 function foxyshop_load_widgets() {
@@ -202,9 +205,6 @@ class FoxyShop_Cart_Link extends WP_Widget {
 	}
 }
 
-
-
-
 class FoxyShop_Category_List extends WP_Widget {
 
 	//Widget setup.
@@ -385,4 +385,3 @@ function foxyshop_order_history_dashboard_ajax() {
 	echo '<li>' . __('30 Days', 'foxyshop') . ': <a href="edit.php?foxyshop_search=1&amp;is_test_filter=&amp;post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;transaction_date_filter_begin=' . date("Y-m-d", strtotime("-30 days")) . '&amp;transaction_date_filter_end='.date("Y-m-d") . '">' . $orderstats[30][0] . ' ' . _n('order', 'orders', $orderstats[30][0], 'foxyshop') . ', ' . foxyshop_currency($orderstats[30][1]) . '</a></li>'."\n";
 	die;
 }
-?>

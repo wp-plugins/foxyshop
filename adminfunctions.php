@@ -1,4 +1,7 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 //Insert jQuery
 function foxyshop_insert_jquery() {
 	$jquery_url = "http" . ($_SERVER['SERVER_PORT'] == 443 ? 's' : '') . "://ajax.googleapis.com/ajax/libs/jquery/".FOXYSHOP_JQUERY_VERSION."/jquery.min.js";
@@ -205,7 +208,7 @@ function foxyshop_activation() {
 	//Defaults For Settings
 	$default_foxyshop_settings = array(
 		"domain" => "",
-		"version" => "0.7.2",
+		"version" => "1.0",
 		"foxyshop_version" => FOXYSHOP_VERSION,
 		"ship_categories" => "",
 		"enable_ship_to" => "",

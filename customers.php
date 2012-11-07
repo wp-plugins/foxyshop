@@ -1,13 +1,15 @@
 <?php
-add_action('admin_menu', 'foxyshop_customer_management_menu');
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
 
+add_action('admin_menu', 'foxyshop_customer_management_menu');
 function foxyshop_customer_management_menu() {
 	add_submenu_page('edit.php?post_type=foxyshop_product', __('Customer Management', 'foxyshop'), __('Customers', 'foxyshop'), apply_filters('foxyshop_customer_perm', 'manage_options'), 'foxyshop_customer_management', 'foxyshop_customer_management');
 }
 
 function foxyshop_customer_management() {
 	global $foxyshop_settings, $wp_version;
-	
+
 	//Setup Fields and Defaults
 	$foxy_data_defaults = array(
 		"customer_id_filter" => "",
@@ -41,15 +43,12 @@ function foxyshop_customer_management() {
 			if ($_GET['paged-top'] != $_GET['paged-top-original']) $foxy_data['pagination_start'] = $p * ((int)$_GET['paged-top'] - 1) + 1 + $start_offset;
 			if ($_GET['paged-bottom'] != $_GET['paged-bottom-original']) $foxy_data['pagination_start'] = $p * ((int)$_GET['paged-bottom'] - 1) + 1 + $start_offset;
 		}
-	}	
+	}
 
-
-	?>	
-	
+	?>
 	<div class="wrap">
 		<div class="icon32" id="icon-users"><br></div>
 		<h2><?php _e('Manage Customers', 'foxyshop'); ?></h2>
-
 
 		<form action="edit.php" method="get" id="foxyshop_searchform" name="foxyshop_searchform" style="display: block; margin: 14px 0 20px 0;">
 		<input type="hidden" name="foxyshop_search" value="1" />
@@ -59,7 +58,7 @@ function foxyshop_customer_management() {
 		<table class="widefat">
 		<thead><tr><th colspan="2"><img src="<?php echo FOXYSHOP_DIR; ?>/images/search-icon.png" alt="" /><?php _e('Search Options', 'foxyshop'); ?></th></tr></thead>
 		<tbody><tr><td>
-		
+
 			<div class="foxyshop_field_control">
 				<label for="customer_id_filter"><?php _e('Customer ID', 'foxyshop'); ?></label><input type="text" name="customer_id_filter" id="customer_id_filter" value="<?php echo $foxy_data['customer_id_filter']; ?>" />
 			</div>
@@ -82,11 +81,11 @@ function foxyshop_customer_management() {
 			<div class="foxyshop_field_control">
 				<label for="customer_state_filter"><?php _e('Customer State', 'foxyshop'); ?></label><input type="text" name="customer_state_filter" id="customer_state_filter" value="<?php echo $foxy_data['customer_state_filter']; ?>" />
 			</div>
-			
+
 			<div style="clear: both;"></div>
 			<button type="submit" id="foxyshop_search_submit" name="foxyshop_search_submit" class="button-primary" style="clear: left; margin: 10px 0 6px 0;"><?php _e('Search Records Now', 'foxyshop'); ?></button>
 			<button type="button" class="button" style="margin-left: 15px;" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_customer_management';"><?php _e('Reset Form', 'foxyshop'); ?></button>
-			
+
 		</td></tr></tbody></table>
 		</form>
 
@@ -238,7 +237,7 @@ function foxyshop_customer_management() {
 	<?php } ?>
 
 	<div id="details_holder"><?php echo $holder; ?></div>
-	
+
 	<script type="text/javascript" src="<?php echo FOXYSHOP_DIR; ?>/js/jquery.tablesorter.js"></script>
 	<script type="text/javascript">
 	jQuery(document).ready(function($){
@@ -266,18 +265,14 @@ function foxyshop_customer_management() {
 
 			return false;
 		});
-		
-		
+
+
 		<?php foxyshop_manage_attributes_jquery('customer'); ?>
 
 	});
 	</script>
 
-	
+
 	<?php
 	echo '</div>';
 }
-
-
-
-?>

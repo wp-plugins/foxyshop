@@ -1,4 +1,7 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 add_action('admin_menu', 'foxyshop_subscription_management_menu');
 
 function foxyshop_subscription_management_menu() {
@@ -7,7 +10,7 @@ function foxyshop_subscription_management_menu() {
 
 function foxyshop_subscription_management() {
 	global $foxyshop_settings, $wp_version, $product;
-	
+
 	//Setup Fields and Defaults
 	$foxy_data_defaults = array(
 		"is_active_filter" => "",
@@ -38,7 +41,7 @@ function foxyshop_subscription_management() {
 	$foxy_data = wp_parse_args(array("api_action" => "subscription_list"), apply_filters('foxyshop_subscription_filter_defaults',$foxy_data_defaults));
 	$foxyshop_querystring = "?post_type=foxyshop_product&amp;page=foxyshop_subscription_management&amp;foxyshop_search=1";
 	$foxyshop_hidden_input = "";
-	
+
 	if (isset($_GET['foxyshop_search']) || !defined('FOXYSHOP_AUTO_API_DISABLED')) {
 		$fields = array("is_active_filter", "frequency_filter", "past_due_amount_filter","start_date_filter_begin", "start_date_filter_end", "next_transaction_date_filter_begin", "next_transaction_date_filter_end", "end_date_filter_begin", "end_date_filter_end", "third_party_id_filter", "last_transaction_id_filter", "customer_id_filter", "customer_email_filter", "customer_first_name_filter", "customer_last_name_filter", "product_code_filter", "product_name_filter", "product_option_name_filter", "product_option_value_filter", "custom_field_name_filter", "custom_field_value_filter");
 		foreach ($fields as $field) {
@@ -57,7 +60,7 @@ function foxyshop_subscription_management() {
 			if ($_GET['paged-bottom'] != $_GET['paged-bottom-original']) $foxy_data['pagination_start'] = $p * ((int)$_GET['paged-bottom'] - 1) + 1 + $start_offset;
 		}
 	}
-	
+
 	$subscription_products = get_posts(array('post_type' => 'foxyshop_product', "meta_key" => "_sub_frequency", "meta_value" => "", 'meta_compare' => '!=', "_sub_frequency", 'numberposts' => -1));
 	$subscription_product_array = array();
 	foreach($subscription_products as $subscription_product) {
@@ -68,8 +71,8 @@ function foxyshop_subscription_management() {
 			"price" => $product['price']
 		);
 	}
-	?>	
-	
+	?>
+
 	<div class="wrap">
 		<div class="icon32 icon32-posts-page" id="icon-edit-pages"><br></div>
 		<h2><?php _e('Manage Subscriptions', 'foxyshop'); ?></h2>
@@ -150,7 +153,7 @@ function foxyshop_subscription_management() {
 				<span><?php _e('to', 'foxyshop'); ?></span>
 				<input type="text" name="end_date_filter_end" id="end_date_filter_end" value="<?php echo $foxy_data['end_date_filter_end']; ?>" class="foxyshop_date_field" />
 			</div>
-		
+
 			<div class="foxyshop_field_control">
 				<label for="customer_id_filter"><?php _e('Customer ID', 'foxyshop'); ?></label><input type="text" name="customer_id_filter" id="customer_id_filter" value="<?php echo $foxy_data['customer_id_filter']; ?>" />
 			</div>
@@ -163,14 +166,14 @@ function foxyshop_subscription_management() {
 			<div class="foxyshop_field_control">
 				<label for="customer_last_name_filter"><?php _e('Customer Last Name', 'foxyshop'); ?></label><input type="text" name="customer_last_name_filter" id="customer_last_name_filter" value="<?php echo $foxy_data['customer_last_name_filter']; ?>" />
 			</div>
-			
+
 			<div style="clear: both;"></div>
 			<button type="submit" id="foxyshop_search_submit" name="foxyshop_search_submit" class="button-primary" style="clear: both; margin-top: 10px;"><?php _e('Search Records Now', 'foxyshop'); ?></button>
 			<button type="button" class="button" style="margin-left: 15px;" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_subscription_management';"><?php _e('Reset Form', 'foxyshop'); ?></button>
-			
+
 		</td></tr></tbody></table>
-			
-		
+
+
 		</form>
 		<script type="text/javascript" charset="utf-8">
 		jQuery(document).ready(function($) {
@@ -183,7 +186,7 @@ function foxyshop_subscription_management() {
 
 	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
-	
+
 	if ((string)$xml->result == __('ERROR', 'foxyshop')) {
 		echo '<h3>' . (string)$xml->messages->message . '</h3>';
 		return;
@@ -354,9 +357,9 @@ function foxyshop_subscription_management() {
 		?>
 		</form>
 	<?php } ?>
-	
+
 	<div id="details_holder"><?php echo $holder; ?></div>
-	
+
 	<script type="text/javascript" src="<?php echo FOXYSHOP_DIR; ?>/js/jquery.tablesorter.js"></script>
 	<script type="text/javascript">
 	jQuery(document).ready(function($){
@@ -428,10 +431,6 @@ function foxyshop_subscription_management() {
 
 	</script>
 	<?php
-	
+
 	echo '</div>';
 }
-
-
-
-?>

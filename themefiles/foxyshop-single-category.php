@@ -11,7 +11,7 @@ This will allow you to upgrade FoxyShop without breaking your customizations. Mo
 <div id="foxyshop_container">
 	<?php
 	global $product;
-	
+
 	//Write Breadcrumbs
 	foxyshop_breadcrumbs(" &raquo; ");
 
@@ -33,7 +33,7 @@ This will allow you to upgrade FoxyShop without breaking your customizations. Mo
 
 	//Show Children Categories
 	foxyshop_category_children($currentCategoryID);
-	
+
 	//Run the query for all products in this category
 	$args = array('post_type' => 'foxyshop_product', "foxyshop_categories" => $currentCategorySlug, 'post_status' => 'publish', 'posts_per_page' => foxyshop_products_per_page(), 'paged' => get_query_var('paged'));
 	$args = array_merge($args,foxyshop_sort_order_array());
@@ -42,13 +42,13 @@ This will allow you to upgrade FoxyShop without breaking your customizations. Mo
 	echo '<ul class="foxyshop_product_list">';
 	while (have_posts()) :
 		the_post();
-		
+
 		//Product Display
 		foxyshop_include('product-loop');
 
 	endwhile;
 	echo '</ul>';
-	
+
 	//Pagination
 	foxyshop_get_pagination();
 	?>

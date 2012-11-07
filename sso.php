@@ -1,4 +1,7 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 //When Saving Profile, These Actions Sync Data to FoxyCart
 add_action('profile_update', 'foxyshop_profile_update', 5);
 add_action('user_register', 'foxyshop_profile_add', 5);
@@ -170,6 +173,3 @@ function foxyshop_add_registration_redirect($path) {
 	if (substr($path, strlen($path)-12) == "wp-login.php" && isset($_REQUEST['redirect_to'])) return $path . '?redirect_to='.urlencode($_REQUEST['redirect_to']);
 	return $path;
 }
-
-
-?>

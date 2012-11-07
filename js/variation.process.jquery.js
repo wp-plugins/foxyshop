@@ -276,6 +276,7 @@ foxycart_required_fields_check = function(e, arr) {
 	if (strFailed) {
 		return false;
 	} else {
+		if (jQuery("#foxyshop_product_form_" + current_product_id + " #productsubmit").attr("disabled")) return false;
 		return true;
 	}
 }

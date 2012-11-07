@@ -1,4 +1,7 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 if (isset($_GET['action-top']) && isset($_GET['action-bottom'])) add_action('admin_init', 'foxyshop_multi_api_edit');
 function foxyshop_multi_api_edit() {
 	if (!isset($_GET['post'])) return;
@@ -32,7 +35,7 @@ if (isset($_GET['transaction_search_type'])) {
 
 function foxyshop_print_invoice() {
 	global $foxyshop_settings;
-	
+
 	//Setup Fields and Defaults
 	$foxy_data_defaults = array(
 		"is_test_filter" => "0",
@@ -66,7 +69,7 @@ function foxyshop_print_invoice() {
 		}
 		$foxy_data['pagination_start'] = (isset($_GET['pagination_start']) ? $_GET['pagination_start'] : 0);
 		if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) $foxy_data['entries_per_page'] = FOXYSHOP_API_ENTRIES_PER_PAGE;
-	}	
+	}
 
 	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
@@ -76,13 +79,13 @@ function foxyshop_print_invoice() {
 		die;
 	}
 
-	include(foxyshop_get_template_file('/foxyshop-receipt.php'));
+	include foxyshop_get_template_file('/foxyshop-receipt.php');
 	die;
 }
 
 
 //Shipping Integrations
-include_once('shippingintegration.php');
+include_once FOXYSHOP_PATH . '/shippingintegration.php';
 
 
 //Order Management
@@ -93,7 +96,7 @@ function foxyshop_order_management_menu() {
 
 function foxyshop_order_management() {
 	global $foxyshop_settings, $wp_version;
-	
+
 	//Setup Fields and Defaults
 	$foxy_data_defaults = array(
 		"is_test_filter" => "0",
@@ -123,7 +126,7 @@ function foxyshop_order_management() {
 	$foxy_data = wp_parse_args(array("api_action" => "transaction_list"), apply_filters('foxyshop_transaction_filter_defaults',$foxy_data_defaults));
 	$foxyshop_querystring = "?post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;foxyshop_search=1";
 	$foxyshop_hidden_input = "";
-	
+
 
 	if (isset($_GET['foxyshop_search']) || !defined('FOXYSHOP_AUTO_API_DISABLED')) {
 		$fields = array("is_test_filter", "hide_transaction_filter", "data_is_fed_filter", "id_filter", "order_total_filter", "coupon_code_filter", "transaction_date_filter_begin", "transaction_date_filter_end", "customer_id_filter", "customer_email_filter", "customer_first_name_filter", "customer_last_name_filter","customer_state_filter", "shipping_state_filter", "customer_ip_filter", "product_code_filter", "product_name_filter", "product_option_name_filter", "product_option_value_filter", "custom_field_name_filter", "custom_field_value_filter");
@@ -143,7 +146,7 @@ function foxyshop_order_management() {
 			if ($_GET['paged-bottom'] != $_GET['paged-bottom-original']) $foxy_data['pagination_start'] = $p * ((int)$_GET['paged-bottom'] - 1) + 1 + $start_offset;
 		}
 	}
-	
+
 	$transaction_search_type = isset($_GET['transaction_search_type']) ? $_GET['transaction_search_type'] : '';
 
 	if ($foxyshop_settings["orderdesk_url"]) {
@@ -151,8 +154,8 @@ function foxyshop_order_management() {
 	} else {
 		$orderdesk_link = "";
 	}
-	?>	
-	
+	?>
+
 	<div class="wrap">
 		<div class="icon32 icon32-posts-page" id="icon-edit-pages"><br></div>
 		<h2><?php _e('Manage Orders', 'foxyshop'); echo $orderdesk_link; ?></h2>
@@ -228,7 +231,7 @@ function foxyshop_order_management() {
 				<label for="product_option_name_filter"><?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Option Name', 'foxyshop'); ?></label><input type="text" name="product_option_name_filter" id="product_option_name_filter" value="<?php echo $foxy_data['product_option_name_filter']; ?>" />
 				<label for="product_option_value_filter" style="margin-left: 15px; margin-top: 4px; width: 34px;"><?php _e('Value', 'foxyshop'); ?></label><input type="text" name="product_option_value_filter" id="product_option_value_filter" value="<?php echo $foxy_data['product_option_value_filter']; ?>" />
 			</div>
-			
+
 			<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) { ?>
 			<div class="foxyshop_field_control">
 				<label for="custom_field_name_filter"><?php _e('Custom Field Name', 'foxyshop'); ?></label><input type="text" name="custom_field_name_filter" id="custom_field_name_filter" value="<?php echo $foxy_data['custom_field_name_filter']; ?>" />
@@ -244,7 +247,7 @@ function foxyshop_order_management() {
 			</div>
 
 
-		
+
 			<div class="foxyshop_field_control">
 				<label for="customer_id_filter"><?php _e('Customer ID', 'foxyshop'); ?></label><input type="text" name="customer_id_filter" id="customer_id_filter" value="<?php echo $foxy_data['customer_id_filter']; ?>" />
 			</div>
@@ -266,7 +269,7 @@ function foxyshop_order_management() {
 			<div class="foxyshop_field_control">
 				<label for="customer_ip_filter"><?php _e('Customer IP', 'foxyshop'); ?></label><input type="text" name="customer_ip_filter" id="customer_ip_filter" value="<?php echo $foxy_data['customer_ip_filter']; ?>" />
 			</div>
-			
+
 			<div style="clear: both;"></div>
 			<select name="transaction_search_type" id="transaction_search_type">
 				<option value="show_orders"<?php echo ($transaction_search_type == "show_orders" ? ' selected="selected"' : ''); ?>><?php _e('Show Orders', 'foxyshop'); ?></option>
@@ -280,7 +283,7 @@ function foxyshop_order_management() {
 			</select>
 			<button type="submit" id="foxyshop_search_submit" name="foxyshop_search_submit" class="button-primary" style="clear: left; margin-top: 10px;"><?php _e('Submit', 'foxyshop'); ?></button>
 			<button type="button" class="button submitcancel" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_order_management';"><?php _e('Reset', 'foxyshop'); ?></button>
-			
+
 			<div style="clear: both;"></div>
 			<?php
 			if (has_action('foxyshop_order_search_buttons')) {
@@ -290,9 +293,9 @@ function foxyshop_order_management() {
 			}
 			?>
 		</td></tr></tbody></table>
-		
+
 		</form>
-		
+
 		<script type="text/javascript">
 		jQuery(document).ready(function($) {
 			$("#foxyshop_searchform button").live("click", function() {
@@ -312,7 +315,7 @@ function foxyshop_order_management() {
 
 	<?php
 	if (!isset($_GET['foxyshop_search']) && defined('FOXYSHOP_AUTO_API_DISABLED')) return;
-	
+
 	$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
 	//var_dump($xml);
@@ -585,7 +588,7 @@ function foxyshop_order_management() {
 
 
 	<div id="details_holder"><?php echo $holder; ?></div>
-	
+
 	<script type="text/javascript" src="<?php echo FOXYSHOP_DIR; ?>/js/jquery.tablesorter.js"></script>
 	<script type="text/javascript">
 	jQuery(document).ready(function($){
@@ -600,7 +603,7 @@ function foxyshop_order_management() {
 		});
 		$(".view_detail").click(function() {
 			var id = $(this).parents("tr").attr("rel");
-			
+
 			if ($("#foxyshop-list-inline #holder_" + id).length > 0) {
 				$("#foxyshop-list-inline .detail_holder").appendTo("#details_holder");
 				$("#foxyshop-list-inline").remove();
@@ -611,7 +614,7 @@ function foxyshop_order_management() {
 				$(this).parents("tr").after('<tr id="foxyshop-list-inline"><td colspan="7"></td></tr>');
 				$("#holder_"+id).appendTo("#foxyshop-list-inline td");
 			}
-			
+
 			return false;
 		});
 
@@ -635,7 +638,7 @@ function foxyshop_order_management() {
 				alert(response);
 			<?php } ?>
 			});
-			
+
 			return false;
 		});
 
@@ -644,9 +647,7 @@ function foxyshop_order_management() {
 	});
 	</script>
 
-	
+
 	<?php
 
 }
-
-

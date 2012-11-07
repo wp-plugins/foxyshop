@@ -1,15 +1,16 @@
 <?php
+//Exit if not called in proper context
+if (!defined('ABSPATH')) exit();
+
 //Only run this if sort key is set to custom
 if ($foxyshop_settings['sort_key'] == "menu_order") add_action('admin_menu', 'foxyshop_custom_sorting_menu');
-function foxyshop_custom_sorting_menu() {    
+function foxyshop_custom_sorting_menu() {
 	add_submenu_page('edit.php?post_type=foxyshop_product', sprintf(__('Custom %s Sorting', 'foxyshop'), FOXYSHOP_PRODUCT_NAME_SINGULAR), sprintf(__('Set %s Order', 'foxyshop'), FOXYSHOP_PRODUCT_NAME_SINGULAR), apply_filters('foxyshop_product_sort_perm', 'edit_others_pages'), 'foxyshop_custom_sort', 'foxyshop_custom_sort');
 }
 
-
-
 //Update Order
 function foxyshop_update_order() {
-	if ($_POST['foxyshop_product_order_value'] != "") { 
+	if ($_POST['foxyshop_product_order_value'] != "") {
 		global $wpdb;
 
 		$foxyshop_product_order_value = $_POST['foxyshop_product_order_value'];
@@ -56,7 +57,7 @@ function foxyshop_custom_sort() {
 	<div class="icon32" id="icon-tools"><br></div>
 	<h2><?php echo sprintf(__('Custom %s Order'), FOXYSHOP_PRODUCT_NAME_SINGULAR); ?></h2>
 	<?php if ($success) echo $success; ?>
-	
+
 	<?php
 	$product_categories = get_terms('foxyshop_categories', 'hide_empty=0&hierarchical=0&orderby=name&order=ASC');
 	if ($product_categories) {
@@ -73,9 +74,9 @@ function foxyshop_custom_sort() {
 		$categoryID = 0;
 	}
 	if (!isset($categoryID) && isset($_POST['categoryID'])) $categoryID = $_POST['categoryID'];
-	
+
 	if (isset($categoryID)) {
-	
+
 		if ($categoryID > 0) {
 			$term = get_term_by('id', $categoryID, "foxyshop_categories");
 			$current_category_name = $term->name;
@@ -87,7 +88,7 @@ function foxyshop_custom_sort() {
 			$current_category_name = __("All", 'foxyshop') . ' ' . FOXYSHOP_PRODUCT_NAME_PLURAL;
 			$args = array('post_type' => 'foxyshop_product', 'numberposts' => -1, 'orderby' => "menu_order", 'order' => "ASC");
 		}
-	
+
 
 		$product_list = get_posts($args);
 		if ($product_list) {
@@ -127,15 +128,10 @@ function foxyshop_custom_sort() {
 
 </div>
 
-
-	
-
-
-
 <script type="text/javascript">
 function foxyshop_custom_order_load_event(){
-	jQuery("#foxyshop_product_order_list").sortable({ 
-		placeholder: "sortable-placeholder", 
+	jQuery("#foxyshop_product_order_list").sortable({
+		placeholder: "sortable-placeholder",
 		revert: false,
 		tolerance: "pointer",
 		update: function() {
@@ -153,6 +149,4 @@ function orderPages() {
 	jQuery("#foxyshop_product_order_value").val(jQuery("#foxyshop_product_order_list").sortable("toArray"));
 }
 </script>
-<?php
-}
-?>
+<?php } ?>

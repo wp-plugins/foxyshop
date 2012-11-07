@@ -3,15 +3,15 @@ Contributors: sparkweb
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2AHG2QMABF8SG
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription, foxy
 Requires at least: 3.1
-Tested up to: 3.4.2
-Stable tag: 4.2.1
+Tested up to: 3.5
+Stable tag: 4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
 
 == Description ==
 
-FoxyShop is a complete shopping cart solution for WordPress. This plugin connects to [FoxyCart's]((http://affiliate.foxycart.com/idevaffiliate.php?id=211)) hosted shopping cart service and will allow you to manage your inventory from a WordPress backend. FoxyShop was built to make the integration of FoxyCart and WordPress a breeze. Products are easy to manage and the flexible templates make it easy for developers to quickly build their storefront. The FoxyShop plugin is exhaustively documented, actively maintained, and completely free.
+FoxyShop is a complete shopping cart solution for WordPress. This plugin connects to [FoxyCart's]((http://affiliate.foxycart.com/idevaffiliate.php?id=211)) hosted shopping cart service and will allow you to manage your inventory from a WordPress backend. FoxyShop was built to make the integration of FoxyCart and WordPress a breeze. Products are easy to manage and the flexible templates make it easy for developers to quickly build their storefront. The FoxyShop plugin is exhaustively documented, actively maintained, and completely free. And it's foxy, too.
 
 Visit [foxy-shop.com](http://www.foxy-shop.com/) for full documentation and instructions.
 
@@ -66,6 +66,22 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 4.3 =
+* Added native support for cart, checkout, and coupon settings at the product level
+* Added support for hidden field product variations
+* Set FoxyCart version 1.0 as default
+* Updated to jQuery 1.8.2
+* Updated to jQuery UI 1.9
+* Reverted jQuery UI theme to Smoothness (from Lightness in FoxyShop 4.2.1)
+* Fixed double-encoding in foreign currency in javascript context
+* Fix for apostrophes in saved variation titles
+* Include and require functions now use absolute paths
+* Security: added checks to make sure that any FoxyShop php pages can't be run directly
+* Fix for missing alert values on imported inventory records
+* Fix for missing quantity_min and quantity_max values on the add to cart link
+* Fix for inventory error generated when there's no product code
+* Fix to make sure that add to cart form can't be submitted if submit button is disabled
 
 = 4.2.1 =
 * Added support for multiple dkeys split by a comma: {dkey:key1,key2}
