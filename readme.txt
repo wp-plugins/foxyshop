@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription, foxy
 Requires at least: 3.1
 Tested up to: 3.5
-Stable tag: 4.3
+Stable tag: 4.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
@@ -66,6 +66,13 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 4.3.1 =
+* Added easier category syncing for FoxyCart 0.7.2+
+* Fixed spacing issue with WP 3.5
+* Fix to remove the `quantity_max` field when backordering is allowed
+* Show warning if cURL is not installed
+* Moved the template cache functionality up so that scrolling isn't required as often on the tools page
 
 = 4.3 =
 * Added native support for cart, empty, and coupon settings at the product level
@@ -271,5 +278,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 4.3 =
-New default FC, hidden product fields, native support for direct checkout options
+= 4.3.1 =
+Fixed spacing issue iwth WP 3.5, added a few small features

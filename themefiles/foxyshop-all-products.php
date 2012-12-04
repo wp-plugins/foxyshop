@@ -19,11 +19,11 @@ global $product;
 
 	//Write Product Sort Dropdown
 	//foxyshop_sort_dropdown();
-	
+
 	//Feel free to put a store description here
 	//echo '<p></p>'."\n";
 
-	
+
 	//Run the query for all products in this category
 	global $paged, $wp_query;
 	$paged = get_query_var('page');
@@ -39,7 +39,7 @@ global $product;
 
 	endwhile;
 	echo '</ul>';
-	
+
 	//Pagination
 	foxyshop_get_pagination();
 	?>

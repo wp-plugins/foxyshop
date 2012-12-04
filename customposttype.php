@@ -373,6 +373,36 @@ function foxyshop_product_details_setup() {
 		<label id="quantity_hide_label" for="_quantity_hide" style="float: left; margin: 6px 0 0 2px; width: 16px;" title="<?php _e('Hide Quantity Box', 'foxyshop'); ?>" class="iconsprite <?php echo $_quantity_hide ? "hide_color" : "hide_gray"; ?>"></label>
 		<div style="clear:both"></div>
 	</div>
+
+	<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=") && $foxyshop_settings['domain']) { ?>
+	<div id="foxyshop_category" class="foxyshop_field_control">
+		<label for="_category" style="width: 100%;">
+			<?php _e('FoxyCart Category'); ?>
+			<small>(<a href="#" id="ajax_get_category_list_select" title="<?php _e('Refresh List', 'foxyshop'); ?>"><?php _e('Refresh List', 'foxyshop'); ?></a>)</small>
+		</label>
+		<select name="_category" id="_category">
+			<?php
+			if (strpos($foxyshop_settings['ship_categories'], "DEFAULT") === false) $foxyshop_settings['ship_categories'] = "DEFAULT|" . __('Default for all products', 'foxyshop') . "\n" . $foxyshop_settings['ship_categories'];
+			$arrShipCategories = preg_split("/(\r\n|\n|\r)/", $foxyshop_settings['ship_categories']);
+			for ($i = 0; $i < count($arrShipCategories); $i++) {
+				if ($arrShipCategories[$i] == "") continue;
+				$shipping_category = explode("|", $arrShipCategories[$i]);
+				$shipping_category_code = trim($shipping_category[0]);
+				if ($shipping_category_code == "DEFAULT") $shipping_category_code = "";
+				$shipping_category_name = $shipping_category_code;
+				$shipping_category_type = '';
+				if (isset($shipping_category[1])) $shipping_category_name = trim($shipping_category[1]);
+				if (isset($shipping_category[2])) $shipping_category_type = trim($shipping_category[2]);
+				echo '<option value="' . esc_attr($shipping_category_code) . '"';
+				if ($shipping_category_type) echo ' rel="' . esc_attr($shipping_category_type) . '"';
+				if (esc_attr($shipping_category_code == $_category)) echo ' selected="selected"';
+				echo '>' . esc_attr($shipping_category_name) . '</option>';
+				echo "\n";
+			}
+			?>
+		</select>
+	</div>
+	<?php } else { ?>
 	<div id="foxyshop_category" class="foxyshop_field_control">
 		<label for="_category" style="width:76px; margin-right: 4px;"><?php _e('FoxyCart Cat'); ?></label>
 		<select name="_category" id="_category">
@@ -397,6 +427,7 @@ function foxyshop_product_details_setup() {
 			?>
 		</select>
 	</div>
+	<?php } ?>
 
 	<?php
 	if ($foxyshop_settings['show_add_to_cart_link'] && isset($_REQUEST['post'])) {
@@ -575,7 +606,7 @@ function foxyshop_product_pricing_setup() {
 
 	<?php if ($foxyshop_settings['manage_inventory_levels']) { ?>
 	<h4><?php _e('Set Inventory Levels', 'foxyshop'); ?></a></h4>
-	<div style="float: left; width: 155px; margin-bottom: 5px; font-size: 11px;"><? echo FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Code', 'foxyshop');?></div>
+	<div style="float: left; width: 154px; margin-bottom: 5px; font-size: 11px;"><? echo FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Code', 'foxyshop');?></div>
 	<div style="float: left; width: 52px; margin-bottom: 5px; font-size: 11px;"><?php _e('Count', 'foxyshop'); ?></div>
 	<div style="float: left; width: 50px; margin-bottom: 5px; font-size: 11px;" title="<?php echo sprintf(__('If not set, default value will be used (%s)', 'foxyshop'), $foxyshop_settings['inventory_alert_level']); ?>"><?php _e('Alert Lvl', 'foxyshop'); ?></div>
 	<ul id="inventory_levels">

@@ -70,6 +70,27 @@ jQuery(document).ready(function($){
 
 	}
 
+
+	//Refresh FoxyCart Categories
+	$("#ajax_get_category_list_select").click(function() {
+		var data = {
+			action: 'foxyshop_ajax_get_category_list_select',
+			security: nonce_downloadable_list
+		};
+		$("#_category option").remove();
+		$("#_category").append('<option value="">Refreshing Now...</option>' + "\n");
+		$(this).addClass("waiting");
+		$.post(ajaxurl, data, function(response) {
+			$("#_category option").remove();
+			if (response) {
+				$("#_category").append(response);
+			} else {
+				$("#_category").append('<option value="">None Found</option>' + "\n" + response);
+			}
+		});
+
+	});
+
 	//When Weight is Disabled
 	$("#weight_disable").click(function() {
 		if ($(this).is(":checked")) {

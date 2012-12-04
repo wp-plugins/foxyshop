@@ -42,6 +42,7 @@ function foxyshop_run_external_datafeeds($external_datafeeds) {
 				$message .= "The feed that failed was $feedurl\n\n";
 				$message .= "The error is listed below:\n\n";
 				$message .= $error_msg;
+				$message .= "\n\n" . foxyshop_decrypt($_POST["FoxyData"]);
 				$headers = 'From: ' . get_bloginfo('name') . ' Server Admin <' . $to_email . '>' . "\r\n";
 				mail($to_email, 'Data Feed Error on ' . get_bloginfo('name'), $message, $headers);
 				curl_close($ch);

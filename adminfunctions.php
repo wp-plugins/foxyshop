@@ -456,7 +456,7 @@ function foxyshop_inventory_count_update($code, $new_count, $product_id = 0, $fo
 
 
 //Get Category List from FoxyCart API
-function foxyshop_get_category_list() {
+function foxyshop_get_category_list($output_type = "") {
 	global $foxyshop_settings;
 	if (version_compare($foxyshop_settings['version'], '0.7.2', "<") || !$foxyshop_settings['domain']) return "";
 	$foxy_data = array("api_action" => "category_list");
@@ -464,12 +464,24 @@ function foxyshop_get_category_list() {
 	$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
 	if ($xml->result == "ERROR") return "";
 	$output = "";
+	$save = "";
 	foreach($xml->categories->category as $category) {
 		$code = (string)$category->code;
 		$description = (string)$category->description;
 		$product_delivery_type = (string)$category->product_delivery_type;
-		$output .= "$code|$description|$product_delivery_type\n";
+		$save .= "$code|$description|$product_delivery_type\n";
+
+		if ($output_type == "") {
+			$output .= "$code|$description|$product_delivery_type\n";
+		} elseif ($output_type == "select") {
+			$output .= '<option value="' . htmlspecialchars($code) . '">' . htmlspecialchars($description) . '</option>' . "\n";
+		}
 	}
+
+	//Save
+	$foxyshop_settings['ship_categories'] = trim($save);
+	update_option("foxyshop_settings", $foxyshop_settings);
+
 	return trim($output);
 }
 

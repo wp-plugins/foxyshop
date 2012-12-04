@@ -26,6 +26,8 @@ function foxyshop_save_feed_file() {
 function foxyshop_create_feed() {
 	global $product, $google_product_field_names;
 
+	$amazon_version = isset($_GET['amazon_version']) ? 1 : 0;
+
 	//Field Names
 	$fieldnames = array(
 		'id',
@@ -47,6 +49,12 @@ function foxyshop_create_feed() {
 	$write = "";
 	foreach($fieldnames as $field) {
 		if ($field != $fieldnames[0]) $write .= "\t";
+		if ($amazon_version) {
+			if ($field == "product_type") $field = "category";
+			if ($field == "id") $field = "sku";
+			if ($field == "image_link") $field = "image";
+			if ($field == "Mfr part number") $field = "mpn";
+		}
 		$write .= '"' . $field . '"';
 	}
 	$write .= "\n";
@@ -560,6 +568,7 @@ function foxyshop_google_products_page() {
 			$google_product_listed = (int)get_post_meta($product['id'],'_google_product_listed',TRUE);
 			if ($google_product_listed > strtotime("now") && !isset($_GET['debug'])) continue;
 			$none_available = 0;
+			if (!isset($google_product_id)) $google_product_id = "";
 
 			$salestartdate = get_post_meta($product['id'],'_salestartdate',TRUE);
 			$saleenddate = get_post_meta($product['id'],'_saleenddate',TRUE);
@@ -631,7 +640,10 @@ function foxyshop_google_products_page() {
 			<tr>
 				<td>
 					<p>If you would like to <a href="http://www.google.com/merchants" target="_blank">submit your products to Google</a>, you may do so by creating a product feed using this tool. Make sure that you check the option that <a href="http://www.google.com/support/merchants/bin/answer.py?answer=160037" target="_blank">enables double quotes.</a> You also need to make sure that the '_google_product_category' custom field is filled out for each product.</p>
-					<p><a href="edit.php?post_type=foxyshop_product&amp;create_google_product_feed=1" class="button-primary">Create Google Product Feed</a></p>
+					<p>
+						<a href="edit.php?post_type=foxyshop_product&amp;create_google_product_feed=1" class="button-primary">Create Google Product Feed</a>
+						<a href="edit.php?post_type=foxyshop_product&amp;create_google_product_feed=1&amp;amazon_version=1" class="button-primary">Create Amazon Product Ads Feed</a>
+					</p>
 				</td>
 			</tr>
 		</tbody>

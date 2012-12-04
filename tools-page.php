@@ -312,46 +312,6 @@ function foxyshop_tools() {
 
 	<br /><br />
 
-	<form method="post" name="foxyshop_tools_form" action="">
-	<table class="widefat">
-		<thead>
-			<tr>
-				<th><img src="<?php echo $export_icon; ?>" alt="" /><?php _e('Import/Export FoxyShop Settings', 'foxyshop'); ?></th>
-			</tr>
-		</thead>
-		<tbody>
-			<?php if (function_exists('mcrypt_encrypt')) : ?>
-			<tr>
-				<td>
-					<label for="foxyshop_export_settings"><?php echo __('Copy String To Your Clipboard to Export FoxyShop Settings', 'foxyshop'); ?>:</label>
-					<div style="clear: both;"></div>
-					<textarea id="foxyshop_export_settings" name="foxyshop_export_settings" wrap="auto" readonly="readonly" onclick="this.select();" style="font-size: 13px; float: left; width:500px; line-height: 110%; resize: none; height: 80px; font-family: courier;"><?php echo $foxyshop_export_settings; ?></textarea>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="foxyshop_import_settings"><?php echo __('Paste Settings String to Import', 'foxyshop'); ?>:</label>
-					<div style="clear: both;"></div>
-					<textarea id="name="foxyshop_import_settings" name="foxyshop_import_settings" wrap="auto" style="float: left; width:500px;height: 80px; font-size: 13px; font-family: courier; line-height: 110%; resize: none;"></textarea>
-					<div style="clear: both;"></div>
-					<p><input type="submit" class="button-primary" value="<?php _e('Import Settings', 'foxyshop'); ?>" /></p>
-				</td>
-			</tr>
-			<?php else : ?>
-			<tr>
-				<td>
-					<p><em>In order to use this feature you need to enable the mcrypt library in your php.ini. More info <a href="http://stackoverflow.com/questions/2604435/what-causes-this-error-fatal-error-call-to-undefined-function-mcrypt-encrypt" target="_blank">here</a>.</em></p>
-				</td>
-			</tr>
-			<?php endif; ?>
-		</tbody>
-	</table>
-	<input type="hidden" name="foxyshop_save_tools" value="1" />
-	<?php wp_nonce_field('import-foxyshop-settings'); ?>
-	</form>
-
-	<br /><br />
-
 	<table class="widefat">
 		<thead>
 			<tr>
@@ -364,7 +324,7 @@ function foxyshop_tools() {
 			<tr>
 				<td>
 					<form method="post" name="foxyshop_cache_form_1" action="">
-					<h3 style="margin-top: 0;">Update FoxyCart Template <span> <a href="http://wiki.foxycart.com/v/0.7.1/templates" target="_blank"><?php _e('Instructions', 'foxyshop'); ?></a></span></h3>
+					<h3 style="margin-top: 0;">Update FoxyCart Template <span> <a href="http://wiki.foxycart.com/v/1.0/templates" target="_blank"><?php _e('Instructions', 'foxyshop'); ?></a></span></h3>
 
 					<label for="foxycart_cart_update" style="width: 150px;">Cart Template URL</label>
 					<input type="text" name="foxycart_cart_update" id="foxycart_cart_update" style="width: 450px;" value="<?php echo htmlspecialchars($foxyshop_settings['template_url_cart']); ?>" />
@@ -606,6 +566,45 @@ echo "</div>";
 	<?php wp_nonce_field('wp-foxyshop-process-saved-variations'); ?>
 	</form>
 
+	<br /><br />
+
+	<form method="post" name="foxyshop_tools_form" action="">
+	<table class="widefat">
+		<thead>
+			<tr>
+				<th><img src="<?php echo $export_icon; ?>" alt="" /><?php _e('Import/Export FoxyShop Settings', 'foxyshop'); ?></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php if (function_exists('mcrypt_encrypt')) : ?>
+			<tr>
+				<td>
+					<label for="foxyshop_export_settings"><?php echo __('Copy String To Your Clipboard to Export FoxyShop Settings', 'foxyshop'); ?>:</label>
+					<div style="clear: both;"></div>
+					<textarea id="foxyshop_export_settings" name="foxyshop_export_settings" wrap="auto" readonly="readonly" onclick="this.select();" style="font-size: 13px; float: left; width:500px; line-height: 110%; resize: none; height: 80px; font-family: courier;"><?php echo $foxyshop_export_settings; ?></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="foxyshop_import_settings"><?php echo __('Paste Settings String to Import', 'foxyshop'); ?>:</label>
+					<div style="clear: both;"></div>
+					<textarea id="name="foxyshop_import_settings" name="foxyshop_import_settings" wrap="auto" style="float: left; width:500px;height: 80px; font-size: 13px; font-family: courier; line-height: 110%; resize: none;"></textarea>
+					<div style="clear: both;"></div>
+					<p><input type="submit" class="button-primary" value="<?php _e('Import Settings', 'foxyshop'); ?>" /></p>
+				</td>
+			</tr>
+			<?php else : ?>
+			<tr>
+				<td>
+					<p><em>In order to use this feature you need to enable the mcrypt library in your php.ini. More info <a href="http://stackoverflow.com/questions/2604435/what-causes-this-error-fatal-error-call-to-undefined-function-mcrypt-encrypt" target="_blank">here</a>.</em></p>
+				</td>
+			</tr>
+			<?php endif; ?>
+		</tbody>
+	</table>
+	<input type="hidden" name="foxyshop_save_tools" value="1" />
+	<?php wp_nonce_field('import-foxyshop-settings'); ?>
+	</form>
 
 	<br /><br />
 

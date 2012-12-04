@@ -80,6 +80,15 @@ function foxyshop_ajax_get_category_list() {
 }
 
 
+//Get New Category List From Product Page AJAX
+add_action('wp_ajax_foxyshop_ajax_get_category_list_select', 'foxyshop_ajax_get_category_list_select');
+function foxyshop_ajax_get_category_list_select() {
+	check_ajax_referer('foxyshop-ajax-get-downloadable-list', 'security');
+	echo foxyshop_get_category_list('select');
+	die;
+}
+
+
 //Get New Downloadable List AJAX
 add_action('wp_ajax_foxyshop_ajax_get_downloadable_list', 'foxyshop_ajax_get_downloadable_list');
 function foxyshop_ajax_get_downloadable_list() {
