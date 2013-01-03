@@ -86,7 +86,7 @@ function foxyshop_save_settings() {
 	$foxyshop_settings["domain"] = trim(stripslashes(str_replace("http://","",$domain)));
 
 	//Set Setup Prompt If FoxyCart API Version Available
-	if ($domain && version_compare($foxyshop_settings['version'], '1.1', ">=") && !$foxyshop_settings['api']['store_access_token']) add_option("foxyshop_setup_required", 1);
+	//if ($domain && version_compare($foxyshop_settings['version'], '1.1', ">=") && !$foxyshop_settings['api']['store_access_token']) add_option("foxyshop_setup_required", 1);
 
 	//Other Settings Treadted Specially
 	$foxyshop_settings["default_weight"] = (int)$_POST['foxyshop_default_weight1'] . ' ' . (double)$_POST['foxyshop_default_weight2'];

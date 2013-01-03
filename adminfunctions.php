@@ -420,7 +420,9 @@ function foxyshop_inventory_count_update($code, $new_count, $product_id = 0, $fo
 		if (!is_array($inventory) && $force) $inventory = array();
 		if (is_array($inventory)) {
 			if ($force || isset($inventory[$code])) {
+				$original_count = isset($inventory[$code]['count']) ? $inventory[$code]['count'] : "";
 				$inventory[$code]['count'] = $new_count;
+				do_action("foxyshop_inventory_update", $code, $original_count, $new_count);
 				update_post_meta($product_id, '_inventory_levels', $inventory);
 			}
 		}
@@ -441,13 +443,17 @@ function foxyshop_inventory_count_update($code, $new_count, $product_id = 0, $fo
 				if (!is_array($inventory)) $inventory = array();
 				$inventory[$code]['count'] = $new_count;
 				$inventory[$code]['alert'] = "";
+				$original_count = "";
+				do_action("foxyshop_inventory_update", $code, $original_count, $new_count);
 				update_post_meta($product_id, '_inventory_levels', $inventory);
 
 
 			//Inventory Already Exists
 			} elseif ($meta_key == "_inventory_levels") {
 				$inventory = maybe_unserialize($meta_value);
+				$original_count = isset($inventory[$code]['count']) ? $inventory[$code]['count'] : "";
 				$inventory[$code]['count'] = $new_count;
+				do_action("foxyshop_inventory_update", $code, $original_count, $new_count);
 				update_post_meta($product_id, '_inventory_levels', $inventory);
 			}
 		}

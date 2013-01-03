@@ -24,6 +24,11 @@ function foxyshop_inventory_update() {
 
 			$db_count = $inventory[$code]['count'];
 			$inventory[$code]['count'] = $db_count + $count_change;
+
+			//Action
+			do_action("foxyshop_inventory_update", $code, $original_count, $new_count);
+
+			//Update
 			update_post_meta($productid, '_inventory_levels', $inventory);
 		}
 		header('Location: edit.php?post_type=foxyshop_product&page=foxyshop_inventory_management_page&saved=1');
@@ -44,6 +49,7 @@ function foxyshop_inventory_update() {
 			$productcode = $line[2];
 			$newcount = (int)$line[4];
 
+			//Update
 			foxyshop_inventory_count_update($productcode, $newcount, $productid);
 			$save_count++;
 		}

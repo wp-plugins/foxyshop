@@ -28,6 +28,7 @@ foxyshop_run_external_datafeeds($external_datafeeds);
 // TRANSACTION DATAFEED
 //-----------------------------------------------------
 if (isset($_POST["FoxyData"])) {
+	if ($_POST['FoxyData'] == "") die('No Content Received From Datafeed');
 
 
 	//DECRYPT (required)
@@ -235,6 +236,8 @@ if (isset($_POST["FoxyData"])) {
 // SUBSCRIPTION DATAFEED
 //-----------------------------------------------------
 } elseif (isset($_POST["FoxySubscriptionData"])) {
+
+	if ($_POST['FoxySubscriptionData'] == "") die('No Content Received From Subscription Datafeed');
 
 	//If you don't want to use any of the subscription datafeed reminder features, uncomment the next line
 	//die("Not In Use");

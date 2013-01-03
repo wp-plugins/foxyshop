@@ -38,7 +38,7 @@ the most out of FoxyShop.
 if (!defined('ABSPATH')) exit();
 
 //Setup Plugin Variables
-define('FOXYSHOP_VERSION', "4.3.1");
+define('FOXYSHOP_VERSION', "4.3.2");
 define('FOXYSHOP_DIR', WP_PLUGIN_URL."/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 $foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
@@ -53,7 +53,7 @@ if (!defined('FOXYSHOP_PRODUCT_SITEMAP_SLUG')) define('FOXYSHOP_PRODUCT_SITEMAP_
 if (!defined('FOXYSHOP_API_ENTRIES_PER_PAGE')) define('FOXYSHOP_API_ENTRIES_PER_PAGE', 50);
 if (!defined('FOXYSHOP_JQUERY_VERSION')) define('FOXYSHOP_JQUERY_VERSION', '1.8.3');
 load_plugin_textdomain('foxyshop', 0, dirname(plugin_basename(__FILE__)).'/languages/');
-$foxycart_version_array = array('1.0' => '1.0', '0.7.2' => '0.7.2', '0.7.1' => '0.7.1', '0.7.0' => '0.7.0');
+$foxycart_version_array = array('1.1' => '1.1', '1.0' => '1.0', '0.7.2' => '0.7.2', '0.7.1' => '0.7.1', '0.7.0' => '0.7.0');
 $google_product_field_names = array('google_product_category', 'mpn', 'gtin', 'brand', 'condition', 'age_group', 'gender', 'color', 'size', 'material', 'pattern');
 
 //Setup Admin Functions
