@@ -59,9 +59,15 @@ function foxyshop_create_feed() {
 	}
 	$write .= "\n";
 
-	$products = get_posts(array('post_type' => 'foxyshop_product', 'post_status' => "publish", 'numberposts' => -1));
+	$products = get_posts(array(
+		'post_type' => 'foxyshop_product',
+		'post_status' => "publish",
+		'posts_per_page' => (int)$_GET['records_per_page'],
+		'paged' => (int)$_GET['records_page'],
+	));
 	foreach($products as $singleproduct) {
 		$product = foxyshop_setup_product($singleproduct);
+		$product = apply_filters('foxyshop_setup_product_info_google', $product);
 
 		foreach($fieldnames as $fieldname) {
 
@@ -78,9 +84,9 @@ function foxyshop_create_feed() {
 					if (!$availability) $availability = "in stock";
 					$write .= foxyshop_dblquotes($availability); break;
 				case "price":
-					$write .= foxyshop_dblquotes($product['originalprice']); break;
+					$write .= foxyshop_dblquotes($product['originalprice'] . " " . apply_filters("foxyshop_google_product_currency", "USD")); break;
 				case "sale_price":
-					$write .= foxyshop_dblquotes(($product['originalprice'] != $product['price'] ? $product['price'] : ''));
+					$write .= foxyshop_dblquotes(($product['originalprice'] != $product['price'] ? $product['price'] . " " . apply_filters("foxyshop_google_product_currency", "USD") : ''));
 					break;
 				case "sale_price_effective_date":
 					if ($product['originalprice'] != $product['price']) {
@@ -119,14 +125,14 @@ function foxyshop_create_feed() {
 					$write .= foxyshop_dblquotes($condition); break;
 
 				case "image_link":
-					$write .= foxyshop_dblquotes(foxyshop_get_main_image()); break;
+					$write .= foxyshop_dblquotes(foxyshop_get_main_image(apply_filters("foxyshop_google_product_image_size", "thumbnail"))); break;
 				case "additional_image_link":
 					$additional_images = array();
 					$number_of_additional_images = 0;
 					foreach($product['images'] AS $product_image) {
 						$number_of_additional_images++;
 						if ($product_image['featured'] == 0 && $number_of_additional_images <= 10) {
-							$additional_images[] = $product_image['thumbnail'];
+							$additional_images[] = $product_image[apply_filters("foxyshop_google_product_image_size", "thumbnail")];
 						}
 					}
 					$write .= foxyshop_dblquotes(implode(",", $additional_images)); break;
@@ -513,123 +519,122 @@ function foxyshop_google_products_page() {
 		</form>
 		<?php
 		}
-	}
-	?>
 
 
-	<?php
-	$meta_query = array(
-		'relation' => 'OR',
-		array(
-			'key' => '_google_product_category',
-			'value' => "",
-			'compare' => '!='
-		)
-	);
-	$args = array('post_type' => 'foxyshop_product', 'post_status' => 'publish', 'numberposts' => "-1", "orderby" => "id", "order" => "ASC", "meta_query" => $meta_query);
-	$product_list = get_posts($args);
-	if ($product_list) {
+		//Display All Unmatched Products
+		$meta_query = array(
+			'relation' => 'OR',
+			array(
+				'key' => '_google_product_category',
+				'value' => "",
+				'compare' => '!='
+			)
+		);
+		$args = array('post_type' => 'foxyshop_product', 'post_status' => 'publish', 'numberposts' => "100", "orderby" => "id", "order" => "ASC", "meta_query" => $meta_query);
+		$product_list = get_posts($args);
+		if ($product_list) {
 
-	?>
-		<h2 style="padding: 100px 0 0 0;">Available, Unmatched <?php echo FOXYSHOP_PRODUCT_NAME_PLURAL; ?> to Add</h2>
-		<p style="margin: 0;">In order to appear in this list, <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL); ?> must have a "Google Product Category" attribute.</p>
+		?>
+			<h2 style="padding: 100px 0 0 0;">Available, Unmatched <?php echo FOXYSHOP_PRODUCT_NAME_PLURAL; ?> to Add</h2>
+			<p style="margin: 0;">In order to appear in this list, <?php echo strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL); ?> must have a "Google Product Category" attribute.</p>
 
-		<form action="edit.php?post_type=foxyshop_product&page=foxyshop_google_products_page&foxyshop_manage_google_feed=1" method="post">
+			<form action="edit.php?post_type=foxyshop_product&page=foxyshop_google_products_page&foxyshop_manage_google_feed=1" method="post">
 
-		<table cellpadding="0" cellspacing="0" border="0" class="wp-list-table widefat foxyshop-list-table" id="available_product_view" style="margin-top: 14px;">
-			<thead>
-				<tr>
-					<th id="cb" class="manage-column column-cb check-column" scope="col"><input type="checkbox"></th>
-					<th class="column-id"><span><?php _e('ID'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Name', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Code', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Image', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Price', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
-					<th><span><?php _e('Date', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
-				</tr>
-			</thead>
-			<tfoot>
-				<tr>
-					<th class="manage-column column-cb check-column" style="" scope="col"><input type="checkbox"></th>
-					<th><?php _e('ID', 'foxyshop'); ?></th>
-					<th><?php _e('Name', 'foxyshop'); ?></th>
-					<th><?php _e('Code', 'foxyshop'); ?></th>
-					<th><?php _e('Image', 'foxyshop'); ?></th>
-					<th><?php _e('Price', 'foxyshop'); ?></th>
-					<th><?php _e('Data', 'foxyshop'); ?></th>
-				</tr>
-			</tfoot>
-			<tbody>
-		<?php
+			<table cellpadding="0" cellspacing="0" border="0" class="wp-list-table widefat foxyshop-list-table" id="available_product_view" style="margin-top: 14px;">
+				<thead>
+					<tr>
+						<th id="cb" class="manage-column column-cb check-column" scope="col"><input type="checkbox"></th>
+						<th class="column-id"><span><?php _e('ID'); ?></span><span class="sorting-indicator"></span></th>
+						<th><span><?php _e('Name', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+						<th><span><?php _e('Code', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+						<th><span><?php _e('Image', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+						<th><span><?php _e('Price', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+						<th><span><?php _e('Date', 'foxyshop'); ?></span><span class="sorting-indicator"></span></th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<th class="manage-column column-cb check-column" style="" scope="col"><input type="checkbox"></th>
+						<th><?php _e('ID', 'foxyshop'); ?></th>
+						<th><?php _e('Name', 'foxyshop'); ?></th>
+						<th><?php _e('Code', 'foxyshop'); ?></th>
+						<th><?php _e('Image', 'foxyshop'); ?></th>
+						<th><?php _e('Price', 'foxyshop'); ?></th>
+						<th><?php _e('Data', 'foxyshop'); ?></th>
+					</tr>
+				</tfoot>
+				<tbody>
+			<?php
 
-		$none_available = 1;
-		foreach ($product_list as $single_product) {
-			$product = foxyshop_setup_product($single_product);
-			$google_product_listed = (int)get_post_meta($product['id'],'_google_product_listed',TRUE);
-			if ($google_product_listed > strtotime("now") && !isset($_GET['debug'])) continue;
-			$none_available = 0;
-			if (!isset($google_product_id)) $google_product_id = "";
+			$none_available = 1;
+			foreach ($product_list as $single_product) {
+				$product = foxyshop_setup_product($single_product);
+				$google_product_listed = (int)get_post_meta($product['id'],'_google_product_listed',TRUE);
+				if ($google_product_listed > strtotime("now") && !isset($_GET['debug'])) continue;
+				$none_available = 0;
+				if (!isset($google_product_id)) $google_product_id = "";
 
-			$salestartdate = get_post_meta($product['id'],'_salestartdate',TRUE);
-			$saleenddate = get_post_meta($product['id'],'_saleenddate',TRUE);
-			if ($salestartdate == '999999999999999999') $salestartdate = 0;
-			if ($saleenddate == '999999999999999999') $saleenddate = 0;
-			$originalprice = $product['originalprice'];
-			$saleprice = get_post_meta($product['id'],'_saleprice', true);
+				$salestartdate = get_post_meta($product['id'],'_salestartdate',TRUE);
+				$saleenddate = get_post_meta($product['id'],'_saleenddate',TRUE);
+				if ($salestartdate == '999999999999999999') $salestartdate = 0;
+				if ($saleenddate == '999999999999999999') $saleenddate = 0;
+				$originalprice = $product['originalprice'];
+				$saleprice = get_post_meta($product['id'],'_saleprice', true);
 
-			if ($saleprice > 0) {
-				$beginningOK = (strtotime("now") > $salestartdate);
-				$endingOK = (strtotime("now") < ($saleenddate + 86400) || $saleenddate == 0);
-				if ($beginningOK && $endingOK || ($salestartdate == 0 && $saleenddate == 0)) {
-					$pricewrite = '<span style="text-decoration: line-through; margin-right: 10px;">' . foxyshop_currency($originalprice) . '</span><span style="color: red;">' . foxyshop_currency($saleprice) . '</span>';
+				if ($saleprice > 0) {
+					$beginningOK = (strtotime("now") > $salestartdate);
+					$endingOK = (strtotime("now") < ($saleenddate + 86400) || $saleenddate == 0);
+					if ($beginningOK && $endingOK || ($salestartdate == 0 && $saleenddate == 0)) {
+						$pricewrite = '<span style="text-decoration: line-through; margin-right: 10px;">' . foxyshop_currency($originalprice) . '</span><span style="color: red;">' . foxyshop_currency($saleprice) . '</span>';
+					} else {
+						$pricewrite = foxyshop_currency($originalprice);
+					}
 				} else {
 					$pricewrite = foxyshop_currency($originalprice);
 				}
-			} else {
-				$pricewrite = foxyshop_currency($originalprice);
+
+
+				echo '<tr>'."\n";
+				echo '<th class="check-column" scope="row"><input type="checkbox" value="' .$product['id'] . '" name="post[]"></th>'."\n";
+				echo '<td><strong>' . $product['id'] . '</strong></td>'."\n";
+
+				echo '<td><strong><a href="post.php?post=' . $product['id'] . '&action=edit">' . $product['name'] . '</a></strong>';
+				echo '<div class="row-actions">';
+				echo '<span><a href="edit.php?foxyshop_manage_google_feed=1&amp;addid=' . $product['id'] . $debug_querystring . '&amp;_wpnonce=' . wp_create_nonce("manage-the-google-feed-settings") . '" class="insert_google_product" rel="' . $google_product_id . '">' . __('Add To Google Products Feed', 'foxyshop') . '</a></span>';
+				echo '</div>';
+				echo '</td>'."\n";
+
+				echo '<td>' . $product['code'] . '</td>'."\n";
+				echo '<td><img src="' . foxyshop_get_main_image() . '" class="productfeedimage" /></td>'."\n";
+				echo '<td>' . $pricewrite . '</td>'."\n";
+				echo '<td>' . Date("Y-m-d", strtotime($single_product->post_date)) . '</td>'."\n";
+				echo '</tr>'."\n";
+
+
+
 			}
-
-
-			echo '<tr>'."\n";
-			echo '<th class="check-column" scope="row"><input type="checkbox" value="' .$product['id'] . '" name="post[]"></th>'."\n";
-			echo '<td><strong>' . $product['id'] . '</strong></td>'."\n";
-
-			echo '<td><strong><a href="post.php?post=' . $product['id'] . '&action=edit">' . $product['name'] . '</a></strong>';
-			echo '<div class="row-actions">';
-			echo '<span><a href="edit.php?foxyshop_manage_google_feed=1&amp;addid=' . $product['id'] . $debug_querystring . '&amp;_wpnonce=' . wp_create_nonce("manage-the-google-feed-settings") . '" class="insert_google_product" rel="' . $google_product_id . '">' . __('Add To Google Products Feed', 'foxyshop') . '</a></span>';
-			echo '</div>';
-			echo '</td>'."\n";
-
-			echo '<td>' . $product['code'] . '</td>'."\n";
-			echo '<td><img src="' . foxyshop_get_main_image() . '" class="productfeedimage" /></td>'."\n";
-			echo '<td>' . $pricewrite . '</td>'."\n";
-			echo '<td>' . Date("Y-m-d", strtotime($single_product->post_date)) . '</td>'."\n";
-			echo '</tr>'."\n";
+			if ($none_available) {
+				echo '<tr><td colspan="7"><em>No ' . FOXYSHOP_PRODUCT_NAME_PLURAL . ' Available.</em></td></tr>'."\n";
+			}
+				?>
+				</tbody>
+			</table>
+			<input type="hidden" name="foxyshop_run_the_xml" value="1" />
+			<?php wp_nonce_field('manage-the-google-feed-settings'); ?>
+			<?php if (isset($_GET['debug'])) echo '<input type="hidden" name="debug" value="1" />'; ?>
+			<div style="padding-top: 10px;">
+				<button type="submit" class="button" name="add_checked_google_products" value="1" id="add_checked_google_products">Add Checked <?php echo FOXYSHOP_PRODUCT_NAME_PLURAL; ?> to Google</button>
+			</div>
+			</form>
 
 
 
-		}
-		if ($none_available) {
-			echo '<tr><td colspan="7"><em>No ' . FOXYSHOP_PRODUCT_NAME_PLURAL . ' Available.</em></td></tr>'."\n";
-		}
-			?>
-			</tbody>
-		</table>
-		<input type="hidden" name="foxyshop_run_the_xml" value="1" />
-		<?php wp_nonce_field('manage-the-google-feed-settings'); ?>
-		<?php if (isset($_GET['debug'])) echo '<input type="hidden" name="debug" value="1" />'; ?>
-		<div style="padding-top: 10px;">
-			<button type="submit" class="button" name="add_checked_google_products" value="1" id="add_checked_google_products">Add Checked <?php echo FOXYSHOP_PRODUCT_NAME_PLURAL; ?> to Google</button>
-		</div>
-		</form>
+		<?php } ?>
 
 
+	<?php } ?>
 
-	<?php }
-	?>
-
-	<br /><br /><br /><br /><br /><br />
-
+		<br /><br /><br /><br /><br /><br />
 	<table class="widefat">
 		<thead>
 			<tr>
@@ -640,10 +645,19 @@ function foxyshop_google_products_page() {
 			<tr>
 				<td>
 					<p>If you would like to <a href="http://www.google.com/merchants" target="_blank">submit your products to Google</a>, you may do so by creating a product feed using this tool. Make sure that you check the option that <a href="http://www.google.com/support/merchants/bin/answer.py?answer=160037" target="_blank">enables double quotes.</a> You also need to make sure that the '_google_product_category' custom field is filled out for each product.</p>
-					<p>
-						<a href="edit.php?post_type=foxyshop_product&amp;create_google_product_feed=1" class="button-primary">Create Google Product Feed</a>
-						<a href="edit.php?post_type=foxyshop_product&amp;create_google_product_feed=1&amp;amazon_version=1" class="button-primary">Create Amazon Product Ads Feed</a>
-					</p>
+					<form action="edit.php" method="get">
+						<input type="hidden" name="post_type" value="foxyshop_product">
+						<input type="hidden" name="create_google_product_feed" value="1">
+						<p>
+							<a href="#" onclick="jQuery('#db_export_settings').show(); jQuery(this).hide(); return false;">Export just part of your product database</a>
+							<div id="db_export_settings" style="display: none;">
+								<label for="records_per_page">How May Records Per Page?</label><input type="text" id="records_per_page" name="records_per_page" value="-1"> (-1 for all)<br>
+								<label for="records_page">Which Page To Export?</label><input type="text" id="records_page" name="records_page" value="1">
+							</div>
+							<button type="submit" name="submitnow" id="submitnow" value="1" class="button-primary">Create Google Product Feed</button>
+							<button type="submit" name="amazon_version" id="amazon_version" value="1" class="button-primary">Create Amazon Product Ads Feed</button>
+						</p>
+					</form>
 				</td>
 			</tr>
 		</tbody>

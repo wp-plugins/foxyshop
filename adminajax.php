@@ -154,7 +154,7 @@ function foxyshop_product_ajax() {
 		echo foxyshop_redraw_images($productID);
 
 	} elseif ($_POST['foxyshop_action'] == "featured_image") {
-		delete_post_meta($productID, "_thumbnail_id");
+		delete_post_meta($productID,"_thumbnail_id");
 		update_post_meta($productID,"_thumbnail_id",$imageID);
 		echo foxyshop_redraw_images($productID);
 

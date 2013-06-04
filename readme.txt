@@ -3,8 +3,8 @@ Contributors: sparkweb
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2AHG2QMABF8SG
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription, foxy
 Requires at least: 3.1
-Tested up to: 3.5.1
-Stable tag: 4.3.2
+Tested up to: 3.6
+Stable tag: 4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
@@ -38,6 +38,7 @@ Visit [foxy-shop.com](http://www.foxy-shop.com/) for full documentation and inst
 
 = Translations Available =
 * Norwegian (Kenneth from [KKTrends](http://kktrend.no/))
+* German (Andrei from [PixelDarkroom](http://www.pixeldarkroom.com/))
 
 
 == Installation ==
@@ -67,6 +68,28 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Changelog ==
 
+= 4.4 =
+* Added a default checkout and receipt template
+* Allow the fr:X variation modifier to adjust the sub_frequency
+* Checkbox variations can now be set as required
+* Added FOXYSHOP_DECIMAL_PLACES definition to allow setups that need three decimal places
+* Google feeds can now be exported in multiple pages/batches and the feed page is limited to 100 unmatched products at a time
+* Updated admin js calls to use .on() instead of the deprecated .live()
+* Image field is now set to --OPEN-- validation so that W3 Cache doesn't break it
+* Future line item products shouldn't get processed by inventory
+* Set description variation field to process shortcodes
+* Added datafeed loop detection to the Order Desk redirect
+* Added filters for the no-stock inventory message
+* max_quantity now honored when dealing with low inventory
+* Changed cURL to wp_remote_post()
+* Check for is_ssl() when building FoxyShop admin links
+* Fixed the jQuery dequeue feature
+* Upgraded to jQuery 1.10.1
+* Upgraded to prettyPhoto 3.1.5
+* Upgraded to jQuery 1.10.3 (used for Date Picker)
+* Default FoxyCart version is now 1.1
+* Added German translation
+
 = 4.3.2 =
 * Added some extra variation features to allow custom values and field names
 * Added missing radio title dkey class
@@ -77,7 +100,7 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 * Added easier category syncing for FoxyCart 0.7.2+
 * Fixed spacing issue with WP 3.5
 * Fix to remove the `quantity_max` field when backordering is allowed
-* Show warning if cURL is not installed
+* Show warning if curl is not installed
 * Moved the template cache functionality up so that scrolling isn't required as often on the tools page
 
 = 4.3 =
@@ -233,7 +256,7 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 * Added an "Archive All" option for the Manage Orders screen
 * Inventory codes can now be forced from the inventory import system even if they haven't been added before
 * Inventory connectors available for QuickBooks (through ConsoliBYTE) and SmartTurn
-* cURL connection error now displays actual error
+* curl connection error now displays actual error
 * Transaction receipts outside the default date filter now viewable
 * Added MinFraud score (0.7.2+) to transaction details
 * Many datafeed template improvements
@@ -284,5 +307,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 4.3.2 =
-Added extra variation features to allow custom values and field names
+= 4.4 =
+Added checkout templates, upgraded to jQuery 1.10.1

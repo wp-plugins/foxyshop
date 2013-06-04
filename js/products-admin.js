@@ -1,7 +1,7 @@
 jQuery(document).ready(function($){
 
 	//Check For Illegal Code
-	$("#_code").live("blur", function() {
+	$(document).on("blur", "#_code", function() {
 		var thisval = $(this).val();
 		if (thisval.indexOf("&") > -1 || thisval.indexOf('"') > -1) {
 			alert("Sorry! You can't use & or \" in the " + FOXYSHOP_PRODUCT_NAME_SINGULAR + " code.");
@@ -193,7 +193,7 @@ jQuery(document).ready(function($){
 		}
 	});
 
-	$(".inventory_code, .inventory_count").live("keyup", function() {
+	$(document).on("keyup", ".inventory_code, .inventory_count", function() {
 		thisID = parseFloat($(this).attr("rel"));
 		nextID = thisID + 1;
 		if (parseFloat($("#max_inventory_count").val()) == thisID && $("#inventory_code_"+nextID).length == 0 && $("#inventory_code_"+thisID).val()) {
@@ -237,12 +237,13 @@ jQuery(document).ready(function($){
 	});
 
 	//When levels are adjusted
-	$("#discount_levels input").live("blur", function() {
+	$(document).on("blur", "#discount_levels input", function() {
 		var discount_method = $("#discount_method").val();
 		format_discount_values($(this));
 		compute_discount();
 		check_for_new_discount_line();
-	}).live("keypress", function(e) {
+	});
+	$(document).on("keypress", "#discount_levels input", function(e) {
 		if (e.keyCode == 13) {
 			compute_discount();
 			return true;
@@ -429,7 +430,7 @@ jQuery(document).ready(function($){
 
 	$("#postimagediv").hide();
 
-	$("#foxyshop_product_image_list .foxyshop_image_rename").live("click", function() {
+	$(document).on("click", "#foxyshop_product_image_list .foxyshop_image_rename", function() {
 		var thisID = $(this).attr("rel");
 		$(".renamediv").removeClass('rename_active');
 		$("#renamediv_" + thisID).addClass('rename_active');
@@ -444,7 +445,7 @@ jQuery(document).ready(function($){
 		}
 	});
 
-	$("#foxyshop_product_image_list input").live("keyup blur", function(e) {
+	$(document).on("keyup blur", "#foxyshop_product_image_list input", function(e) {
 		var thisID = $(this).attr("rel");
 		var newTitle = $(this).val();
 		if (e.keyCode == 27) {
@@ -469,7 +470,7 @@ jQuery(document).ready(function($){
 	});
 
 
-	$("#foxyshop_product_image_list .foxyshop_image_delete").live("click", function() {
+	$(document).on("click", "#foxyshop_product_image_list .foxyshop_image_delete", function() {
 		var data = {
 			action: 'foxyshop_product_ajax_action',
 			security: nonce_images,
@@ -485,7 +486,7 @@ jQuery(document).ready(function($){
 		return false;
 	});
 
-	$("#foxyshop_product_image_list .foxyshop_image_featured").live("click", function() {
+	$(document).on("click", "#foxyshop_product_image_list .foxyshop_image_featured", function() {
 		var data = {
 			action: 'foxyshop_product_ajax_action',
 			security: nonce_images,
@@ -501,7 +502,7 @@ jQuery(document).ready(function($){
 		return false;
 	});
 
-	$("#foxyshop_product_image_list .foxyshop_visible").live("click", function() {
+	$(document).on("click", "#foxyshop_product_image_list .foxyshop_visible", function() {
 		var data = {
 			action: 'foxyshop_product_ajax_action',
 			security: nonce_images,
@@ -589,7 +590,7 @@ jQuery(document).ready(function($){
 		$(this).hide();
 	});
 
-	$('.deleteVariation').live("click", function() {
+	$(document).on("click", ".deleteVariation", function() {
 		variationID = $(this).attr("rel");
 		$("#variation" + variationID).slideUp(function() {
 			$(this).remove();
@@ -624,7 +625,7 @@ jQuery(document).ready(function($){
 	addLoadEvent(foxyshop_variation_order_load_event);
 
 	//Check For Illegal Titles
-	$("input.variation_name").live("blur", function() {
+	$(document).on("blur", "input.variation_name", function() {
 		var thisval = $(this).val().toLowerCase();
 		if (thisval == "code" || thisval == "codes" || thisval == "price" || thisval == "name" || thisval == "category" || thisval == "weight" || thisval == "shipto") {
 			alert("Sorry! The title '" + thisval + "' cannot be used as a variation name.");
@@ -633,7 +634,7 @@ jQuery(document).ready(function($){
 	});
 
 	//Check For Illegal Titles
-	$("input.variation_name").live("keypress", function(e) {
+	$(document).on("keypress", "input.variation_name", function(e) {
 		if (e.which !== 0 && (e.charCode == 46 || e.charCode == 34)) {
 			alert("Sorry! You can't use this character in a variation name: " + String.fromCharCode(e.keyCode|e.charCode));
 			return false;
@@ -641,7 +642,7 @@ jQuery(document).ready(function($){
 	});
 
 	//On Change Listener
-	$(".variationtype").live("change", function() {
+	$(document).on("change", ".variationtype", function() {
 		new_type = $(this).val();
 		this_id = $(this).parents(".product_variation").attr("rel");
 
@@ -669,7 +670,7 @@ jQuery(document).ready(function($){
 		$("#variation_holder_"+this_id).html(getVariationContents(new_type, this_id));
 
 		//Hide or Show Required Checkbox Option
-		if (new_type == 'dropdown' || new_type == 'text' || new_type == 'textarea' || new_type == 'upload') {
+		if (new_type == 'dropdown' || new_type == 'text' || new_type == 'textarea' || new_type == 'upload' || new_type == 'checkbox') {
 			$(this).parents(".product_variation").find(".variation_required_container").show();
 		} else {
 			$(this).parents(".product_variation").find(".variation_required_container").hide();
@@ -711,7 +712,7 @@ jQuery(document).ready(function($){
 		new_content += '<label class="dkeylabel" title="Enter a value here if you want your variation to be invisible until called by another variation.">Display Key</label>';
 		new_content += '<input type="text" name="_variation_dkey_' + this_id + '" id="_variation_dkey_' + this_id + '" value="" class="dkeynamefield" />';
 		new_content += '<!-- Required -->';
-		new_content += '<div class="variation_required_container" rel="' + this_id + '" style="display: none;">';
+		new_content += '<div class="variation_required_container" rel="' + this_id + '">';
 		new_content += '<input type="checkbox" name="_variation_required_' + this_id + '" id="_variation_required_' + this_id + '" />';
 		new_content += '<label for="_variation_required_' + this_id + '">Make Field Required</label>';
 		new_content += '</div>';

@@ -4,15 +4,26 @@ if (!defined('ABSPATH')) exit();
 
 //Insert jQuery
 function foxyshop_insert_jquery() {
-	$jquery_url = "http" . ($_SERVER['SERVER_PORT'] == 443 ? 's' : '') . "://ajax.googleapis.com/ajax/libs/jquery/".FOXYSHOP_JQUERY_VERSION."/jquery.min.js";
+
+	$jquery_url = "http" . ($_SERVER['SERVER_PORT'] == 443 ? 's' : '') . "://ajax.googleapis.com/ajax/libs/jquery/" . foxyshop_get_jquery_version() . "/jquery.min.js";
 	wp_deregister_script('jquery');
 	wp_register_script('jquery', apply_filters('foxyshop_jquery_url', $jquery_url), array(), NULL, false);
 	wp_enqueue_script('jquery');
 }
 
+function foxyshop_get_jquery_version() {
+	global $foxyshop_settings;
+
+	$jquery_version = FOXYSHOP_JQUERY_VERSION;
+	if (version_compare($foxyshop_settings['version'], '1.0', "<=") && version_compare($jquery_version, '1.8.3', ">")) {
+		$jquery_version = "1.8.3";
+	}
+	return $jquery_version;
+}
+
 //Remove jQuery
 function foxyshop_remove_jquery() {
-	wp_deregister_script('jquery');
+	wp_dequeue_script('jquery');
 }
 
 //Loading in Admin Scripts
@@ -142,6 +153,77 @@ _gaq.push(['_trackPageview']);
 	}
 }
 
+//Google Analytics For Checkout
+function foxyshop_insert_google_analytics_checkout() {
+	global $foxyshop_settings;
+	if (!$foxyshop_settings['ga_advanced']) return;
+	?>
+	<script type="text/javascript" charset="utf-8">
+		if (window.location.hash.search(/utma/) == -1 && typeof(fc_json.custom_fields['ga']) != "undefined") {
+			if (fc_json.custom_fields['ga'].length > 0) {
+				window.location.hash = fc_json.custom_fields['ga'].replace( /\&amp;/g, '&' );
+			}
+		}
+	</script>
+
+	<script type="text/javascript">
+
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', '<?php echo htmlspecialchars($foxyshop_settings['ga']); ?>']);
+	  _gaq.push(['_setDomainName', 'none']);
+	  _gaq.push(['_setAllowLinker', true]);
+	  _gaq.push(['_setAllowAnchor', true]);
+	  _gaq.push(['_trackPageview', '/checkout']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>
+
+	<script type="text/javascript" charset="utf-8">
+		function ga_tracker() {
+			if (typeof(fc_json.custom_fields['ga']) != "undefined" && jQuery('#fc_payment_method_paypal').attr("checked") == true) {
+				_gaq.push(['_trackPageview', '/paypal_payment']);
+				// setTimeout('return true;', 250); // TODO
+			}
+		}
+		FC.checkout.overload('validateAndSubmit', 'ga_tracker', null);
+	</script>
+	<?php
+}
+
+
+//Google Analytics For Receipt
+function foxyshop_insert_google_analytics_receipt() {
+	global $foxyshop_settings;
+	if (!$foxyshop_settings['ga_advanced']) return;
+	?>
+	<script type="text/javascript">
+
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', '<?php echo htmlspecialchars($foxyshop_settings['ga']); ?>']);
+	  _gaq.push(['_setDomainName', 'none']);
+	  _gaq.push(['_setAllowLinker', true]);
+	  _gaq.push(['_setAllowAnchor', true]);
+	  _gaq.push(['_trackPageview', '/receipt']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>
+
+	^^receipt_only_begin^^
+	^^analytics_google_ga_async^^
+	^^receipt_only_end^^
+	<?php
+}
+
 //Product Category Comparison
 function foxyshop_comparison($a, $b) {
 	if ($a->sort_key == $b->sort_key) { return 0; }
@@ -208,7 +290,7 @@ function foxyshop_activation() {
 	//Defaults For Settings
 	$default_foxyshop_settings = array(
 		"domain" => "",
-		"version" => "1.0",
+		"version" => "1.1",
 		"foxyshop_version" => FOXYSHOP_VERSION,
 		"ship_categories" => "",
 		"enable_ship_to" => "",
@@ -225,6 +307,8 @@ function foxyshop_activation() {
 		"browser_title_3" => "%c | " . get_bloginfo("name"),
 		"browser_title_4" => "%p | " . get_bloginfo("name"),
 		"browser_title_5" => FOXYSHOP_PRODUCT_NAME_SINGULAR . " Search | " . get_bloginfo("name"),
+		"browser_title_6" => get_bloginfo("name") . " Checkout",
+		"browser_title_7" => get_bloginfo("name") . " Receipt",
 		"weight_type" => "english",
 		"default_weight" => "1 0.0",
 		"use_jquery" => "on",
@@ -245,8 +329,8 @@ function foxyshop_activation() {
 		"default_image" => "",
 		"foxycart_include_cache" => "",
 		"template_url_cart" => "",
-		"template_url_checkout" => "",
-		"template_url_receipt" => "",
+		"template_url_checkout" => get_bloginfo("url") . "/foxycart-checkout-template/",
+		"template_url_receipt" => get_bloginfo("url") . "/foxycart-receipt-template/",
 		"products_per_page" => -1,
 		"downloadables_sync" => "",
 		"google_product_support" => "",
@@ -254,7 +338,7 @@ function foxyshop_activation() {
 		"google_product_auth" => "",
 		"include_exception_list" => "",
 		"show_add_to_cart_link" => "",
-		"api_key" => "spfx".hash_hmac('sha256',rand(2165,64898),"dkw81".time()),
+		"api_key" => "spfx" . hash_hmac('sha256', rand(2165,64898), "dkw81" . time()),
 	);
 
 	//Set For the First Time
@@ -308,6 +392,9 @@ function foxyshop_activation() {
 		if (!array_key_exists('orderdesk_url',$foxyshop_settings)) $foxyshop_settings['orderdesk_url'] = ""; //4.1.4
 		if (!array_key_exists('expiring_cards_reminder',$foxyshop_settings)) $foxyshop_settings['expiring_cards_reminder'] = $foxyshop_settings['enable_subscriptions']; //4.1.5
 		if (!array_key_exists('use_cart_validation',$foxyshop_settings)) $foxyshop_settings['use_cart_validation'] = (defined('FOXYSHOP_SKIP_VERIFICATION') ? 0 : 1); //4.2
+		if (!array_key_exists('browser_title_6', $foxyshop_settings)) $foxyshop_settings['browser_title_6'] = get_bloginfo("name") . " Checkout"; //4.4
+		if (!array_key_exists('browser_title_7', $foxyshop_settings)) $foxyshop_settings['browser_title_7'] = get_bloginfo("name") . " Receipt"; //4.4
+
 
 
 		//Upgrade Variations in 3.0
@@ -515,27 +602,24 @@ function foxyshop_get_downloadable_list() {
 //Access the FoxyCart API
 function foxyshop_get_foxycart_data($foxyData, $silent_fail = true) {
 	global $foxyshop_settings;
-	if (!defined('FOXYSHOP_CURL_CONNECTTIMEOUT')) define('FOXYSHOP_CURL_CONNECTTIMEOUT', 10); //10
-	if (!defined('FOXYSHOP_CURL_TIMEOUT')) define('FOXYSHOP_CURL_TIMEOUT', 15); //15
-
 	$foxyData = array_merge(array("api_token" => $foxyshop_settings['api_key']), $foxyData);
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, "https://" . $foxyshop_settings['domain'] . "/api");
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $foxyData);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, FOXYSHOP_CURL_CONNECTTIMEOUT);
-	curl_setopt($ch, CURLOPT_TIMEOUT, FOXYSHOP_CURL_TIMEOUT);
-	if (defined('FOXYSHOP_CURL_SSL_VERIFYPEER')) curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FOXYSHOP_CURL_SSL_VERIFYPEER);
-	$response = trim(curl_exec($ch));
-	if (!$response) {
+	$args = array(
+		"redirection" => !defined('FOXYSHOP_CURL_CONNECTTIMEOUT') ? 10 : FOXYSHOP_CURL_CONNECTTIMEOUT,
+		"timeout" => !defined('FOXYSHOP_CURL_TIMEOUT') ? 15 : FOXYSHOP_CURL_TIMEOUT,
+		"method" => "POST",
+		"sslverify" => defined('FOXYSHOP_CURL_SSL_VERIFYPEER') ? FOXYSHOP_CURL_SSL_VERIFYPEER : 1,
+		"body" => $foxyData,
+	);
+	$response = wp_remote_post("https://" . $foxyshop_settings['domain'] . "/api", $args);
+	$response_body = $response['body'];
+	if (!$response_body || $response['response']['code'] != 200) {
 		if ($silent_fail) {
-			$response = "<?xml version='1.0' encoding='UTF-8'?><foxydata><result>ERROR</result><messages><message>" . __('Connection Error', 'foxyshop') . ": " . curl_error($ch) . "</message></messages></foxydata>";
+			$response_body = "<?xml version='1.0' encoding='UTF-8'?><foxydata><result>ERROR</result><messages><message>" . __('Connection Error', 'foxyshop') . ": " . $response['response']['message'] . "</message></messages></foxydata>";
 		} else {
-			die("Connection Error: " . curl_error($ch));
+			die("Connection Error: " . $response['response']['message']);
 		}
 	}
-	curl_close($ch);
-	return $response;
+	return $response_body;
 }
 
 

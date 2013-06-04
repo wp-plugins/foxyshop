@@ -13,6 +13,10 @@ function foxyshop_decrypt($src) {
 function foxyshop_run_external_datafeeds($external_datafeeds) {
 	global $foxyshop_settings;
 	if ($foxyshop_settings["orderdesk_url"]) {
+		//Check Referer to make sure we aren't coming from Order Desk and thus creating a loop
+		if ($_SERVER['REMOTE_ADDR'] == "216.70.96.51") {
+			die("It looks like you have a potential datafeed loop with FoxyShop and Order Desk. You can't send the datafeed to Order Desk and then have Order Desk send it back to FoxyShop or you'll have a never-ending loop. It's recommended that you uncheck the 'Send to Order Desk' feature in your FoxyShop Settings.");
+		}
 		$external_datafeeds[] = $foxyshop_settings["orderdesk_url"];
 	}
 	if (!defined('FOXYSHOP_CURL_CONNECTTIMEOUT')) define('FOXYSHOP_CURL_CONNECTTIMEOUT', 10); //10
@@ -36,14 +40,14 @@ function foxyshop_run_external_datafeeds($external_datafeeds) {
 
 			//If Error, Send Email and Kill Process
 			if ($response != 'foxy' && $response != 'foxysub') {
-				$error_msg = ($response == false ? "Datafeed Processing Error: " . curl_error($ch) : $response);
+				$error_msg = (!$response ? "Datafeed Processing Error: " . curl_error($ch) : $response);
 				$to_email = get_bloginfo('admin_email');
 				$message = "A FoxyCart datafeed error was encountered at " . date("F j, Y, g:i a") . ".\n\n";
 				$message .= "The feed that failed was $feedurl\n\n";
 				$message .= "The error is listed below:\n\n";
 				$message .= $error_msg;
-				$message .= "\n\n" . print_r($_POST, 1);
-				$message .= "\n\n" . print_r($_SERVER, 1);
+				//$message .= "\n\n" . print_r($_POST, 1);
+				//$message .= "\n\n" . print_r($_SERVER, 1);
 				$message .= "\n\n" . foxyshop_decrypt($_POST["FoxyData"]);
 				$headers = 'From: ' . get_bloginfo('name') . ' Server Admin <' . $to_email . '>' . "\r\n";
 				mail($to_email, 'Data Feed Error on ' . get_bloginfo('name'), $message, $headers);
@@ -67,6 +71,7 @@ function foxyshop_datafeed_inventory_update($xml) {
 
 		//For Each Transaction Detail
 		foreach($transaction->transaction_details->transaction_detail as $transactiondetails) {
+			if ((int)$transactiondetails->is_future_line_item == 1) continue;
 			$product_name = (string)$transactiondetails->product_name;
 			$product_code = (string)$transactiondetails->product_code;
 			$product_quantity = (int)$transactiondetails->product_quantity;

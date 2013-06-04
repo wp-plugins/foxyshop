@@ -56,7 +56,9 @@ function foxyshop_save_settings() {
 		"browser_title_2",
 		"browser_title_3",
 		"browser_title_4",
-		"browser_title_5"
+		"browser_title_5",
+		"browser_title_6",
+		"browser_title_7",
 	);
 	foreach ($fields as $field1) {
 		$foxyshop_settings[$field1] = isset($_POST['foxyshop_'.$field1]) ? stripslashes($_POST['foxyshop_'.$field1]) : '';
@@ -309,7 +311,7 @@ function foxyshop_settings_page() {
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_use_jquery" name="foxyshop_use_jquery"<?php checked($foxyshop_settings['use_jquery'], "on"); ?> />
-					<label for="foxyshop_use_jquery"><?php echo sprintf(__('Automatically Insert jQuery %s from Google CDN', 'foxyshop'), FOXYSHOP_JQUERY_VERSION); ?></label>
+					<label for="foxyshop_use_jquery"><?php echo sprintf(__('Automatically Insert jQuery %s from Google CDN', 'foxyshop'), foxyshop_get_jquery_version()); ?></label>
 					<a href="#" class="foxyshophelp">If you are already manually inserting jQuery you should uncheck this option.</a>
 				</td>
 			</tr>
@@ -384,6 +386,10 @@ function foxyshop_settings_page() {
 					<label for="foxyshop_browser_title_4" style="width: 112px;"><?php echo __('Single', 'foxyshop') . ' ' . FOXYSHOP_PRODUCT_NAME_SINGULAR; ?>:</label> <input type="text" name="foxyshop_browser_title_4" value="<?php echo $foxyshop_settings['browser_title_4']; ?>" size="50" /> <small>Use %p for <?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?> Name</small>
 					<div style="clear: both;"></div>
 					<label for="foxyshop_browser_title_5" style="width: 112px;"><?php _e('Search Results', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_5" value="<?php echo $foxyshop_settings['browser_title_5']; ?>" size="50" />
+					<div style="clear: both;"></div>
+					<label for="foxyshop_browser_title_6" style="width: 112px;"><?php _e('Checkout Template', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_6" value="<?php echo $foxyshop_settings['browser_title_6']; ?>" size="50" />
+					<div style="clear: both;"></div>
+					<label for="foxyshop_browser_title_7" style="width: 112px;"><?php _e('Receipt Template', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_7" value="<?php echo $foxyshop_settings['browser_title_7']; ?>" size="50" />
 
 				</td>
 			</tr>
@@ -539,7 +545,7 @@ function foxyshop_settings_page() {
 					<div class="settings_indent">
 						<input type="checkbox" id="foxyshop_ga_advanced" name="foxyshop_ga_advanced"<?php checked($foxyshop_settings['ga_advanced'], "on"); ?> />
 						<label for="foxyshop_ga_advanced"><?php _e('Advanced Google Analytics Code', 'foxyshop'); ?></label>
-						<a href="#" class="foxyshophelp"><?php _e('Check this box if you are using the advanced FoxyCart Google Analytics Sync. We will put the appropriate code in your footer (but you\'ll still have to setup Google Analytics and your template).', 'foxyshop'); ?></a>
+						<a href="#" class="foxyshophelp"><?php _e('Check this box if you are using the advanced FoxyCart Google Analytics Sync. We will put the appropriate code in your footer.', 'foxyshop'); ?></a>
 						<small><a href="http://wiki.foxycart.com/integration/googleanalytics_async" target="_blank" tabindex="99999">advanced instructions here</a></small>
 					</div>
 				</td>

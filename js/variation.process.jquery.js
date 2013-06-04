@@ -16,8 +16,9 @@ jQuery(document).ready(function($){
 		}
 		var new_price = $("#fs_price_" + current_product_id).val();
 		var new_price_original = $("#originalprice_" + current_product_id).val();
-		new_price = parseFloat(new_price.replace(",","")) * 100;
-		new_price_original = parseFloat(new_price_original.replace(",","")) * 100;
+		var ten_multiplier = $("#foxyshop_decimal_places").length ? $("#foxyshop_decimal_places").val() : 100;
+		new_price = parseFloat(new_price.replace(",","")) * ten_multiplier;
+		new_price_original = parseFloat(new_price_original.replace(",","")) * ten_multiplier;
 
 		var new_code = '';
 		var new_codeadd = '';
@@ -84,6 +85,10 @@ jQuery(document).ready(function($){
 				}
 			}
 
+			//Check Sub Frequency
+			var sub_frequency = thisEl.attr("subfrequency");
+			if (typeof sub_frequency != 'undefined') $("#fs_sub_frequency_" + current_product_id).val(sub_frequency);
+
 			//Code Additions
 			varcodeadd = thisEl.attr("codeadd");
 			if (varcodeadd != "" && typeof varcodeadd != 'undefined') new_codeadd += varcodeadd;
@@ -130,6 +135,7 @@ jQuery(document).ready(function($){
 
 	function setModifiers(new_code, new_codeadd, new_price, new_price_original, new_ikey, current_product_id) {
 		var parentForm = "#foxyshop_product_form_" + current_product_id;
+		var ten_multiplier = $("#foxyshop_decimal_places").length ? $("#foxyshop_decimal_places").val() : 100;
 
 		//Change Image
 		if (new_ikey != '' || new_ikey === 0) {
@@ -167,23 +173,29 @@ jQuery(document).ready(function($){
 			newcount = parseInt(arr_foxyshop_inventory[current_product_id][inventory_match_count][1]);
 			newalert = parseInt(arr_foxyshop_inventory[current_product_id][inventory_match_count][2]);
 			newhash = arr_foxyshop_inventory[current_product_id][inventory_match_count][3];
-			if (!foxyshop_allow_backorder) {
-				$("#fs_quantity_max_" + current_product_id).attr("name","quantity_max" + newhash).val(newcount);
+			original_max_quantity = $("#original_quantity_max_" + current_product_id).val();
+			original_max_quantity_hash = $("#original_quantity_max_" + current_product_id).attr("rel");
+			if (!foxyshop_allow_backorder && newcount < original_max_quantity) {
+				$("#fs_quantity_max_" + current_product_id).val(newcount);
+			} else if (!foxyshop_allow_backorder && newcount >= original_max_quantity && original_max_quantity > 0) {
+				$("#fs_quantity_max_" + current_product_id).val(original_max_quantity);
 			} else {
 				$("#fs_quantity_max_" + current_product_id).remove();
 			}
 			if (newcount > 0 && newcount <= newalert) {
-				$(parentForm + " .foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").text(update_inventory_alert_language(arr_foxyshop_inventory_stock_alert[current_product_id],newcount)).show();
+				$(parentForm + " .foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").html(update_inventory_alert_language(arr_foxyshop_inventory_stock_alert[current_product_id],newcount,inventory_code)).show();
 				$(parentForm + " #productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
 			} else if (newcount <= 0) {
-				$(parentForm + " .foxyshop_stock_alert").addClass("foxyshop_out_of_stock").text(update_inventory_alert_language(arr_foxyshop_inventory_stock_none[current_product_id],inventory_match_count)).show();
+				$(parentForm + " .foxyshop_stock_alert").addClass("foxyshop_out_of_stock").html(update_inventory_alert_language(arr_foxyshop_inventory_stock_none[current_product_id],inventory_match_count,inventory_code)).show();
 				if (!foxyshop_allow_backorder) $(parentForm + " #productsubmit").attr("disabled","disabled").addClass("foxyshop_disabled");
 			} else {
 				$(parentForm + " #productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
 				$(parentForm + " .foxyshop_stock_alert").hide();
 			}
 		} else if (typeof arr_foxyshop_inventory[current_product_id] != 'undefined') {
-			if (!foxyshop_allow_backorder) $("#fs_quantity_max_" + current_product_id).attr("name","quantity_max"+$("#original_quantity_max_" + current_product_id).attr("rel")).val($("#original_quantity_max_" + current_product_id).val());
+			if (!foxyshop_allow_backorder) {
+				$("#fs_quantity_max_" + current_product_id).val($("#original_quantity_max_" + current_product_id).val());
+			}
 			$(parentForm + " #productsubmit").removeAttr("disabled").removeClass("foxyshop_disabled");
 			$(parentForm + " .foxyshop_stock_alert").removeClass("foxyshop_out_of_stock").hide();
 		}
@@ -193,7 +205,7 @@ jQuery(document).ready(function($){
 		$(".foxyshop_quantity.foxyshop_addon_fields").prop("disabled", true);
 		$("input.foxyshop_addon_checkbox:checked").each(function() {
 			current_id = $(this).attr("rel");
-			currentTotal =  parseFloat($("#addon_price_" + current_id).val()) * 100;
+			currentTotal =  parseFloat($("#addon_price_" + current_id).val()) * ten_multiplier;
 			$(".foxyshop_quantity.foxyshop_addon_fields[rel=" + current_id + "]").prop("disabled", false);
 			if ($("input.foxyshop_quantity.foxyshop_addon_fields[rel=" + current_id + "]").length > 0) {
 				totalQty = $("input.foxyshop_quantity.foxyshop_addon_fields[rel=" + current_id + "]").val();
@@ -223,7 +235,8 @@ jQuery(document).ready(function($){
 
 	}
 
-	function update_inventory_alert_language(strlang, itemcount) {
+	function update_inventory_alert_language(strlang, itemcount, itemcode) {
+		strlang = strlang.replace('%code',itemcode);
 		strlang = strlang.replace('%c',itemcount);
 		if (itemcount == 1) {
 			strlang = strlang.replace('%s',"");
@@ -264,6 +277,10 @@ foxycart_required_fields_check = function(e, arr) {
 			if (jQuery(this).is('select') && jQuery(this).is(':visible') && jQuery('option:selected', this).index() == 0) {
 					strFailed = true;
 					alert("Error: You must select an option from the dropdown.");
+					jQuery(this).focus();
+			} else if (jQuery(this).is(':checkbox') && !jQuery(this).is(':checked')) {
+					strFailed = true;
+					alert("Error: You must check this checkbox before adding to cart.");
 					jQuery(this).focus();
 			} else if (!jQuery(this).val() && !jQuery(this).is('label')) {
 				if (jQuery(this).hasClass('hiddenimageholder') && jQuery(this).parents('.foxyshop_custom_upload_container').is(':visible')) {

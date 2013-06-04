@@ -379,6 +379,35 @@ function foxyshop_order_management() {
 
 			$print_receipt_link = "edit.php?foxyshop_search=1&amp;post_type=foxyshop_product&amp;page=foxyshop_order_management&amp;id_filter=" . $transaction_id . "&amp;foxyshop_print_invoice=1&amp;is_test_filter=&amp;skip_print=1&amp;transaction_date_filter_begin=" . $foxy_data['transaction_date_filter_begin'] . "&amp;transaction_date_filter_end=" . $foxy_data['transaction_date_filter_end'];
 
+
+			foreach($transaction->transaction_details->transaction_detail as $transaction_detail) {
+
+				$pickup_day = "";
+				$pickup_location = "";
+
+				foreach($transaction_detail->transaction_detail_options->transaction_detail_option as $transaction_detail_option) {
+					if ((string)$transaction_detail_option->product_option_name == "Pickup_Day") {
+						$pickup_day = (string)$transaction_detail_option->product_option_value;
+					} elseif ((string)$transaction_detail_option->product_option_name == "Pickup_Location") {
+						$pickup_location = (string)$transaction_detail_option->product_option_value;
+					}
+
+
+					$holder .= '<li>';
+					$holder .= str_replace("_", " ", (string)$transaction_detail_option->product_option_name) . ': ';
+					if (substr((string)$transaction_detail_option->product_option_value,0,5) == "file-") {
+						$upload_dir = wp_upload_dir();
+						$holder .= '<a href="' . $upload_dir['baseurl'] . '/customuploads/' . (string)$transaction_detail_option->product_option_value . '" target="_blank">' . (string)$transaction_detail_option->product_option_value . '</a>';
+					} else {
+						$holder .= $transaction_detail_option->product_option_value;
+					}
+					if ((string)$transaction_detail_option->price_mod != '0.000') $holder .= ' (' . (strpos("-",$transaction_detail_option->price_mod) !== false ? '-' : '+') . foxyshop_currency((double)$transaction_detail_option->price_mod) . ')';
+					$holder .= '</li>';
+				}
+
+			}
+
+
 			echo '<tr rel="' . $transaction_id . '">';
 			echo '<th class="check-column" scope="row"><input type="checkbox" value="' . $transaction_id . '" name="post[]"></th>'."\n";
 			echo '<td>';
