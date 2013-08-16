@@ -8,6 +8,7 @@ add_action('user_register', 'foxyshop_profile_add', 5);
 
 //Runs When WP Profile is Updated
 function foxyshop_profile_update($user_id) {
+	global $foxyshop_new_password_hash;
 
 	//Get User Info
 	$foxycart_customer_id = get_user_meta($user_id, 'foxycart_customer_id', true);
@@ -15,11 +16,15 @@ function foxyshop_profile_update($user_id) {
 	//Get User Data
 	$wp_user = get_userdata($user_id);
 
+	//Set The New Password
+	$new_password = $wp_user->user_pass;
+	if (isset($foxyshop_new_password_hash)) $new_password = $foxyshop_new_password_hash;
+
 	//Send Updated Info to FoxyCart
 	$foxy_data = array("api_action" => "customer_save");
 	if ($foxycart_customer_id) $foxy_data["customer_id"] = $foxycart_customer_id;
 	$foxy_data["customer_email"] = $wp_user->user_email;
-	$foxy_data["customer_password_hash"] = $wp_user->user_pass;
+	$foxy_data["customer_password_hash"] = $new_password;
 	if ($wp_user->user_firstname) $foxy_data["customer_first_name"] = $wp_user->user_firstname;
 	if ($wp_user->user_lastname) $foxy_data["customer_last_name"] = $wp_user->user_lastname;
 

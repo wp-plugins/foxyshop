@@ -108,5 +108,5 @@ if (isset($_POST['foxyshop_image_uploader'])) {
 }
 
 
-die;
+exit;
 ?>

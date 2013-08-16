@@ -9,9 +9,8 @@ You can find these templates at:
 http://yoursite.com/foxycart-checkout-template/
 http://yoursite.com/foxycart-receipt-template/
 
-*/ ?>
+*/
 
-<?php
 //Remove jQuery and FoxyCart Includes
 add_action('wp_enqueue_scripts', 'foxyshop_remove_jquery', 99);
 remove_action('wp_footer', 'foxyshop_insert_google_analytics', 100);
@@ -37,13 +36,10 @@ body {
 	display: none !important;
 }
 </style>
-
 	<?php
 }
-?>
 
-
-<?php get_header(); ?>
+get_header(); ?>
 <?php foxyshop_include('header'); ?>
 <div id="foxyshop_container">
 

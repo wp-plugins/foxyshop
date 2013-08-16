@@ -50,7 +50,7 @@ body {
 
 
 ^^cart^^
-^^checkout^^
+^^receipt^^
 
 
 

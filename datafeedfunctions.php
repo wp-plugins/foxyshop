@@ -162,7 +162,7 @@ function foxyshop_datafeed_sso_update($xml) {
 
 //Update or Create a WordPress User After Checkout
 function foxyshop_datafeed_user_update($xml) {
-	global $wpdb;
+	global $wpdb, $foxyshop_new_password_hash;
 
 	//For Each Transaction
 	foreach($xml->transactions->transaction as $transaction) {
@@ -197,13 +197,18 @@ function foxyshop_datafeed_user_update($xml) {
 				add_user_meta($new_user_id, 'foxycart_customer_id', $customer_id, true);
 
 				//Set Password
-				$wpdb->query("UPDATE $wpdb->users SET user_pass = '$customer_password' WHERE ID = $new_user_id");
+				$wpdb->query("UPDATE $wpdb->users SET user_pass = '" . esc_sql($customer_password) . "' WHERE ID = $new_user_id");
+				$foxyshop_new_password_hash = $customer_password;
 
 				//Run Your Custom Actions Here with add_action()
 				do_action("foxyshop_datafeed_add_wp_user", $xml, $user_id);
 
 			//Update User
 			} else {
+
+				//Set Password
+				$wpdb->query("UPDATE $wpdb->users SET user_pass = '" . esc_sql($customer_password) . "' WHERE ID = " . $current_user->ID);
+				$foxyshop_new_password_hash = $customer_password;
 
 				//Update First Name and Last Name
 				$updated_user_id = wp_update_user(array(

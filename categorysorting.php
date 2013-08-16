@@ -151,4 +151,3 @@ function orderPages() {
 </script>
 <?php
 }
-?>

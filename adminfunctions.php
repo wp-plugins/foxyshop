@@ -611,12 +611,22 @@ function foxyshop_get_foxycart_data($foxyData, $silent_fail = true) {
 		"body" => $foxyData,
 	);
 	$response = wp_remote_post("https://" . $foxyshop_settings['domain'] . "/api", $args);
+
+	//WP Error
+	if (is_wp_error($response)) {
+		if ($silent_fail) {
+			return "<?xml version='1.0' encoding='UTF-8'?><foxydata><result>ERROR</result><messages><message>" . __('Connection Error', 'foxyshop') . ": " . nl2br($response->get_error_message()) . "</message></messages></foxydata>";
+		} else {
+			die("Connection Error: " . nl2br($response->get_error_message()));
+		}
+	}
+
 	$response_body = $response['body'];
 	if (!$response_body || $response['response']['code'] != 200) {
 		if ($silent_fail) {
-			$response_body = "<?xml version='1.0' encoding='UTF-8'?><foxydata><result>ERROR</result><messages><message>" . __('Connection Error', 'foxyshop') . ": " . $response['response']['message'] . "</message></messages></foxydata>";
+			return "<?xml version='1.0' encoding='UTF-8'?><foxydata><result>ERROR</result><messages><message>" . __('Connection Error', 'foxyshop') . ": " . $message . "</message></messages></foxydata>";
 		} else {
-			die("Connection Error: " . $response['response']['message']);
+			die("Connection Error: " . $message);
 		}
 	}
 	return $response_body;

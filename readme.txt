@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription, foxy
 Requires at least: 3.1
 Tested up to: 3.6
-Stable tag: 4.4
+Stable tag: 4.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
@@ -68,6 +68,15 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Changelog ==
 
+= 4.4.1 =
+* Improved WP_Error handling with FoxyCart API
+* Start using wp_redirect()
+* Fix for missing validation on variation values that are only "0"
+* Added 'foxyshop_social_media_header' handle for custom social media headers
+* Made the JavaScript UTF-8 checker more flexible
+* Updates SSO account updating to properly update WordPress passwords
+* Updated external jQuery reference to 1.10.2
+
 = 4.4 =
 * Added a default checkout and receipt template
 * Allow the fr:X variation modifier to adjust the sub_frequency
@@ -84,7 +93,7 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 * Changed cURL to wp_remote_post()
 * Check for is_ssl() when building FoxyShop admin links
 * Fixed the jQuery dequeue feature
-* Upgraded to jQuery 1.10.1
+* Upgraded to jQuery 1.10.1 for stores <= FoxyCart 1.0
 * Upgraded to prettyPhoto 3.1.5
 * Upgraded to jQuery 1.10.3 (used for Date Picker)
 * Default FoxyCart version is now 1.1
@@ -307,5 +316,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 4.4 =
-Added checkout templates, upgraded to jQuery 1.10.1
+= 4.4.1 =
+Maintenance Release to fix WP_Error() connection problems

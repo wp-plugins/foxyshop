@@ -111,8 +111,8 @@ function foxyshop_save_settings() {
 
 	//Save
 	update_option("foxyshop_settings", $foxyshop_settings);
-	header('location: edit.php?post_type=foxyshop_product&page=foxyshop_settings_page&saved=1');
-	die;
+	wp_redirect("edit.php?post_type=foxyshop_product&page=foxyshop_settings_page&saved=1");
+	exit;
 }
 
 add_action('admin_menu', 'foxyshop_settings_menu');
@@ -225,7 +225,7 @@ function foxyshop_settings_page() {
 			<tr>
 				<td style="border-bottom: 0 none;">
 					<label for="foxyshop_key"><?php _e('API Key', 'foxyshop'); ?>:</label>
-					<input type="text" id="foxyshop_key" name="key" value="<?php echo $foxyshop_settings['api_key']; ?>" readonly="readonly" onclick="this.select();" />
+					<input type="text" id="foxyshop_key" name="key" value="<?php echo esc_attr($foxyshop_settings['api_key']); ?>" readonly="readonly" onclick="this.select();" />
 					<a href="#" class="foxyshophelp">The API key is saved here and stored on your FoxyCart account so that your cart information can be encrypted to avoid link tampering. The API key is also used to communicate with FoxyCart and retrieve your order information.<br /><br />This API key is generated automatically and cannot be edited. Go to the tools page if you need to reset this key.</a>
 					<div style="clear: both; padding: 5px 0; font-style: italic;"><strong style="color: #BB1E1E;">Required Setup:</strong> Enter this API key on the advanced menu of your <a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&url=http://admin.foxycart.com/" target="_blank">FoxyCart admin</a> and check the box to enable cart validation.</div>
 
@@ -244,13 +244,13 @@ function foxyshop_settings_page() {
 					<div style="clear: both;margin-bottom: 5px;"></div>
 
 					<label for="foxyshop_theme_dir"><?php _e('Template Path', 'foxyshop'); ?>:</label>
-					<input type="text" id="foxyshop_theme_dir" name="foxyshop_theme_dir" value="<?php echo FOXYSHOP_TEMPLATE_PATH; ?>/" readonly="readonly" />
+					<input type="text" id="foxyshop_theme_dir" name="foxyshop_theme_dir" value="<?php echo esc_attr(FOXYSHOP_TEMPLATE_PATH); ?>/" readonly="readonly" />
 					<a href="#" class="foxyshophelp">FoxyShop will look in this folder for customized theme files.</a>
 
 					<?php if ($foxyshop_settings['generate_product_sitemap']) { ?>
 						<div style="clear: both;margin-bottom: 5px;"></div>
 						<label for="foxyshop_sitemap"><?php _e('Sitemap', 'foxyshop'); ?>:</label>
-						<input type="text" id="foxyshop_sitemap" name="foxyshop_sitemap" value="http://<?php echo $_SERVER['SERVER_NAME'] . '/' . FOXYSHOP_PRODUCT_SITEMAP_SLUG . '/'; ?>" readonly="readonly" onclick="this.select();" />
+						<input type="text" id="foxyshop_sitemap" name="foxyshop_sitemap" value="http://<?php echo esc_attr($_SERVER['SERVER_NAME']) . '/' . FOXYSHOP_PRODUCT_SITEMAP_SLUG . '/'; ?>" readonly="readonly" onclick="this.select();" />
 						<a href="#" class="foxyshophelp">This is the url where you can find your sitemap for submitting to search engines.</a>
 					<?php } ?>
 
@@ -282,7 +282,7 @@ function foxyshop_settings_page() {
 				}
 				?>
 				<td class="foxycartdomain <?php echo $foxycart_domain_class; ?>">
-					<label for="foxyshop_domain"><?php _e('Your FoxyCart Domain', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_domain" id="foxyshop_domain" value="<?php echo htmlspecialchars($foxycart_domain); ?>" size="50" />
+					<label for="foxyshop_domain"><?php _e('Your FoxyCart Domain', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_domain" id="foxyshop_domain" value="<?php echo esc_attr($foxycart_domain); ?>" size="50" />
 					<label id="foxydomainsimplelabel">.foxycart.com</label>
 					<a href="#" class="foxyshophelp">If you have your own custom domain, you may enter that as well (store.yoursite.com). Do not include the "http://". The FoxyCart include files will be inserted automatically so you won't need to add anything to the header of your site.</a>
 					<div id="foxydomain_simple">Have a customized FoxyCart domain like store.yoursite.com? <a href="#" class="foxydomainpicker" rel="advanced">Click here.</a></div>
@@ -304,7 +304,7 @@ function foxyshop_settings_page() {
 			<tr>
 				<td>
 					<label for="foxyshop_include_exception_list"><?php _e("Skip FoxyCart Includes on These Pages", 'foxyshop'); ?>:</label>
-					<input type="text" name="foxyshop_include_exception_list" id="foxyshop_include_exception_list" value="<?php echo $foxyshop_settings['include_exception_list']; ?>" size="50" />
+					<input type="text" name="foxyshop_include_exception_list" id="foxyshop_include_exception_list" value="<?php echo esc_attr($foxyshop_settings['include_exception_list']); ?>" size="50" />
 					<a href="#" class="foxyshophelp">Enter page slugs or ID's, separated by comma and the FoxyCart includes will not be included on these pages. This is helpful if you are setting up a template for checkout caching.<br /><br />Enter * to keep includes from showing on any page. This is useful if you want to enter the includes manually.</a>
 				</td>
 			</tr>
@@ -353,7 +353,7 @@ function foxyshop_settings_page() {
 					<div style="clear: both;"></div>
 					<input type="radio" name="foxyshop_default_image" id="foxyshop_default_image_0" value="0"<?php if ($foxyshop_settings['default_image'] == "") echo ' checked="checked"'; ?> /><label for="foxyshop_default_image_0" style="width: 95px;"><?php _e('Default Image'); ?></label> <input type="text" id="foxyshop_default_image_custom" name="foxyshop_default_image_standard" value="<?php echo WP_PLUGIN_URL."/foxyshop/images/no-photo.png";?>" readonly="readonly" style="width:544px;" onclick="jQuery('#foxyshop_default_image_0').prop('checked', true);" />
 					<div style="clear: both;"></div>
-					<input type="radio" name="foxyshop_default_image" id="foxyshop_default_image_1" value="1"<?php if ($foxyshop_settings['default_image'] && $foxyshop_settings['default_image'] != "") echo ' checked="checked"'; ?> /><label for="foxyshop_default_image_1" style="width: 95px;"><?php _e('Custom Image'); ?></label> <input type="text" id="foxyshop_default_image_custom" name="foxyshop_default_image_custom" value="<?php if ($foxyshop_settings['default_image'] != "none") echo $foxyshop_settings['default_image']; ?>" style="width:544px;" onclick="jQuery('#foxyshop_default_image_1').prop('checked', true);" />
+					<input type="radio" name="foxyshop_default_image" id="foxyshop_default_image_1" value="1"<?php if ($foxyshop_settings['default_image'] && $foxyshop_settings['default_image'] != "") echo ' checked="checked"'; ?> /><label for="foxyshop_default_image_1" style="width: 95px;"><?php _e('Custom Image'); ?></label> <input type="text" id="foxyshop_default_image_custom" name="foxyshop_default_image_custom" value="<?php if ($foxyshop_settings['default_image'] != "none") echo esc_attr($foxyshop_settings['default_image']); ?>" style="width:544px;" onclick="jQuery('#foxyshop_default_image_1').prop('checked', true);" />
 					<div style="clear: both;"></div>
 					<input type="radio" name="foxyshop_default_image" id="foxyshop_default_image_2" value="2"<?php if ($foxyshop_settings['default_image'] == "none") echo ' checked="checked"'; ?> /><label for="foxyshop_default_image_2"><?php _e("Don't Show a Default Image"); ?></label>
 					<div class="small" style="line-height: 13px;"><strong>Note:</strong> If you are loading a custom image, it is not recommended to load a full url in your dev environment. Changing the url later via<br />a mass mysql update can invalidate your settings and erase them. Use a relative path starting with /wp-content/</div>
@@ -377,19 +377,19 @@ function foxyshop_settings_page() {
 		<tbody>
 			<tr>
 				<td>
-					<label for="foxyshop_browser_title_1" style="width: 112px;"><?php echo __('All', 'foxyshop') . ' ' . FOXYSHOP_PRODUCT_NAME_PLURAL; ?>:</label> <input type="text" name="foxyshop_browser_title_1" value="<?php echo $foxyshop_settings['browser_title_1']; ?>" size="50" />
+					<label for="foxyshop_browser_title_1" style="width: 112px;"><?php echo __('All', 'foxyshop') . ' ' . FOXYSHOP_PRODUCT_NAME_PLURAL; ?>:</label> <input type="text" name="foxyshop_browser_title_1" value="<?php echo esc_attr($foxyshop_settings['browser_title_1']); ?>" size="50" />
 					<div style="clear: both;"></div>
-					<label for="foxyshop_browser_title_2" style="width: 112px;"><?php _e('All Categories', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_2" value="<?php echo $foxyshop_settings['browser_title_2']; ?>" size="50" />
+					<label for="foxyshop_browser_title_2" style="width: 112px;"><?php _e('All Categories', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_2" value="<?php echo esc_attr($foxyshop_settings['browser_title_2']); ?>" size="50" />
 					<div style="clear: both;"></div>
-					<label for="foxyshop_browser_title_3" style="width: 112px;"><?php _e('Single Category', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_3" value="<?php echo $foxyshop_settings['browser_title_3']; ?>" size="50" /> <small>Use %c for Category Name</small>
+					<label for="foxyshop_browser_title_3" style="width: 112px;"><?php _e('Single Category', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_3" value="<?php echo esc_attr($foxyshop_settings['browser_title_3']); ?>" size="50" /> <small>Use %c for Category Name</small>
 					<div style="clear: both;"></div>
-					<label for="foxyshop_browser_title_4" style="width: 112px;"><?php echo __('Single', 'foxyshop') . ' ' . FOXYSHOP_PRODUCT_NAME_SINGULAR; ?>:</label> <input type="text" name="foxyshop_browser_title_4" value="<?php echo $foxyshop_settings['browser_title_4']; ?>" size="50" /> <small>Use %p for <?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR; ?> Name</small>
+					<label for="foxyshop_browser_title_4" style="width: 112px;"><?php echo __('Single', 'foxyshop') . ' ' . FOXYSHOP_PRODUCT_NAME_SINGULAR; ?>:</label> <input type="text" name="foxyshop_browser_title_4" value="<?php echo esc_attr($foxyshop_settings['browser_title_4']); ?>" size="50" /> <small>Use %p for <?php echo esc_html(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?> Name</small>
 					<div style="clear: both;"></div>
-					<label for="foxyshop_browser_title_5" style="width: 112px;"><?php _e('Search Results', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_5" value="<?php echo $foxyshop_settings['browser_title_5']; ?>" size="50" />
+					<label for="foxyshop_browser_title_5" style="width: 112px;"><?php _e('Search Results', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_5" value="<?php echo esc_attr($foxyshop_settings['browser_title_5']); ?>" size="50" />
 					<div style="clear: both;"></div>
-					<label for="foxyshop_browser_title_6" style="width: 112px;"><?php _e('Checkout Template', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_6" value="<?php echo $foxyshop_settings['browser_title_6']; ?>" size="50" />
+					<label for="foxyshop_browser_title_6" style="width: 112px;"><?php _e('Checkout Template', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_6" value="<?php echo esc_attr($foxyshop_settings['browser_title_6']); ?>" size="50" />
 					<div style="clear: both;"></div>
-					<label for="foxyshop_browser_title_7" style="width: 112px;"><?php _e('Receipt Template', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_7" value="<?php echo $foxyshop_settings['browser_title_7']; ?>" size="50" />
+					<label for="foxyshop_browser_title_7" style="width: 112px;"><?php _e('Receipt Template', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_7" value="<?php echo esc_attr($foxyshop_settings['browser_title_7']); ?>" size="50" />
 
 				</td>
 			</tr>
@@ -519,13 +519,13 @@ function foxyshop_settings_page() {
 					$weight1 = (int)$arrweight[0];
 					$weight2 = (count($arrweight) > 1 ? (double)$arrweight[1] : "0.0");
 					?>
-					<input type="text" id="foxyshop_default_weight1" name="foxyshop_default_weight1" value="<?php echo $weight1; ?>" style="width: 46px;" /><small id="weight_title1" style="width: 28px;">lbs</small>
-					<input type="text" id="foxyshop_default_weight2" name="foxyshop_default_weight2" value="<?php echo $weight2; ?>" style="width: 46px;" /><small id="weight_title2">oz</small>
+					<input type="text" id="foxyshop_default_weight1" name="foxyshop_default_weight1" value="<?php echo esc_attr($weight1); ?>" style="width: 46px;" /><small id="weight_title1" style="width: 28px;">lbs</small>
+					<input type="text" id="foxyshop_default_weight2" name="foxyshop_default_weight2" value="<?php echo esc_attr($weight2); ?>" style="width: 46px;" /><small id="weight_title2">oz</small>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<label for="foxyshop_locale_code"><?php _e('Currency Locale Code', 'foxyshop'); ?>:</label> <input type="text" id="foxyshop_locale_code" name="foxyshop_locale_code" value="<?php echo $foxyshop_settings['locale_code']; ?>" style="width: 150px;" />
+					<label for="foxyshop_locale_code"><?php _e('Currency Locale Code', 'foxyshop'); ?>:</label> <input type="text" id="foxyshop_locale_code" name="foxyshop_locale_code" value="<?php echo esc_attr($foxyshop_settings['locale_code']); ?>" style="width: 150px;" />
 					<a href="#" class="foxyshophelp"><?php _e('If you would like to use something other than $ for your currency, enter your locale code here. For the British Pound, enter "en_GB".', 'foxyshop'); ?></a>
 					<small><a href="http://www.roseindia.net/tutorials/I18N/locales-list.shtml" target="_blank" tabindex="99999">full list of locale codes</a></small>
 					<?php if (!function_exists('money_format')) echo '<div style="clear: both; padding-top: 5px;"><em>' . __('Attention: you are using Windows which does not support internationalization. You will be limited to $ (en_US) or &pound; (en_GB).', 'foxyshop') . '</em></div>'; ?>
@@ -534,13 +534,13 @@ function foxyshop_settings_page() {
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_hide_subcat_children" name="foxyshop_hide_subcat_children"<?php checked($foxyshop_settings['hide_subcat_children'], "on"); ?> />
-					<label for="foxyshop_hide_subcat_children"><?php echo sprintf(__('Hide Child %s From Parent Categories (recommended)', 'foxyshop'), FOXYSHOP_PRODUCT_NAME_PLURAL); ?></label>
+					<label for="foxyshop_hide_subcat_children"><?php echo sprintf(__('Hide Child %s From Parent Categories (recommended)', 'foxyshop'), esc_html(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></label>
 					<a href="#" class="foxyshophelp"><?php echo sprintf(__('By default, WordPress treats children a little differently than you would expect in that products in child categories also show up in parent categories. FoxyShop removes these products, but if you would like to have all %s from sub-categories show up in parent categories, uncheck this box.', 'foxyshop'), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></a>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<label for="foxyshop_ga"><?php _e('Google Analytics Code'); ?>:</label> <input type="text" id="foxyshop_ga" name="foxyshop_ga" value="<?php echo $foxyshop_settings['ga']; ?>" size="20" /> <small>(UA-XXXXXXXX-X)</small>
+					<label for="foxyshop_ga"><?php _e('Google Analytics Code'); ?>:</label> <input type="text" id="foxyshop_ga" name="foxyshop_ga" value="<?php echo esc_attr($foxyshop_settings['ga']); ?>" size="20" /> <small>(UA-XXXXXXXX-X)</small>
 					<a href="#" class="foxyshophelp"><?php _e('Enter your UA code here and Google Analytics tracking will be installed in the footer. Tracking will only be initiated if the visitor is not a logged-in WordPress user so that admin usage won\'t be tracked.', 'foxyshop'); ?></a>
 					<div class="settings_indent">
 						<input type="checkbox" id="foxyshop_ga_advanced" name="foxyshop_ga_advanced"<?php checked($foxyshop_settings['ga_advanced'], "on"); ?> />
@@ -582,8 +582,8 @@ function foxyshop_settings_page() {
 			<tr>
 				<td>
 					<input type="checkbox" id="foxyshop_generate_product_sitemap" name="foxyshop_generate_product_sitemap"<?php checked($foxyshop_settings['generate_product_sitemap'], "on"); ?> />
-					<label for="foxyshop_generate_product_sitemap"><?php echo sprintf(__('Generate %s Sitemap', 'foxyshop'), FOXYSHOP_PRODUCT_NAME_SINGULAR); ?></label>
-					<a href="#" class="foxyshophelp"><?php echo sprintf(__('If checked, a sitemap file with all of your %s will be created in your root folder.', 'foxyshop'), strtolower(FOXYSHOP_PRODUCT_NAME_PLURAL)); ?></a>
+					<label for="foxyshop_generate_product_sitemap"><?php echo sprintf(__('Generate %s Sitemap', 'foxyshop'), esc_html(FOXYSHOP_PRODUCT_NAME_SINGULAR)); ?></label>
+					<a href="#" class="foxyshophelp"><?php echo sprintf(__('If checked, a sitemap file with all of your %s will be created in your root folder.', 'foxyshop'), strtolower(esc_html(FOXYSHOP_PRODUCT_NAME_PLURAL))); ?></a>
 				</td>
 			</tr>
 			<tr>

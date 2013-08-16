@@ -49,6 +49,14 @@ if (isset($_POST["FoxyData"])) {
 	//error_reporting(E_ALL);
 	//ini_set('display_errors','On');
 
+	//SKIP IF HOSTED GATEWAY AND NOT YET APPROVED
+	//-----------------------------------------------------
+	$status = isset($xml->transactions->transaction->status) ? (string)$xml->transactions->transaction->status : '';
+	if ($status == "pending") {
+		die("foxy");
+	}
+
+
 
 	//BUILT-IN FEATURES
 	//-----------------------------------------------------
