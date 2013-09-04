@@ -211,7 +211,7 @@ function foxyshop_start_form() {
 	echo '<input type="hidden" name="x:originalprice" value="' . $product['originalprice'] . '" id="originalprice_' . $product['id'] . '" />'."\n";
 	echo '<input type="hidden" name="x:l18n" value="' . apply_filters("foxyshop_form_l18n", $l18n_value) . '" id="foxyshop_l18n_' . $product['id'] . '" />'."\n";
 	if (version_compare($foxyshop_settings['version'], '0.7.0', ">")) {
-		if (!isset($foxyshop_skip_cart_image) && foxyshop_get_main_image()) echo '<input type="hidden" name="image' . foxyshop_get_verification('image',"--OPEN--") . ' value="' . foxyshop_get_main_image(apply_filters('foxycart_product_image_size','thumbnail')) . '" id="foxyshop_cart_product_image_' . $product['id'] . '" />'."\n";
+		if (!isset($foxyshop_skip_cart_image) && foxyshop_get_main_image()) echo '<input type="hidden" name="image' . foxyshop_get_verification('image',"--OPEN--") . '" value="' . foxyshop_get_main_image(apply_filters('foxycart_product_image_size','thumbnail')) . '" id="foxyshop_cart_product_image_' . $product['id'] . '" />'."\n";
 		if (!isset($foxyshop_skip_url_link)) echo '<input type="hidden" name="url' . foxyshop_get_verification('url') . '" value="' . $product['url'] . '" id="fs_url_' . $product['id'] . '" />'."\n";
 	}
 
