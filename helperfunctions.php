@@ -493,6 +493,11 @@ function foxyshop_run_variations($variationValue, $variationName, $showPriceVari
 			}
 			if ($showPriceVariations && $displaypricechange) $option_show_price_change = apply_filters('foxyshop_variation_price_change', ' (' . $displaypricechange . ')');
 
+			//Check for sub_startdate and sub_enddate as alternate values
+			if ($variationName == "sub_startdate" || $variationName == "sub_enddate") {
+				if ($alternate_value != preg_replace("/[^0-9]/","", $alternate_value)) $alternate_value = date("Ymd", strtotime($alternate_value));
+			}
+
 			if ($alternate_value != "NO-VALUE") $val = $alternate_value;
 			if ($priceset) $option_attributes .= ' priceset="' . $priceset . '"';
 			if ($pricechange) $option_attributes .= ' pricechange="' . $pricechange . '"';
@@ -1283,11 +1288,20 @@ function foxyshop_addon_products($show_qty = false, $before_entry = "", $after_e
 
 		//Setup
 		$product = foxyshop_setup_product();
+
+		//Check Inventory Levels
+		if (isset($product['inventory_levels'][$product['code']]['count'])) {
+			if ($product['inventory_levels'][$product['code']]['count'] <= 0) {
+				continue;
+			}
+		}
+
+
 		$fields = array('name','price','code','category','weight','discount_quantity_amount','discount_quantity_percentage','discount_price_amount','discount_price_percentage','sub_frequency','sub_startdate','sub_enddate');
 		foreach ($fields as $fieldname) {
 			if ($product[$fieldname]) echo '<input type="hidden" class="foxyshop_addon_fields" rel="' . $num . '" originalname="' . $fieldname . foxyshop_get_verification($fieldname) . '" name="x:' . $fieldname . foxyshop_get_verification($fieldname) . '" id="' . $num . ':' . $fieldname . '_' . $product['id'] . '" value="' . esc_attr($product[$fieldname]) . '" />'."\n";
 		}
-		if (foxyshop_get_main_image() && version_compare($foxyshop_settings['version'], '0.7.0', ">")) echo '<input type="hidden" class="foxyshop_addon_fields" rel="' . $num . '" originalname="image' . foxyshop_get_verification('image',foxyshop_get_main_image()) . '" name="x:image' . foxyshop_get_verification('image',foxyshop_get_main_image()) . '" id="' . $num . ':image_' . $product['id'] . '" value="' . foxyshop_get_main_image() . '" />'."\n";
+		if (foxyshop_get_main_image() && version_compare($foxyshop_settings['version'], '0.7.0', ">")) echo '<input type="hidden" class="foxyshop_addon_fields" rel="' . $num . '" originalname="image' . foxyshop_get_verification('image','--OPEN--') . '" name="x:image' . foxyshop_get_verification('image','--OPEN--') . '" id="' . $num . ':image_' . $product['id'] . '" value="' . foxyshop_get_main_image() . '" />'."\n";
 		if (version_compare($foxyshop_settings['version'], '0.7.0', ">") && !isset($foxyshop_skip_url_link)) echo '<input type="hidden" class="foxyshop_addon_fields" rel="' . $num . '" originalname="url' . foxyshop_get_verification('url') . '" name="x:url' . foxyshop_get_verification('url') . '" id="' . $num . ':url_' . $product['id'] . '" value="' . $product['url'] . '" />'."\n";
 
 		//Output

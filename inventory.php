@@ -19,17 +19,8 @@ function foxyshop_inventory_update() {
 			if ($_POST["new_count_$i"] == "") continue;
 			if ($original_count == $new_count) continue;
 
-			$inventory = get_post_meta($productid, "_inventory_levels", 1);
-			if (!is_array($inventory)) $inventory = array();
-
-			$db_count = $inventory[$code]['count'];
-			$inventory[$code]['count'] = $db_count + $count_change;
-
-			//Action
-			do_action("foxyshop_inventory_update", $code, $original_count, $new_count);
-
-			//Update
-			update_post_meta($productid, '_inventory_levels', $inventory);
+			//Do the Update
+			foxyshop_inventory_count_update($code, $new_count, $productid, true);
 		}
 		header('Location: edit.php?post_type=foxyshop_product&page=foxyshop_inventory_management_page&saved=1');
 		die;

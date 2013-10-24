@@ -501,48 +501,58 @@ function foxyshop_check_rewrite_rules() {
 function foxyshop_inventory_count_update($code, $new_count, $product_id = 0, $force = true) {
 	global $wpdb;
 
-	//If Product ID is provided
-	if ((int)$product_id > 0) {
-		$inventory = get_post_meta($product_id, "_inventory_levels", 1);
-		if (!is_array($inventory) && $force) $inventory = array();
-		if (is_array($inventory)) {
-			if ($force || isset($inventory[$code])) {
-				$original_count = isset($inventory[$code]['count']) ? $inventory[$code]['count'] : "";
-				$inventory[$code]['count'] = $new_count;
-				do_action("foxyshop_inventory_update", $code, $original_count, $new_count);
-				update_post_meta($product_id, '_inventory_levels', $inventory);
-			}
-		}
+	$search_code = mysql_real_escape_string($code);
 
-	//If No Product ID provided
-	} elseif ($product_id == 0) {
-		$meta_list = $wpdb->get_row("SELECT $wpdb->postmeta.`post_id`, $wpdb->postmeta.`meta_id`,  $wpdb->postmeta.`meta_value`,  $wpdb->postmeta.`meta_key` FROM  $wpdb->posts INNER JOIN $wpdb->postmeta ON  $wpdb->posts.`ID` =  $wpdb->postmeta.`post_id` WHERE $wpdb->posts.`post_status` = 'publish' AND $wpdb->postmeta.`meta_key` = '_inventory_levels' AND ($wpdb->postmeta.`meta_value` LIKE '%\"" . mysql_real_escape_string($code) . "\";%' OR $wpdb->postmeta.`meta_value` LIKE '%:" . mysql_real_escape_string($code) . ";%')");
-		if (!$meta_list && $force) $meta_list = $wpdb->get_row("SELECT $wpdb->postmeta.`post_id`,  $wpdb->postmeta.`meta_id`,  $wpdb->postmeta.`meta_value`,  $wpdb->postmeta.`meta_key` FROM  $wpdb->posts INNER JOIN $wpdb->postmeta ON  $wpdb->posts.`ID` =  $wpdb->postmeta.`post_id` WHERE $wpdb->posts.`post_status` = 'publish' AND $wpdb->postmeta.`meta_key` = '_variations' AND $wpdb->postmeta.`meta_value` LIKE '%c:" . mysql_real_escape_string($code) . "%'");
-		if (!$meta_list && $force) $meta_list = $wpdb->get_row("SELECT $wpdb->postmeta.`post_id`,  $wpdb->postmeta.`meta_id`,  $wpdb->postmeta.`meta_value`,  $wpdb->postmeta.`meta_key` FROM  $wpdb->posts INNER JOIN $wpdb->postmeta ON  $wpdb->posts.`ID` =  $wpdb->postmeta.`post_id` WHERE $wpdb->posts.`post_status` = 'publish' AND $wpdb->postmeta.`meta_key` = '_code' AND $wpdb->postmeta.`meta_value` = '" . mysql_real_escape_string($code) . "'");
-		if ($meta_list) {
-			$product_id = $meta_list->post_id;
-			$meta_key = $meta_list->meta_key;
-			$meta_value = $meta_list->meta_value;
+	//Setup Search Query
+	$sql = "SELECT $wpdb->postmeta.`post_id`, $wpdb->postmeta.`meta_value`,  $wpdb->postmeta.`meta_key` ";
+	$sql .= "FROM  $wpdb->posts INNER JOIN $wpdb->postmeta ON $wpdb->posts.`ID` =  $wpdb->postmeta.`post_id` ";
+	$sql .= "WHERE $wpdb->posts.`post_status` = 'publish' AND (";
 
-			//No Inventory Already, Create Inventory Record
-			if (($meta_key == "_code" || $meta_key == "_variations") && $force) {
-				$inventory = get_post_meta($product_id, "_inventory_levels", 1);
-				if (!is_array($inventory)) $inventory = array();
-				$inventory[$code]['count'] = $new_count;
-				$inventory[$code]['alert'] = "";
-				$original_count = "";
-				do_action("foxyshop_inventory_update", $code, $original_count, $new_count);
-				update_post_meta($product_id, '_inventory_levels', $inventory);
+	//Search Inventory Values
+	$sql .= "($wpdb->postmeta.`meta_key` = '_inventory_levels' AND ";
+	$sql .= "(";
+	$sql .= "$wpdb->postmeta.`meta_value` LIKE '%\"" . $search_code . "\";%' OR ";
+	$sql .= "$wpdb->postmeta.`meta_value` LIKE '%:" . $search_code . ";%'";
+	$sql .= ")";
+	$sql .= ") ";
+
+	//Only Search These Extra Fields If $force = 1
+	if ($force) {
+
+		//Search Variation Values
+		$sql .= "OR ($wpdb->postmeta.`meta_key` = '_variations' AND $wpdb->postmeta.`meta_value` LIKE '%c:" . $search_code . "%')";
+
+		//Search Code Values
+		$sql .= "OR ($wpdb->postmeta.`meta_key` = '_code' AND $wpdb->postmeta.`meta_value` = '" . $search_code . "')";
+	}
+	$sql .= ")";
+
+	//Search
+	$result = $wpdb->get_results($sql);
+
+	foreach ($result as $row) {
+		$product_id = $row->post_id;
+		$meta_key = $row->meta_key;
+		$meta_value = $row->meta_value;
+
+		//No Inventory Already, Create Inventory Record
+		if (($meta_key == "_code" || $meta_key == "_variations") && $force) {
+			$inventory = get_post_meta($product_id, "_inventory_levels", 1);
+			if (!is_array($inventory)) $inventory = array();
+			$inventory[$code]['count'] = $new_count;
+			$inventory[$code]['alert'] = "";
+			$original_count = "";
+			do_action("foxyshop_inventory_update", $code, $original_count, $new_count);
+			update_post_meta($product_id, '_inventory_levels', $inventory);
 
 
-			//Inventory Already Exists
-			} elseif ($meta_key == "_inventory_levels") {
-				$inventory = maybe_unserialize($meta_value);
-				$original_count = isset($inventory[$code]['count']) ? $inventory[$code]['count'] : "";
-				$inventory[$code]['count'] = $new_count;
-				do_action("foxyshop_inventory_update", $code, $original_count, $new_count);
-				update_post_meta($product_id, '_inventory_levels', $inventory);
-			}
+		//Inventory Already Exists
+		} elseif ($meta_key == "_inventory_levels") {
+			$inventory = maybe_unserialize($meta_value);
+			$original_count = isset($inventory[$code]['count']) ? $inventory[$code]['count'] : "";
+			$inventory[$code]['count'] = $new_count;
+			do_action("foxyshop_inventory_update", $code, $original_count, $new_count);
+			update_post_meta($product_id, '_inventory_levels', $inventory);
 		}
 	}
 }

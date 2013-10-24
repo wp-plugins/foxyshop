@@ -3,8 +3,8 @@ Contributors: sparkweb
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2AHG2QMABF8SG
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription, foxy
 Requires at least: 3.1
-Tested up to: 3.6.1
-Stable tag: 4.4.2
+Tested up to: 3.7
+Stable tag: 4.4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
@@ -68,8 +68,12 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Changelog ==
 
-= NEXT =
-* Add-on-product images are now skipping validation
+= 4.4.3 =
+* Updating inventory now covers multiple products with same code
+* Add-on product images are now properly skipping validation
+* Add-on products are not displayed if they are not in stock
+* Changed multiship script to use "Me" instead of "me" to avoid potentially different shipto names
+* Allow alternate named sub_startdate and sub_enddate to set a dynamic strtotime date
 
 = 4.4.2 =
 * Fixing a missing " that was keeping the image field from working properly
@@ -322,6 +326,6 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 4.4.2 =
-Fixing a missing " that was keeping the image field from working properly
+= 4.4.3 =
+Some small maintenance adjustments
 
