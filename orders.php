@@ -282,7 +282,7 @@ function foxyshop_order_management() {
 				<?php do_action("foxyshop_order_search_list"); ?>
 			</select>
 			<button type="submit" id="foxyshop_search_submit" name="foxyshop_search_submit" class="button-primary" style="clear: left; margin-top: 10px;"><?php _e('Submit', 'foxyshop'); ?></button>
-			<button type="button" class="button submitcancel" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_order_management';"><?php _e('Reset', 'foxyshop'); ?></button>
+			<button type="button" class="button submitcancel" style="margin-top: 10px;" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_order_management';"><?php _e('Reset', 'foxyshop'); ?></button>
 
 			<div style="clear: both;"></div>
 			<?php

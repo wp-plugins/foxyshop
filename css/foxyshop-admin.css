@@ -110,7 +110,7 @@ body .foxyshop-list-table tbody tr.foxyshop-row-updated {
 	background-color: #FFFFE0;
 }
 .subscription_update_form .foxyshop_field_control label {
-	width: 130px;
+	width: 138px;
 	font-weight: bold;
 }
 .subscription_update_form .foxyshop_field_control input[type=text] {
@@ -164,6 +164,17 @@ body .foxyshop-list-table tbody tr.foxyshop-row-updated {
 }
 #ajax_get_downloadable_list.waiting {
 	background: url("../../../../wp-admin/images/wpspin_light.gif") repeat scroll 0 0 transparent;
+}
+.foxyshop_wait {
+	display: inline-block;
+	visibility: hidden;
+	width: 16px;
+	height: 16px;
+	margin-left: 5px;
+	background: url("../../../../wp-admin/images/wpspin_light.gif") repeat scroll 0 0 transparent;
+}
+.foxyshop_wait.waiting {
+	visibility: visible;
 }
 #show_downloadable_list {
 	width: 16px;
@@ -403,9 +414,6 @@ body label.variationtypelabel {
 
 #foxyshop_version {
 	min-width: 80px;
-}
-.widefat th:last-child, .widefat th:last-child td {
-	border-bottom: 0 none;
 }
 #foxyshop_settings_wrap select {
 	float: left;
@@ -665,7 +673,7 @@ body label.variationtypelabel {
 }
 
 #foxyshop_searchform td label {
-	width: 130px;
+	width: 134px;
 }
 
 #foxyshop_searchform td input[type=text] {
@@ -775,7 +783,7 @@ table.widefat tr:last-child td {
 	margin: 0;
 }
 #foxyshoprecommendedplugins li {
-	height: 21px;
+	height: 28px;
 }
 #foxyshoprecommendedplugins h3 {
 	margin: 0 8px 0 0;

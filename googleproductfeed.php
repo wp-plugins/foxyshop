@@ -41,7 +41,7 @@ function foxyshop_create_feed() {
 		'availability',
 		'description',
 		'image_link',
-		'additional_image_link'
+		'additional_image_link',
 	);
 	$fieldnames = array_merge($fieldnames, $google_product_field_names);
 	$lastfieldname = end($fieldnames);
@@ -123,6 +123,16 @@ function foxyshop_create_feed() {
 					$condition = get_post_meta($product['id'],'_condition',1);
 					if (!$condition) $condition = "new";
 					$write .= foxyshop_dblquotes($condition); break;
+
+				case 'gtin':
+					$gtin = get_post_meta($product['id'],'_gtin',1);
+					if (!$gtin) $gtin = $product['code'];
+					$write .= foxyshop_dblquotes($gtin); break;
+
+				case 'mpn':
+					$mpn = get_post_meta($product['id'],'_mpn',1);
+					if (!$mpn) $mpn = $product['code'];
+					$write .= foxyshop_dblquotes($mpn); break;
 
 				case "image_link":
 					$write .= foxyshop_dblquotes(foxyshop_get_main_image(apply_filters("foxyshop_google_product_image_size", "thumbnail"))); break;

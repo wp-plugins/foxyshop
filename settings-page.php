@@ -377,19 +377,19 @@ function foxyshop_settings_page() {
 		<tbody>
 			<tr>
 				<td>
-					<label for="foxyshop_browser_title_1" style="width: 112px;"><?php echo __('All', 'foxyshop') . ' ' . FOXYSHOP_PRODUCT_NAME_PLURAL; ?>:</label> <input type="text" name="foxyshop_browser_title_1" value="<?php echo esc_attr($foxyshop_settings['browser_title_1']); ?>" size="50" />
+					<label for="foxyshop_browser_title_1" style="width: 123px;"><?php echo __('All', 'foxyshop') . ' ' . FOXYSHOP_PRODUCT_NAME_PLURAL; ?>:</label> <input type="text" name="foxyshop_browser_title_1" value="<?php echo esc_attr($foxyshop_settings['browser_title_1']); ?>" size="50" />
 					<div style="clear: both;"></div>
-					<label for="foxyshop_browser_title_2" style="width: 112px;"><?php _e('All Categories', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_2" value="<?php echo esc_attr($foxyshop_settings['browser_title_2']); ?>" size="50" />
+					<label for="foxyshop_browser_title_2" style="width: 123px;"><?php _e('All Categories', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_2" value="<?php echo esc_attr($foxyshop_settings['browser_title_2']); ?>" size="50" />
 					<div style="clear: both;"></div>
-					<label for="foxyshop_browser_title_3" style="width: 112px;"><?php _e('Single Category', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_3" value="<?php echo esc_attr($foxyshop_settings['browser_title_3']); ?>" size="50" /> <small>Use %c for Category Name</small>
+					<label for="foxyshop_browser_title_3" style="width: 123px;"><?php _e('Single Category', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_3" value="<?php echo esc_attr($foxyshop_settings['browser_title_3']); ?>" size="50" /> <small>Use %c for Category Name</small>
 					<div style="clear: both;"></div>
-					<label for="foxyshop_browser_title_4" style="width: 112px;"><?php echo __('Single', 'foxyshop') . ' ' . FOXYSHOP_PRODUCT_NAME_SINGULAR; ?>:</label> <input type="text" name="foxyshop_browser_title_4" value="<?php echo esc_attr($foxyshop_settings['browser_title_4']); ?>" size="50" /> <small>Use %p for <?php echo esc_html(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?> Name</small>
+					<label for="foxyshop_browser_title_4" style="width: 123px;"><?php echo __('Single', 'foxyshop') . ' ' . FOXYSHOP_PRODUCT_NAME_SINGULAR; ?>:</label> <input type="text" name="foxyshop_browser_title_4" value="<?php echo esc_attr($foxyshop_settings['browser_title_4']); ?>" size="50" /> <small>Use %p for <?php echo esc_html(FOXYSHOP_PRODUCT_NAME_SINGULAR); ?> Name</small>
 					<div style="clear: both;"></div>
-					<label for="foxyshop_browser_title_5" style="width: 112px;"><?php _e('Search Results', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_5" value="<?php echo esc_attr($foxyshop_settings['browser_title_5']); ?>" size="50" />
+					<label for="foxyshop_browser_title_5" style="width: 123px;"><?php _e('Search Results', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_5" value="<?php echo esc_attr($foxyshop_settings['browser_title_5']); ?>" size="50" />
 					<div style="clear: both;"></div>
-					<label for="foxyshop_browser_title_6" style="width: 112px;"><?php _e('Checkout Template', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_6" value="<?php echo esc_attr($foxyshop_settings['browser_title_6']); ?>" size="50" />
+					<label for="foxyshop_browser_title_6" style="width: 123px;"><?php _e('Checkout Template', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_6" value="<?php echo esc_attr($foxyshop_settings['browser_title_6']); ?>" size="50" />
 					<div style="clear: both;"></div>
-					<label for="foxyshop_browser_title_7" style="width: 112px;"><?php _e('Receipt Template', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_7" value="<?php echo esc_attr($foxyshop_settings['browser_title_7']); ?>" size="50" />
+					<label for="foxyshop_browser_title_7" style="width: 123px;"><?php _e('Receipt Template', 'foxyshop'); ?>:</label> <input type="text" name="foxyshop_browser_title_7" value="<?php echo esc_attr($foxyshop_settings['browser_title_7']); ?>" size="50" />
 
 				</td>
 			</tr>

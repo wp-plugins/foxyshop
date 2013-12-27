@@ -60,7 +60,7 @@ function foxyshop_cfbe_metabox($post_type) {
 				<td>
 					<label for="_saleprice" class="cfbe_special_label"><?php _e('Sale Price', 'foxyshop'); ?></label>
 					<input type="radio" name="_saleprice_status" id="_saleprice_status0" value="0" checked="checked" />
-					<label for="_saleprice_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged, 'foxyshop'"); ?></label>
+					<label for="_saleprice_status0" class="cfbe_leave_unchanged"><?php _e("Leave Unchanged", 'foxyshop'); ?></label>
 					<input type="radio" name="_saleprice_status" id="_saleprice_status1" value="1" />
 					<label for="_saleprice_status1"><?php echo $change_to_text; ?>:</label>
 					<input type="text" name="_saleprice" id="_saleprice" value="" class="cfbe_field_name" onfocus="jQuery('#_saleprice_status1').prop('checked', true);" />

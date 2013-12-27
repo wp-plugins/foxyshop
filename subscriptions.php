@@ -124,12 +124,12 @@ function foxyshop_subscription_management() {
 			</div>
 			<div class="foxyshop_field_control">
 				<label for="product_option_name_filter"><?php echo FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Option Name', 'foxyshop'); ?></label><input type="text" name="product_option_name_filter" id="product_option_name_filter" value="<?php echo $foxy_data['product_option_name_filter']; ?>" />
-				<label for="product_option_value_filter" style="margin-left: 15px; margin-top: 4px; width: 30px;"><?php _e('Value', 'foxyshop'); ?></label><input type="text" name="product_option_value_filter" id="product_option_value_filter" value="<?php echo $foxy_data['product_option_value_filter']; ?>" />
+				<label for="product_option_value_filter" style="margin-left: 15px; margin-top: 4px; width: 38px;"><?php _e('Value', 'foxyshop'); ?></label><input type="text" name="product_option_value_filter" id="product_option_value_filter" value="<?php echo $foxy_data['product_option_value_filter']; ?>" />
 			</div>
 			<?php if (version_compare($foxyshop_settings['version'], '0.7.2', ">=")) { ?>
 			<div class="foxyshop_field_control">
 				<label for="custom_field_name_filter"><?php _e('Custom Field Name', 'foxyshop'); ?></label><input type="text" name="custom_field_name_filter" id="custom_field_name_filter" value="<?php echo $foxy_data['custom_field_name_filter']; ?>" />
-				<label for="custom_field_value_filter" style="margin-left: 15px; margin-top: 4px; width: 30px;"><?php _e('Value', 'foxyshop'); ?></label><input type="text" name="custom_field_value_filter" id="custom_field_value_filter" value="<?php echo $foxy_data['custom_field_value_filter']; ?>" />
+				<label for="custom_field_value_filter" style="margin-left: 15px; margin-top: 4px; width: 38px;"><?php _e('Value', 'foxyshop'); ?></label><input type="text" name="custom_field_value_filter" id="custom_field_value_filter" value="<?php echo $foxy_data['custom_field_value_filter']; ?>" />
 			</div>
 			<?php } ?>
 
@@ -169,7 +169,7 @@ function foxyshop_subscription_management() {
 
 			<div style="clear: both;"></div>
 			<button type="submit" id="foxyshop_search_submit" name="foxyshop_search_submit" class="button-primary" style="clear: both; margin-top: 10px;"><?php _e('Search Records Now', 'foxyshop'); ?></button>
-			<button type="button" class="button" style="margin-left: 15px;" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_subscription_management';"><?php _e('Reset Form', 'foxyshop'); ?></button>
+			<button type="button" class="button" style="margin-left: 15px; margin-top: 10px;" onclick="document.location.href = 'edit.php?post_type=foxyshop_product&page=foxyshop_subscription_management';"><?php _e('Reset Form', 'foxyshop'); ?></button>
 
 		</td></tr></tbody></table>
 

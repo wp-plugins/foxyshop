@@ -440,6 +440,7 @@ function foxyshop_run_variations($variationValue, $variationName, $showPriceVari
 		$code = "";
 		$codeadd = "";
 		$price_change_multiplier = pow(10, FOXYSHOP_DECIMAL_PLACES);
+		$val = trim($val);
 		if (strpos($val,"*") !== false) {
 			$val = str_replace("*","",$val);
 			if ($variationType == "dropdown") {

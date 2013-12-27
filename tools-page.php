@@ -237,7 +237,7 @@ function foxyshop_tools() {
 
 	<div style="clear: both; margin-top: 14px;"></div>
 
-	<table class="widefat">
+	<table class="widefat" id="recommended_plugins_container" style="margin-bottom: 30px;">
 		<thead>
 			<tr>
 				<th><img src="<?php echo $recommend_icon; ?>" alt="" /><?php _e("Recommended Companion Plugins", 'foxyshop'); ?></th>
@@ -310,9 +310,7 @@ function foxyshop_tools() {
 		</tbody>
 	</table>
 
-	<br /><br />
-
-	<table class="widefat">
+	<table class="widefat" id="misc_tools_container" style="margin-bottom: 30px;">
 		<thead>
 			<tr>
 				<th><img src="<?php echo $misc_icon; ?>" alt="" /><?php _e('Misc Tools', 'foxyshop'); ?></th>
@@ -369,8 +367,6 @@ function foxyshop_tools() {
 			</tr>
 		</tbody>
 	</table>
-
-	<br /><br />
 
 	<form method="post" name="foxyshop_saved_vars_form" action="">
 	<table class="widefat">
@@ -569,7 +565,7 @@ echo "</div>";
 	<br /><br />
 
 	<form method="post" name="foxyshop_tools_form" action="">
-	<table class="widefat">
+	<table class="widefat" id="import_export_settings_container">
 		<thead>
 			<tr>
 				<th><img src="<?php echo $export_icon; ?>" alt="" /><?php _e('Import/Export FoxyShop Settings', 'foxyshop'); ?></th>
@@ -588,7 +584,7 @@ echo "</div>";
 				<td>
 					<label for="foxyshop_import_settings"><?php echo __('Paste Settings String to Import', 'foxyshop'); ?>:</label>
 					<div style="clear: both;"></div>
-					<textarea id="name="foxyshop_import_settings" name="foxyshop_import_settings" wrap="auto" style="float: left; width:500px;height: 80px; font-size: 13px; font-family: courier; line-height: 110%; resize: none;"></textarea>
+					<textarea id="foxyshop_import_settings" name="foxyshop_import_settings" wrap="auto" style="float: left; width:500px;height: 80px; font-size: 13px; font-family: courier; line-height: 110%; resize: none;"></textarea>
 					<div style="clear: both;"></div>
 					<p><input type="submit" class="button-primary" value="<?php _e('Import Settings', 'foxyshop'); ?>" /></p>
 				</td>
@@ -609,7 +605,7 @@ echo "</div>";
 	<br /><br />
 
 	<form name="foxyshop_uninstall_form" action="" onsubmit="return false;">
-	<table class="widefat">
+	<table class="widefat" id="uninstall_plugin_container" style="margin-bottom: 14px;">
 		<thead>
 			<tr>
 				<th><img src="<?php echo $remove_icon; ?>" alt="" /><?php _e('Uninstall FoxyShop', 'foxyshop'); ?></th>

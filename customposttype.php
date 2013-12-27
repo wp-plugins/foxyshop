@@ -606,8 +606,8 @@ function foxyshop_product_pricing_setup() {
 
 	<?php if ($foxyshop_settings['manage_inventory_levels']) { ?>
 	<h4><?php _e('Set Inventory Levels', 'foxyshop'); ?></a></h4>
-	<div style="float: left; width: 154px; margin-bottom: 5px; font-size: 11px;"><? echo FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Code', 'foxyshop');?></div>
-	<div style="float: left; width: 52px; margin-bottom: 5px; font-size: 11px;"><?php _e('Count', 'foxyshop'); ?></div>
+	<div style="float: left; width: 152px; margin-bottom: 5px; font-size: 11px;"><? echo FOXYSHOP_PRODUCT_NAME_SINGULAR . ' ' . __('Code', 'foxyshop');?></div>
+	<div style="float: left; width: 51px; margin-bottom: 5px; font-size: 11px;"><?php _e('Count', 'foxyshop'); ?></div>
 	<div style="float: left; width: 50px; margin-bottom: 5px; font-size: 11px;" title="<?php echo sprintf(__('If not set, default value will be used (%s)', 'foxyshop'), $foxyshop_settings['inventory_alert_level']); ?>"><?php _e('Alert Lvl', 'foxyshop'); ?></div>
 	<ul id="inventory_levels">
 		<?php
