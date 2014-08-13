@@ -9,6 +9,9 @@ Examples:
 [productcategory name="category-slug"]
 Shows all products in a given category with full markup
 
+[showproduct id="product-id"]
+Shows all product content and markup
+
 [showproduct name="product-slug"]
 Shows all product content and markup
 
@@ -46,11 +49,18 @@ function foxyshop_showproduct_shortcode($atts, $content = null) {
 	global $product, $prod;
 	$original_product = $product;
 	extract(shortcode_atts(array(
-		"name" => ''
+		"id" => '',
+		"name" => '',
 	), $atts));
 
-	$prod = foxyshop_get_product_by_name($name);
-	if (!$prod || !$name) return "";
+	$prod = "";
+	if ($id) {
+		$prod = get_post($id, OBJECT);
+	} elseif ($name) {
+		$prod = foxyshop_get_product_by_name($name);
+	}
+
+	if (!$prod) return "";
 
 	ob_start();
 	foxyshop_include('single-product-shortcode');
@@ -68,7 +78,8 @@ function foxyshop_product_shortcode($atts, $content = null) {
 	$original_product = $product;
 	extract(shortcode_atts(array(
 		"name" => '',
-		"variations" => ''
+		"sub_frequency" => '',
+		"variations" => '',
 	), $atts));
 
 
@@ -76,7 +87,11 @@ function foxyshop_product_shortcode($atts, $content = null) {
 	if (!$prod || !$name) return;
 	if ($content == "") $content = "Add To Cart";
 	$product = foxyshop_setup_product($prod);
-	$write = '<a href="' . foxyshop_product_link("", true, $variations) . '" class="foxyshop_sc_product_link">' . $content . '</a>';
+	$url_extra = "";
+	if ($sub_frequency) {
+		$url_extra .= "&amp;sub_frequency=" . $sub_frequency . foxyshop_get_verification("sub_frequency", $sub_frequency);
+	}
+	$write = '<a href="' . foxyshop_product_link("", true, $variations) . $url_extra . '" class="foxyshop_sc_product_link">' . $content . '</a>';
 	$product = $original_product;
 	return $write;
 }
@@ -103,8 +118,10 @@ function foxyshop_productlink_shortcode($atts, $content = null) {
 
 //Function To Get the Product Object From SLUG
 function foxyshop_get_product_by_name($post_name, $output = OBJECT) {
-    global $wpdb;
-    $post = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_name = %s AND post_type='foxyshop_product'", $post_name ));
-    if ($post) return get_post($post, $output);
-    return null;
+	global $wpdb;
+	$post = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_name = %s AND post_type='foxyshop_product'", $post_name ));
+	if ($post) {
+		return get_post($post, $output);
+	}
+	return null;
 }

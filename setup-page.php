@@ -38,7 +38,7 @@ function save_foxyshop_setup() {
 
 	update_option("foxyshop_settings", $foxyshop_settings);
 	delete_option("foxyshop_setup_required");
-	header('location: edit.php?post_type=foxyshop_product&page=foxyshop_settings_page&setup=1');
+	wp_redirect('edit.php?post_type=foxyshop_product&page=foxyshop_settings_page&setup=1');
 	die;
 }
 
@@ -109,7 +109,7 @@ function foxyshop_setup_legacy() {
 					echo '<option value="' . $key . '"' . ($foxyshop_settings['version'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
 				} ?>
 				</select>
-				<small>Version 1.0 is recommended.</small>
+				<small>Version 1.1 is recommended.</small>
 			</td>
 		</tr>
 	</tbody>

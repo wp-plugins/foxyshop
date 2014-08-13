@@ -21,13 +21,14 @@ function foxyshop_create_post_type() {
 		'new_item_name' => __('New').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Category Name', 'foxyshop'),
 		'menu_name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Categories', 'foxyshop')
 	);
-	register_taxonomy('foxyshop_categories', 'foxyshop_product', array(
+	$foxyshop_product_cat_tax_args = array(
 		'hierarchical' => true,
 		'labels' => $labels,
 		'show_ui' => true,
 		'query_var' => true,
 		'rewrite' => array('slug' => FOXYSHOP_PRODUCT_CATEGORY_SLUG, 'hierarchical' => true)
-	));
+	);
+	register_taxonomy('foxyshop_categories', 'foxyshop_product', apply_filters("foxyshop_product_cat_taxonomy_setup", $foxyshop_product_cat_tax_args));
 
 
 	//Custom Taxonomy: Product Tags
@@ -43,13 +44,14 @@ function foxyshop_create_post_type() {
 			'new_item_name' => __('New').' '.FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Tag Name', 'foxyshop'),
 			'menu_name' => FOXYSHOP_PRODUCT_NAME_SINGULAR.' '.__('Tags', 'foxyshop')
 		);
-		register_taxonomy('foxyshop_tags', 'foxyshop_product', array(
+		$foxyshop_product_tag_tax_args = array(
 			'hierarchical' => false,
 			'labels' => $labels,
 			'show_ui' => true,
 			'query_var' => true,
 			'rewrite' => array('slug' => FOXYSHOP_PRODUCTS_SLUG."-tag")
-		));
+		);
+		register_taxonomy('foxyshop_tags', 'foxyshop_product', apply_filters("foxyshop_product_tag_taxonomy_setup", $foxyshop_product_tag_tax_args));
 	}
 
 	//FoxyShop Product
@@ -1105,11 +1107,17 @@ function foxyshop_product_meta_save($post_id) {
 	if (isset($_POST['_sub_frequency'])) {
 		if ($_POST['_sub_frequency'] == "") {
 			foxyshop_save_meta_data('_sub_frequency', "");
-			foxyshop_save_meta_data('_sub_startdate', "");
-			foxyshop_save_meta_data('_sub_enddate', "");
 		} else {
 			foxyshop_save_meta_data('_sub_frequency', $_POST['_sub_frequency']);
+		}
+		if ($_POST['_sub_startdate'] == "") {
+			foxyshop_save_meta_data('_sub_startdate', "");
+		} else {
 			foxyshop_save_meta_data('_sub_startdate', $_POST['_sub_startdate']);
+		}
+		if ($_POST['_sub_enddate'] == "") {
+			foxyshop_save_meta_data('_sub_enddate', "");
+		} else {
 			foxyshop_save_meta_data('_sub_enddate', $_POST['_sub_enddate']);
 		}
 	}
@@ -1237,5 +1245,5 @@ function foxyshop_product_meta_save($post_id) {
 	//Save Action (For Other Integrations)
 	do_action("foxyshop_save_product", $post_id);
 
-	return $post_id;
+	return;
 }

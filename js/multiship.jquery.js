@@ -2,23 +2,23 @@
 	FoxyCart Multiship Javascript
 	v2.2
 	2011-06-20
- 
+
 	INSTRUCTIONS:
 	http://wiki.foxycart.com/integration/foxycart/multiship_javascript_070
- 
+
 	IMPORTANT:
 	If you're having problems with this script, MAKE SURE YOUR PAGE IS VALID.
 	Seriously, if your page is invalid (particularly with regard to forms
 	spanning beyond where they should, like starting in one <td> and going into
 	another) this code might have issues.
 */
- 
+
 function shipto_initialize() {
 	jQuery('div.shipto_select').show();
 	jQuery('div.shipto_name').hide();
 	jQuery('div.shipto_name input').val("");
 }
- 
+
 // shipto_check checks for the existence of the shipto cookie
 // returns an array of values, or false if no cookie found
 function shipto_array() {
@@ -32,7 +32,7 @@ function shipto_array() {
 		return false;
 	}
 }
- 
+
 function shipto_select() {
 	// Clear the shipto select boxes first
 	jQuery('div.shipto_select select').html('');
@@ -43,23 +43,23 @@ function shipto_select() {
 		// alert('shipto is true');
 		jQuery.each(shipto, function(i, val){
 			// alert('starting the .each loop with: ' + i + ' = ' + val);
-			if (val != 'undefined' && val != 'null' && val != '' && val != 'me') {
+			if (val != 'undefined' && val != 'null' && val != '' && val != 'Me') {
 				shipto_options += '<option value="' + val + '">' + val + '<\/option>';
 				// alert('and it worked: ' + val);
 			}
 		});
 		if (shipto_options != '') shipto_options += '<option value="">- - - - - - - - -<\/option>';
 	}
- 
+
 	// Add the defaults...
 	// This doesn't seem to work perfectly, as the selected="selected" gets ignored for some reason
 	shipto_options += '<option value="add_new">Add a new recipient...<\/option>';
 	shipto_options += '<option value="">- - - - - - - - -<\/option>';
-	shipto_options += '<option selected="selected" value="me">Yourself<\/option>';
- 
+	shipto_options += '<option selected="selected" value="Me">Yourself<\/option>';
+
 	// Set the select boxes with the proper values
 	jQuery('div.shipto_select select').html(shipto_options);
- 
+
 	// Now add the onchange event
 	jQuery('div.shipto_select select').change(function(){
 		if (jQuery(this).val() == 'add_new') {
@@ -75,32 +75,32 @@ function shipto_select() {
 		// console.info(jQuery('input[name^="shipto"]').val());
 		// console.info(jQuery('input[name^="2:shipto"]').val());
 	});
- 
+
 	// Finally, select the last used shipto
 	//if (jQuery.cookie('shipto_name_recent') != '') {
 	//	jQuery('div.shipto_select select').selectOptions(jQuery.cookie('shipto_name_recent'));
 	//} else {
-		jQuery('div.shipto_select select').selectOptions('me');
+		jQuery('div.shipto_select select').selectOptions('Me');
 	//}
- 
+
 	// console.info(jQuery('input[name*="shipto"]').val())
 }
- 
+
 // Tie any additional product shipto's to the primary shipto
 function shipto_multiples() {
 	jQuery('input[name*="shipto"]').change(function(){
 		jQuery(this).parents('form').find('input[name*="shipto"]').val(jQuery(this).val());
 	});
 }
- 
+
 // Set the events
 jQuery(document).ready(function(){
 	shipto_initialize();
 	shipto_select();
 	shipto_multiples();
 });
- 
- 
+
+
 // Set the cookie on cart add
 // NOTE: This does not yet work with multiple forms on the same page.
 // If you need that, chime in on the FoxyCart forums: http://forum.foxycart.com
@@ -114,27 +114,27 @@ setCookie = function() {
 	var error = false;
 	var shipto_cookie = jQuery.cookie('shipto_names');
 	var shipto_new = jQuery('input[name^="shipto"]').eq(0).val();
- 
+
 	jQuery.cookie('shipto_name_recent', '', {expires: -1, path: '/', domain: location.host.match('[^.]+.[^.]+$')});
 	jQuery.cookie('shipto_name_recent', shipto_new, {expires: 300, path: '/', domain: location.host.match('[^.]+.[^.]+$')});
- 
+
 	if ((shipto_new != 'undefined') && (shipto_new != 'null') && (shipto_new != 'me')) {
 		jQuery.cookie('shipto_names', '', {expires: -1, path: '/', domain: location.host.match('[^.]+.[^.]+$')});
 		jQuery.cookie('shipto_names', shipto_cookie + '||' + shipto_new, {expires: 300, path: '/', domain: location.host.match('[^.]+.[^.]+$')});
 	}
 	return true;
 }
- 
+
 constructShipTo = function() {
 	shipto_initialize();
 	shipto_select();
 }
- 
+
 fcc.events.cart.preprocess.add(setCookie);
 fcc.events.cart.postprocess.add(constructShipTo);
- 
- 
- 
+
+
+
 // ============================================================================
 /**
  * Removes duplicates in the array 'a'
@@ -159,12 +159,12 @@ function contains(a, e) {
 	return false;
 }
 // ============================================================================
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
 // ============================================================================
 /**
  * Cookie plugin
@@ -175,7 +175,7 @@ function contains(a, e) {
  * http://www.gnu.org/licenses/gpl.html
  *
  */
- 
+
 /**
  * Create a cookie with the given name and value and other optional parameters.
  *
@@ -206,7 +206,7 @@ function contains(a, e) {
  * @cat Plugins/Cookie
  * @author Klaus Hartl/klaus.hartl@stilbuero.de
  */
- 
+
 /**
  * Get the value of a cookie with the given name.
  *
@@ -263,9 +263,9 @@ return cookieValue;
 }
 };
 // ============================================================================
- 
- 
- 
+
+
+
 // ============================================================================
 // http://www.mathias-bank.de/2006/11/01/jquery-plugin-select-box-manipulation/
 /*
@@ -276,7 +276,7 @@ return cookieValue;
  *
  * Addepted to select an option by Mathias Bank (http://www.mathias-bank.de)
  */
- 
+
 /*
  * Selects an option by value
  *
@@ -290,11 +290,11 @@ jQuery.fn.selectOptions = function(value) {
 	this.each(
 		function()	{
 			if(this.nodeName.toLowerCase() != "select") return;
- 
+
 			// get number of options
 			var optionsLength = this.options.length;
- 
- 
+
+
 			for(var i = 0; i<optionsLength; i++) {
 				if (this.options[i].value == value) {
 					this.options[i].selected = true;

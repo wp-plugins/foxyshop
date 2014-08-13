@@ -148,10 +148,11 @@ jQuery(document).ready(function($){
 			//Cloud-zoom
 			if (typeof window.foxyshop_cloudzoom_image_change == 'function') {
 				foxyshop_cloudzoom_image_change(new_ikey);
+				$("#foxyshop_cart_product_image_" + current_product_id).val(ikey[new_ikey][1]);
 
 			//Replace Image
 			} else {
-				$("#foxyshop_cart_product_image_" + current_product_id).attr("name",'image'+ikey[new_ikey][5]).val(ikey[new_ikey][1]);
+				$("#foxyshop_cart_product_image_" + current_product_id).val(ikey[new_ikey][1]);
 			}
 
 			//Plugin Function Here
@@ -172,10 +173,10 @@ jQuery(document).ready(function($){
 		if (inventory_match_count >= 0) {
 			newcount = parseInt(arr_foxyshop_inventory[current_product_id][inventory_match_count][1]);
 			newalert = parseInt(arr_foxyshop_inventory[current_product_id][inventory_match_count][2]);
-			newhash = arr_foxyshop_inventory[current_product_id][inventory_match_count][3];
 			original_max_quantity = $("#original_quantity_max_" + current_product_id).val();
-			original_max_quantity_hash = $("#original_quantity_max_" + current_product_id).attr("rel");
 			if (!foxyshop_allow_backorder && newcount < original_max_quantity) {
+				$("#fs_quantity_max_" + current_product_id).val(newcount);
+			} else if (!foxyshop_allow_backorder && original_max_quantity == 0) {
 				$("#fs_quantity_max_" + current_product_id).val(newcount);
 			} else if (!foxyshop_allow_backorder && newcount >= original_max_quantity && original_max_quantity > 0) {
 				$("#fs_quantity_max_" + current_product_id).val(original_max_quantity);
@@ -266,44 +267,45 @@ jQuery(document).ready(function($){
 		}
 	}
 
-});
+	//Form Validation
+	$("form.foxyshop_product").submit(function(e) {
 
-//Code to Check For Required Fields Before Adding to Cart
-foxycart_required_fields_check = function(e, arr) {
-	var current_product_id = jQuery(e).attr("rel");
-	var strFailed = false;
-	if (current_product_id) {
-		jQuery("#foxyshop_product_form_" + current_product_id + " .foxyshop_required").each(function() {
-			if (jQuery(this).is('select') && jQuery(this).is(':visible') && jQuery('option:selected', this).index() == 0) {
-					strFailed = true;
-					alert("Error: You must select an option from the dropdown.");
-					jQuery(this).focus();
-			} else if (jQuery(this).is(':checkbox') && !jQuery(this).is(':checked')) {
-					strFailed = true;
-					alert("Error: You must check this checkbox before adding to cart.");
-					jQuery(this).focus();
-			} else if (!jQuery(this).val() && !jQuery(this).is('label')) {
-				if (jQuery(this).hasClass('hiddenimageholder') && jQuery(this).parents('.foxyshop_custom_upload_container').is(':visible')) {
-					strFailed = true;
-					alert('Error: You must upload a file before adding to cart.');
-				} else if (jQuery(this).is(':visible')) {
-					strFailed = true;
-					alert("Error: You have not completed a required field.");
-					jQuery(this).focus();
+		var current_product_id = jQuery(this).attr("rel");
+		var strFailed = false;
+		console.log(current_product_id);
+		if (current_product_id) {
+			jQuery("#foxyshop_product_form_" + current_product_id + " .foxyshop_required").each(function() {
+				if (jQuery(this).is('select') && jQuery(this).is(':visible') && jQuery('option:selected', this).index() == 0) {
+						strFailed = true;
+						alert("Error: You must select an option from the dropdown.");
+						jQuery(this).focus();
+				} else if (jQuery(this).is(':checkbox') && !jQuery(this).is(':checked')) {
+						strFailed = true;
+						alert("Error: You must check this checkbox before adding to cart.");
+						jQuery(this).focus();
+				} else if (!jQuery(this).val() && !jQuery(this).is('label')) {
+					if (jQuery(this).hasClass('hiddenimageholder') && jQuery(this).parents('.foxyshop_custom_upload_container').is(':visible')) {
+						strFailed = true;
+						alert('Error: You must upload a file before adding to cart.');
+					} else if (jQuery(this).is(':visible')) {
+						strFailed = true;
+						alert("Error: You have not completed a required field.");
+						jQuery(this).focus();
+					}
 				}
-			}
-		});
-	}
-	if (strFailed) {
-		return false;
-	} else {
-		if (jQuery("#foxyshop_product_form_" + current_product_id + " #productsubmit").attr("disabled")) return false;
-		return true;
-	}
-}
-if (typeof fcc !== 'undefined') {
-	fcc.events.cart.preprocess.add(foxycart_required_fields_check);
-}
+			});
+		}
+		if (strFailed) {
+			e.stopPropagation();
+			e.preventDefault();
+		} else {
+			if (jQuery("#foxyshop_product_form_" + current_product_id + " #productsubmit").attr("disabled")) return false;
+			return true;
+		}
+
+	});
+
+});
 
 function foxyshop_is_array(obj) {
 	if (obj.constructor.toString().indexOf("Array") == -1)

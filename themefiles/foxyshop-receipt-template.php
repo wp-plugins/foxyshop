@@ -9,9 +9,9 @@ You can find these templates at:
 http://yoursite.com/foxycart-checkout-template/
 http://yoursite.com/foxycart-receipt-template/
 
-*/ ?>
+*/
+global $foxyshop_settings;
 
-<?php
 //Remove jQuery and FoxyCart Includes
 add_action('wp_enqueue_scripts', 'foxyshop_remove_jquery', 99);
 remove_action('wp_footer', 'foxyshop_insert_google_analytics', 100);
@@ -20,6 +20,12 @@ remove_action('init', 'foxyshop_insert_jquery');
 
 //Do Special Google Analytics If Required
 add_action('wp_footer', 'foxyshop_insert_google_analytics_receipt');
+
+//Wrap RAW tags
+add_action('wp_head', 'foxycart_template_start_raw', 1);
+add_action('wp_head', 'foxycart_template_end_raw', 999);
+function foxycart_template_start_raw() { echo "{% raw %}"; }
+function foxycart_template_end_raw() { echo "{% endraw %}<style></style>"; }
 
 //Put Special CSS in Head
 add_action('wp_head', 'foxycart_template_header_includes');
@@ -49,8 +55,13 @@ body {
 
 
 
+<?php if (version_compare($foxyshop_settings['version'], '1.1', "<=")) { ?>
 ^^cart^^
 ^^receipt^^
+<?php } else { ?>
+{% include 'cart.inc.twig' %}
+{% include 'email_order_details.inc.twig' %}
+<?php } ?>
 
 
 

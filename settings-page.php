@@ -31,6 +31,7 @@ function foxyshop_save_settings() {
 		"use_jquery",
 		"ga",
 		"ga_advanced",
+		"ga_type",
 		"hide_subcat_children",
 		"generate_product_sitemap",
 		"manage_inventory_levels",
@@ -90,13 +91,18 @@ function foxyshop_save_settings() {
 	//Set Setup Prompt If FoxyCart API Version Available
 	//if ($domain && version_compare($foxyshop_settings['version'], '1.1', ">=") && !$foxyshop_settings['api']['store_access_token']) add_option("foxyshop_setup_required", 1);
 
-	//Other Settings Treadted Specially
+	//Other Settings Treated Specially
 	$foxyshop_settings["default_weight"] = (int)$_POST['foxyshop_default_weight1'] . ' ' . (double)$_POST['foxyshop_default_weight2'];
 	$foxyshop_settings["products_per_page"] = ((int)$_POST['foxyshop_products_per_page'] == 0 ? -1 : (int)$_POST['foxyshop_products_per_page']);
 
 	//Cache the FoxyCart Includes
 	if (version_compare($foxyshop_settings['version'], '0.7.2', ">=") && $foxyshop_settings['domain']) {
-		$foxy_data = array("api_action" => "store_includes_get", "javascript_library" => "none", "cart_type" => "colorbox");
+		if (version_compare($foxyshop_settings['version'], '0.7.2', "<=")) {
+			$cart_type = "colorbox";
+		} else {
+			$cart_type = "sidecart";
+		}
+		$foxy_data = array("api_action" => "store_includes_get", "javascript_library" => "none", "cart_type" => $cart_type);
 		$foxy_data = apply_filters('foxyshop_store_includes_get', $foxy_data);
 		$foxy_response = foxyshop_get_foxycart_data($foxy_data);
 		$xml = simplexml_load_string($foxy_response, NULL, LIBXML_NOCDATA);
@@ -546,7 +552,13 @@ function foxyshop_settings_page() {
 						<input type="checkbox" id="foxyshop_ga_advanced" name="foxyshop_ga_advanced"<?php checked($foxyshop_settings['ga_advanced'], "on"); ?> />
 						<label for="foxyshop_ga_advanced"><?php _e('Advanced Google Analytics Code', 'foxyshop'); ?></label>
 						<a href="#" class="foxyshophelp"><?php _e('Check this box if you are using the advanced FoxyCart Google Analytics Sync. We will put the appropriate code in your footer.', 'foxyshop'); ?></a>
-						<small><a href="http://wiki.foxycart.com/integration/googleanalytics_async" target="_blank" tabindex="99999">advanced instructions here</a></small>
+						<small>Advanced Instructions: <a href="https://wiki.foxycart.com/integration/googleanalytics_async" target="_blank" tabindex="99998">legacy</a> or <a href="https://wiki.foxycart.com/integration/googleanalytics_universal" target="_blank" tabindex="99999">universal</a></small>
+						<div style="clear: both;">
+						<select name="foxyshop_ga_type" id="ga_type">
+							<option value="legacy"<?php if ($foxyshop_settings['ga_type'] == "legacy") echo ' selected="selected"'; ?>>Legacy Analytics</option>
+							<option value="universal"<?php if ($foxyshop_settings['ga_type'] == "universal") echo ' selected="selected"'; ?>>Universal Analytics</option>
+						</select>
+						</div>
 					</div>
 				</td>
 			</tr>
@@ -566,7 +578,7 @@ function foxyshop_settings_page() {
 				<td>
 					<input type="checkbox" id="foxyshop_set_orderdesk_url" name="foxyshop_set_orderdesk_url"<?php if ($foxyshop_settings['orderdesk_url']) echo ' checked="checked"'; ?> />
 					<label for="foxyshop_set_orderdesk_url"><?php _e('Use FoxyTools Order Desk', 'foxyshop'); ?></label>
-					<small>(<a href="https://foxytools.com/orderdesk/" target="_blank"><?php _e("more info", "foxyshop"); ?></a>)</small>
+					<small>(<a href="http://www.orderdesk.me/" target="_blank"><?php _e("more info", "foxyshop"); ?></a>)</small>
 					<div id="orderdesk_url_holder"<?php if (!$foxyshop_settings['orderdesk_url']) echo ' style="display:none;"'; ?>>
 						<label for="foxyshop_orderdesk_url"><?php echo __('Your Order Desk Datafeed URL', 'foxyshop'); ?>:</label>
 						<input type="text" id="foxyshop_orderdesk_url" name="foxyshop_orderdesk_url" value="<?php echo esc_attr($foxyshop_settings['orderdesk_url']); ?>" style="width: 400px;" />

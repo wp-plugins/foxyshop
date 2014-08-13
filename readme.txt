@@ -3,8 +3,8 @@ Contributors: sparkweb
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2AHG2QMABF8SG
 Tags: foxycart, shopping, cart, inventory, management, ecommerce, selling, subscription, foxy
 Requires at least: 3.1
-Tested up to: 3.9.1
-Stable tag: 4.4.4
+Tested up to: 4.0
+Stable tag: 4.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 FoxyShop provides a robust shopping cart and inventory management tool for use with FoxyCart's hosted e-commerce solution.
@@ -67,6 +67,25 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 
 == Changelog ==
+
+= 4.5 =
+* Added FoxyCart 2.0 support
+* Added true bundled product support
+* Google Analytics Universal functionality
+* Custom product sorting by category
+* Adding full and medium size image type filters
+* Updating max_quantity calculation, removing hashes
+* Updating most fields to remove tags to solve validation issues
+* Open validation for bundled product images
+* Adding filters for adjusting all prices and variations
+* Adding filter for default wp user role
+* Adding filter for Google Analytics ga.src
+* Adding filter for custom bundled product fields
+* Fixed the SSO password problem when adding new WordPress accounts
+* Changing mysql_real_escape_string() to esc_sql()
+* Allowing price changes to still be enforced with v: variation modifier
+* Allowing id attribute when specifying 'showproduct' shortcode
+* Updated to jQuery 1.11.1
 
 = 4.4.4 =
 * Changing the Manage Inventory page to use ajax-based saving
@@ -332,6 +351,5 @@ There's a thorough FAQ section located at [http://www.foxy-shop.com/faq/](http:/
 
 == Upgrade Notice ==
 
-= 4.4.4 =
-WP 3.8 CSS Updates
-
+= 4.5 =
+FoxyCart v2 Updates
