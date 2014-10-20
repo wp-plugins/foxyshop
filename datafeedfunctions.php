@@ -173,9 +173,10 @@ function foxyshop_datafeed_user_update($xml) {
 		$customer_last_name = (string)$transaction->customer_last_name;
 		$customer_email = (string)$transaction->customer_email;
 		$customer_password = (string)$transaction->customer_password;
+		$is_anonymous = (int)$transaction->is_anonymous;
 
 		//Add or Update WordPress User If Not Guest Checkout
-		if ($customer_id != '0') {
+		if ($customer_id != '0' && $is_anonymous == 0) {
 
 			//Check To See if WordPress User Already Exists
 			$current_user = get_user_by("email", $customer_email);
@@ -292,7 +293,7 @@ class rc4crypt {
 	 * @access public
 	 * @return string
 	 */
-	function encrypt ($pwd, $data, $ispwdHex = 0) {
+	public static function encrypt ($pwd, $data, $ispwdHex = 0) {
 		if ($ispwdHex) $pwd = @pack('H*', $pwd); // valid input, please!
  		$key[] = '';
 		$box[] = '';
@@ -329,7 +330,7 @@ class rc4crypt {
 	 * @access public
 	 * @return string
 	 */
-	function decrypt ($pwd, $data, $ispwdHex = 0) {
+	public static function decrypt ($pwd, $data, $ispwdHex = 0) {
 		return rc4crypt::encrypt($pwd, $data, $ispwdHex);
 	}
 }

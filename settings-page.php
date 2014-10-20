@@ -32,6 +32,7 @@ function foxyshop_save_settings() {
 		"ga",
 		"ga_advanced",
 		"ga_type",
+		"ga_demographics",
 		"hide_subcat_children",
 		"generate_product_sitemap",
 		"manage_inventory_levels",
@@ -96,7 +97,7 @@ function foxyshop_save_settings() {
 	$foxyshop_settings["products_per_page"] = ((int)$_POST['foxyshop_products_per_page'] == 0 ? -1 : (int)$_POST['foxyshop_products_per_page']);
 
 	//Cache the FoxyCart Includes
-	if (version_compare($foxyshop_settings['version'], '0.7.2', ">=") && $foxyshop_settings['domain']) {
+	if (version_compare($foxyshop_settings['version'], '0.7.2', ">=") && version_compare($foxyshop_settings['version'], '2.0', "<") && $foxyshop_settings['domain']) {
 		if (version_compare($foxyshop_settings['version'], '0.7.2', "<=")) {
 			$cart_type = "colorbox";
 		} else {
@@ -199,7 +200,7 @@ function foxyshop_settings_page() {
 		<tbody>
 			<tr>
 				<td style="border-bottom: 0 none;">
-					<a href="http://www.foxy-shop.com/?utm_source=plugin&utm_medium=app&utm_campaign=pluginlink_<?php echo FOXYSHOP_VERSION ?>" target="_blank"><img src="<?php echo FOXYSHOP_DIR; ?>/images/logo.png" alt="FoxyShop" style="float: right; margin-left: 20px;" /></a>
+					<a href="http://www.foxy-shop.com/?utm_source=plugin&amp;utm_medium=app&amp;utm_campaign=pluginlink_<?php echo FOXYSHOP_VERSION ?>" target="_blank"><img src="<?php echo FOXYSHOP_DIR; ?>/images/logo.png" alt="FoxyShop" style="float: right; margin-left: 20px;" /></a>
 
 					<p>Stay up to date with the latest updates from FoxyShop by following on Twitter and Facebook.</p>
 					<a href="http://twitter.com/FoxyShopWP" class="twitter-follow-button">Follow @FoxyShopWP</a>
@@ -207,10 +208,10 @@ function foxyshop_settings_page() {
 					<iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo urlencode('https://www.facebook.com/pages/FoxyShop/188079417920111'); ?>&amp;layout=button_count&amp;show_faces=false&amp;width=190&amp;action=like&amp;colorscheme=light&amp;font=arial" scrolling="no" frameborder="0" allowTransparency="true" style="border:none; overflow:hidden; width:190px; height:26px;"></iframe>
 
 					<p>
-					<a href="http://www.foxy-shop.com/documentation/?utm_source=plugin&utm_medium=app&utm_campaign=pluginlink_<?php echo FOXYSHOP_VERSION ?>" target="_blank" class="button"><?php _e('FoxyShop Documentation', 'foxyshop'); ?></a>
-					<a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&url=http://www.foxycart.com/" target="_blank" class="button"><?php _e('FoxyCart Information', 'foxyshop'); ?></a>
-					<a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&url=http://wiki.foxycart.com/" target="_blank" class="button"><?php _e('FoxyCart Wiki', 'foxyshop'); ?></a>
-					<a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&url=http://admin.foxycart.com/" target="_blank" class="button"><?php _e('FoxyCart Admin Panel', 'foxyshop'); ?></a>
+					<a href="http://www.foxy-shop.com/documentation/?utm_source=plugin&amp;utm_medium=app&amp;utm_campaign=pluginlink_<?php echo FOXYSHOP_VERSION ?>" target="_blank" class="button"><?php _e('FoxyShop Documentation', 'foxyshop'); ?></a>
+					<a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&amp;url=http://www.foxycart.com/" target="_blank" class="button"><?php _e('FoxyCart Information', 'foxyshop'); ?></a>
+					<a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&amp;url=http://wiki.foxycart.com/" target="_blank" class="button"><?php _e('FoxyCart Wiki', 'foxyshop'); ?></a>
+					<a href="http://affiliate.foxycart.com/idevaffiliate.php?id=211&amp;url=http://admin.foxycart.com/" target="_blank" class="button"><?php _e('FoxyCart Admin Panel', 'foxyshop'); ?></a>
 
 					</p>
 				</td>
@@ -304,7 +305,7 @@ function foxyshop_settings_page() {
 						echo '<option value="' . $key . '"' . ($foxyshop_settings['version'] == $key ? ' selected="selected"' : '') . '>' . $val . '  </option>'."\n";
 					} ?>
 					</select>
-					<a href="#" class="foxyshophelp">Version 0.7.0 was a big step up from 0.6.0 and used the new ColorBox overlay. Version 0.7.1 added images to the cart checkout. Version 0.7.2 added new API options. Version 1.0 added live tax rates and a new country selector.<br /><br />If you are upgrading to 0.7.2 or higher, change your version at FoxyCart and save, then update here.</a>
+					<a href="#" class="foxyshophelp">Version 0.7.0 was a big step up from 0.6.0 and used the new ColorBox overlay. Version 0.7.1 added images to the cart checkout. Version 0.7.2 added new API options. Version 1.0 added live tax rates and a new country selector. Version 2.0 completely rebuilt the checkout templates.<br /><br />If you are upgrading to 0.7.2 or higher, change your version at FoxyCart and save, then update here.</a>
 				</td>
 			</tr>
 			<tr>
@@ -558,6 +559,8 @@ function foxyshop_settings_page() {
 							<option value="legacy"<?php if ($foxyshop_settings['ga_type'] == "legacy") echo ' selected="selected"'; ?>>Legacy Analytics</option>
 							<option value="universal"<?php if ($foxyshop_settings['ga_type'] == "universal") echo ' selected="selected"'; ?>>Universal Analytics</option>
 						</select>
+
+						<label for="foxyshop_ga_demographics" style="margin: 2px 3px 0 9px;"><input type="checkbox" name="foxyshop_ga_demographics" id="foxyshop_ga_demographics" <?php checked($foxyshop_settings['ga_demographics'], "on"); ?>>Include Demographics</label>
 						</div>
 					</div>
 				</td>

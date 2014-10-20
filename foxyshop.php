@@ -5,7 +5,7 @@ Plugin Name: FoxyShop
 Plugin URI: http://www.foxy-shop.com/
 Description: FoxyShop is a full integration for FoxyCart and WordPress, providing a robust shopping cart and inventory management tool.
 Author: SparkWeb Interactive, Inc.
-Version: 4.5
+Version: 4.5.1
 Author URI: http://www.foxy-shop.com/
 
 **************************************************************************
@@ -38,7 +38,7 @@ the most out of FoxyShop.
 if (!defined('ABSPATH')) exit();
 
 //Setup Plugin Variables
-define('FOXYSHOP_VERSION', "4.5");
+define('FOXYSHOP_VERSION', "4.5.1");
 define('FOXYSHOP_DIR', (is_ssl() ? str_replace("http://", "https://", WP_PLUGIN_URL) : WP_PLUGIN_URL) . "/foxyshop");
 define('FOXYSHOP_PATH', dirname(__FILE__));
 $foxyshop_document_root = $_SERVER['DOCUMENT_ROOT'];
@@ -90,7 +90,12 @@ if (is_admin()) {
 //Load FoxyShop Scripts and Styles on Public Site
 } else {
 	if ($foxyshop_settings['use_jquery']) add_action('wp_enqueue_scripts', 'foxyshop_insert_jquery', 15);
-	add_action('wp_head', 'foxyshop_insert_foxycart_files');
+
+	if (version_compare($foxyshop_settings['version'], '2.0', ">=")) {
+		add_action('wp_footer', 'foxyshop_insert_foxycart_loader');
+	} else {
+		add_action('wp_head', 'foxyshop_insert_foxycart_files');
+	}
 	add_action('init', 'foxyshop_load_site_scripts', 1);
 	add_action('wp', 'foxyshop_check_include_status', 11);
 	if ($foxyshop_settings['ga']) add_action('wp_footer', 'foxyshop_insert_google_analytics', 100);
