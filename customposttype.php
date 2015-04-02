@@ -149,10 +149,17 @@ function foxyshop_manage_custom_columns($column_name, $id) {
 		$imageNumber = 0;
 		$src = "";
 		$attachments = get_posts(array('numberposts' => -1, 'post_type' => 'attachment','post_status' => null,'post_parent' => $id, 'order' => 'ASC','orderby' => 'menu_order'));
+		if (!$attachments && $featuredImageID) {
+			$attachments = get_posts(array("p" => $featuredImageID, 'post_type' => 'attachment', "post_mime_type" => "image"));
+		}
 		foreach ($attachments as $attachment) {
 			$thumbnailSRC = wp_get_attachment_image_src($attachment->ID, "thumbnail");
 			if ($featuredImageID == $attachment->ID || ($featuredImageID == 0 && $imageNumber == 0)) $src = $thumbnailSRC[0];
 			$imageNumber++;
+		}
+		if (!$src && $featuredImageID) {
+			$arr = wp_get_attachment_image_src($featuredImageID, "thumbnail");
+			$src = $arr[0];
 		}
 		if (!$src) $src = $foxyshop_settings['default_image'];
 		if (!$src) $src = WP_PLUGIN_URL."/foxyshop/images/no-photo.png";
@@ -509,6 +516,7 @@ function foxyshop_product_pricing_setup() {
 	$_saleenddate = get_post_meta($post->ID, '_saleenddate', 1);
 
 	$_coupon = get_post_meta($post->ID, '_coupon', 1);
+	$_expires = get_post_meta($post->ID, '_expires', 1);
 	$_cart = get_post_meta($post->ID, '_cart', 1) == 'checkout' ? ' checked="checked"' : '';
 	$_empty = get_post_meta($post->ID, '_empty', 1) == 'true' ? ' checked="checked"' : '';
 
@@ -676,6 +684,12 @@ function foxyshop_product_pricing_setup() {
 		<label for="_coupon"><?php _e('Code', 'foxyshop'); ?></label>
 		<input type="text" name="_coupon" id="_coupon" value="<?php echo $_coupon; ?>" />
 	</div>
+	<?php if (version_compare($foxyshop_settings['version'], '2.0', ">=")) { ?>
+	<div class="foxyshop_field_control">
+		<label for="_expires"><?php _e('Expires', 'foxyshop'); ?></label>
+		<input type="text" name="_expires" id="_expires" value="<?php echo $_expires; ?>" />
+	</div>
+	<?php } ?>
 	<div style="clear: both;"></div>
 	<?php
 }
@@ -1138,6 +1152,12 @@ function foxyshop_product_meta_save($post_id) {
 		foxyshop_save_meta_data('_cart', $_POST['_cart']);
 	} else {
 		foxyshop_save_meta_data('_cart', '');
+	}
+
+	if (isset($_POST['_expires'])) {
+		foxyshop_save_meta_data('_expires', $_POST['_expires']);
+	} else {
+		foxyshop_save_meta_data('_expires', '');
 	}
 
 

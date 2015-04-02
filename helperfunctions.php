@@ -148,6 +148,9 @@ function foxyshop_setup_product($thepost = false, $shortcut = false) {
 		$imageNumber = 0;
 		$featuredImageID = (has_post_thumbnail($thepost->ID) ? get_post_thumbnail_id($thepost->ID) : 0);
 		$attachments = get_posts(array('numberposts' => -1, 'post_type' => 'attachment','post_status' => null,'post_parent' => $thepost->ID, "post_mime_type" => "image", 'order' => 'ASC','orderby' => 'menu_order'));
+		if (!$attachments && $featuredImageID) {
+			$attachments = get_posts(array("p" => $featuredImageID, 'post_type' => 'attachment', "post_mime_type" => "image"));
+		}
 		$sizes = get_intermediate_image_sizes();
 		$sizes[] = 'full';
 		foreach ($attachments as $attachment) {
@@ -159,13 +162,13 @@ function foxyshop_setup_product($thepost = false, $shortcut = false) {
 			$new_product['images'][$imageNumber] = array(
 				"id" => $attachment->ID,
 				"title" => $imageTitle,
-				"featured" => ($featuredImageID == $attachment->ID || ($featuredImageID == 0 && $imageNumber == 0) ? 1 : 0),
 				"hide_from_slideshow" => (get_post_meta($attachment->ID, "_foxyshop_hide_image", 1) ? 1 : 0)
 			);
 			foreach($sizes as $size) {
 				$sizearray = wp_get_attachment_image_src($attachment->ID, $size);
 				$new_product['images'][$imageNumber][$size] = $sizearray[0];
 			}
+			$new_product['images'][$imageNumber]["featured"] = $featuredImageID == $attachment->ID || ($featuredImageID == 0 && $imageNumber == 0) ? 1 : 0;
 			$imageNumber++;
 		}
 	}
@@ -194,10 +197,17 @@ function foxyshop_setup_product($thepost = false, $shortcut = false) {
 	//Extra Cart Parameters
 	$fields = array('cart','empty','coupon','redirect','output','_cart','_empty','_coupon');
 	foreach ($fields as $fieldname) {
-		if (get_post_meta($thepost->ID,$fieldname, true)) {
+		if (get_post_meta($thepost->ID, $fieldname, true)) {
 			$new_product[str_replace("_", "", $fieldname)] = get_post_meta($thepost->ID,$fieldname, true);
 		}
 	}
+
+	//Expires
+	$expires = get_post_meta($thepost->ID, '_expires', true);
+	if ($expires) {
+		$new_product['expires'] = strpos($expires, "-") ? strtotime($expires) : $expires;
+	}
+
 
 	//Hook To Add Your Own Function to Update the $new_product array with your own data
 	if (has_filter('foxyshop_setup_product_info')) $new_product = apply_filters('foxyshop_setup_product_info', $new_product, $thepost->ID);
@@ -229,6 +239,11 @@ function foxyshop_start_form() {
 	echo '<input type="hidden" name="quantity_max' . foxyshop_get_verification('quantity_max', '--OPEN--') . '" value="' . $product['quantity_max'] . '" id="fs_quantity_max_' . $product['id'] . '" />'."\n";
 	echo '<input type="hidden" name="x:quantity_max" value="' . $product['quantity_max_original'] . '" id="original_quantity_max_' . $product['id'] . '" />'."\n";
 	if (FOXYSHOP_DECIMAL_PLACES != 2) echo '<input type="hidden" name="x:foxyshop_decimal_places" value="' . pow(10, FOXYSHOP_DECIMAL_PLACES) . '" id="foxyshop_decimal_places" />'."\n";
+
+	//Expires
+	if (isset($product['expires']) && $product['expires']) {
+		echo '<input type="hidden" name="expires' . foxyshop_get_verification('expires') . '" value="' . $product['expires'] . '" id="fs_expires_' . $product['id'] . '" />'."\n";
+	}
 
 	//Sub Frequency
 	if (!$product["sub_frequency"]) {
@@ -1009,7 +1024,10 @@ function foxyshop_category_children($categoryID = 0, $showCount = false, $showDe
 	if ($termchildren) {
 
 		//Sort Categories
-		$termchildren = foxyshop_sort_categories($termchildren, $categoryID);
+		$skip_category_sort = apply_filters('foxyshop_categories_skip_sort', 0);
+		if (!$skip_category_sort) {
+			$termchildren = foxyshop_sort_categories($termchildren, $categoryID);
+		}
 
 		foreach ($termchildren as $child) {
 			$term = get_term_by('id', $child->term_id, "foxyshop_categories");
@@ -1071,7 +1089,11 @@ function foxyshop_category_writer($category_id, $depth) {
 		}
 
 
-		$termchildren = foxyshop_sort_categories($termchildren, $category_id);
+		$skip_category_sort = apply_filters('foxyshop_category_writer_skip_sort', 0);
+		if (!$skip_category_sort) {
+			$termchildren = foxyshop_sort_categories($termchildren, $category_id);
+		}
+		$termchildren = apply_filters("foxyshop_simple_category_custom_sort", $termchildren);
 		if ($depth > 1) $foxyshop_category_write .= '<ul class="children">';
 		foreach ($termchildren as $child) {
 			$term = get_term_by('id', $child->term_id, "foxyshop_categories");
