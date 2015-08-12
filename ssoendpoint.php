@@ -7,8 +7,10 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 	global $foxyshop_settings;
 	global $current_user;
 
-	//Run an action here in case you want to to intercept
-	do_action("foxyshop_sso_endpoint");
+	//Run an action here in case you want to to intercept (only if there's no special checkout type)
+	if (!isset($_GET['checkout_type'])) {
+		do_action("foxyshop_sso_endpoint");
+	}
 
 	$login_url = get_bloginfo('wpurl') . '/wp-login.php';
 
@@ -24,7 +26,7 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 			die;
 
 		//Check Cart Contents to Decide on Redirect
-		} elseif ($foxyshop_settings['sso_account_required'] == 2) {
+		} elseif ($foxyshop_settings['sso_account_required'] == 2 && !isset($_GET['checkout_type'])) {
 			$ch = curl_init();
 			if (!defined('FOXYSHOP_CURL_CONNECTTIMEOUT')) define('FOXYSHOP_CURL_CONNECTTIMEOUT', 10);
 			if (!defined('FOXYSHOP_CURL_TIMEOUT')) define('FOXYSHOP_CURL_TIMEOUT', 15);
@@ -105,7 +107,7 @@ if (isset($_GET['fcsid']) && isset($_GET['timestamp'])) {
 	$auth_token = sha1($customer_id . '|' . $newtimestamp . '|' . $foxyshop_settings['api_key']);
 	$redirect_complete = 'https://' . $foxyshop_settings['domain'] . '/checkout?fc_auth_token=' . $auth_token . '&fc_customer_id=' . $customer_id . '&timestamp=' . $newtimestamp . '&fcsid=' . $fcsid;
 
-	header('Location: ' . $redirect_complete);
+	wp_redirect($redirect_complete, 301);
 	die;
 }
 
